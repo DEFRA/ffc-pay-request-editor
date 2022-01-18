@@ -1,0 +1,5 @@
+{{- if .Values.postgresService.postgresExternalName }}
+{{- include "ffc-helm-library.postgres-service" (list . "ffc-pay-request-editor.postgres-service") -}}
+{{- end }}
+{{- define "ffc-pay-request-editor.postgres-service" -}}
+{{- end -}}

@@ -1,30 +1,57 @@
 {
   "name": "ffc-pay-request-editor",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Edit payment requests",
   "homepage": "https://github.com/DEFRA/ffc-pay-request-editor",
   "main": "app/index.js",
   "scripts": {
+    "build": "webpack",
+    "build:watch": "webpack --watch",
     "pretest": "npm run test:lint",
     "test": "jest --runInBand --forceExit",
     "test:watch": "jest --coverage=false --onlyChanged --watch --runInBand",
     "test:lint": "standard",
     "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/jest/bin/jest.js --coverage=false --onlyChanged --watch --runInBand --no-cache",
-    "start:watch": "nodemon --inspect=0.0.0.0 --ext js --legacy-watch app/index.js",
-    "start:debug": "nodemon --inspect-brk=0.0.0.0 --ext js --legacy-watch app/index.js"
+    "start:watch": "npm-run-all --parallel build:watch start:nodemon",
+    "start:debug": "nodemon --inspect-brk=0.0.0.0 --ext css,js,njk --legacy-watch app/index.js",
+    "start:nodemon": "nodemon --inspect=0.0.0.0 --ext css,js,njk --legacy-watch app/index.js"
   },
   "author": "Defra",
-  "contributors": [],
+  "contributors": [
+    "John Watson john.watson2@rpa.gov.uk"
+  ],
   "license": "OGL-UK-3.0",
   "dependencies": {
-    "@hapi/hapi": "^20.1.5",
-    "applicationinsights": "^2.1.6"
+    "@azure/identity": "^1.5.2",
+    "@hapi/crumb": "^8.0.1",
+    "@hapi/hapi": "^20.1.0",
+    "@hapi/inert": "^6.0.3",
+    "@hapi/vision": "^6.1.0",
+    "applicationinsights": "^1.8.10",
+    "ffc-messaging": "^2.3.1",
+    "govuk-frontend": "^3.14.0",
+    "hapi-pino": "^8.3.0",
+    "joi": "^17.4.0",
+    "nunjucks": "^3.2.3"
   },
   "devDependencies": {
-    "jest": "^27.0.6",
-    "jest-junit": "^12.2.0",
-    "nodemon": "^2.0.12",
-    "standard": "^16.0.3"
+    "blipp": "^4.0.2",
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^5.2.6",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.3.1",
+    "jest": "^27.2.5",
+    "jest-junit": "^13.0.0",
+    "mini-css-extract-plugin": "^1.6.0",
+    "nodemon": "^2.0.7",
+    "npm-run-all": "^4.1.5",
+    "resolve-url-loader": "^4.0.0",
+    "sass": "1.32.13",
+    "sass-loader": "^11.1.1",
+    "standard": "^16.0.4",
+    "style-loader": "^2.0.0",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.0"
   },
   "standard": {
     "globals": [
@@ -36,6 +63,12 @@
       "jest",
       "beforeAll",
       "afterAll"
+    ],
+    "ignore": [
+      "app/dist/**/*.js",
+      "test/acceptance/**/*.js",
+      "test/acceptance/**/*.mjs",
+      "test/acceptance/**/*.cjs"
     ]
   },
   "nodemonConfig": {

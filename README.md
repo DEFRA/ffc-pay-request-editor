@@ -1,44 +1,34 @@
-# FFC Template Node
-
-Template to support rapid delivery of microservices for FFC Platform. It contains the configuration needed to deploy a simple Hapi Node server to the Azure Kubernetes Platform.
-
-## Usage
-
-Create a new repository from this template and run `./rename.js` specifying the new name of the project and the description to use e.g.
-```
-./rename.js ffc-demo-web "Web frontend for demo workstream"
-```
-
-The script will update the following:
-
-* `package.json`: update `name`, `description`, `homepage`
-* `docker-compose.yaml`: update the service name, `image` and `container_name`
-* `docker-compose.test.yaml`: update the service name, `image` and `container_name`
-* `docker-compose.override.yaml`: update the service name, `image` and `container_name`
-* Rename `helm/ffc-template-node`
-* `helm/ffc-template-node/Chart.yaml`: update `description` and `name`
-* `helm/ffc-template-node/values.yaml`: update  `name`, `namespace`, `workstream`, `image`, `containerConfigMap.name`
-* `helm/ffc-template-node/templates/_container.yaml`: update the template name
-* `helm/ffc-template-node/templates/cluster-ip-service.yaml`: update the template name and list parameter of include
-* `helm/ffc-template-node/templates/config-map.yaml`: update the template name and list parameter of include
-* `helm/ffc-template-node/templates/deployment.yaml`: update the template name, list parameter of deployment and container includes
-
-### Notes on automated rename
-
-* The Helm chart deployment values in `helm/ffc-template-node/values.yaml` may need updating depending on the resource needs of your microservice
-* The rename is a one-way operation i.e. currently it doesn't allow the name being changed from to be specified
-* There is some validation on the input to try and ensure the rename is successful, however, it is unlikely to stand up to malicious entry
-* Once the rename has been performed the script can be removed from the repo
-* Should the rename go awry the changes can be reverted via `git clean -df && git checkout -- .`
+# FFC Pay Request Editor
 
 ## Prerequisites
 
+- Access to an instance of an
+[Azure Service Bus](https://docs.microsoft.com/en-us/azure/service-bus-messaging/)(ASB).
 - Docker
 - Docker Compose
 
 Optional:
 - Kubernetes
 - Helm
+
+### Azure Service Bus
+
+This service depends on a valid Azure Service Bus connection string for
+asynchronous communication.  The following environment variables need to be set
+in any non-production (`!config.isProd`) environment before the Docker
+container is started or tests are run.
+
+When deployed into an appropriately configured AKS
+cluster (where [AAD Pod Identity](https://github.com/Azure/aad-pod-identity) is
+configured) the microservice will use AAD Pod Identity.
+
+| Name                                   | Description                                                            |
+| ----                                   | -----------                                                            |
+| MESSAGE_QUEUE_HOST                     | Azure Service Bus hostname, e.g. `myservicebus.servicebus.windows.net` |
+| MESSAGE_QUEUE_PASSWORD                 | Azure Service Bus SAS policy key                                       |
+| MESSAGE_QUEUE_USER                     | Azure Service Bus SAS policy name, e.g. `RootManageSharedAccessKey`    |
+| MESSAGE_QUEUE_SUFFIX                   | Developer initials                                                     |
+
 
 ## Running the application
 
@@ -68,9 +58,16 @@ docker-compose build
 
 Use Docker Compose to run service locally.
 
-```
-docker-compose up
-```
+The service uses [Liquibase](https://www.liquibase.org/) to manage database migrations. To ensure the appropriate migrations have been run the utility script `scripts/start` may be run to execute the migrations, then the application.
+
+Alternatively the steps can be run manually:
+* run migrations
+  * `docker-compose -f docker-compose.migrate.yaml run --rm database-up`
+* start
+  * `docker-compose up`
+* stop
+  * `docker-compose down` or CTRL-C
+
 
 ## Test structure
 
@@ -87,12 +84,24 @@ arguments to the test script.
 
 Examples:
 
+
+### Run all tests
 ```
-# Run all tests
 scripts/test
+```
+
+### Run Acceptance tests
+```shell
+scripts/acceptance arg
+```
+- `debug` -- Build docker image and run acceptance test against Browserstack
+- `local` -- Start the service locally, run test on your local machine. Note: You should have chrome browser installed
 
 # Run tests with file watch
 scripts/test -w
+
+# Run tests with debugger attachable
+scripts/test -d
 ```
 
 ## CI pipeline

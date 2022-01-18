@@ -26,20 +26,42 @@ container:
   imagePullPolicy: IfNotPresent
   requestMemory: 10Mi
   requestCpu: 10m
-  limitMemory: 40Mi
-  limitCpu: 40m
-  port: 3000
+  limitMemory: 120Mi
+  limitCpu: 120m
+  port: 3001
+  messageQueueHost: namespace.servicebus.windows.net
+  debtTopicAddress: ffc-pay-debt-data
+  qcTopicAddress: ffc-pay-quality-check
+  qcSubscriptionAddress: ffc-pay-request-editor
+  editTopicAddress: ffc-pay-request-edit
 
 livenessProbe:
   path: /healthz
-  port: 3000
+  port: 3001
   initialDelaySeconds: 10
   periodSeconds: 10
   failureThreshold: 3
 
 readinessProbe:
   path: /healthy
-  port: 3000
+  port: 3001
   initialDelaySeconds: 10
   periodSeconds: 10
   failureThreshold: 3
+
+postgresService:
+  postgresDb: ffc_pay_request_editor
+  # postgresExternalName is the external host name to which PostgreSQL
+  # requests should be forwarded. If empty, PostgreSQL is assumed to be
+  # within the cluster and accessible via postgresHost
+  postgresExternalName:
+  postgresHost: ffc-pay-request-editor-postgres
+  postgresPort: 5432
+  postgresSchema: public
+  postgresUser: postgres
+
+aadPodIdentity: true
+
+azureIdentity:
+  clientID: not-a-real-clientID
+  resourceID: not-a-real-resourceID
