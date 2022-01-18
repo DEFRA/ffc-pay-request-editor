@@ -1,12 +1,12 @@
 version: '3.8'
 
 services:
-  ffc-template-node:
+  ffc-pay-request-editor:
     build:
       context: .
       target: production
-    image: ffc-template-node
-    container_name: ffc-template-node
+    image: ffc-pay-request-editor
+    container_name: ffc-pay-request-editor
     environment:
-      APPINSIGHTS_CLOUDROLE: ffc-template-node-local
+      APPINSIGHTS_CLOUDROLE: ffc-pay-request-editor-local
       APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
