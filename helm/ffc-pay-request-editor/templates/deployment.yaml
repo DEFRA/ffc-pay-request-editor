@@ -1,0 +1,8 @@
+{{- include "ffc-helm-library.deployment" (list . "ffc-pay-request-editor.deployment") -}}
+{{- define "ffc-pay-request-editor.deployment" -}}
+spec:
+  template:
+    spec:
+      containers:
+      - {{ include "ffc-helm-library.container" (list . "ffc-pay-request-editor.container") }}
+{{- end -}}

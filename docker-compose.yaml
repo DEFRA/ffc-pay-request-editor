@@ -1,12 +1,34 @@
 version: '3.8'
 
 services:
-  ffc-template-node:
+  ffc-pay-request-editor:
     build:
       context: .
       target: production
-    image: ffc-template-node
-    container_name: ffc-template-node
+    image: ffc-pay-request-editor
+    container_name: ffc-pay-request-editor
+    depends_on:
+      - ffc-pay-request-editor-postgres
     environment:
-      APPINSIGHTS_CLOUDROLE: ffc-template-node-local
+      APPINSIGHTS_CLOUDROLE: ffc-pay-request-editor-local
       APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
+      MESSAGE_QUEUE_HOST: ${MESSAGE_QUEUE_HOST}
+      MESSAGE_QUEUE_PASSWORD: ${MESSAGE_QUEUE_PASSWORD}
+      MESSAGE_QUEUE_USER: ${MESSAGE_QUEUE_USER}
+      DEBT_TOPIC_ADDRESS: ${DEBT_TOPIC_ADDRESS:-ffc-pay-debt-data}${MESSAGE_QUEUE_SUFFIX}
+      QC_TOPIC_ADDRESS: ${QC_TOPIC_ADDRESS:-ffc-pay-quality-check}${MESSAGE_QUEUE_SUFFIX}
+      QC_SUBSCRIPTION_ADDRESS: ${QC_SUBSCRIPTION_ADDRESS:-ffc-pay-request-editor}${MESSAGE_QUEUE_SUFFIX}
+      EDIT_TOPIC_ADDRESS: ${EDIT_TOPIC_ADDRESS:-ffc-pay-request-edit}${MESSAGE_QUEUE_SUFFIX}
+      POSTGRES_DB: ffc_pay_request_editor
+      POSTGRES_HOST: ${POSTGRES_HOST:-ffc-pay-request-editor-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_SCHEMA_PASSWORD:-ppp}
+      POSTGRES_PORT: 5432
+      POSTGRES_SCHEMA_NAME: ${POSTGRES_SCHEMA_NAME:-public}
+      POSTGRES_USERNAME: ${POSTGRES_SCHEMA_USERNAME:-postgres}
+
+  ffc-pay-request-editor-postgres:
+    image: postgres:11.4-alpine
+    environment:
+      POSTGRES_DB: ffc_pay_request_editor
+      POSTGRES_PASSWORD: ppp
+      POSTGRES_USERNAME: postgres
