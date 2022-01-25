@@ -1,18 +1,18 @@
 const config = require('../config')
-const processQualityCheckMessage = require('./process-quality-check-message')
+const processDebtDataMessage = require('./process-debt-data-message')
 const { MessageReceiver } = require('ffc-messaging')
-let qualityCheckReceiver
+let debtDataReceiver
 
 const start = async () => {
-  const qualityCheckAction = message => processQualityCheckMessage(message, qualityCheckReceiver)
-  qualityCheckReceiver = new MessageReceiver(config.qcSubscription, qualityCheckAction)
-  await qualityCheckReceiver.subscribe()
+  const debtDataAction = message => processDebtDataMessage(message, debtDataReceiver)
+  debtDataReceiver = new MessageReceiver(config.debtSubscription, debtDataAction)
+  await debtDataReceiver.subscribe()
 
   console.info('Ready to receive messages')
 }
 
 const stop = async () => {
-  await qualityCheckReceiver.closeConnection()
+  await debtDataReceiver.closeConnection()
 }
 
 module.exports = { start, stop }

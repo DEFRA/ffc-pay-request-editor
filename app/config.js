@@ -15,15 +15,12 @@ const schema = Joi.object({
       username: Joi.string(),
       password: Joi.string()
     }),
-    dataTopic: Joi.object({
-      address: Joi.string()
-    }),
-    qcSubscription: Joi.object({
+    debtSubscription: Joi.object({
       topic: Joi.string(),
       address: Joi.string(),
       type: Joi.string().default('subscription')
     }),
-    editTopic: Joi.object({
+    qcTopic: Joi.object({
       address: Joi.string()
     })
   }),
@@ -64,16 +61,13 @@ const config = {
       username: process.env.MESSAGE_QUEUE_USER,
       password: process.env.MESSAGE_QUEUE_PASSWORD
     },
-    dataTopic: {
-      address: process.env.DEBT_TOPIC_ADDRESS
-    },
-    qcSubscription: {
-      topic: process.env.QC_TOPIC_ADDRESS,
-      address: process.env.QC_SUBSCRIPTION_ADDRESS,
+    debtSubscription: {
+      topic: process.env.DEBT_TOPIC_ADDRESS,
+      address: process.env.DEBT_SUBSCRIPTION_ADDRESS,
       type: 'subscription'
     },
-    editTopic: {
-      address: process.env.EDIT_TOPIC_ADDRESS
+    qcTopic: {
+      address: process.env.QC_TOPIC_ADDRESS
     }
   },
   database: {
@@ -118,9 +112,8 @@ if (result.error) {
 // Use the joi validated value
 const value = result.value
 
-value.debtTopic = { ...value.message.connection, ...value.message.debtTopic }
-value.qcSubscription = { ...value.message.connection, ...value.message.qcSubscription }
-value.editTopic = { ...value.message.connection, ...value.message.editTopic }
+value.debtSubscription = { ...value.message.connection, ...value.message.debtSubscription }
+value.qcTopic = { ...value.message.connection, ...value.message.qcTopic }
 
 value.isDev = value.env === 'development'
 value.isTest = value.env === 'test'
