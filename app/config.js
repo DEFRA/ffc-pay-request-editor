@@ -15,7 +15,7 @@ const schema = Joi.object({
       username: Joi.string(),
       password: Joi.string()
     }),
-    dataSubscription: Joi.object({
+    debtSubscription: Joi.object({
       topic: Joi.string(),
       address: Joi.string(),
       type: Joi.string().default('subscription')
@@ -61,7 +61,7 @@ const config = {
       username: process.env.MESSAGE_QUEUE_USER,
       password: process.env.MESSAGE_QUEUE_PASSWORD
     },
-    dataSubscription: {
+    debtSubscription: {
       topic: process.env.DEBT_TOPIC_ADDRESS,
       address: process.env.DEBT_SUBSCRIPTION_ADDRESS,
       type: 'subscription'
