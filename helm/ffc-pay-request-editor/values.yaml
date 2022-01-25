@@ -31,8 +31,8 @@ container:
   port: 3001
   messageQueueHost: namespace.servicebus.windows.net
   debtTopicAddress: ffc-pay-debt-data
+  debtSubscriptionAddress: ffc-pay-request-editor
   qcTopicAddress: ffc-pay-quality-check
-  qcSubscriptionAddress: ffc-pay-request-editor
   editTopicAddress: ffc-pay-request-edit
 
 livenessProbe:
