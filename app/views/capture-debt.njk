@@ -3,11 +3,23 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+      text: "Back",
+      href: "/",
+      attributes: {
+        id: "back"
+      }
+    }) 
+  }}
+{% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">Capture Debt</h1>
+      <h1 class="govuk-heading-l">Create new reporting dataset</h1>
     </div>
     <div class="govuk-grid-column-two-thirds">
 
@@ -18,21 +30,23 @@
     <form method="POST" action="/capture-debt" novalidate>
       <input type="hidden" name="crumb" value="{{crumb}}"/>
       <div class="govuk-form-group">
-        {{ govukInput({
-            label: {
-              text: "Scheme",
-              classes: "govuk-label--s"
-            },
-            classes: "govuk-input--width-10",
-            id: "scheme",
-            name: "scheme"
-          }) 
-        }}
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading"> Scheme </h1>
+        </legend>
+        <div class="govuk-radios govuk-radios--inline govuk-radios--small">
+          {% for scheme_name in schemes %}
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="{{ scheme_name }}" type="radio">
+              <label class="govuk-label govuk-radios__label"> {{ scheme_name }} </label>
+            </div>
+          {% endfor %}
+        </div>
       </div>
+      
       <div class="govuk-form-group">
         {{ govukInput({
             label: {
-              text: "FRN (Firm Reference Number)",
+              text: "Firm Reference Number (FRN)",
               classes: "govuk-label--s"
             },
             classes: "govuk-input--width-10",
@@ -73,27 +87,28 @@
       </div>
       <div class="govuk-form-group">
         {{ govukRadios({
-          classes: "govuk-radios--small",
-          idPrefix: "error-type", 
-          name: "error-type",
-          fieldset: {
-            legend: {
-              text: "Type of debt",
-              isPageHeading: false,
-              classes: "govuk-fieldset__legend--s"
-            }
-          },
-          items: [
-            {
-              value: false,
-              text: "Irregular"
+            classes: "govuk-radios--small",
+            idPrefix: "error-type", 
+            name: "error-type",
+            fieldset: {
+              legend: {
+                text: "Type of debt",
+                isPageHeading: false,
+                classes: "govuk-fieldset__legend--s"
+              }
             },
-            {
-              value: false,
-              text: "Administrative"
-            }
-          ]
-        }) }}
+            items: [
+              {
+                value: false,
+                text: "Irregular"
+              },
+              {
+                value: false,
+                text: "Administrative"
+              }
+            ]
+          }) 
+        }}
       </div>
       <div class="govuk-form-group">
       {{ govukDateInput({

@@ -3,7 +3,8 @@ module.exports = [{
   path: '/capture-debt',
   options: {
     handler: async (request, h) => {
-      return h.view('capture-debt')
+      const schemes = ['SFI', 'SFI Pilot', 'Hardcoded Values']
+      return h.view('capture-debt', { schemes: schemes }) 
     }
   }
 },
