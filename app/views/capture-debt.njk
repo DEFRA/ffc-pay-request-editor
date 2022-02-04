@@ -1,5 +1,8 @@
 {% extends '_layout.njk' %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 
 {% block content %}
   <div class="govuk-grid-row">
@@ -8,12 +11,113 @@
     </div>
     <div class="govuk-grid-column-two-thirds">
 
-    {{ govukButton({
-        text: "Create new dataset",
-        href: "/capture-debt",
-        isStartButton: true
-      }) 
-    }}
+    {% if test %}
+      <h1>post <h1>
+    {% endif %}
+
+    <form method="POST" action="/capture-debt" novalidate>
+      <input type="hidden" name="crumb" value="{{crumb}}"/>
+      <div class="govuk-form-group">
+        {{ govukInput({
+            label: {
+              text: "Scheme",
+              classes: "govuk-label--s"
+            },
+            classes: "govuk-input--width-10",
+            id: "scheme",
+            name: "scheme"
+          }) 
+        }}
+      </div>
+      <div class="govuk-form-group">
+        {{ govukInput({
+            label: {
+              text: "FRN (Firm Reference Number)",
+              classes: "govuk-label--s"
+            },
+            classes: "govuk-input--width-10",
+            id: "frn",
+            name: "frn"
+          }) 
+        }}
+      </div>
+      <div class="govuk-form-group">
+        {{ govukInput({
+            label: {
+              text: "Application identifier",
+              classes: "govuk-label--s"
+            },
+            hint: {
+              text: "Unique reference number to identify application."
+            },
+            classes: "govuk-input--width-10",
+            id: "application-identifier",
+            name: "application-identifier"
+          }) 
+        }}
+      </div>
+      <div class="govuk-form-group">
+        {{ govukInput({
+            prefix: {
+              text: "£"
+            },
+            label: {
+              text: "Net value, in pounds",
+              classes: "govuk-label--s"
+            },
+            classes: "govuk-input--width-5",
+            id: "net",
+            name: "net"
+          }) 
+        }}
+      </div>
+      <div class="govuk-form-group">
+        {{ govukRadios({
+          classes: "govuk-radios--small",
+          idPrefix: "error-type", 
+          name: "error-type",
+          fieldset: {
+            legend: {
+              text: "Type of debt",
+              isPageHeading: false,
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: [
+            {
+              value: false,
+              text: "Irregular"
+            },
+            {
+              value: false,
+              text: "Administrative"
+            }
+          ]
+        }) }}
+      </div>
+      <div class="govuk-form-group">
+      {{ govukDateInput({
+        id: "debt-discovered",
+        namePrefix: "debt-discovered",
+        fieldset: {
+          legend: {
+            text: "Date debt discovered",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        hint: {
+          text: "For example, 27 3 2007"
+        }
+      }) }}
+      </div>
+
+        {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "capture-debt"
+          }
+        }) }}
+    </form>
 
   </div>
 {% endblock %}
