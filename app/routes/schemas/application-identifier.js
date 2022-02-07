@@ -1,7 +1,7 @@
 const Joi = require('joi')
 
 module.exports = {
-  'application-identifier': Joi.number().integer().greater(999999999).less(10000000000).required()
+  applicationIdentifier: Joi.number().integer().greater(999999999).less(10000000000).required()
     .error(errors => {
       errors.forEach(err => {
         switch (err.code) {

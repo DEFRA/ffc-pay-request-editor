@@ -8,7 +8,7 @@
         <div class="govuk-radios {{ 'govuk-radios--inline' if isInline }} {{ 'govuk-radios--small' if isInline }}">
           {% for value in values %}
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="{{ legend.toLowerCase().split(" ").join("-") }}" name="{{ legend.toLowerCase().split(" ").join("-") }}" type="radio" value="{{ value.toLowerCase().split(" ").join("-") }}">
+              <input class="govuk-radios__input" id="{{ legend.toLowerCase().split(" ").join("-") }}" name="{{ legend.toLowerCase().split(" ").join("-") }}" type="radio" value="{{ value }}">
               <label class="govuk-label govuk-radios__label"> {{ value }} </label>
             </div>
           {% endfor %}

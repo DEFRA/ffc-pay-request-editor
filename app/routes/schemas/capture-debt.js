@@ -3,7 +3,7 @@ const schemeSchema = require('./scheme')
 const frnSchema = require('./frn')
 const applicationIdentifierSchema = require('./application-identifier')
 const netSchema = require('./net')
-const debtDateSchema = require('./debt-date')
+const debtDaySchema = require('./debt-day')
 const debtMonthSchema = require('./debt-month')
 const debtYearSchema = require('./debt-year')
 
@@ -12,7 +12,7 @@ module.exports = Joi.object({
   ...frnSchema,
   ...applicationIdentifierSchema,
   ...netSchema,
-  ...debtDateSchema,
+  ...debtDaySchema,
   ...debtMonthSchema,
   ...debtYearSchema
 })
