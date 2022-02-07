@@ -1,5 +1,12 @@
 const Joi = require('joi')
+const schemeSchema = require('./scheme')
+const frnSchema = require('./frn')
+const net = require('./net')
+const debtDateSchema = require('./debt-date')
 
 module.exports = Joi.object({
-  frn: Joi.number().required()
+  ...schemeSchema,
+  ...frnSchema,
+  ...net,
+  ...debtDateSchema
 })

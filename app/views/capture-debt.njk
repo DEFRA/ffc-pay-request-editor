@@ -4,6 +4,7 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "./macros/radio-list.njk" import radioList %}
 
 {% block beforeContent %}
@@ -24,15 +25,23 @@
     </div>
     <div class="govuk-grid-column-two-thirds">
 
-    {% if error %}
-      <h1>{{error}}<h1>
+    {% if model.errorMessage %}
+      {{ govukErrorSummary({
+        titleText: "Something went wrong",
+        errorList: [
+          {
+            text: model.errorMessage.text
+          }
+        ]
+      }) 
+    }}
     {% endif %}
 
     <form method="POST" action="/capture-debt" novalidate>
       <input type="hidden" name="crumb" value="{{ crumb }}"/>
       
       <div class="govuk-form-group">
-        {{ radioList("Scheme", schemes, true) }}
+        {{ radioList("Scheme", model.schemes, true) }}
       </div>
       
       <div class="govuk-form-group">
