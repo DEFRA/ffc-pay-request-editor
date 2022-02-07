@@ -4,6 +4,7 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "./macros/radio-list.njk" import radioList %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -23,24 +24,16 @@
     </div>
     <div class="govuk-grid-column-two-thirds">
 
-    {% if test %}
-      <h1>post <h1>
+    {% if frn %}
+      <h1>{{frn}}<h1>
+      <p>{{net}}<p>
     {% endif %}
 
     <form method="POST" action="/capture-debt" novalidate>
-      <input type="hidden" name="crumb" value="{{crumb}}"/>
+      <input type="hidden" name="crumb" value="{{ crumb }}"/>
+      
       <div class="govuk-form-group">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading"> Scheme </h1>
-        </legend>
-        <div class="govuk-radios govuk-radios--inline govuk-radios--small">
-          {% for scheme_name in schemes %}
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="{{ scheme_name }}" type="radio">
-              <label class="govuk-label govuk-radios__label"> {{ scheme_name }} </label>
-            </div>
-          {% endfor %}
-        </div>
+        {{ radioList("Scheme", schemes, true) }}
       </div>
       
       <div class="govuk-form-group">
@@ -55,6 +48,7 @@
           }) 
         }}
       </div>
+
       <div class="govuk-form-group">
         {{ govukInput({
             label: {
@@ -70,6 +64,7 @@
           }) 
         }}
       </div>
+
       <div class="govuk-form-group">
         {{ govukInput({
             prefix: {
@@ -85,53 +80,57 @@
           }) 
         }}
       </div>
+
       <div class="govuk-form-group">
         {{ govukRadios({
             classes: "govuk-radios--small",
-            idPrefix: "error-type", 
-            name: "error-type",
+            name: "debt-type",
+            value: scheme_name,
             fieldset: {
               legend: {
                 text: "Type of debt",
-                isPageHeading: false,
                 classes: "govuk-fieldset__legend--s"
               }
             },
             items: [
               {
-                value: false,
-                text: "Irregular"
+                text: "Irregular",
+                value: "irr"
               },
               {
-                value: false,
-                text: "Administrative"
+                text: "Administrative",
+                value: "admin"
               }
             ]
+          })
+        }}
+      </div>
+
+      <div class="govuk-form-group">
+        {{ govukDateInput({
+            id: "debt-discovered",
+            namePrefix: "debt-discovered",
+            fieldset: {
+              legend: {
+                text: "Date debt discovered",
+                classes: "govuk-fieldset__legend--s"
+              }
+            },
+            hint: {
+              text: "For example, 27 3 2007"
+            }
           }) 
         }}
       </div>
-      <div class="govuk-form-group">
-      {{ govukDateInput({
-        id: "debt-discovered",
-        namePrefix: "debt-discovered",
-        fieldset: {
-          legend: {
-            text: "Date debt discovered",
-            classes: "govuk-fieldset__legend--s"
-          }
-        },
-        hint: {
-          text: "For example, 27 3 2007"
-        }
-      }) }}
-      </div>
 
         {{ govukButton({
-          text: "Continue",
-          attributes: {
-            id: "capture-debt"
-          }
-        }) }}
+            text: "Continue",
+            attributes: {
+              id: "capture-debt"
+            }
+          }) 
+        }}
+    
     </form>
 
   </div>
