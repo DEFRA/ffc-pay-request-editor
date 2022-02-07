@@ -24,9 +24,8 @@
     </div>
     <div class="govuk-grid-column-two-thirds">
 
-    {% if frn %}
-      <h1>{{frn}}<h1>
-      <p>{{net}}<p>
+    {% if error %}
+      <h1>{{error}}<h1>
     {% endif %}
 
     <form method="POST" action="/capture-debt" novalidate>
