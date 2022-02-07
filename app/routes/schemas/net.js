@@ -6,19 +6,19 @@ module.exports = {
       errors.forEach(err => {
         switch (err.code) {
           case 'number.greater':
-            err.message = 'The net value needs to be greater than £0.'
+            err.message = 'The net value needs to be greater than £0'
             break
           case 'number.less':
-            err.message = 'The net value needs to be less than £1,000,000,000.'
+            err.message = 'The net value needs to be less than £1,000,000,000'
             break
           case 'number.unsafe':
-            err.message = 'The net value needs to be less than £1,000,000,000.'
+            err.message = 'The net value needs to be less than £1,000,000,000'
             break
           case 'number.base':
-            err.message = 'The net value must be a number without commas.'
+            err.message = 'The net value must be a number without commas'
             break
           default:
-            err.message = 'The net value must be between £0 and £1,000,000,000.'
+            err.message = 'The net value must be between £0 and £1,000,000,000'
             break
         }
       })

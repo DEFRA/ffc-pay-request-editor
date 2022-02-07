@@ -1,24 +1,24 @@
 const Joi = require('joi')
 
 module.exports = {
-  frn: Joi.number().integer().greater(999999999).less(10000000000).required()
+  'debt-discovered-month': Joi.number().integer().greater(0).less(13).required()
     .error(errors => {
       errors.forEach(err => {
         switch (err.code) {
           case 'number.less':
-            err.message = 'The FRN is too long'
+            err.message = 'The debt month cannot be less than 1'
             break
           case 'number.greater':
-            err.message = 'The FRN is too short'
+            err.message = 'The debt month cannot exceed 12'
             break
           case 'number.unsafe':
-            err.message = 'The FRN is too long'
+            err.message = 'The debt month is invalid'
             break
           case 'number.base':
-            err.message = 'The FRN must be a number'
+            err.message = 'The debt month must be a number'
             break
           default:
-            err.message = 'The FRN is invalid'
+            err.message = 'The debt month must be between 1 and 12'
             break
         }
       })

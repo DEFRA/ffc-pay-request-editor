@@ -6,10 +6,10 @@ module.exports = {
       errors.forEach(err => {
         switch (err.code) {
           case 'string.empty':
-            err.message = 'Scheme cannot be empty.'
+            err.message = 'The scheme cannot be empty'
             break
           default:
-            err.message = 'Scheme is invalid.'
+            err.message = 'The scheme is invalid'
             break
         }
       })
