@@ -3,6 +3,7 @@ const ViewModel = require('../models/capture-debt')
 
 const getSchemes = require('../processing/get-schemes')
 const getSchemeId = require('../processing/get-scheme-id')
+const getPaymentRequestId = require('../processing/get-payment-request-id')
 
 const { convertToPounds, convertStringToPence } = require('../processing/convert-currency')
 
@@ -39,11 +40,29 @@ module.exports = [{
 
       const [debtDay, debtMonth, debtYear] = ['debt-discovered-day', 'debt-discovered-month', 'debt-discovered-year'].map(key => request.payload[key])
 
-      const debtDate = `${debtDay}-${debtMonth}-${debtYear}`
+      const recoveryDate = `${debtDay}-${debtMonth}-${debtYear}`
 
-      console.log(`frn: ${frn} schemeId ${schemeId} appID: ${applicationIdentifier} type: ${debtType} debt day: ${debtDay} debt month: ${debtMonth} debt yr: ${debtYear} || ${debtDate} net: ${netValue}`)
+      // check frn and appId
 
-      // saveDebtData({ debtDate, schemeId })
+      // if error, then wrong frn
+      const paymentRequestId = getPaymentRequestId(frn, schemeId)
+
+      console.log(`payId: ${paymentRequestId} frn: ${frn} schemeId ${schemeId} appID: ${applicationIdentifier} type: ${debtType} debt day: ${debtDay} debt month: ${debtMonth} debt yr: ${debtYear} || ${debtDate} net: ${netValue}`)
+
+      const debtData = {
+        paymentRequestId,
+        schemeId,
+        frn,
+        reference: applicationIdentifier,
+        netValue,
+        debtType,
+        recoveryDate,
+        attachedDate: undefined,
+        createdDate: new Date().toISOString().replace(/T/, ' ').replace(/Z/, ''),
+        createdBy: undefined
+      }
+
+      saveDebtData({ debtData })
 
       return h.redirect('capture-debt')
     }
