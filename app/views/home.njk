@@ -2,8 +2,52 @@
 
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">{{serviceName}}</h1>
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">{{serviceName}}</h1>
+      <div class="govuk-cards govuk-cards--2">
+        <div class="govuk-cards--2__item govuk-card--dashboard">
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Unattached reporting datasets</h2>
+          <p class="govuk-heading-xl govuk-!-margin-bottom-5">
+            {{ captureCount }}
+          </p>      
+          <ul class="govuk-list">
+            <li>
+              <a href="/capture" class="govuk-link">View unattached datasets</a>
+            </li>
+          </ul>
+        </div>
+        <div class="govuk-cards--2__item govuk-card--dashboard">
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Requests awaiting reporting data</h2>
+          <p class="govuk-heading-xl govuk-!-margin-bottom-5">
+            {{ enrichCount }}
+          </p>      
+          <ul class="govuk-list">
+            <li>
+              <a href="/enrich" class="govuk-link">View awaiting reporting data</a>
+            </li>
+          </ul>
+        </div>
+        <div class="govuk-cards--2__item govuk-card--dashboard">
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Requests awaiting quality check</h2>
+          <p class="govuk-heading-xl govuk-!-margin-bottom-5">
+            {{ qualityCheck }}
+          </p>      
+          <ul class="govuk-list">
+            <li>
+              <a href="/quality-check" class="govuk-link">View awaiting quality check</a>
+            </li>
+          </ul>
+        </div>
     </div>
+    <h2 class="govuk-heading-m">Capture new reporting dataset</h2>
+    <p class="govuk-body">
+      Datasets are automatically attached to matching requests when they are received in the request editor.
+    </p>
+    <a href="/capture-new" class="govuk-button govuk-button--start">
+      Capture new dataset
+      <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" role="presentation" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" fill-rule="evenodd"></path>
+      </svg>
+    </a>
   </div>
 {% endblock %}
