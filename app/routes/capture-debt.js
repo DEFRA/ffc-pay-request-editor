@@ -1,3 +1,5 @@
+const db = require('../data')
+
 const schema = require('./schemas/capture-debt')
 const ViewModel = require('../models/capture-debt')
 
@@ -6,6 +8,7 @@ const getSchemeId = require('../processing/get-scheme-id')
 const getPaymentRequestId = require('../processing/get-payment-request-id')
 
 const { convertToPounds, convertStringToPence } = require('../processing/convert-currency')
+const { convertDateToDDMMYYYY } = require('../processing/convert-date')
 
 const saveDebtData = require('../processing/save-debt-data')
 
@@ -33,38 +36,40 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const { scheme, frn, applicationIdentifier, net, debtType } = request.payload
-
-      const netValue = convertToPounds(convertStringToPence(net))
-
+      const netValue = convertToPounds(convertStringToPence(String(net)))
       const schemeId = await getSchemeId(scheme)
+      const recoveryDate = convertDateToDDMMYYYY(...['debt-discovered-day', 'debt-discovered-month', 'debt-discovered-year'].map(key => request.payload[key]))
 
-      const [debtDay, debtMonth, debtYear] = ['debt-discovered-day', 'debt-discovered-month', 'debt-discovered-year'].map(key => request.payload[key])
+      const transaction = await db.sequelize.transaction()
+      try {
+        const paymentRequestId = await getPaymentRequestId(frn, schemeId, transaction)
 
-      const recoveryDate = `${debtDay}-${debtMonth}-${debtYear}`
+        if (!paymentRequestId) {
+          const schemes = (await getSchemes()).map(x => x.name)
+          return h.view('capture-debt', new ViewModel(schemes, { message: 'The FRN does not exist for that scheme' })).code(400).takeover()
+        }
 
-      // check frn and appId
+        const debtData = {
+          paymentRequestId,
+          schemeId,
+          frn,
+          reference: applicationIdentifier,
+          netValue,
+          debtType,
+          recoveryDate,
+          attachedDate: undefined,
+          createdDate: new Date(),
+          createdBy: undefined
+        }
 
-      // if error, then wrong frn
-      const paymentRequestId = getPaymentRequestId(frn, schemeId)
-
-      console.log(`payId: ${paymentRequestId} frn: ${frn} schemeId ${schemeId} appID: ${applicationIdentifier} type: ${debtType} debt day: ${debtDay} debt month: ${debtMonth} debt yr: ${debtYear} || ${debtDate} net: ${netValue}`)
-
-      const debtData = {
-        paymentRequestId,
-        schemeId,
-        frn,
-        reference: applicationIdentifier,
-        netValue,
-        debtType,
-        recoveryDate,
-        attachedDate: undefined,
-        createdDate: new Date().toISOString().replace(/T/, ' ').replace(/Z/, ''),
-        createdBy: undefined
+        await saveDebtData(debtData, transaction)
+        await transaction.commit()
+      } catch (error) {
+        await transaction.rollback()
+        throw (error)
       }
 
-      saveDebtData({ debtData })
-
-      return h.redirect('capture-debt')
+      return h.redirect('/')
     }
   }
 }]
