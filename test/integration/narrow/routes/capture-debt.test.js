@@ -1,10 +1,16 @@
 describe('capture-debt route', () => {
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/processing/get-schemes')
+  jest.mock('../../../../app/processing/get-scheme-id')
+  jest.mock('../../../../app/processing/get-payment-request-id')
+  jest.mock('../../../../app/processing/save-debt-data')
+
   const getSchemes = require('../../../../app/processing/get-schemes')
-  const db = require('../../../../app/data')
+  const getSchemeId = require('../../../../app/processing/get-scheme-id')
+  const getPaymentRequestId = require('../../../../app/processing/get-payment-request-id')
 
   const SCHEMES = require('../../../data/scheme')
+  const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
 
   let createServer
   let server
@@ -20,12 +26,10 @@ describe('capture-debt route', () => {
     'debt-discovered-year': 2022
   }
 
-  beforeAll(async () => {
-    await db.debtData.destroy({ truncate: { cascade: false } })
-  })
-
   beforeEach(async () => {
     getSchemes.mockResolvedValue(SCHEMES)
+    getSchemeId.mockResolvedValue(SCHEME_ID_SFI)
+    getPaymentRequestId.mockResolvedValue(1)
 
     createServer = require('../../../../app/server')
     server = await createServer()
@@ -35,11 +39,6 @@ describe('capture-debt route', () => {
   afterEach(async () => {
     jest.clearAllMocks()
     await server.stop()
-  })
-
-  afterAll(async () => {
-    await db.debtData.destroy({ truncate: { cascade: true } })
-    await db.sequelize.close()
   })
 
   test('GET /capture-debt returns 200', async () => {
@@ -1466,5 +1465,90 @@ describe('capture-debt route', () => {
 
     const result = await server.inject(options)
     expect(result.request.response.source.context.model.errorMessage.text).toEqual('The debt year must be a number')
+  })
+
+  test('POST /capture-debt with valid but no matching FRN returns 400', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, frn: '7639118723' }
+    }
+    getPaymentRequestId.mockResolvedValue(undefined)
+
+    const result = await server.inject(options)
+    expect(result.statusCode).toBe(400)
+  })
+
+  test('POST /capture-debt with valid but no matching FRN returns capture-debt view', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, frn: '7639118723' }
+    }
+    getPaymentRequestId.mockResolvedValue(undefined)
+
+    const result = await server.inject(options)
+    expect(result.request.response.variety).toBe('view')
+    expect(result.request.response.source.template).toBe('capture-debt')
+  })
+
+  test('POST /capture-debt with valid but no matching FRN returns all scheme names', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, frn: '7639118723' }
+    }
+    getPaymentRequestId.mockResolvedValue(undefined)
+
+    const result = await server.inject(options)
+    expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
+  })
+
+  test('POST /capture-debt with valid but no matching FRN returns "The FRN does not exist for that scheme" error message', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, frn: '7639118723' }
+    }
+    getPaymentRequestId.mockResolvedValue(undefined)
+
+    const result = await server.inject(options)
+    expect(result.request.response.source.context.model.errorMessage.text).toEqual('The FRN does not exist for that scheme')
+  })
+
+  test('POST /capture-debt with valid payload returns 302', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: VALID_PAYLOAD
+    }
+    const result = await server.inject(options)
+    expect(result.statusCode).toBe(302)
+  })
+
+  test('POST /capture-debt with valid payload redirects to home', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: VALID_PAYLOAD
+    }
+    const result = await server.inject(options)
+    expect(result.headers.location).toBe('/')
+  })
+
+  test('POST /capture-debt with valid payload is saved to debtData table', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: VALID_PAYLOAD
+    }
+    jest.setTimeout(999999)
+    await server.inject(options)
+
+    const db = require('../../../../app/data')
+
+    const debtData = await db.debtData.findOne({ where: { schemeId: SCHEME_ID_SFI, frn: VALID_PAYLOAD.frn } })
+
+    expect(debtData.length).toBe(1)
   })
 })
