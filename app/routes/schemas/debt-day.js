@@ -15,7 +15,11 @@ module.exports = {
             err.message = 'The debt day is invalid'
             break
           case 'number.base':
-            err.message = 'The debt day must be a number'
+            if (err.local.value) {
+              err.message = 'The debt day must be a number'
+            } else {
+              err.message = 'The debt day cannot be empty'
+            }
             break
           default:
             err.message = 'The debt day must be between 1 and 31'

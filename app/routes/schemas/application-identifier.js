@@ -15,7 +15,11 @@ module.exports = {
             err.message = 'The application identifier is too long'
             break
           case 'number.base':
-            err.message = 'The application identifier must be a number'
+            if (err.local.value) {
+              err.message = 'The application identifier must be a number'
+            } else {
+              err.message = 'The application identifier cannot be empty'
+            }
             break
           default:
             err.message = 'The application identifier is invalid'

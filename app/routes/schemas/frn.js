@@ -15,7 +15,11 @@ module.exports = {
             err.message = 'The FRN is too long'
             break
           case 'number.base':
-            err.message = 'The FRN must be a number'
+            if (err.local.value) {
+              err.message = 'The FRN must be a number'
+            } else {
+              err.message = 'The FRN cannot be empty'
+            }
             break
           default:
             err.message = 'The FRN is invalid'

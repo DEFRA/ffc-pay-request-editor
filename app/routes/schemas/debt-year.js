@@ -6,16 +6,20 @@ module.exports = {
       errors.forEach(err => {
         switch (err.code) {
           case 'number.less':
-            err.message = 'The debt year cannot be before 1900'
+            err.message = 'The debt year cannot be after 2100'
             break
           case 'number.greater':
-            err.message = 'The debt year cannot be after 2100'
+            err.message = 'The debt year cannot be before 1900'
             break
           case 'number.unsafe':
             err.message = 'The debt year is invalid'
             break
           case 'number.base':
-            err.message = 'The debt year must be a number'
+            if (err.local.value) {
+              err.message = 'The debt year must be a number'
+            } else {
+              err.message = 'The debt year cannot be empty'
+            }
             break
           default:
             err.message = 'The debt year must be between 1900 and 2100'

@@ -15,7 +15,11 @@ module.exports = {
             err.message = 'The net value must be less than £1,000,000,000'
             break
           case 'number.base':
-            err.message = 'The net value must be a number without commas'
+            if (err.local.value) {
+              err.message = 'The net value must be a number without commas'
+            } else {
+              err.message = 'The net value cannot be empty'
+            }
             break
           default:
             err.message = 'The net value must be between £0 and £1,000,000,000'
