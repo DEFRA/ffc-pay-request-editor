@@ -1,5 +1,5 @@
 const ViewModel = require('./models/search')
-const captureData = require('./capture-data')
+const { getDebts } = require('../debt')
 const frnSchema = require('./schemas/frn')
 const searchLabelText = 'Search for data by FRN number'
 
@@ -8,6 +8,7 @@ module.exports = [{
   path: '/capture',
   options: {
     handler: async (request, h) => {
+      const captureData = await getDebts()
       return h.view('capture', { captureData, ...new ViewModel(searchLabelText) })
     }
   }
@@ -19,11 +20,13 @@ module.exports = [{
     validate: {
       payload: frnSchema,
       failAction: async (request, h, error) => {
+        const captureData = await getDebts()
         return h.view('capture', { captureData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
       const frn = request.payload.frn
+      const captureData = await getDebts()
       const filteredCaptureData = captureData.filter(x => x.frn === frn)
 
       if (filteredCaptureData.length) {
