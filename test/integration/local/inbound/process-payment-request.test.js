@@ -1,5 +1,5 @@
 const db = require('../../../../app/data')
-const processPaymentRequest = require('../../../../app/process-payment-request')
+const { processPaymentRequest } = require('../../../../app/inbound/payment-request')
 let scheme
 let paymentRequest
 describe('process payment requests', () => {
