@@ -1,4 +1,4 @@
 resources:
   topics:
     - name: debt
-    - name: quality
+    - name: qc
