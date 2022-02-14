@@ -5,7 +5,6 @@ const ViewModel = require('../models/capture-debt')
 
 const getSchemes = require('../processing/get-schemes')
 const getSchemeId = require('../processing/get-scheme-id')
-const getPaymentRequestId = require('../processing/get-payment-request-id')
 
 const { convertToPounds, convertStringToPence } = require('../processing/convert-currency')
 const { convertDateToDDMMYYYY } = require('../processing/convert-date')
@@ -42,15 +41,8 @@ module.exports = [{
 
       const transaction = await db.sequelize.transaction()
       try {
-        const paymentRequestId = await getPaymentRequestId(frn, schemeId, transaction)
-
-        if (!paymentRequestId) {
-          const schemes = (await getSchemes()).map(x => x.name)
-          return h.view('capture-debt', new ViewModel(schemes, { message: 'The FRN does not exist for that scheme' })).code(400).takeover()
-        }
-
         const debtData = {
-          paymentRequestId,
+          paymentRequestId: undefined,
           schemeId,
           frn,
           reference: applicationIdentifier,

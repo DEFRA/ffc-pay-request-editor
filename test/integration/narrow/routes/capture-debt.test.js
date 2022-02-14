@@ -2,11 +2,9 @@ describe('capture-debt route', () => {
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/processing/get-schemes')
   jest.mock('../../../../app/processing/get-scheme-id')
-  jest.mock('../../../../app/processing/get-payment-request-id')
 
   const getSchemes = require('../../../../app/processing/get-schemes')
   const getSchemeId = require('../../../../app/processing/get-scheme-id')
-  const getPaymentRequestId = require('../../../../app/processing/get-payment-request-id')
 
   const db = require('../../../../app/data')
   const { SCHEMES, SCHEME_NAME_SFI } = require('../../../data/scheme')
@@ -29,7 +27,6 @@ describe('capture-debt route', () => {
   beforeEach(async () => {
     getSchemes.mockResolvedValue(SCHEMES)
     getSchemeId.mockResolvedValue(SCHEME_ID_SFI)
-    getPaymentRequestId.mockResolvedValue(1)
 
     createServer = require('../../../../app/server')
     server = await createServer()
@@ -1330,55 +1327,6 @@ describe('capture-debt route', () => {
 
     const result = await server.inject(options)
     expect(result.request.response.source.context.model.errorMessage.text).toEqual('The debt year must be a number')
-  })
-
-  test('POST /capture-debt with valid but no matching FRN returns 400', async () => {
-    const options = {
-      method: 'POST',
-      url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '7639118723' }
-    }
-    getPaymentRequestId.mockResolvedValue(undefined)
-
-    const result = await server.inject(options)
-    expect(result.statusCode).toBe(400)
-  })
-
-  test('POST /capture-debt with valid but no matching FRN returns capture-debt view', async () => {
-    const options = {
-      method: 'POST',
-      url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '7639118723' }
-    }
-    getPaymentRequestId.mockResolvedValue(undefined)
-
-    const result = await server.inject(options)
-    expect(result.request.response.variety).toBe('view')
-    expect(result.request.response.source.template).toBe('capture-debt')
-  })
-
-  test('POST /capture-debt with valid but no matching FRN returns all scheme names', async () => {
-    const options = {
-      method: 'POST',
-      url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '7639118723' }
-    }
-    getPaymentRequestId.mockResolvedValue(undefined)
-
-    const result = await server.inject(options)
-    expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
-  })
-
-  test('POST /capture-debt with valid but no matching FRN returns "The FRN does not exist for that scheme" error message', async () => {
-    const options = {
-      method: 'POST',
-      url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '7639118723' }
-    }
-    getPaymentRequestId.mockResolvedValue(undefined)
-
-    const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorMessage.text).toEqual('The FRN does not exist for that scheme')
   })
 
   test('POST /capture-debt with valid payload returns 302', async () => {
