@@ -29,6 +29,35 @@ configured) the microservice will use AAD Pod Identity.
 | MESSAGE_QUEUE_USER                     | Azure Service Bus SAS policy name, e.g. `RootManageSharedAccessKey`    |
 | MESSAGE_QUEUE_SUFFIX                   | Developer initials                                                     |
 
+Example inbound payment request
+{
+   "sourceSystem":"SFIP",
+   "sbi":123456789,
+   "frn":1234567890,
+   "marketingYear":2022,
+   "paymentRequestNumber":1,
+   "invoiceNumber":"S123456789A123456V001",
+   "agreementNumber":"SFI12345",
+   "contractNumber":"SFI12345",
+   "currency":"GBP",
+   "schedule":"Q4",
+   "dueDate":"09/11/2022",
+   "value":100000,
+   "schemeId":2,
+   "ledger":"AP",
+   "deliveryBody":"RP00",
+   "schemeId":2,
+   "invoiceLines":[
+      {
+         "standardCode":"sfi-arable-soil",
+         "description":"G00 - Gross value of claim",
+         "value":100000,
+         "schemeCode":"80001",
+         "fundCode":"DOM00"
+      }
+   ]
+}
+
 
 ## Running the application
 
@@ -123,3 +152,4 @@ The following attribution statement MUST be cited in your products and applicati
 The Open Government Licence (OGL) was developed by the Controller of Her Majesty's Stationery Office (HMSO) to enable information providers in the public sector to license the use and re-use of their information under a common open licence.
 
 It is designed to encourage use and re-use of information freely and flexibly, with only a few conditions.
+
