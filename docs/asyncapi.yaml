@@ -1,0 +1,101 @@
+asyncapi: 2.2.0
+info:
+  title: FFC Pay Request Editor
+  version: '1.0.0'
+channels:
+  payment/debt:
+    subscribe:
+      message:
+        $ref: '#/components/messages/PaymentRequest'
+  payment/qualityCheck:
+    publish:
+      message:
+        $ref: '#/components/messages/PaymentRequest'
+components:
+  messages:
+    PaymentRequest:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          sourceSystem:
+            type: string
+            description: System identifier request originates from
+          sbi:
+            type: number
+            description: Single Business Identifier, optional
+          frn:
+            type: number
+            description: Firm Reference Number
+          marketingYear:
+            type: number
+            description: Scheme year for request
+          paymentRequestNumber:
+            type: number
+            description: Version of payment request starting with 1, anything greater than 1 is an adjustment
+          invoiceNumber:
+            type: string
+            description: Unique request for payment
+          agreementNumber:
+            type: string
+            description: Unique reference number for agreement/application
+          contractNumber:
+            type: string
+            description: Contract reference number of agreement
+          currency:
+            type: string
+            description: Currency of values in request, eg GBP
+          schedule:
+            type: string
+            description: Payment frequency instruction for DAX, eg Q4 for quarterly payments
+          dueDate:
+            type: string
+            description: Date request should be issued from DAX in format DD/MM/YYYY
+          value:
+            type: number
+            description: Integer net value of request, ie sum of all invoice lines
+          schemeId:
+            type: number
+            description: Unique ID for scheme
+          ledger:
+            type: string
+            description: Target ledger for settlement, AP for Accounts Payable and AR for Accounts Receivable
+          deliveryBody:
+            type: string
+            description: Delivery body responsible for payment
+          debtType:
+            type: string
+            description: Reason for recovery, optional
+          recoveryDate:
+            type: string
+            description: Date recovery identified, optional
+          originalSettlementDate:
+            type: string
+            description: Date original invoice settled, optional
+          originalInvoiceNumber:
+            type: string
+            description: Original invoice number, optional
+          invoiceCorrectionReference:
+            type: string
+            description: Original invoice number if correction to AR
+          invoiceLines:
+            type: array
+            description: List of Invoice lines that make up request
+            items:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: Description of what line relates to, eg gross or penalty
+                value:
+                  type: string
+                  description: Integer value of invoice line
+                schemeCode:
+                  type: string
+                  description: Unique scheme code for funding option
+                fundCode:
+                  type: string
+                  description: Unique fund code to pay from
+                accountCode:
+                  type: string
+                  description: Unique account code to pay from
