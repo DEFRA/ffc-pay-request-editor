@@ -19,8 +19,8 @@
   "author": "Defra",
   "contributors": [
     "John Watson john.watson2@rpa.gov.uk",
-    "Paul Popa paulp@kainos.com",
-    "Marc Templeton m.templeton@kainos.com"
+    "Marc Templeton m.templeton@kainos.com",
+    "Paul Popa paulp@kainos.com"
   ],
   "license": "OGL-UK-3.0",
   "dependencies": {
