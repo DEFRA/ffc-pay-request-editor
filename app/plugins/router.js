@@ -6,6 +6,7 @@ const routes = [].concat(
   require('../routes/capture-debt'),
   require('../routes/capture'),
   require('../routes/enrich'),
+  require('../routes/enrich-request'),
   require('../routes/review'),
   require('../routes/quality-check')
 )
