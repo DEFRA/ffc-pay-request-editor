@@ -14,8 +14,10 @@ const getPaymentRequest = async () => {
         'frn',
         'agreementNumber',
         'invoiceNumber',
+        'paymentRequestNumber',
         'value',
-        'received'
+        'received',
+        'receivedFormatted'
       ]
     })
 }

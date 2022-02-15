@@ -18,6 +18,7 @@ const getQualityChecks = async () => {
             'frn',
             'agreementNumber',
             'invoiceNumber',
+            'paymentRequestNumber',
             'value'
           ]
         }

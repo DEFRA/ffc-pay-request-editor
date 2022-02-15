@@ -40,7 +40,7 @@ describe('Quality check test', () => {
 
     test.each([
       { frn: '1234567890', statusCode: 200 },
-      { frn: 'A123456789', statusCode: 400 },
+      { frn: '1123456789', statusCode: 400 },
       { frn: '12345', statusCode: 400 },
       { frn: 1234567890, statusCode: 400 }
     ])('POST /quality-check %p route returns the correct status code', async ({ frn, statusCode }) => {

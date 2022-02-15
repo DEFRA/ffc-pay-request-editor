@@ -8,20 +8,15 @@ const getDebts = async () => {
           model: db.scheme,
           as: 'schemes',
           attributes: ['name']
-        },
-        {
-          model: db.paymentRequest,
-          as: 'paymentRequests',
-          attributes: ['agreementNumber']
         }
       ],
       attributes: [
         'frn',
+        'reference',
         'netValue',
         'debtType',
-        'attachedDate',
-        'createdBy',
-        'attachedDateFormatted'
+        'recoveryDate',
+        'createdBy'
       ]
     })
 }
