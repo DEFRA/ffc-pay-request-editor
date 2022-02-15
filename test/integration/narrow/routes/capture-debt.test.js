@@ -339,6 +339,141 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.errorMessage.text).toEqual('The application identifier cannot be empty')
   })
 
+  test('POST /capture-debt with a nine character application identifier returns 400', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' }
+    }
+
+    const result = await server.inject(options)
+    expect(result.statusCode).toBe(400)
+  })
+
+  test('POST /capture-debt with a nine character application identifier returns capture-debt view', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' }
+    }
+
+    const result = await server.inject(options)
+    expect(result.request.response.variety).toBe('view')
+    expect(result.request.response.source.template).toBe('capture-debt')
+  })
+
+  test('POST /capture-debt with a nine character application identifier returns all scheme names', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' }
+    }
+
+    const result = await server.inject(options)
+    expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
+  })
+
+  test('POST /capture-debt with a nine character application identifier returns "The application identifier is too short" error message', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' }
+    }
+
+    const result = await server.inject(options)
+    expect(result.request.response.source.context.model.errorMessage.text).toEqual('The application identifier is too short')
+  })
+
+  test('POST /capture-debt with an eleven character application identifier returns 400', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A5B' }
+    }
+
+    const result = await server.inject(options)
+    expect(result.statusCode).toBe(400)
+  })
+
+  test('POST /capture-debt with an eleven character application identifier returns capture-debt view', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A5B' }
+    }
+
+    const result = await server.inject(options)
+    expect(result.request.response.variety).toBe('view')
+    expect(result.request.response.source.template).toBe('capture-debt')
+  })
+
+  test('POST /capture-debt with an eleven character application identifier returns all scheme names', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A5B' }
+    }
+
+    const result = await server.inject(options)
+    expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
+  })
+
+  test('POST /capture-debt with an eleven character application identifier returns "The application identifier is too long" error message', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A5B' }
+    }
+
+    const result = await server.inject(options)
+    expect(result.request.response.source.context.model.errorMessage.text).toEqual('The application identifier is too long')
+  })
+
+  test('POST /capture-debt with non alphanumeric characters in the application identifier returns 400', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A' }
+    }
+
+    const result = await server.inject(options)
+    expect(result.statusCode).toBe(400)
+  })
+
+  test('POST /capture-debt with non alphanumeric characters in the application identifier returns capture-debt view', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A' }
+    }
+
+    const result = await server.inject(options)
+    expect(result.request.response.variety).toBe('view')
+    expect(result.request.response.source.template).toBe('capture-debt')
+  })
+
+  test('POST /capture-debt with non alphanumeric characters in the application identifier returns all scheme names', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A' }
+    }
+
+    const result = await server.inject(options)
+    expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
+  })
+
+  test('POST /capture-debt with non alphanumeric characters in the application identifier returns "The application identifier can only have alphanumeric characters" error message', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A' }
+    }
+
+    const result = await server.inject(options)
+    expect(result.request.response.source.context.model.errorMessage.text).toEqual('The application identifier can only have alphanumeric characters')
+  })
+
   test('POST /capture-debt with no net returns 400', async () => {
     const options = {
       method: 'POST',
