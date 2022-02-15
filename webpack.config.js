@@ -80,12 +80,6 @@ module.exports = {
       template: 'app/views/_layout.template.njk',
       chunks: ['core']
     }),
-    new HtmlWebpackPlugin({
-      inject: false,
-      filename: '../views/_cookie-banner.njk',
-      template: 'app/views/_cookie-banner.template.njk',
-      chunks: ['cookies']
-    }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[fullhash].css'
     })
