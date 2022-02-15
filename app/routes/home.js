@@ -1,6 +1,6 @@
-const captureData = require('./capture-data')
-const enrichData = require('./enrich-data')
-const qualityCheckData = require('./quality-check-data')
+const { getDebtsCount } = require('../debt')
+const { getPaymentRequestCount } = require('../payment-request')
+const { getQualityChecksCount } = require('../quality-check')
 
 module.exports = {
   method: 'GET',
@@ -9,9 +9,9 @@ module.exports = {
     handler: async (request, h) => {
       return h.view('home',
         {
-          captureCount: captureData.length,
-          enrichCount: enrichData.length,
-          qualityCheck: qualityCheckData.length
+          captureCount: await getDebtsCount(),
+          enrichCount: await getPaymentRequestCount(),
+          qualityCheck: await getQualityChecksCount()
         })
     }
   }

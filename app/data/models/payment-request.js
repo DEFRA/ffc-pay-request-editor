@@ -20,7 +20,23 @@ module.exports = (sequelize, DataTypes) => {
     invoiceCorrectionReference: DataTypes.STRING,
     value: DataTypes.DECIMAL,
     received: DataTypes.DATE,
-    released: DataTypes.DATE
+    receivedDateFormatted: {
+      type: DataTypes.VIRTUAL,
+      get () {
+        const formattedDate = this.received.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })
+        const formattedTime = this.received.toLocaleTimeString('en-GB')
+        return `${formattedDate} ${formattedTime}`
+      }
+    },
+    released: DataTypes.DATE,
+    releasedDateFormatted: {
+      type: DataTypes.VIRTUAL,
+      get () {
+        const formattedDate = this.released.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })
+        const formattedTime = this.released.toLocaleTimeString('en-GB')
+        return `${formattedDate} ${formattedTime}`
+      }
+    }
   },
   {
     tableName: 'paymentRequests',

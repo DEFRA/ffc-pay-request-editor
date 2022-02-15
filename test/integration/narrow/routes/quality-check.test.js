@@ -2,12 +2,17 @@ describe('Quality check test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
   const createServer = require('../../../../app/server')
+
+  jest.mock('../../../../app/quality-check')
+  const { getQualityChecks } = require('../../../../app/quality-check')
+
   let server
   const url = '/quality-check'
 
   beforeEach(async () => {
     server = await createServer()
     await server.initialize()
+    getQualityChecks.mockResolvedValue([{ frn: '1234567890' }])
   })
 
   afterEach(async () => {

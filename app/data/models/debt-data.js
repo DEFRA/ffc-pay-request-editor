@@ -9,7 +9,23 @@ module.exports = (sequelize, DataTypes) => {
     debtType: DataTypes.STRING,
     recoveryDate: DataTypes.STRING,
     attachedDate: DataTypes.DATE,
+    attachedDateFormatted: {
+      type: DataTypes.VIRTUAL,
+      get () {
+        const formattedDate = this.attachedDate.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })
+        const formattedTime = this.attachedDate.toLocaleTimeString('en-GB')
+        return `${formattedDate} ${formattedTime}`
+      }
+    },
     createdDate: DataTypes.DATE,
+    createdDateFormatted: {
+      type: DataTypes.VIRTUAL,
+      get () {
+        const formattedDate = this.createdDate.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })
+        const formattedTime = this.createdDate.toLocaleTimeString('en-GB')
+        return `${formattedDate} ${formattedTime}`
+      }
+    },
     createdBy: DataTypes.STRING
   },
   {

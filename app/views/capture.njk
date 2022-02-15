@@ -55,12 +55,12 @@
           <tbody class="govuk-table__body">
             {% for data in captureData %}
               <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.scheme }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.reference }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequests.agreementNumber }}<th>
                 <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.netValue }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtType }}<th>
-                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}<th>
+                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.attachedDateFormatted }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">
                   {% if data.attachedDate.length %}

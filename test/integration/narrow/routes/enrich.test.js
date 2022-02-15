@@ -2,12 +2,25 @@ describe('Enrich test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
   const createServer = require('../../../../app/server')
+
+  jest.mock('../../../../app/payment-request')
+  const { getPaymentRequest } = require('../../../../app/payment-request')
+
   let server
   const url = '/enrich'
 
   beforeEach(async () => {
     server = await createServer()
     await server.initialize()
+    getPaymentRequest.mockResolvedValue([
+      {
+        frn: '1234567890',
+        netValue: '100.00',
+        debtType: 'Debt',
+        attachedDate: '2020-01-01',
+        createdBy: 'test'
+      }
+    ])
   })
 
   afterEach(async () => {
