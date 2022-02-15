@@ -14,4 +14,4 @@ dist
 *.tgz
 *.lock
 # Generated views
-# _layout.njk
+_layout.njk
