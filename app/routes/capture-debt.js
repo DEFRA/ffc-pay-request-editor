@@ -61,7 +61,7 @@ module.exports = [{
         throw (error)
       }
 
-      return h.redirect('/')
+      return h.view('home')
     }
   }
 }]
