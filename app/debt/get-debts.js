@@ -16,7 +16,8 @@ const getDebts = async () => {
         'netValue',
         'debtType',
         'recoveryDate',
-        'createdBy'
+        'createdBy',
+        'attachedDate'
       ]
     })
 }
