@@ -25,14 +25,10 @@
     </div>
     <div class="govuk-grid-column-two-thirds">
 
-    {% if model.errorMessage %}
+    {% if model.errorSummary %}
       {{ govukErrorSummary({
         titleText: "There is a problem",
-        errorList: [
-          {
-            text: model.errorMessage.text
-          }
-        ]
+        errorList: model.errorSummary
       }) 
     }}
     {% endif %}

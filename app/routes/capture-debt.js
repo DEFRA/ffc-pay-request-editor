@@ -25,7 +25,6 @@ module.exports = [{
       payload: schema,
       failAction: async (request, h, error) => {
         const schemes = (await getSchemes()).map(x => x.name)
-        error.output.payload.message = error.details.map(detail => { return `${detail.message}\n` }).join('')
         return h.view('capture-debt', new ViewModel(schemes, error)).code(400).takeover()
       }
     },

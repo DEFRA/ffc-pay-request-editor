@@ -1,12 +1,18 @@
 function ViewModel (schemes, error) {
-  this.model = {
-    schemes: schemes
-  }
+  const errorMessages = {}
 
   if (error) {
-    this.model.errorMessage = {
-      text: error.message
-    }
+    errorMessages.summary = error.details.map(x => {
+      return {
+        text: x.message,
+        href: `#${x.context.key}`
+      }
+    })
+  }
+
+  this.model = {
+    schemes: schemes,
+    errorSummary: errorMessages.summary
   }
 }
 
