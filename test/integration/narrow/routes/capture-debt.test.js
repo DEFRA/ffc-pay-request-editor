@@ -334,7 +334,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorMessage.text).toEqual('The FRN must be a number')
+    expect(result.request.response.source.context.model.errorMessage.text).toEqual('The FRN must be a 10 digit number')
   })
 
   test('POST /capture-debt with no application identifier returns 400', async () => {
