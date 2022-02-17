@@ -6,8 +6,8 @@ const ViewModel = require('../models/capture-debt')
 const getSchemes = require('../processing/get-schemes')
 const getSchemeId = require('../processing/get-scheme-id')
 
-const { convertToPounds, convertStringToPence } = require('../processing/convert-currency')
-const { convertDateToDDMMYYYY } = require('../processing/convert-date')
+const { convertToPounds, convertStringToPence } = require('../processing/conversion')
+const { convertDateToDDMMYYYY } = require('../processing/conversion')
 
 const saveDebtData = require('../processing/save-debt-data')
 

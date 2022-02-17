@@ -1,7 +1,7 @@
 const {
   convertStringToPence,
   convertToPounds
-} = require('../../../app/processing/convert-currency')
+} = require('../../../app/processing/conversion')
 
 describe('convert currency', () => {
   test('converts 100 to pence', () => {

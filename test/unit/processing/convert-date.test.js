@@ -1,4 +1,4 @@
-const { convertDateToDDMMYYYY } = require('../../../app/processing/convert-date')
+const { convertDateToDDMMYYYY } = require('../../../app/processing/conversion')
 
 describe('convert date', () => {
   test('converts 16/10/2020 to date', () => {
