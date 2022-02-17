@@ -6,23 +6,23 @@ module.exports = {
       errors.forEach(err => {
         switch (err.code) {
           case 'number.less':
-            err.message = 'The FRN is too long. This must be 10 digits'
+            err.message = 'The FRN is too long. This must be 10 digits.'
             break
           case 'number.greater':
-            err.message = 'The FRN is too short. This must be 10 digits'
+            err.message = 'The FRN is too short. This must be 10 digits.'
             break
           case 'number.unsafe':
-            err.message = 'The FRN is too long. This must be 10 digits'
+            err.message = 'The FRN is too long. This must be 10 digits.'
             break
           case 'number.base':
             if (err.local.value) {
-              err.message = 'The FRN must be a 10 digit number'
+              err.message = 'The FRN must be a 10 digit number.'
             } else {
-              err.message = 'The FRN cannot be empty'
+              err.message = 'The FRN cannot be empty.'
             }
             break
           default:
-            err.message = 'The FRN is invalid'
+            err.message = 'The FRN is invalid.'
             break
         }
       })

@@ -9,13 +9,13 @@ module.exports = {
       errors.forEach(err => {
         switch (err.code) {
           case 'string.empty':
-            err.message = 'The scheme cannot be empty'
+            err.message = 'The scheme cannot be empty.'
             break
           case 'string.pattern.base':
-            err.message = `The scheme can only be ${typeOfSchemes}`
+            err.message = `The scheme can only be ${typeOfSchemes}.`
             break
           default:
-            err.message = 'The scheme is invalid'
+            err.message = 'The scheme is invalid.'
             break
         }
       })

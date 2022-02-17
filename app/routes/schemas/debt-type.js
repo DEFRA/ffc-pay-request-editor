@@ -9,13 +9,13 @@ module.exports = {
       errors.forEach(err => {
         switch (err.code) {
           case 'string.empty':
-            err.message = 'The type of debt cannot be empty'
+            err.message = 'The type of debt cannot be empty.'
             break
           case 'string.pattern.base':
-            err.message = `The type of debt can only be ${typeOfDebts}`
+            err.message = `The type of debt can only be ${typeOfDebts}.`
             break
           default:
-            err.message = 'The type of debt is invalid'
+            err.message = 'The type of debt is invalid.'
             break
         }
       })
