@@ -1,15 +1,17 @@
 const Joi = require('joi')
 
+const yearNow = new Date().getFullYear()
+
 module.exports = {
-  'debt-discovered-year': Joi.number().integer().greater(1900).less(2100).required()
+  'debt-discovered-year': Joi.number().integer().greater(2015).less(1 + yearNow).required()
     .error(errors => {
       errors.forEach(err => {
         switch (err.code) {
           case 'number.less':
-            err.message = 'The debt year cannot be after 2100'
+            err.message = 'The debt year cannot be in the future'
             break
           case 'number.greater':
-            err.message = 'The debt year cannot be before 1900'
+            err.message = 'The debt year cannot be before 2015'
             break
           case 'number.unsafe':
             err.message = 'The debt year is invalid'
@@ -22,7 +24,7 @@ module.exports = {
             }
             break
           default:
-            err.message = 'The debt year must be between 1900 and 2100'
+            err.message = `The debt year must be between 2015 and ${yearNow}`
             break
         }
       })

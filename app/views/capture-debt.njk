@@ -27,7 +27,7 @@
 
     {% if model.errorMessage %}
       {{ govukErrorSummary({
-        titleText: "Something went wrong",
+        titleText: "There is a problem",
         errorList: [
           {
             text: model.errorMessage.text

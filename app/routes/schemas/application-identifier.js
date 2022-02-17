@@ -12,9 +12,9 @@ module.exports = {
             break
           case 'string.pattern.base':
             if (err.local.value.length < LENGTH) {
-              err.message = 'The application identifier is too short'
+              err.message = `The application identifier is too short. This must be ${LENGTH} characters`
             } else if (err.local.value.length > LENGTH) {
-              err.message = 'The application identifier is too long'
+              err.message = `The application identifier is too long. This must be ${LENGTH} characters`
             } else {
               err.message = 'The application identifier can only have alphanumeric characters'
             }

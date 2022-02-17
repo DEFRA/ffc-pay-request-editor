@@ -6,7 +6,7 @@ module.exports = {
       errors.forEach(err => {
         switch (err.code) {
           case 'number.less':
-            err.message = 'The debt month cannot exceed 12'
+            err.message = 'The debt month cannot be more than 12'
             break
           case 'number.greater':
             err.message = 'The debt month cannot be less than 1'
