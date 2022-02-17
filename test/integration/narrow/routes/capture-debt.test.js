@@ -1,10 +1,8 @@
 describe('capture-debt route', () => {
   jest.mock('../../../../app/plugins/crumb')
-  jest.mock('../../../../app/processing/get-schemes')
-  jest.mock('../../../../app/processing/get-scheme-id')
+  jest.mock('../../../../app/processing/scheme')
 
-  const getSchemes = require('../../../../app/processing/get-schemes')
-  const getSchemeId = require('../../../../app/processing/get-scheme-id')
+  const { getSchemeId, getSchemes } = require('../../../../app/processing/scheme')
 
   const db = require('../../../../app/data')
   const { SCHEMES, SCHEME_NAME_SFI } = require('../../../data/scheme')

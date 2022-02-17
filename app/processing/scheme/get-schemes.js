@@ -1,4 +1,4 @@
-const db = require('../data')
+const db = require('../../data')
 
 const getSchemes = async () => {
   const schemes = await db.scheme.findAll({ attributes: ['name'] })
@@ -6,4 +6,4 @@ const getSchemes = async () => {
   return schemes.map(x => x.get({ plain: true }))
 }
 
-module.exports = getSchemes
+module.exports = { getSchemes }

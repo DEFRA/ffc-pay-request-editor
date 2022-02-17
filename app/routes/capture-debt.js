@@ -3,11 +3,8 @@ const db = require('../data')
 const schema = require('./schemas/capture-debt')
 const ViewModel = require('../models/capture-debt')
 
-const getSchemes = require('../processing/get-schemes')
-const getSchemeId = require('../processing/get-scheme-id')
-
-const { convertToPounds, convertStringToPence } = require('../processing/conversion')
-const { convertDateToDDMMYYYY } = require('../processing/conversion')
+const { getSchemeId, getSchemes } = require('../processing/scheme')
+const { convertToPounds, convertStringToPence, convertDateToDDMMYYYY } = require('../processing/conversion')
 
 const saveDebtData = require('../processing/save-debt-data')
 
