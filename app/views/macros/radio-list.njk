@@ -1,6 +1,7 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 
 {% macro radioList(legend, values, isInline) %}
+  {% set parsedLegend = legend.toLowerCase().split(" ").join("-") %}
     <div class="govuk-form-group">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
           <h1 class="govuk-fieldset__heading"> {{ legend }} </h1>
@@ -8,7 +9,7 @@
         <div class="govuk-radios {{ 'govuk-radios--inline' if isInline }} {{ 'govuk-radios--small' if isInline }}">
           {% for value in values %}
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="{{ legend.toLowerCase().split(" ").join("-") }}" name="{{ legend.toLowerCase().split(" ").join("-") }}" type="radio" value="{{ value }}">
+              <input class="govuk-radios__input" id="{{ parsedLegend }}" name="{{ parsedLegend }}" type="radio" value="{{ value }}">
               <label class="govuk-label govuk-radios__label"> {{ value }} </label>
             </div>
           {% endfor %}
