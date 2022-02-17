@@ -5,8 +5,7 @@ const ViewModel = require('../models/capture-debt')
 
 const { getSchemeId, getSchemes } = require('../processing/scheme')
 const { convertToPounds, convertStringToPence, convertDateToDDMMYYYY } = require('../processing/conversion')
-
-const saveDebtData = require('../processing/save-debt-data')
+const { saveDebtData } = require('../processing/debt')
 
 module.exports = [{
   method: 'GET',
