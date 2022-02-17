@@ -1,0 +1,70 @@
+{% extends '_layout.njk' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "macros/search-box.njk" import searchBox %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+        text: "Back",
+        href: "/",
+        attributes: {
+          id: "back"
+        }
+      }) 
+    }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">Requests awaiting Quality Check</h1>
+      <div class="govuk-!-padding-bottom-3">
+        <div class="user-search-box govuk-!-width-one-third">
+          <form class="search-form" action="/quality-check" method="POST">
+            <input type="hidden" name="crumb" value="{{crumb}}"/>
+            {{searchBox(model)}}
+          </form>
+        </div>
+
+        <p class="govuk-body">
+          <a href="/quality-check" class="govuk-link govuk-link--no-visited-state">View all existing reporting datasets</a>
+        </p>
+
+        <table class="govuk-table">
+          <caption class="govuk-table__caption govuk-table__caption--s">Requests</caption>
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header govuk-body-s">Scheme<th>
+              <th scope="col" class="govuk-table__header govuk-body-s">FRN<th>
+              <th scope="col" class="govuk-table__header govuk-body-s">Application ID<th>
+              <th scope="col" class="govuk-table__header govuk-body-s">Invoice<th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Request<th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount<th>
+              <th scope="col" class="govuk-table__header govuk-body-s">Amended by<th>
+              <th scope="col" class="govuk-table__header govuk-body-s">Status<th>
+              <th scope="col" class="govuk-table__header"><th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for data in qualityCheckData %}
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.schemes.name }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.frn }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.agreementNumber }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.invoiceNumber }}<th>
+                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequest.paymentRequestNumber }}<th>
+                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.paymentRequest.value }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.amendedBy }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.status }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">
+                  {% if data.status === status.pending %}
+                    <a href="review">Review</a>
+                  {% endif %}
+                <th>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      <div>
+    </div>
+  </div>
+{% endblock %}

@@ -20,12 +20,6 @@ module.exports = {
             return h.view('404').code(statusCode)
           }
 
-          // In the event of 401
-          // redirect to login
-          if (statusCode === 401) {
-            return h.redirect('/login')
-          }
-
           request.log('error', {
             statusCode: statusCode,
             data: response.data,
