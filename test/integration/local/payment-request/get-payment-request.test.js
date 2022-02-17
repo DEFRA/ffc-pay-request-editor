@@ -1,4 +1,4 @@
-const { getPaymentRequest } = require('../../../../app/payment-request')
+const { getPaymentRequest, getPaymentRequestCount } = require('../../../../app/payment-request')
 const db = require('../../../../app/data')
 
 describe('Get payment request test', () => {
@@ -47,14 +47,25 @@ describe('Get payment request test', () => {
     await db.sequelize.close()
   })
 
-  test('should return payment request', async () => {
+  test('should return 1 payment request record', async () => {
     const paymentRequests = await getPaymentRequest()
     expect(paymentRequests).toHaveLength(1)
   })
 
-  test('should return no payment request', async () => {
+  test('should return a count of 1 for payment request', async () => {
+    const paymentRequestCount = await getPaymentRequestCount()
+    expect(paymentRequestCount).toEqual(1)
+  })
+
+  test('should return zero payment requests', async () => {
     await db.sequelize.truncate({ cascade: true })
     const paymentRequests = await getPaymentRequest()
     expect(paymentRequests).toHaveLength(0)
+  })
+
+  test('should return a count of 0 for payment request', async () => {
+    await db.sequelize.truncate({ cascade: true })
+    const paymentRequestCount = await getPaymentRequestCount()
+    expect(paymentRequestCount).toEqual(0)
   })
 })

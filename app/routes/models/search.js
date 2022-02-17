@@ -1,4 +1,4 @@
-function ViewModel (labelText, frn, error) {
+function ViewModel (labelText, value, error) {
   this.model = {
     id: 'user-search',
     name: 'frn',
@@ -13,7 +13,7 @@ function ViewModel (labelText, frn, error) {
       classes: 'search-button'
     },
     inputmode: 'numeric',
-    value: frn
+    value
   }
 
   if (error) {

@@ -33,7 +33,7 @@ module.exports = [{
         return h.view('capture', { captureData: filteredCaptureData, ...new ViewModel(searchLabelText, frn) })
       }
 
-      return h.view('capture', new ViewModel(frn, { message: 'No data matching FRN.' })).code(400)
+      return h.view('capture', new ViewModel(searchLabelText, frn, { message: 'No debts match the FRN provided.' })).code(400)
     }
   }
 }

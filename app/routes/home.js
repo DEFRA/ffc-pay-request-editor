@@ -11,7 +11,7 @@ module.exports = {
         {
           captureCount: await getDebtsCount(),
           enrichCount: await getPaymentRequestCount(),
-          qualityCheck: await getQualityChecksCount()
+          qualityCheckCount: await getQualityChecksCount()
         })
     }
   }

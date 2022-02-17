@@ -56,7 +56,7 @@
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.amendedBy }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.status }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">
-                  {% if data.status === 'pending' %}
+                  {% if data.status === status.pending %}
                     <a href="review">Review</a>
                   {% endif %}
                 <th>
