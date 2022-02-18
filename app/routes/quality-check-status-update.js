@@ -1,3 +1,4 @@
+
 const { updateQualityChecksStatus } = require('../quality-check')
 
 module.exports = [{
@@ -16,8 +17,9 @@ module.exports = [{
     handler: async (request, h) => {
       if (request.payload.status && request.payload.paymentrequestid) {
         await updateQualityChecksStatus(request.payload.paymentrequestid, request.payload.status)
+        return h.redirect('/quality-check')
       }
-      return h.redirect('/quality-check')
+      return h.redirect('/quality-check').code(301)
     }
   }
 }
