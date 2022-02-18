@@ -1,6 +1,5 @@
 describe('errors test', () => {
   jest.mock('ffc-messaging')
-
   jest.mock('../../../../app/debt')
   const mockDebts = require('../../../../app/debt')
 
@@ -22,7 +21,7 @@ describe('errors test', () => {
     expect(response.statusCode).toBe(404)
   })
 
-  test('GET /capture route returns 500', async () => {
+  test('GET /capture route throws an error within getDebts() and returns 500', async () => {
     const options = {
       method: 'GET',
       url: '/capture'

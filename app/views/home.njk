@@ -12,7 +12,9 @@
           </p>      
           <ul class="govuk-list">
             <li>
-              <a href="/capture" class="govuk-link">View unattached datasets</a>
+              {% if captureCount > 0 %}
+                <a href="/capture" class="govuk-link">View unattached datasets</a>
+              {% endif %}
             </li>
           </ul>
         </div>
@@ -23,18 +25,22 @@
           </p>      
           <ul class="govuk-list">
             <li>
-              <a href="/enrich" class="govuk-link">View awaiting reporting data</a>
+              {% if enrichCount > 0 %}
+                <a href="/enrich" class="govuk-link">View awaiting reporting data</a>
+              {% endif %}
             </li>
           </ul>
         </div>
         <div class="govuk-cards--2__item govuk-card--dashboard">
           <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Requests awaiting quality check</h2>
           <p class="govuk-heading-xl govuk-!-margin-bottom-5">
-            {{ qualityCheck }}
+            {{ qualityCheckCount }}
           </p>      
           <ul class="govuk-list">
             <li>
-              <a href="/quality-check" class="govuk-link">View awaiting quality check</a>
+              {% if qualityCheckCount > 0 %}
+                <a href="/quality-check" class="govuk-link">View awaiting quality check</a>
+              {% endif %}
             </li>
           </ul>
         </div>

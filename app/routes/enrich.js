@@ -33,7 +33,7 @@ module.exports = [{
         return h.view('enrich', { enrichData: filteredEnrichData, ...new ViewModel(searchLabelText, frn) })
       }
 
-      return h.view('enrich', new ViewModel(frn, { message: 'No data matching FRN.' })).code(400)
+      return h.view('enrich', new ViewModel(searchLabelText, frn, { message: 'No payments match the FRN provided.' })).code(400)
     }
   }
 }

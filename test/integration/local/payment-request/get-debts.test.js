@@ -1,18 +1,15 @@
-const { getDebts } = require('../../../../app/debt')
+const { getDebts, getDebtsCount } = require('../../../../app/debt')
 const db = require('../../../../app/data')
 
 describe('Get debts test', () => {
-  let debts
+  const debts = {
+    frn: 1234567890,
+    reference: 'SIP00000000000001',
+    netValue: 15000
+  }
 
   beforeEach(async () => {
     await db.sequelize.truncate({ cascade: true })
-
-    debts = {
-      frn: 1234567890,
-      reference: 'SIP00000000000001',
-      netValue: 15000
-    }
-
     await db.debtData.create(debts)
   })
 
@@ -21,14 +18,25 @@ describe('Get debts test', () => {
     await db.sequelize.close()
   })
 
-  test('should return debt', async () => {
+  test('should return 1 debt record', async () => {
     const debt = await getDebts()
     expect(debt).toHaveLength(1)
   })
 
-  test('should return no debt', async () => {
+  test('should return count of 1 for debt', async () => {
+    const debtCount = await getDebtsCount()
+    expect(debtCount).toEqual(1)
+  })
+
+  test('should return zero debt records', async () => {
     await db.sequelize.truncate({ cascade: true })
     const debt = await getDebts()
     expect(debt).toHaveLength(0)
+  })
+
+  test('should return count of zero for debt', async () => {
+    await db.sequelize.truncate({ cascade: true })
+    const debtCount = await getDebtsCount()
+    expect(debtCount).toEqual(0)
   })
 })

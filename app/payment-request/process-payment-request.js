@@ -5,12 +5,12 @@ const saveInvoiceLines = require('../inbound/invoice-lines')
 const updateQualityCheck = require('../inbound/quality-checks')
 
 const processPaymentRequest = async (paymentRequest) => {
-  console.log(`[${new Date()}]: Processing data`)
+  console.log('Processing data')
   const transaction = await db.sequelize.transaction()
   try {
     const existingPaymentRequest = await getExistingPaymentRequest(paymentRequest.invoiceNumber, transaction)
     if (existingPaymentRequest) {
-      console.info(`[${new Date()}]: Duplicate payment request received, skipping ${existingPaymentRequest.invoiceNumber}`)
+      console.info(`Duplicate payment request received, skipping ${existingPaymentRequest.invoiceNumber}`)
       await transaction.rollback()
     } else {
       delete paymentRequest.paymentRequestId
