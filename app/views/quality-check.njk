@@ -56,8 +56,12 @@
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.amendedBy }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.status }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">
-                  {% if data.status === 'pending' %}
-                    <a href="review">Review</a>
+                  {% if data.status === 'Pending' %}
+                    <form class="search-form" action="/review" method="POST">
+                      <input type="hidden" name="crumb" value="{{crumb}}"/>
+                      <input type="hidden" name="paymentrequestid" value="{{data.paymentRequest.paymentRequestId}}"/>
+                      <a href="" onclick="parentNode.submit();return false;">Review</a>
+                    </form>
                   {% endif %}
                 <th>
               </tr>

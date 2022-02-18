@@ -1,0 +1,97 @@
+{% extends '_layout.njk' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+        text: "Back",
+        href: "/quality-check",
+        attributes: {
+          id: "back"
+        }
+      }) 
+    }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <span class="govuk-caption-l">FRN: {{paymentRequestData.frn}}</span>
+      <h1 class="govuk-heading-l">Review edited request for Invoice {{paymentRequestData.invoiceNumber}}</h1>
+      <table class="govuk-table">
+        <caption class="govuk-table__caption govuk-table__caption--s">Header</caption>
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">FRN</th>
+            <th scope="col" class="govuk-table__header govuk-body-s">Application ID</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Request</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Ledger</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell govuk-body-s">{{paymentRequestData.schemes.name}}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{paymentRequestData.frn}}</td>
+            <td class="govuk-table__cell govuk-body-s">{{paymentRequestData.agreementNumber}}</td>
+            <td class="govuk-table__cell govuk-table__header--numeric govuk-body-s">{{paymentRequestData.paymentRequestNumber}}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{paymentRequestData.value}}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{paymentRequestData.ledger}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="govuk-table">
+        <caption class="govuk-table__caption govuk-table__caption--s">Lines</caption>
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header govuk-body-s">Description</th>
+            <th scope="col" class="govuk-table__header govuk-body-s">Fund</th>
+            <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
+            <th scope="col" class="govuk-table__header govuk-body-s">Account</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Amount</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for data in invoiceLinesData %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell govuk-body-s">{{ data.description }}</td>
+              <td class="govuk-table__cell govuk-body-s">{{ data.fundCode }}</td>
+              <td class="govuk-table__cell govuk-body-s">{{ data.schemeCode }}</td>
+              <td class="govuk-table__cell govuk-body-s">{{ data.accountCode }}</td>
+              <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.value }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <form action="/quality-check-status-update" method="post" novalidate="">
+        <div class="govuk-form-group">
+          <input type="hidden" name="paymentrequestid" value="{{paymentRequestData.paymentRequestId}}"/>
+          <input type="hidden" name="crumb" value="{{crumb}}"/>
+          <label class="govuk-label govuk-label--s" for="status">
+            Has the request been edited correctly?
+          </label>
+          <div id="status-hint" class="govuk-hint">
+            Correctly edited requests will be immediately released from the editor.
+          </div>
+          <div class="govuk-radios govuk-radios--small" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="status-1" name="status" type="radio" value="Passed">
+              <label class="govuk-label govuk-radios__label" for="status">
+                Yes
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="status-2" name="status" type="radio" value="Failed">
+              <label class="govuk-label govuk-radios__label" for="status-2">
+                No
+              </label>
+            </div>
+          </div>
+        </div>
+        <button class="govuk-button" data-module="govuk-button">
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

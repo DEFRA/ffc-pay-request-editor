@@ -5,7 +5,9 @@ const routes = [].concat(
   require('../routes/home'),
   require('../routes/capture'),
   require('../routes/enrich'),
-  require('../routes/quality-check')
+  require('../routes/review'),
+  require('../routes/quality-check'),
+  require('../routes/quality-check-status-update')
 )
 
 module.exports = {
