@@ -122,9 +122,9 @@ function ViewModel (schemes, payload, error) {
   }
 
   this.model = {
+    schemes,
     components: {
       scheme,
-      payload,
       frn,
       applicationIdentifier,
       net,
