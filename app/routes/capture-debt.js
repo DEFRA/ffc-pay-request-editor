@@ -25,7 +25,7 @@ module.exports = [{
       payload: schema,
       failAction: async (request, h, error) => {
         const schemes = (await getSchemes()).map(x => x.name)
-        return h.view('capture-debt', new ViewModel(schemes, error)).code(400).takeover()
+        return h.view('capture-debt', new ViewModel(schemes, request.payload, error)).code(400).takeover()
       }
     },
     handler: async (request, h) => {

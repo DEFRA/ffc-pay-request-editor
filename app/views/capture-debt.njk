@@ -37,103 +37,36 @@
       <input type="hidden" name="crumb" value="{{ crumb }}"/>
       
       <div class="govuk-form-group">
-        {{ radioList("Scheme", model.schemes, true) }}
-      </div>
-      
-      <div class="govuk-form-group">
-        {{ govukInput({
-            label: {
-              text: "Firm Reference Number (FRN)",
-              classes: "govuk-label--s"
-            },
-            classes: "govuk-input--width-10",
-            id: "frn",
-            name: "frn"
-          }) 
-        }}
+        {{ govukRadios(model.components.scheme) }}
       </div>
 
       <div class="govuk-form-group">
-        {{ govukInput({
-            label: {
-              text: "Application identifier",
-              classes: "govuk-label--s"
-            },
-            hint: {
-              text: "Unique reference number to identify application."
-            },
-            classes: "govuk-input--width-10",
-            id: "applicationIdentifier",
-            name: "applicationIdentifier"
-          }) 
-        }}
+        {{ govukInput(model.components.frn) }}
       </div>
 
       <div class="govuk-form-group">
-        {{ govukInput({
-            prefix: {
-              text: "£"
-            },
-            label: {
-              text: "Net value, in pounds",
-              classes: "govuk-label--s"
-            },
-            classes: "govuk-input--width-5",
-            id: "net",
-            name: "net"
-          }) 
-        }}
+        {{ govukInput(model.components.applicationIdentifier) }}
       </div>
 
       <div class="govuk-form-group">
-        {{ govukRadios({
-            classes: "govuk-radios--small",
-            name: "debtType",
-            value: scheme_name,
-            fieldset: {
-              legend: {
-                text: "Type of debt",
-                classes: "govuk-fieldset__legend--s"
-              }
-            },
-            items: [
-              {
-                text: "Irregular",
-                value: "irr"
-              },
-              {
-                text: "Administrative",
-                value: "admin"
-              }
-            ]
-          })
-        }}
+        {{ govukInput(model.components.net) }}
       </div>
 
       <div class="govuk-form-group">
-        {{ govukDateInput({
-            id: "debt-discovered",
-            namePrefix: "debt-discovered",
-            fieldset: {
-              legend: {
-                text: "Date debt discovered",
-                classes: "govuk-fieldset__legend--s"
-              }
-            },
-            hint: {
-              text: "For example, 27 3 2007"
-            }
-          }) 
-        }}
+        {{ govukRadios(model.components.debtType) }}
       </div>
 
-        {{ govukButton({
-            text: "Continue",
-            attributes: {
-              id: "capture-debt"
-            }
-          }) 
-        }}
+      <div class="govuk-form-group">
+        {{ govukDateInput(model.components.debtDate) }}
+      </div>
+
+      {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "capture-debt"
+          }
+        }) 
+      }}
     
     </form>
 
