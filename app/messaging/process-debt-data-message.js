@@ -1,4 +1,4 @@
-const { processPaymentRequest } = require('../inbound/payment-request')
+const { processPaymentRequest } = require('../payment-request')
 
 const processDebtDataMessage = async (message, receiver) => {
   try {

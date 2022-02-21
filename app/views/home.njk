@@ -3,18 +3,58 @@
 
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-xl">{{serviceName}}</h1>
+      <div class="govuk-cards govuk-cards--2">
+        <div class="govuk-cards--2__item govuk-card--dashboard">
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Unattached reporting datasets</h2>
+          <p class="govuk-heading-xl govuk-!-margin-bottom-5">
+            {{ captureCount }}
+          </p>      
+          <ul class="govuk-list">
+            <li>
+              {% if captureCount > 0 %}
+                <a href="/capture" class="govuk-link">View unattached datasets</a>
+              {% endif %}
+            </li>
+          </ul>
+        </div>
+        <div class="govuk-cards--2__item govuk-card--dashboard">
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Requests awaiting reporting data</h2>
+          <p class="govuk-heading-xl govuk-!-margin-bottom-5">
+            {{ enrichCount }}
+          </p>      
+          <ul class="govuk-list">
+            <li>
+              {% if enrichCount > 0 %}
+                <a href="/enrich" class="govuk-link">View awaiting reporting data</a>
+              {% endif %}
+            </li>
+          </ul>
+        </div>
+        <div class="govuk-cards--2__item govuk-card--dashboard">
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Requests awaiting quality check</h2>
+          <p class="govuk-heading-xl govuk-!-margin-bottom-5">
+            {{ qualityCheckCount }}
+          </p>      
+          <ul class="govuk-list">
+            <li>
+              {% if qualityCheckCount > 0 %}
+                <a href="/quality-check" class="govuk-link">View awaiting quality check</a>
+              {% endif %}
+            </li>
+          </ul>
+        </div>
     </div>
-    <div class="govuk-grid-column-two-thirds">
-
-    {{ govukButton({
-        attributes: { id: "submit" },
-        text: "Create new dataset",
-        href: "/capture-debt",
-        isStartButton: true
-      }) 
-    }}
-
+    <h2 class="govuk-heading-m">Capture new reporting dataset</h2>
+    <p class="govuk-body">
+      Datasets are automatically attached to matching requests when they are received in the request editor.
+    </p>
+    <a href="/capture-debt" class="govuk-button govuk-button--start">
+      Capture new dataset
+      <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" role="presentation" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" fill-rule="evenodd"></path>
+      </svg>
+    </a>
   </div>
 {% endblock %}
