@@ -2,13 +2,21 @@ function ViewModel (schemes, payload, error) {
   const errorMessages = {}
 
   if (error) {
+    error.details.map(x => {
+      errorMessages[x.context.key] = x.message
+    })
+
     errorMessages.summary = error.details.map(x => {
       return {
         text: x.message,
         href: `#${x.context.key}`
       }
     })
+
+    errorMessages.debtDate = Object.entries(errorMessages).filter(x => x[0].startsWith('debt-discovered')).map(x => x[1]).join(' ')
   }
+
+  console.log(errorMessages)
 
   const scheme = {
     classes: 'govuk-radios--small govuk-radios--inline',
@@ -28,6 +36,8 @@ function ViewModel (schemes, payload, error) {
     })
   }
 
+  scheme.errorMessage = errorMessages?.scheme ? { text: errorMessages.scheme } : ''
+
   const frn = {
     label: {
       text: 'Firm Reference Number (FRN)',
@@ -38,6 +48,8 @@ function ViewModel (schemes, payload, error) {
     name: 'frn',
     value: payload?.frn ?? ''
   }
+
+  frn.errorMessage = errorMessages?.frn ? { text: errorMessages.frn } : ''
 
   const applicationIdentifier = {
     label: {
@@ -53,6 +65,8 @@ function ViewModel (schemes, payload, error) {
     value: payload?.applicationIdentifier ?? ''
   }
 
+  applicationIdentifier.errorMessage = errorMessages?.applicationIdentifier ? { text: errorMessages.applicationIdentifier } : ''
+
   const net = {
     prefix: {
       text: '£'
@@ -66,6 +80,8 @@ function ViewModel (schemes, payload, error) {
     name: 'net',
     value: payload?.net ?? ''
   }
+
+  net.errorMessage = errorMessages?.net ? { text: errorMessages.net } : ''
 
   const debtType = {
     classes: 'govuk-radios--small',
@@ -90,6 +106,8 @@ function ViewModel (schemes, payload, error) {
     ]
   }
 
+  debtType.errorMessage = errorMessages?.debtType ? { text: errorMessages.debtType } : ''
+
   const debtDate = {
     id: 'debt-discovered',
     namePrefix: 'debt-discovered',
@@ -104,22 +122,24 @@ function ViewModel (schemes, payload, error) {
     },
     items: [
       {
-        classes: 'govuk-input--width-2',
+        classes: errorMessages?.['debt-discovered-day'] ? 'govuk-input--width-2 govuk-input--error' : 'govuk-input--width-2',
         name: 'day',
         value: payload?.['debt-discovered-day'] ?? ''
       },
       {
-        classes: 'govuk-input--width-2',
+        classes: errorMessages?.['debt-discovered-month'] ? 'govuk-input--width-2 govuk-input--error' : 'govuk-input--width-2',
         name: 'month',
         value: payload?.['debt-discovered-month'] ?? ''
       },
       {
-        classes: 'govuk-input--width-4',
+        classes: errorMessages?.['debt-discovered-year'] ? 'govuk-input--width-4 govuk-input--error' : 'govuk-input--width-4',
         name: 'year',
         value: payload?.['debt-discovered-year'] ?? ''
       }
     ]
   }
+
+  debtDate.errorMessage = errorMessages?.debtDate ? { text: errorMessages.debtDate } : ''
 
   this.model = {
     schemes,
