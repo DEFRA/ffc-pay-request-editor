@@ -4,10 +4,9 @@ const checkDebts = async (frn, reference, netValue, transaction) => {
   return db.debtData.findAll({
     transaction,
     lock: true,
-    skipLocked: true,
     where: {
       frn: parseInt(frn),
-      reference: reference.toString(),
+      reference: reference,
       netValue: parseFloat(netValue)
     }
   })
