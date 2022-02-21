@@ -65,7 +65,7 @@
           {% endfor %}
         </tbody>
       </table>
-      <form action="/quality-check-status-update" method="post" novalidate="">
+      <form action="/review" method="post" novalidate="">
         <div class="govuk-form-group">
           <input type="hidden" name="paymentrequestid" value="{{paymentRequestData.paymentRequestId}}"/>
           <input type="hidden" name="crumb" value="{{crumb}}"/>

@@ -26,10 +26,35 @@ describe('Review test', () => {
   describe('GET requests', () => {
     const method = 'GET'
 
-    test('GET /review route returns 302 by redirecting to /quality-check', async () => {
+    test('GET /review route returns 200 if paymentrequestid in query-string and exist in database', async () => {
       const options = {
         method,
-        url
+        url: '/review?paymentrequestid=1'
+      }
+
+      const response = await server.inject(options)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.statusCode).toBe(200)
+      expect(response.request.response.source.template).toBe('review')
+      // expect(response.request.response.headers.location).toBe('/quality-check')
+    })
+
+    test('GET /review route redirects to /quality-check if paymentrequestid not in query-string', async () => {
+      const options = {
+        method,
+        url: '/review'
+      }
+
+      const response = await server.inject(options)
+      expect(response.request.response.variety).toBe('plain')
+      expect(response.statusCode).toBe(302)
+      expect(response.request.response.headers.location).toBe('/quality-check')
+    })
+
+    test('GET /review route redirects to /quality-check if paymentrequestid in query-string but not in the database', async () => {
+      const options = {
+        method,
+        url: '/review?paymentrequestid=6'
       }
 
       const response = await server.inject(options)
@@ -42,30 +67,30 @@ describe('Review test', () => {
   describe('POST requests', () => {
     const method = 'POST'
 
-    test('POST /review with  existing paymentrequestid displays review page', async () => {
+    test('POST /review with paymentrequestid  redirect to quality-check after update with code 302', async () => {
       const options = {
         method: method,
         url: url,
-        payload: { paymentrequestid: '1' }
+        payload: { paymentrequestid: '1', status: 'False' }
       }
 
       const response = await server.inject(options)
-      expect(response.statusCode).toBe(200)
-      expect(response.request.response.variety).toBe('view')
-      expect(response.request.response.source.template).toBe('review')
+      expect(response.request.response.variety).toBe('plain')
+      expect(response.statusCode).toBe(302)
+      expect(response.request.response.headers.location).toBe('/quality-check')
     })
 
-    test('POST /review with  non-existing paymentrequestid displays error message', async () => {
+    test('POST /review with  no paymentrequestid redirect to quality-check with code 301', async () => {
       const options = {
         method: method,
         url: url,
-        payload: { paymentrequestid: '2' }
+        payload: { }
       }
 
       const response = await server.inject(options)
-      expect(response.statusCode).toBe(400)
-      expect(response.request.response.variety).toBe('view')
-      expect(response.request.response.source.template).toBe('review')
+      expect(response.request.response.variety).toBe('plain')
+      expect(response.statusCode).toBe(301)
+      expect(response.request.response.headers.location).toBe('/quality-check')
     })
   })
 })
