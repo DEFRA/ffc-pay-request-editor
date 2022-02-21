@@ -2,9 +2,9 @@ function ViewModel (schemes, payload, error) {
   const errorMessages = {}
 
   if (error) {
-    error.details.map(x => {
+    for (const x of error.details) {
       errorMessages[x.context.key] = x.message
-    })
+    }
 
     errorMessages.summary = error.details.map(x => {
       return {
@@ -15,8 +15,6 @@ function ViewModel (schemes, payload, error) {
 
     errorMessages.debtDate = Object.entries(errorMessages).filter(x => x[0].startsWith('debt-discovered')).map(x => x[1]).join(' ')
   }
-
-  console.log(errorMessages)
 
   const scheme = {
     classes: 'govuk-radios--small govuk-radios--inline',
