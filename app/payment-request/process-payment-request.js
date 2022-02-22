@@ -20,8 +20,8 @@ const processPaymentRequest = async (paymentRequest) => {
       await attachDebtInformation(paymentRequestId, paymentRequest, transaction)
       await saveInvoiceLines(paymentRequest.invoiceLines, paymentRequestId)
       await updateQualityCheck(paymentRequestId)
-      const updatedQualityCheck = await getQualityCheck(paymentRequestId, transaction)
-      console.log(updatedQualityCheck)
+      // const updatedQualityCheck = await getQualityCheck(paymentRequestId, transaction)
+      // console.log(updatedQualityCheck)
       await transaction.commit()
     }
   } catch (error) {

@@ -18,7 +18,7 @@ const attachDebtInformation = async (paymentRequestId, paymentRequest, transacti
     updatedDebtData.paymentRequestId = paymentRequestId
     updatedDebtData.attachedDate = new Date()
     // save the data to db 
-    await saveDebtData(updatedDebtData)
+    await saveDebtData(updatedDebtData, transaction)
     console.log(updatedDebtData)
 
     // update the status in quality check table
