@@ -1,12 +1,10 @@
 const checkDebts = require('./check-debts')
-const getQualityCheck = require('./get-quality-check')
-const saveDebtData =  require('./save-debt-data')
-const db = require('../data')
+const saveDebtData = require('./save-debt-data')
 
 const attachDebtInformation = async (paymentRequestId, paymentRequest, transaction) => {
   const frn = paymentRequest.frn
   const agreementNumber = paymentRequest.agreementNumber
-  const value = paymentRequest.value  
+  const value = paymentRequest.value
 
   const foundDebtData = await checkDebts(frn, agreementNumber, value, transaction)
 
@@ -17,7 +15,7 @@ const attachDebtInformation = async (paymentRequestId, paymentRequest, transacti
     // set the new values
     updatedDebtData.paymentRequestId = paymentRequestId
     updatedDebtData.attachedDate = new Date()
-    // save the data to db 
+    // save the data to db
     await saveDebtData(updatedDebtData, transaction)
     console.log(updatedDebtData)
 
@@ -25,7 +23,6 @@ const attachDebtInformation = async (paymentRequestId, paymentRequest, transacti
     // does this need to be done after the other tables are saved?
     // const updatedQualityCheck = await getQualityCheck(paymentRequestId, transaction)
     // console.log(updatedQualityCheck)
-
   } else {
     console.log('no debt data found')
   }
