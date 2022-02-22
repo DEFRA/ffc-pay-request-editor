@@ -5,6 +5,7 @@ const routes = [].concat(
   require('../routes/home'),
   require('../routes/capture'),
   require('../routes/enrich'),
+  require('../routes/review'),
   require('../routes/quality-check')
 )
 

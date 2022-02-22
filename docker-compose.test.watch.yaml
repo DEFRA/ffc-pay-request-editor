@@ -5,4 +5,4 @@ services:
     command: >
       sh -c "npm run test:watch"
     volumes:
-      - ./.git:/home/node/.git
+      - ./app:/home/node/app
