@@ -25,9 +25,9 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      const frn = String(request.payload.frn)
+      const frn = request.payload.frn
       const captureData = await getDebts()
-      const filteredCaptureData = captureData.filter(x => x.frn === frn)
+      const filteredCaptureData = captureData.filter(x => x.frn === String(frn))
 
       if (filteredCaptureData.length) {
         return h.view('capture', { captureData: filteredCaptureData, ...new ViewModel(searchLabelText, frn) })

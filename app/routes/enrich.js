@@ -27,7 +27,7 @@ module.exports = [{
     handler: async (request, h) => {
       const frn = request.payload.frn
       const paymentRequest = await getPaymentRequest()
-      const filteredEnrichData = paymentRequest.filter(x => x.frn === frn)
+      const filteredEnrichData = paymentRequest.filter(x => x.frn === String(frn))
 
       if (filteredEnrichData.length) {
         return h.view('enrich', { enrichData: filteredEnrichData, ...new ViewModel(searchLabelText, frn) })

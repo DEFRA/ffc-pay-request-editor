@@ -28,7 +28,7 @@ module.exports = [{
     handler: async (request, h) => {
       const frn = request.payload.frn
       const qualityCheckData = await getQualityChecks()
-      const filteredQualityCheckData = qualityCheckData.filter(x => x.frn === frn)
+      const filteredQualityCheckData = qualityCheckData.filter(x => x.frn === String(frn))
 
       if (filteredQualityCheckData.length) {
         return h.view('quality-check', { status, qualityCheckData: filteredQualityCheckData, ...new ViewModel(searchLabelText, frn) })
