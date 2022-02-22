@@ -1,7 +1,7 @@
 const db = require('../data')
 
 const checkDebts = async (frn, reference, netValue, transaction) => {
-  return db.debtData.findAll({
+  return db.debtData.findOne({
     transaction,
     where: {
       frn: parseInt(frn),

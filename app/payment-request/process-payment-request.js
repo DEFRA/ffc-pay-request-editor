@@ -3,7 +3,8 @@ const getExistingPaymentRequest = require('./get-existing-payment-request')
 const savePaymentRequest = require('./save-payment-request')
 const saveInvoiceLines = require('../inbound/invoice-lines')
 const updateQualityCheck = require('../inbound/quality-checks')
-const { attachDebtInformation, getQualityCheck } = require('../debt')
+const { attachDebtInformation } = require('../debt')
+const updateQualityCheckStatus = require('../quality-check/update-quality-check-status')
 
 const processPaymentRequest = async (paymentRequest) => {
   console.log('Processing data')
@@ -20,8 +21,7 @@ const processPaymentRequest = async (paymentRequest) => {
       await attachDebtInformation(paymentRequestId, paymentRequest, transaction)
       await saveInvoiceLines(paymentRequest.invoiceLines, paymentRequestId)
       await updateQualityCheck(paymentRequestId)
-      // const updatedQualityCheck = await getQualityCheck(paymentRequestId, transaction)
-      // console.log(updatedQualityCheck)
+      await updateQualityCheckStatus(paymentRequestId, paymentRequest, transaction)
       await transaction.commit()
     }
   } catch (error) {
