@@ -1,4 +1,5 @@
 describe('capture-debt route', () => {
+  jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/processing/scheme')
 
@@ -14,13 +15,20 @@ describe('capture-debt route', () => {
   const VALID_PAYLOAD = {
     scheme: SCHEME_NAME_SFI,
     frn: '1234567890',
-    applicationIdentifier: '987654321A',
+    applicationIdentifier: '43210987654321A',
     net: 312.2,
     debtType: 'admin',
     'debt-discovered-day': 2,
     'debt-discovered-month': 1,
     'debt-discovered-year': 2022
   }
+
+  beforeAll(async () => {
+    await db.scheme.upsert({
+      schemeId: 1,
+      name: 'SFI'
+    })
+  })
 
   beforeEach(async () => {
     getSchemes.mockResolvedValue(SCHEMES)
@@ -34,6 +42,10 @@ describe('capture-debt route', () => {
   afterEach(async () => {
     jest.clearAllMocks()
     await server.stop()
+  })
+
+  afterAll(async () => {
+    await db.sequelize.close()
   })
 
   test('GET /capture-debt returns 200', async () => {
@@ -417,7 +429,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with a nine character application identifier returns "The application identifier is too short. This must be 10 characters." error message', async () => {
+  test('POST /capture-debt with a nine character application identifier returns "The application identifier is too short. This must be 15 characters." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -425,25 +437,25 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The application identifier is too short. This must be 10 characters.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The application identifier is too short. This must be 15 characters.')
   })
 
-  test('POST /capture-debt with an eleven character application identifier returns 400', async () => {
+  test('POST /capture-debt with a 16 character application identifier returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A5B' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' }
     }
 
     const result = await server.inject(options)
     expect(result.statusCode).toBe(400)
   })
 
-  test('POST /capture-debt with an eleven character application identifier returns capture-debt view', async () => {
+  test('POST /capture-debt with a 16 application identifier returns capture-debt view', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A5B' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' }
     }
 
     const result = await server.inject(options)
@@ -451,26 +463,26 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.template).toBe('capture-debt')
   })
 
-  test('POST /capture-debt with an eleven character application identifier returns all scheme names', async () => {
+  test('POST /capture-debt with a 16 character application identifier returns all scheme names', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A5B' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' }
     }
 
     const result = await server.inject(options)
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with an eleven character application identifier returns "The application identifier is too long. This must be 10 characters." error message', async () => {
+  test('POST /capture-debt with a 16 character application identifier returns "The application identifier is too long. This must be 15 characters." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A5B' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' }
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The application identifier is too long. This must be 10 characters.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The application identifier is too long. This must be 15 characters.')
   })
 
   test('POST /capture-debt with non alphanumeric characters in the application identifier returns 400', async () => {
@@ -511,7 +523,7 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A12345' }
     }
 
     const result = await server.inject(options)

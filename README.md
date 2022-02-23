@@ -38,7 +38,7 @@ Example inbound payment request
    "marketingYear":2022,
    "paymentRequestNumber": 1,
    "invoiceNumber":"S123456789A123456V001",
-   "agreementNumber":"SFI12345",
+   "agreementNumber":"SIP000001234567",
    "contractNumber":"SFI12345",
    "currency":"GBP",
    "schedule":"Q4",

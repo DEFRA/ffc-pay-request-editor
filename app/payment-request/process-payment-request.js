@@ -5,7 +5,6 @@ const saveInvoiceLines = require('../inbound/invoice-lines')
 const updateQualityCheck = require('../inbound/quality-checks')
 
 const processPaymentRequest = async (paymentRequest) => {
-  console.log('Processing data')
   const transaction = await db.sequelize.transaction()
   try {
     const existingPaymentRequest = await getExistingPaymentRequest(paymentRequest.invoiceNumber, transaction)

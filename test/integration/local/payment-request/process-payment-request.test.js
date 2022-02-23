@@ -102,7 +102,7 @@ describe('process payment requests', () => {
       }]
     })
 
-    expect(qualityChecksRow[0].status).toBe('Pending')
+    expect(qualityChecksRow[0].status).toBe('Not ready')
   })
 
   test('should only insert the first payment request', async () => {
