@@ -15,6 +15,7 @@ const getQualityChecks = async () => {
             }
           ],
           attributes: [
+            'paymentRequestId',
             'frn',
             'agreementNumber',
             'invoiceNumber',

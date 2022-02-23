@@ -11,13 +11,15 @@ const getPaymentRequest = async () => {
         }
       ],
       attributes: [
+        'paymentRequestId',
         'frn',
         'agreementNumber',
         'invoiceNumber',
         'paymentRequestNumber',
         'value',
         'received',
-        'receivedFormatted'
+        'receivedFormatted',
+        'ledger'
       ]
     })
 }
