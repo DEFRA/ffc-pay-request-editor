@@ -1,5 +1,6 @@
 const checkDebts = require('./check-debts')
 const saveDebtData = require('./save-debt-data')
+const updateQualityCheckStatus = require('../quality-check/update-quality-check-status')
 
 const attachDebtInformation = async (paymentRequestId, paymentRequest, transaction) => {
   const frn = paymentRequest.frn
@@ -9,11 +10,10 @@ const attachDebtInformation = async (paymentRequestId, paymentRequest, transacti
   const foundDebtData = await checkDebts(frn, agreementNumber, value, transaction)
 
   if (foundDebtData) {
-    console.log('data found')
     foundDebtData.paymentRequestId = paymentRequestId
     foundDebtData.attachedDate = new Date()
     await saveDebtData(foundDebtData, transaction)
-    console.log(foundDebtData)
+    await updateQualityCheckStatus(paymentRequestId, paymentRequest, transaction)
   } else {
     console.log('no debt data found')
   }
