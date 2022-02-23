@@ -1,3 +1,8 @@
+const {
+  getObjectKey,
+  getObjectKeyEquals
+} = require('../processing/object-check')
+
 function ViewModel (schemes, payload, error) {
   const errorMessages = {}
 
@@ -29,7 +34,7 @@ function ViewModel (schemes, payload, error) {
       return {
         text: x,
         value: x,
-        checked: payload?.scheme === x ?? ''
+        checked: getObjectKeyEquals(payload, 'scheme', x)
       }
     })
   }
@@ -44,7 +49,7 @@ function ViewModel (schemes, payload, error) {
     classes: 'govuk-input--width-10',
     id: 'frn',
     name: 'frn',
-    value: payload?.frn ?? ''
+    value: getObjectKey(payload, 'frn')
   }
 
   frn.errorMessage = errorMessages?.frn ? { text: errorMessages.frn } : ''
@@ -60,7 +65,7 @@ function ViewModel (schemes, payload, error) {
     classes: 'govuk-input--width-10',
     id: 'applicationIdentifier',
     name: 'applicationIdentifier',
-    value: payload?.applicationIdentifier ?? ''
+    value: getObjectKey(payload, 'applicationIdentifier')
   }
 
   applicationIdentifier.errorMessage = errorMessages?.applicationIdentifier ? { text: errorMessages.applicationIdentifier } : ''
@@ -76,7 +81,7 @@ function ViewModel (schemes, payload, error) {
     classes: 'govuk-input--width-5',
     id: 'net',
     name: 'net',
-    value: payload?.net ?? ''
+    value: getObjectKey(payload, 'net')
   }
 
   net.errorMessage = errorMessages?.net ? { text: errorMessages.net } : ''
@@ -94,12 +99,12 @@ function ViewModel (schemes, payload, error) {
       {
         text: 'Irregular',
         value: 'irr',
-        checked: payload?.debtType === 'irr' ?? ''
+        checked: getObjectKeyEquals(payload, 'debtType', 'irr')
       },
       {
         text: 'Administrative',
         value: 'admin',
-        checked: payload?.debtType === 'admin' ?? ''
+        checked: getObjectKeyEquals(payload, 'debtType', 'admin')
       }
     ]
   }
@@ -122,17 +127,17 @@ function ViewModel (schemes, payload, error) {
       {
         classes: errorMessages?.['debt-discovered-day'] ? 'govuk-input--width-2 govuk-input--error' : 'govuk-input--width-2',
         name: 'day',
-        value: payload?.['debt-discovered-day'] ?? ''
+        value: getObjectKey(payload, 'debt-discovered-day')
       },
       {
         classes: errorMessages?.['debt-discovered-month'] ? 'govuk-input--width-2 govuk-input--error' : 'govuk-input--width-2',
         name: 'month',
-        value: payload?.['debt-discovered-month'] ?? ''
+        value: getObjectKey(payload, 'debt-discovered-month')
       },
       {
         classes: errorMessages?.['debt-discovered-year'] ? 'govuk-input--width-4 govuk-input--error' : 'govuk-input--width-4',
         name: 'year',
-        value: payload?.['debt-discovered-year'] ?? ''
+        value: getObjectKey(payload, 'debt-discovered-year')
       }
     ]
   }
