@@ -1,7 +1,7 @@
 const ViewModel = require('./models/search')
 const { getQualityChecks } = require('../quality-check')
 const status = require('../status')
-const frnSchema = require('./schemas/frn')
+const schema = require('./schemas/quality-check')
 const searchLabelText = 'Search for a request by FRN number'
 
 module.exports = [{
@@ -19,7 +19,7 @@ module.exports = [{
   path: '/quality-check',
   options: {
     validate: {
-      payload: frnSchema,
+      payload: schema,
       failAction: async (request, h, error) => {
         const qualityCheckData = await getQualityChecks()
         return h.view('quality-check', { status, qualityCheckData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
@@ -28,7 +28,7 @@ module.exports = [{
     handler: async (request, h) => {
       const frn = request.payload.frn
       const qualityCheckData = await getQualityChecks()
-      const filteredQualityCheckData = qualityCheckData.filter(x => x.frn === frn)
+      const filteredQualityCheckData = qualityCheckData.filter(x => x.frn === String(frn))
 
       if (filteredQualityCheckData.length) {
         return h.view('quality-check', { status, qualityCheckData: filteredQualityCheckData, ...new ViewModel(searchLabelText, frn) })
