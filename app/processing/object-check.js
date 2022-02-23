@@ -1,9 +1,9 @@
-function getObjectKey (obj, key, defaultValue = '') {
-  return obj?.[String(key)] ?? defaultValue
+function getObjectKey (obj, key, defaultResponse = '') {
+  return obj?.[String(key)] ?? defaultResponse
 }
 
-function getObjectKeyEquals (obj, key, value, defaultValue = '') {
-  return obj?.[String(key)] === value ?? defaultValue
+function getObjectKeyEquals (obj, key, value, defaultResponse = false) {
+  return obj?.[String(key)] === value ?? defaultResponse
 }
 
 module.exports = {
