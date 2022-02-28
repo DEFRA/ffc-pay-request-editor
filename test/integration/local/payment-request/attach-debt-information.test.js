@@ -1,10 +1,10 @@
 const db = require('../../../../app/data')
 const { attachDebtInformation } = require('../../../../app/debt')
 // const { processPaymentRequest } = require('../../../../app/payment-request')
-let paymentRequest
-let paymentRequestId
+let paymentRequestData
 let debtData
 let qualityData
+let paymentRequestId
 describe('process payment requests', () => {
   beforeEach(async () => {
     await db.sequelize.truncate({ cascade: true })
@@ -30,7 +30,7 @@ describe('process payment requests', () => {
       createdDate: null
     }
 
-    paymentRequest = {
+    paymentRequestData = {
       sourceSystem: 'SFIP',
       deliveryBody: 'RP00',
       invoiceNumber: 'S00000001SFIP000001V001',
@@ -64,8 +64,8 @@ describe('process payment requests', () => {
 
     await db.debtData.create(debtData)
     await db.qualityCheck.create(qualityData)
-    paymentRequestId = 39
-    // await db.scheme.create(scheme)
+    const paymentRequest = await db.paymentRequest.create(paymentRequestData)
+    paymentRequestId = paymentRequest.paymentRequestId
   })
 
   afterAll(async () => {
@@ -74,12 +74,9 @@ describe('process payment requests', () => {
   })
 
   test('Update the debtData table with data from the payment request', async () => {
-    const debtDataRow = await db.debtData.findAll({
-    })
-    console.log(debtDataRow)
-    await attachDebtInformation(paymentRequest, paymentRequestId)
+    await attachDebtInformation(paymentRequestId, paymentRequestData)
+    const debtDataRow = await db.debtData.findAll()
     expect(debtDataRow[0].paymentRequestId).toBe(paymentRequestId)
     // check date is not null
-    // include quality table test as well
   })
 })
