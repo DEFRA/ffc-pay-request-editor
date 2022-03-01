@@ -1,10 +1,16 @@
 const db = require('../../../../app/data')
 const { attachDebtInformation } = require('../../../../app/debt')
+const { checkDebts } = require('../../../../app/debt')
+
 global.console.log = jest.fn()
 let paymentRequestData
 let debtData
 let qualityData
 let paymentRequestId
+let frn
+let reference
+let netValue
+
 describe('Attach debt information tests', () => {
   beforeEach(async () => {
     await db.sequelize.truncate({ cascade: true })
@@ -87,7 +93,7 @@ describe('Attach debt information tests', () => {
     expect(debtDataRow[0].attachedDate).toBeInstanceOf(Date)
   })
 
-  test('if no debt data found, log message to console', async () => {
+  test('If no debt data found, log message to console', async () => {
     await db.debtData.destroy({
       where: {
         debtDataId: 1
@@ -96,5 +102,12 @@ describe('Attach debt information tests', () => {
     await attachDebtInformation(paymentRequestId, paymentRequestData)
     const logSpy = jest.spyOn(console, 'log')
     expect(logSpy).toHaveBeenCalledWith('no debt data found')
+  })
+
+  test('checkDebts returns an empty object if frn is NaN', async () => {
+    frn = 'aaaaaaa'
+    reference = paymentRequestData.agreementNumber
+    netValue = paymentRequestData.netValue
+    expect(await checkDebts(frn, reference, netValue)).toStrictEqual({})
   })
 })

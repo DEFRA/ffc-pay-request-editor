@@ -8,6 +8,6 @@ module.exports = {
   getDebts,
   getDebtsCount,
   checkDebts,
-  attachDebtInformation
+  attachDebtInformation,
   saveDebt
 }
