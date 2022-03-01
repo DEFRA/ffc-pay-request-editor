@@ -9,11 +9,7 @@ const attachDebtInformation = async (paymentRequestId, paymentRequest, transacti
     foundDebtData.paymentRequestId = paymentRequestId
     foundDebtData.attachedDate = new Date()
     const debtData = foundDebtData.dataValues ?? foundDebtData
-    try {
-      await saveDebtData(debtData, transaction)
-    } catch (error) {
-      console.log(error)
-    }
+    await saveDebtData(debtData, transaction)
     console.log('debt data updated')
   } else {
     console.log('no debt data found')

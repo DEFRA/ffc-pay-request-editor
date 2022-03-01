@@ -1,15 +1,13 @@
 const db = require('../../../../app/data')
 const { attachDebtInformation } = require('../../../../app/debt')
-// const { processPaymentRequest } = require('../../../../app/payment-request')
+global.console.log = jest.fn()
 let paymentRequestData
 let debtData
 let qualityData
 let paymentRequestId
-describe('process payment requests', () => {
+describe('Attach debt information tests', () => {
   beforeEach(async () => {
     await db.sequelize.truncate({ cascade: true })
-
-    // define the db tables to be used in testing
 
     qualityData = {
       qualityCheckId: 1,
@@ -76,7 +74,27 @@ describe('process payment requests', () => {
   test('Update the debtData table with data from the payment request', async () => {
     await attachDebtInformation(paymentRequestId, paymentRequestData)
     const debtDataRow = await db.debtData.findAll()
+    const logSpy = jest.spyOn(console, 'log')
+    expect(logSpy).toHaveBeenCalledWith('debt data updated')
     expect(debtDataRow[0].paymentRequestId).toBe(paymentRequestId)
-    // check date is not null
+    expect(debtDataRow[0].attachedDate).not.toBeNull()
+    expect(debtDataRow[0].debtDataId).toBe(debtData.debtDataId)
+  })
+
+  test('attachedDate should be a date type', async () => {
+    await attachDebtInformation(paymentRequestId, paymentRequestData)
+    const debtDataRow = await db.debtData.findAll()
+    expect(debtDataRow[0].attachedDate).toBeInstanceOf(Date)
+  })
+
+  test('if no debt data found, log message to console', async () => {
+    await db.debtData.destroy({
+      where: {
+        debtDataId: 1
+      }
+    })
+    await attachDebtInformation(paymentRequestId, paymentRequestData)
+    const logSpy = jest.spyOn(console, 'log')
+    expect(logSpy).toHaveBeenCalledWith('no debt data found')
   })
 })
