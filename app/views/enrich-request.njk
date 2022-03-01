@@ -1,0 +1,45 @@
+{% extends '_layout.njk' %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+        text: "Back",
+        href: "/enrich",
+        attributes: {
+          id: "back"
+        }
+      }) 
+    }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <span class="govuk-caption-l">FRN: {{ paymentRequest.frn }}</span>
+      <h1 class="govuk-heading-l">Attach new dataset to Invoice {{ paymentRequest.invoiceNumber }}</h1>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <form action="/enrich-request" method="POST" novalidate>
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        <input type="hidden" name="invoice-number" value="{{ paymentRequest.invoiceNumber }}"/>
+        {% if model.errorMessage %}
+         {{ govukErrorSummary(model.errorMessage) }}
+        {% endif %}
+        {{ govukRadios(model.radio) }}
+        {{ govukDateInput(model.date) }}
+        {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "submit"
+          }
+        }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

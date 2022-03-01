@@ -1,6 +1,6 @@
 const ViewModel = require('./models/search')
 const { getPaymentRequest } = require('../payment-request')
-const frnSchema = require('./schemas/frn')
+const schema = require('./schemas/enrich')
 const searchLabelText = 'Search for a request by FRN number'
 
 module.exports = [{
@@ -18,7 +18,7 @@ module.exports = [{
   path: '/enrich',
   options: {
     validate: {
-      payload: frnSchema,
+      payload: schema,
       failAction: async (request, h, error) => {
         const paymentRequest = await getPaymentRequest()
         return h.view('enrich', { enrichData: paymentRequest, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
@@ -27,7 +27,7 @@ module.exports = [{
     handler: async (request, h) => {
       const frn = request.payload.frn
       const paymentRequest = await getPaymentRequest()
-      const filteredEnrichData = paymentRequest.filter(x => x.frn === frn)
+      const filteredEnrichData = paymentRequest.filter(x => x.frn === String(frn))
 
       if (filteredEnrichData.length) {
         return h.view('enrich', { enrichData: filteredEnrichData, ...new ViewModel(searchLabelText, frn) })

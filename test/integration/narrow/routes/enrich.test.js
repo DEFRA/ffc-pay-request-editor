@@ -61,10 +61,11 @@ describe('Enrich test', () => {
     })
 
     test.each([
+      { frn: 1234567890, statusCode: 200 },
       { frn: '1234567890', statusCode: 200 },
-      { frn: '1123456789', statusCode: 400 },
-      { frn: '12345', statusCode: 400 },
-      { frn: 1234567890, statusCode: 400 }
+      { frn: '1234567899', statusCode: 400 },
+      { frn: 'A123456789', statusCode: 400 },
+      { frn: '12345', statusCode: 400 }
     ])('POST /enrich %p route returns the correct status code', async ({ frn, statusCode }) => {
       const options = {
         method,

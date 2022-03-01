@@ -30,14 +30,15 @@ configured) the microservice will use AAD Pod Identity.
 | MESSAGE_QUEUE_SUFFIX                   | Developer initials                                                     |
 
 Example inbound payment request
+
+```
 {
    "sourceSystem":"SFIP",
-   "sbi":123456789,
    "frn":1234567890,
    "marketingYear":2022,
-   "paymentRequestNumber":1,
+   "paymentRequestNumber": 1,
    "invoiceNumber":"S123456789A123456V001",
-   "agreementNumber":"SFI12345",
+   "agreementNumber":"SIP000001234567",
    "contractNumber":"SFI12345",
    "currency":"GBP",
    "schedule":"Q4",
@@ -49,15 +50,15 @@ Example inbound payment request
    "schemeId":2,
    "invoiceLines":[
       {
-         "standardCode":"sfi-arable-soil",
-         "description":"G00 - Gross value of claim",
-         "value":100000,
-         "schemeCode":"80001",
-         "fundCode":"DOM00"
+        "description":"G00 - Gross value of claim",
+        "value":100000,
+        "schemeCode":"80001",
+        "fundCode":"DOM00",
+        "accountCode": "SOS970"
       }
    ]
 }
-
+```
 
 ## Running the application
 
@@ -127,11 +128,10 @@ scripts/acceptance arg
 - `local` -- Start the service locally, run test on your local machine. Note: You should have chrome browser installed
 
 # Run tests with file watch
-scripts/test -w
+`scripts/test -w`
 
 # Run tests with debugger attachable
-scripts/test -d
-```
+`scripts/test -d`
 
 ## CI pipeline
 

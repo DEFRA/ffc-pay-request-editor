@@ -1,0 +1,73 @@
+{% extends '_layout.njk' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+      text: "Back",
+      href: "/",
+      attributes: {
+        id: "back"
+      }
+    }) 
+  }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Create new reporting dataset</h1>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+
+    {% if model.errorSummary %}
+      {{ govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: model.errorSummary
+      }) 
+    }}
+    {% endif %}
+
+    <form method="POST" action="/capture-debt" novalidate>
+      <input type="hidden" name="crumb" value="{{ crumb }}"/>
+      
+      <div class="govuk-form-group">
+        {{ govukRadios(model.components.scheme) }}
+      </div>
+
+      <div class="govuk-form-group">
+        {{ govukInput(model.components.frn) }}
+      </div>
+
+      <div class="govuk-form-group">
+        {{ govukInput(model.components.applicationIdentifier) }}
+      </div>
+
+      <div class="govuk-form-group">
+        {{ govukInput(model.components.net) }}
+      </div>
+
+      <div class="govuk-form-group">
+        {{ govukRadios(model.components.debtType) }}
+      </div>
+
+      <div class="govuk-form-group">
+        {{ govukDateInput(model.components.debtDate) }}
+      </div>
+
+      {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "capture-debt"
+          }
+        }) 
+      }}
+    
+    </form>
+
+  </div>
+{% endblock %}

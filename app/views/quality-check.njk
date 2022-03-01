@@ -52,12 +52,12 @@
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.agreementNumber }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.invoiceNumber }}<th>
                 <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequest.paymentRequestNumber }}<th>
-                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.paymentRequest.value }}<th>
+                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.paymentRequest.valueDecimal }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.amendedBy }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.status }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">
-                  {% if data.status === status.pending %}
-                    <a href="review">Review</a>
+                  {% if data.status === 'Pending' %}
+                    <a href="/review?paymentrequestid={{data.paymentRequest.paymentRequestId}}">Review</a>
                   {% endif %}
                 <th>
               </tr>

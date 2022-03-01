@@ -11,15 +11,30 @@ const getPaymentRequest = async () => {
         }
       ],
       attributes: [
+        'paymentRequestId',
         'frn',
         'agreementNumber',
         'invoiceNumber',
         'paymentRequestNumber',
         'value',
         'received',
-        'receivedFormatted'
+        'receivedFormatted',
+        'ledger'
       ]
     })
 }
 
-module.exports = getPaymentRequest
+const getPaymentRequestByInvoiceNumber = async (invoiceNumber) => {
+  return db.paymentRequest.findOne({
+    lock: true,
+    skipLocked: true,
+    where: {
+      invoiceNumber
+    }
+  })
+}
+
+module.exports = {
+  getPaymentRequest,
+  getPaymentRequestByInvoiceNumber
+}

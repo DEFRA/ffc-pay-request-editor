@@ -15,11 +15,13 @@ const getQualityChecks = async () => {
             }
           ],
           attributes: [
+            'paymentRequestId',
             'frn',
             'agreementNumber',
             'invoiceNumber',
             'paymentRequestNumber',
-            'value'
+            'value',
+            'valueDecimal'
           ]
         }
       ],
