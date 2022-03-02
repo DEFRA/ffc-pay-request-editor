@@ -33,11 +33,11 @@ describe('convert currency', () => {
 
   test('converts 10000 to pounds', () => {
     const result = convertToPounds(10000)
-    expect(result).toEqual('100.00')
+    expect(result).toEqual(100.00)
   })
 
   test('converts 10010 to pounds', () => {
     const result = convertToPounds(10010)
-    expect(result).toEqual('100.10')
+    expect(result).toEqual(100.10)
   })
 })
