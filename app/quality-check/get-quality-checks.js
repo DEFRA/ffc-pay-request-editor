@@ -20,7 +20,8 @@ const getQualityChecks = async () => {
             'agreementNumber',
             'invoiceNumber',
             'paymentRequestNumber',
-            'value'
+            'value',
+            'valueDecimal'
           ]
         }
       ],

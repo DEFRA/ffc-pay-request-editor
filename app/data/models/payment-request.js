@@ -1,3 +1,5 @@
+const { convertToPounds } = require('../../currency-convert')
+
 module.exports = (sequelize, DataTypes) => {
   const paymentRequest = sequelize.define('paymentRequest', {
     paymentRequestId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -19,6 +21,12 @@ module.exports = (sequelize, DataTypes) => {
     originalInvoiceNumber: DataTypes.STRING,
     invoiceCorrectionReference: DataTypes.STRING,
     value: DataTypes.DECIMAL,
+    valueDecimal: {
+      type: DataTypes.VIRTUAL,
+      get () {
+        return convertToPounds(this.value)
+      }
+    },
     received: DataTypes.DATE,
     receivedFormatted: {
       type: DataTypes.VIRTUAL,

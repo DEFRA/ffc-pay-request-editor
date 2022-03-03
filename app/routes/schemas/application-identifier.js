@@ -1,9 +1,9 @@
 const Joi = require('joi')
 
-const LENGTH = 10
+const LENGTH = 15
 
 module.exports = {
-  applicationIdentifier: Joi.string().regex(/^\w{10}$/).required()
+  applicationIdentifier: Joi.string().regex(/^\w{15}$/).required()
     .error(errors => {
       errors.forEach(err => {
         switch (err.code) {

@@ -56,7 +56,7 @@ describe('process payment requests', () => {
   test('confirm quality data status update', async () => {
     await processPaymentRequest(paymentRequest)
 
-    const qualityChecksRowBeforeUpade = await db.qualityCheck.findAll({
+    const qualityChecksRowBeforeUpdate = await db.qualityCheck.findAll({
       include: [{
         model: db.paymentRequest,
         as: 'paymentRequest',
@@ -64,13 +64,13 @@ describe('process payment requests', () => {
       }]
     })
 
-    paymentRequestId = qualityChecksRowBeforeUpade[0].paymentRequestId
+    paymentRequestId = qualityChecksRowBeforeUpdate[0].paymentRequestId
 
-    expect(qualityChecksRowBeforeUpade[0].status).toBe('Pending')
+    expect(qualityChecksRowBeforeUpdate[0].status).toBe('Not ready')
 
     await updateQualityChecksStatus(paymentRequestId, 'Passed')
 
-    const qualityChecksRowAfterUpade = await db.qualityCheck.findAll({
+    const qualityChecksRowAfterUpdate = await db.qualityCheck.findAll({
       where: { paymentRequestId: paymentRequestId },
       include: [{
         model: db.paymentRequest,
@@ -78,6 +78,6 @@ describe('process payment requests', () => {
         required: true
       }]
     })
-    expect(qualityChecksRowAfterUpade[0].status).toBe('Passed')
+    expect(qualityChecksRowAfterUpdate[0].status).toBe('Passed')
   })
 })
