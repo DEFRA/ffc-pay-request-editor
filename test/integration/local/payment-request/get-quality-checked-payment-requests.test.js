@@ -1,5 +1,5 @@
 const db = require('../../../../app/data')
-const { getCompletedQualityCheckRequests } = require('../../../../app/quality-check')
+const { getQualityCheckedPaymentRequests } = require('../../../../app/payment-request')
 
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
 const { DEBT_TYPE_IRREGULAR } = require('../../../data/debt-types')
@@ -36,20 +36,20 @@ describe('Get completed quality checks test', () => {
   })
 
   test('should return 1 completed quality check record when released is not null', async () => {
-    const completedQualityChecks = await getCompletedQualityCheckRequests()
+    const completedQualityChecks = await getQualityCheckedPaymentRequests()
     expect(completedQualityChecks).toHaveLength(1)
   })
 
   test('should return zero completed quality check records when no payment requests', async () => {
     await db.paymentRequest.truncate({ cascade: true })
-    const completedQualityChecks = await getCompletedQualityCheckRequests()
+    const completedQualityChecks = await getQualityCheckedPaymentRequests()
     expect(completedQualityChecks).toHaveLength(0)
   })
 
   test('should return zero completed quality check records when released is null', async () => {
     await db.paymentRequest.truncate({ cascade: true })
     await db.paymentRequest.create({ ...paymentRequest, released: undefined })
-    const completedQualityChecks = await getCompletedQualityCheckRequests()
+    const completedQualityChecks = await getQualityCheckedPaymentRequests()
     expect(completedQualityChecks).toHaveLength(0)
   })
 })

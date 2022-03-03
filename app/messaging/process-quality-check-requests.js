@@ -1,9 +1,9 @@
 const publishQualityCheckRequest = require('./publish-quality-check-request')
-const { getCompletedQualityCheckRequests } = require('../quality-check')
+const { getQualityCheckedPaymentRequests } = require('../payment-request')
 
 const processQualityCheckRequests = async (qualityCheckSender) => {
   try {
-    const notNullReleased = await getCompletedQualityCheckRequests()
+    const notNullReleased = await getQualityCheckedPaymentRequests()
     for (const request of notNullReleased) {
       await publishQualityCheckRequest(request, qualityCheckSender)
     }

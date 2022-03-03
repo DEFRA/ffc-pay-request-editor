@@ -1,6 +1,6 @@
 const db = require('../data')
 
-const getCompletedQualityCheckRequests = async () => {
+const getQualityCheckedPaymentRequests = async () => {
   return db.paymentRequest.findAll({
     where: { released: { [db.Sequelize.Op.ne]: null } },
     include: [
@@ -28,4 +28,4 @@ const getCompletedQualityCheckRequests = async () => {
   })
 }
 
-module.exports = getCompletedQualityCheckRequests
+module.exports = getQualityCheckedPaymentRequests
