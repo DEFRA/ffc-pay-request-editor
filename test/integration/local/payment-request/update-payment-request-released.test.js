@@ -3,7 +3,7 @@ const { updatePaymentRequestReleased } = require('../../../../app/payment-reques
 
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
 
-describe('Update quality check released test', () => {
+describe('Update payment request released test', () => {
   let paymentRequest
 
   beforeEach(async () => {

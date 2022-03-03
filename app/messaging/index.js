@@ -19,6 +19,7 @@ const start = async () => {
 
 const stop = async () => {
   await debtDataReceiver.closeConnection()
+  await qualityCheckSender.closeConnection()
 }
 
 module.exports = { start, stop }

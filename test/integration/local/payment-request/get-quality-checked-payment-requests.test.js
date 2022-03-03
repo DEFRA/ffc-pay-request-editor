@@ -4,7 +4,7 @@ const { getQualityCheckedPaymentRequests } = require('../../../../app/payment-re
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
 const { DEBT_TYPE_IRREGULAR } = require('../../../data/debt-types')
 
-describe('Get completed quality checks test', () => {
+describe('Get released payment request test', () => {
   let paymentRequest
   let debtData
   let invoiceLine
@@ -14,7 +14,7 @@ describe('Get completed quality checks test', () => {
       paymentRequestId: 1,
       schemeId: SCHEME_ID_SFI_PILOT,
       frn: 1234567890,
-      released: new Date()
+      released: undefined
     }
 
     debtData = {
@@ -35,20 +35,20 @@ describe('Get completed quality checks test', () => {
     await db.invoiceLine.create(invoiceLine)
   })
 
-  test('should return 1 completed quality check record when released is not null', async () => {
+  test('should return 1 payment request record when released is null', async () => {
     const completedQualityChecks = await getQualityCheckedPaymentRequests()
     expect(completedQualityChecks).toHaveLength(1)
   })
 
-  test('should return zero completed quality check records when no payment requests', async () => {
+  test('should return 0 payment request record when no payment requests', async () => {
     await db.paymentRequest.truncate({ cascade: true })
     const completedQualityChecks = await getQualityCheckedPaymentRequests()
     expect(completedQualityChecks).toHaveLength(0)
   })
 
-  test('should return zero completed quality check records when released is null', async () => {
+  test('should return 0 payment request record when released is not null', async () => {
     await db.paymentRequest.truncate({ cascade: true })
-    await db.paymentRequest.create({ ...paymentRequest, released: undefined })
+    await db.paymentRequest.create({ ...paymentRequest, released: new Date() })
     const completedQualityChecks = await getQualityCheckedPaymentRequests()
     expect(completedQualityChecks).toHaveLength(0)
   })

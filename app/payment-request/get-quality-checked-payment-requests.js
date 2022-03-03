@@ -2,7 +2,7 @@ const db = require('../data')
 
 const getQualityCheckedPaymentRequests = async () => {
   return db.paymentRequest.findAll({
-    where: { released: { [db.Sequelize.Op.ne]: null } },
+    where: { released: { [db.Sequelize.Op.eq]: null } },
     include: [
       {
         model: db.invoiceLine,
