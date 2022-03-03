@@ -45,6 +45,19 @@
             </li>
           </ul>
         </div>
+        <div class="govuk-cards--2__item govuk-card--dashboard">
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Awaiting Manual Ledger Assignment</h2>
+          <p class="govuk-heading-xl govuk-!-margin-bottom-5">
+            {{ manualLedgerCount }}
+          </p>
+          <ul class="govuk-list">
+            <li>
+              {% if manualLedgerCount > 0 %}
+                <a href="/manual-ledger" class="govuk-link">View  Manual Ledger Assignment</a>
+              {% endif %}
+            </li>
+          </ul>
+        </div>
     </div>
     <h2 class="govuk-heading-m">Capture new reporting dataset</h2>
     <p class="govuk-body">

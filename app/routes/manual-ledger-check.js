@@ -1,9 +1,23 @@
-const manualLedgerMockData = require('./manual-ledger-data')
+const manualLedgerMockData = require('./manual-ledger-check-data')
 
-module.exports = {
+module.exports = [{
   method: 'GET',
   path: '/manual-ledger-check',
-  handler: async (request, h) => {
-    return h.view('manual-ledger-check', { ledgerData: manualLedgerMockData })
+  options: {
+    handler: async (request, h) => {
+      const paymentRequestId = parseInt(request.query.paymentrequestid)
+      if (!paymentRequestId) {
+        return h.view('404')
+      }
+
+      const manualLedgerData = manualLedgerMockData.find(x => x.paymentRequestId === paymentRequestId)
+
+      if (!manualLedgerData) {
+        console.log(`No manual ledger record with paymentRequestId: ${paymentRequestId} exists in the database`)
+        return h.view('404')
+      }
+
+      return h.view('manual-ledger-check', { manualLedgerData })
+    }
   }
-}
+}]

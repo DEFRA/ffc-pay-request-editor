@@ -1,69 +1,43 @@
 {% extends '_layout.njk' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "macros/search-box.njk" import searchBox %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% block beforeContent %}
   {{ govukBackLink({
-        text: "Back",
-        href: "/",
-        attributes: {
-          id: "back"
-        }
-      }) 
-    }}
+      text: "Back",
+      href: "/manual-ledger",
+      attributes: {
+        id: "back"
+      }
+    }) 
+  }}
 {% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-l">Manual Ledger Assignment Check</h1>
-      <div class="govuk-!-padding-bottom-3">
-        <div class="user-search-box govuk-!-width-one-third">
-          <form class="search-form" action="/manual-ledger-check" method="POST">
-            <input type="hidden" name="crumb" value="{{crumb}}"/>
-            {{searchBox(model)}}
-          </form>
-        </div>
-
-        <p class="govuk-body">
-          <a href="/manual-ledger-check" class="govuk-link govuk-link--no-visited-state">View all existing manual ledger assignment datasets</a>
-        </p>
-        <table class="govuk-table">
-          <caption class="govuk-table__caption govuk-table__caption--s">Manual Ledger Assignments</caption>
-          <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header govuk-body-s">Scheme<th>
-              <th scope="col" class="govuk-table__header govuk-body-s">FRN<th>
-              <th scope="col" class="govuk-table__header govuk-body-s">Application ID<th>
-              <th scope="col" class="govuk-table__header govuk-body-s">Invoice<th>
-              <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Request<th>
-              <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount<th>
-              <th scope="col" class="govuk-table__header govuk-body-s">Amended by<th>
-              <th scope="col" class="govuk-table__header govuk-body-s">Status<th>
-              <th scope="col" class="govuk-table__header"><th>
-            </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-            {% for data in ledgerData %}
-              <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.scheme.name }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.frn }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.agreementNumber }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.invoiceNumber }}<th>
-                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequest.paymentRequestNumber }}<th>
-                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.paymentRequest.value }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.amendedBy }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.status }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">
-                  {% if data.status === 'Pending' %}
-                    <a href="/review?paymentrequestid={{data.paymentRequest.paymentRequestId}}">Review</a>
-                  {% endif %}
-                <th>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      <div>
+      <h1 class="govuk-heading-l">Manual Ledger Check - {{manualLedgerData.paymentRequest.invoiceNumber}}</h1>
+      <span class="govuk-caption-l">FRN: {{manualLedgerData.paymentRequest.frn}}</span>
+      <span class="govuk-caption-l">Invoice: {{manualLedgerData.paymentRequest.invoiceNumber}}</span>
+      <span class="govuk-caption-l">Application Id: {{manualLedgerData.paymentRequest.agreementNumber}}</span>
+      <span class="govuk-caption-l">Request: {{manualLedgerData.paymentRequest.paymentRequestNumber}}</span>
+      <span class="govuk-caption-l">Currency: {{manualLedgerData.paymentRequest.currency}}</span>
+      <span class="govuk-caption-l">Ledger: {{manualLedgerData.paymentRequest.ledger}}</span>
+      <span class="govuk-caption-l">Siti Value: {{manualLedgerData.paymentRequest.value}}</span>
+      <h2 class="govuk-heading-2">Ledger Split:</h2>
     </div>
+  
+    {% if model.errorSummary %}
+      {{ govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: model.errorSummary
+      }) 
+    }}
+    {% endif %}
+
   </div>
 {% endblock %}
