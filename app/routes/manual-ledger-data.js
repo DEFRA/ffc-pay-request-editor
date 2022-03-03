@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = [{
   scheduleId: 2,
   paymentRequest: {
     paymentRequestId: 2,
@@ -76,4 +76,4 @@ module.exports = {
       settledValue: 0
     }
   ]
-}
+}]

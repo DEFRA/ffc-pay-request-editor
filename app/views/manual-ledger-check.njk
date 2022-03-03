@@ -28,7 +28,6 @@
         <p class="govuk-body">
           <a href="/manual-ledger-check" class="govuk-link govuk-link--no-visited-state">View all existing manual ledger assignment datasets</a>
         </p>
-        scheduleId: {{ ledgerData.scheduleId }}
         <table class="govuk-table">
           <caption class="govuk-table__caption govuk-table__caption--s">Manual Ledger Assignments</caption>
           <thead class="govuk-table__head">
@@ -45,14 +44,14 @@
             </tr>
           </thead>
           <tbody class="govuk-table__body">
-            {% for data in qualityCheckData %}
+            {% for data in ledgerData %}
               <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.schemes.name }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.scheme.name }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.frn }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.agreementNumber }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.invoiceNumber }}<th>
                 <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequest.paymentRequestNumber }}<th>
-                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.paymentRequest.valueDecimal }}<th>
+                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.paymentRequest.value }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.amendedBy }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.status }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">
