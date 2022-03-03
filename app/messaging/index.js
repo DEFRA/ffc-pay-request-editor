@@ -12,7 +12,7 @@ const start = async () => {
   await debtDataReceiver.subscribe()
 
   qualityCheckSender = new MessageSender(config.qcTopic)
-  setInterval(() => processQualityCheckedPaymentRequests(qualityCheckSender), 200) // TODO: add to config
+  setInterval(() => processQualityCheckedPaymentRequests(qualityCheckSender), config.publishPollingInterval)
 
   console.info('Ready to receive messages')
 }
