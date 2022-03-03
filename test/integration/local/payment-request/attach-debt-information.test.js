@@ -1,6 +1,5 @@
 const db = require('../../../../app/data')
-const { attachDebtInformation } = require('../../../../app/debt')
-const { checkDebts } = require('../../../../app/debt')
+const { attachDebtInformation, checkDebts } = require('../../../../app/debt')
 
 global.console.log = jest.fn()
 let paymentRequestData
