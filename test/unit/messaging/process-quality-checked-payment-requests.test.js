@@ -2,13 +2,29 @@ jest.mock('ffc-messaging')
 // jest.mock('../../../app/data')
 // jest.mock('../../../app/payment-request')
 
-const publishQualityCheckRequest = require('../../../app/messaging/publish-quality-check-request')
+const publishQualityCheckedPaymentRequest = require('../../../app/messaging/publish-quality-checked-payment-request')
 
 let sender
 
 describe('Publish quality checked payment requests', () => {
+  let paymentRequest
+  let message
+
   beforeEach(() => {
     sender = { sendMessage: jest.fn() }
+
+    paymentRequest = {
+      paymentRequestId: 1,
+      schemeId: 2,
+      frn: 1234567890,
+      released: undefined
+    }
+
+    message = {
+      body: paymentRequest,
+      type: 'uk.gov.pay.quality.check',
+      source: 'ffc-pay-request-editor'
+    }
   })
 
   afterEach(() => {
@@ -16,20 +32,7 @@ describe('Publish quality checked payment requests', () => {
   })
 
   test('completes valid message', async () => {
-    const paymentRequest = {
-      paymentRequestId: 1,
-      schemeId: 2,
-      frn: 1234567890,
-      released: undefined
-    }
-
-    const message = {
-      body: paymentRequest,
-      type: 'uk.gov.pay.quality.check',
-      source: 'ffc-pay-request-editor'
-    }
-
-    await publishQualityCheckRequest(paymentRequest, sender)
+    await publishQualityCheckedPaymentRequest(paymentRequest, sender)
     expect(sender.sendMessage).toHaveBeenCalled()
     expect(sender.sendMessage).toHaveBeenCalledWith(message)
   })

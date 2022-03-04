@@ -1,4 +1,4 @@
-const publishQualityCheckRequest = require('./publish-quality-check-request')
+const publishQualityCheckedPaymentRequest = require('./publish-quality-checked-payment-request')
 const {
   getQualityCheckedPaymentRequests,
   updatePaymentRequestReleased
@@ -8,11 +8,11 @@ const processQualityCheckedPaymentRequests = async (qualityCheckSender) => {
   try {
     const qualityCheckedPaymentRequests = await getQualityCheckedPaymentRequests()
     for (const paymentRequest of qualityCheckedPaymentRequests) {
-      await publishQualityCheckRequest(paymentRequest, qualityCheckSender)
+      await publishQualityCheckedPaymentRequest(paymentRequest, qualityCheckSender)
       await updatePaymentRequestReleased(paymentRequest.paymentRequestId)
     }
   } catch (err) {
-    console.error('Unable to process quality check message:', err)
+    console.error('Unable to process payment request message:', err)
   }
 }
 

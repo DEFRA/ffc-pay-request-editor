@@ -2,14 +2,28 @@ const db = require('../../../../app/data')
 const { getQualityCheckedPaymentRequests } = require('../../../../app/payment-request')
 
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
+const { SCHEME_NAME_SFI_PILOT } = require('../../../data/scheme')
 const { DEBT_TYPE_IRREGULAR } = require('../../../data/debt-types')
 
 describe('Get released payment request test', () => {
   let paymentRequest
-  let debtData
-  let invoiceLine
 
   beforeEach(async () => {
+    const scheme = {
+      schemeId: SCHEME_ID_SFI_PILOT,
+      schemeName: SCHEME_NAME_SFI_PILOT
+    }
+
+    const debtData = {
+      paymentRequestId: 1,
+      debtType: DEBT_TYPE_IRREGULAR
+    }
+
+    const invoiceLine = {
+      paymentRequestId: 1,
+      value: 10000
+    }
+
     paymentRequest = {
       paymentRequestId: 1,
       schemeId: SCHEME_ID_SFI_PILOT,
@@ -17,21 +31,10 @@ describe('Get released payment request test', () => {
       released: undefined
     }
 
-    debtData = {
-      paymentRequestId: 1,
-      debtType: DEBT_TYPE_IRREGULAR
-    }
-
-    invoiceLine = {
-      paymentRequestId: 1,
-      value: 10000
-    }
-
-    await db.paymentRequest.truncate({ cascade: true })
+    await db.sequelize.truncate({ cascade: true })
+    await db.scheme.create(scheme)
     await db.paymentRequest.create(paymentRequest)
-    await db.debtData.truncate({ cascade: true })
     await db.debtData.create(debtData)
-    await db.invoiceLine.truncate({ cascade: true })
     await db.invoiceLine.create(invoiceLine)
   })
 
