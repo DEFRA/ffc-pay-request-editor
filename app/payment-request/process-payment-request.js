@@ -3,7 +3,7 @@ const getExistingPaymentRequest = require('./get-existing-payment-request')
 const savePaymentRequest = require('./save-payment-request')
 const saveInvoiceLines = require('../inbound/invoice-lines')
 const updateQualityCheck = require('../inbound/quality-checks')
-const attachDebtInformation = require('../debt/attach-debt-information')
+const { attachDebtInformation } = require('../debt')
 
 const processPaymentRequest = async (paymentRequest) => {
   const transaction = await db.sequelize.transaction()

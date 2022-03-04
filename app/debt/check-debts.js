@@ -2,15 +2,21 @@ const db = require('../data')
 const { convertToPounds } = require('../processing/conversion/convert-currency')
 
 const checkDebts = async (frn, reference, netValue, transaction) => {
-  const convertNetValue = convertToPounds(netValue)
-  return db.debtData.findOne({
-    transaction,
-    where: {
-      frn: parseInt(frn),
-      reference: reference,
-      netValue: parseFloat(convertNetValue)
-    }
-  })
+  const parsedFrn = parseInt(frn)
+
+  if (isNaN(parsedFrn)) {
+    return {}
+  } else {
+    const convertNetValue = convertToPounds(netValue)
+    return db.debtData.findOne({
+      transaction,
+      where: {
+        frn: parsedFrn,
+        reference,
+        netValue: convertNetValue
+      }
+    })
+  }
 }
 
 module.exports = checkDebts

@@ -3,12 +3,12 @@ const db = require('../data')
 const saveDebtData = (updatedDebtData, transaction) => {
   const { paymentRequestId, attachedDate, debtDataId } = updatedDebtData
   return db.debtData.update({
-    paymentRequestId: paymentRequestId,
-    attachedDate: attachedDate
+    paymentRequestId,
+    attachedDate
   },
   {
     where: {
-      debtDataId: debtDataId
+      debtDataId
     }
   },
   {
