@@ -37,7 +37,7 @@
             <td class="govuk-table__cell govuk-body-s">{{paymentRequestData.agreementNumber}}</td>
             <td class="govuk-table__cell govuk-body-s">{{paymentRequestData.invoiceNumber}}</td>
             <td class="govuk-table__cell govuk-table__header--numeric govuk-body-s">{{paymentRequestData.paymentRequestNumber}}</td>
-            <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{paymentRequestData.value}}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{paymentRequestData.valueDecimal}}</td>
             <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{paymentRequestData.ledger}}</td>
           </tr>
         </tbody>
@@ -60,7 +60,7 @@
               <td class="govuk-table__cell govuk-body-s">{{ data.fundCode }}</td>
               <td class="govuk-table__cell govuk-body-s">{{ data.schemeCode }}</td>
               <td class="govuk-table__cell govuk-body-s">{{ data.accountCode }}</td>
-              <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.value }}</td>
+              <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.valueDecimal }}</td>
             </tr>
           {% endfor %}
         </tbody>

@@ -24,4 +24,17 @@ const getPaymentRequest = async () => {
     })
 }
 
-module.exports = getPaymentRequest
+const getPaymentRequestByInvoiceNumber = async (invoiceNumber) => {
+  return db.paymentRequest.findOne({
+    lock: true,
+    skipLocked: true,
+    where: {
+      invoiceNumber
+    }
+  })
+}
+
+module.exports = {
+  getPaymentRequest,
+  getPaymentRequestByInvoiceNumber
+}
