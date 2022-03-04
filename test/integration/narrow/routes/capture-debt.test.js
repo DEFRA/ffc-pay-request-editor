@@ -44,13 +44,10 @@ describe('capture-debt route', () => {
     await server.stop()
   })
 
-<<<<<<< HEAD
-=======
   afterAll(async () => {
     await db.sequelize.close()
   })
 
->>>>>>> main
   test('GET /capture-debt returns 200', async () => {
     const options = {
       method: 'GET',
