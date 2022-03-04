@@ -1,5 +1,5 @@
 const db = require('../data')
-const { convertToPounds } = require('../currency-convert')
+const { convertToPounds } = require('../processing/conversion/convert-currency')
 
 const checkDebts = async (frn, reference, netValue, transaction) => {
   const convertNetValue = convertToPounds(netValue)

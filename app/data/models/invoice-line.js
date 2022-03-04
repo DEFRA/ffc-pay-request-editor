@@ -1,4 +1,4 @@
-const { convertToPounds } = require('../../currency-convert')
+const { convertToPounds } = require('../../processing/conversion/convert-currency')
 
 module.exports = (sequelize, DataTypes) => {
   const invoiceLine = sequelize.define('invoiceLine', {
