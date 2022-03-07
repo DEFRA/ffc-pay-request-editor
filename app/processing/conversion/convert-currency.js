@@ -5,7 +5,7 @@ const convertToPence = (valueInPounds) => {
   return Number(pounds + pence)
 }
 
-function convertToPounds (valueInPence) {
+const convertToPounds = (valueInPence) => {
   return valueInPence / 100
 }
 

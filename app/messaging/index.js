@@ -1,7 +1,7 @@
 const { MessageReceiver, MessageSender } = require('ffc-messaging')
 const config = require('../config')
 const processDebtDataMessage = require('./process-debt-data-message')
-const processQualityCheckedPaymentRequests = require('./process-quality-checked-payment-requests')
+const publishQualityCheckedPaymentRequests = require('./publish-quality-checked-payment-request')
 
 let debtDataReceiver
 let qualityCheckSender
@@ -12,7 +12,7 @@ const start = async () => {
   await debtDataReceiver.subscribe()
 
   qualityCheckSender = new MessageSender(config.qcTopic)
-  setInterval(() => processQualityCheckedPaymentRequests(qualityCheckSender), config.publishPollingInterval)
+  setInterval(() => publishQualityCheckedPaymentRequests(qualityCheckSender), config.publishPollingInterval)
 
   console.info('Ready to receive messages')
 }

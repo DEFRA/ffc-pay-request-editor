@@ -1,15 +1,29 @@
 jest.mock('ffc-messaging')
+jest.mock('../../../app/payment-request')
+
+const { MessageSender } = require('ffc-messaging')
+const config = require('../../../app/config')
+const db = require('../../../app/data')
+const { getQualityCheckedPaymentRequests } = require('../../../app/payment-request')
+
+const { SCHEME_ID_SFI_PILOT } = require('../../data/scheme-id')
+const { SCHEME_NAME_SFI_PILOT } = require('../../data/scheme')
 
 const publishQualityCheckedPaymentRequest = require('../../../app/messaging/publish-quality-checked-payment-request')
 
-let sender
-
 describe('Publish quality checked payment requests', () => {
+  let qualityCheckSender
   let paymentRequest
   let message
 
-  beforeEach(() => {
-    sender = { sendMessage: jest.fn() }
+  beforeEach(async () => {
+    qualityCheckSender = new MessageSender(config.qcTopic)
+    qualityCheckSender = { sendMessage: jest.fn() }
+
+    const scheme = {
+      schemeId: SCHEME_ID_SFI_PILOT,
+      schemeName: SCHEME_NAME_SFI_PILOT
+    }
 
     paymentRequest = {
       paymentRequestId: 1,
@@ -23,6 +37,11 @@ describe('Publish quality checked payment requests', () => {
       type: 'uk.gov.pay.quality.check',
       source: 'ffc-pay-request-editor'
     }
+
+    await db.sequelize.truncate({ cascade: true })
+    await db.scheme.create(scheme)
+
+    getQualityCheckedPaymentRequests.mockResolvedValue(paymentRequest)
   })
 
   afterEach(() => {
@@ -30,8 +49,14 @@ describe('Publish quality checked payment requests', () => {
   })
 
   test('completes valid message', async () => {
-    await publishQualityCheckedPaymentRequest(paymentRequest, sender)
-    expect(sender.sendMessage).toHaveBeenCalled()
-    expect(sender.sendMessage).toHaveBeenCalledWith(message)
+    await publishQualityCheckedPaymentRequest(paymentRequest, qualityCheckSender)
+    expect(qualityCheckSender.sendMessage).toHaveBeenCalled()
+    expect(qualityCheckSender.sendMessage).toHaveBeenCalledWith(message)
+  })
+
+  test('updates payment requests released', async () => {
+    await publishQualityCheckedPaymentRequest(paymentRequest, qualityCheckSender)
+    const updatedPaymentRequest = await db.paymentRequest.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
+    expect(updatedPaymentRequest.released).not.toBeNull()
   })
 })
