@@ -2,11 +2,17 @@ const db = require('../../../../app/data')
 const { updatePaymentRequestReleased } = require('../../../../app/payment-request')
 
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
+const { SCHEME_NAME_SFI_PILOT } = require('../../../data/scheme')
 
 describe('Update payment request released test', () => {
   let paymentRequest
 
   beforeEach(async () => {
+    const scheme = {
+      schemeId: SCHEME_ID_SFI_PILOT,
+      schemeName: SCHEME_NAME_SFI_PILOT
+    }
+
     paymentRequest = {
       paymentRequestId: 1,
       schemeId: SCHEME_ID_SFI_PILOT,
@@ -14,7 +20,8 @@ describe('Update payment request released test', () => {
       released: undefined
     }
 
-    await db.paymentRequest.truncate({ cascade: true })
+    await db.sequelize.truncate({ cascade: true })
+    await db.scheme.create(scheme)
     await db.paymentRequest.create(paymentRequest)
   })
 

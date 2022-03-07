@@ -39,20 +39,20 @@ describe('Get released payment request test', () => {
   })
 
   test('should return 1 payment request record when released is null', async () => {
-    const completedQualityChecks = await getQualityCheckedPaymentRequests()
-    expect(completedQualityChecks).toHaveLength(1)
+    const paymentRequests = await getQualityCheckedPaymentRequests()
+    expect(paymentRequests).toHaveLength(1)
   })
 
   test('should return 0 payment request record when no payment requests', async () => {
     await db.paymentRequest.truncate({ cascade: true })
-    const completedQualityChecks = await getQualityCheckedPaymentRequests()
-    expect(completedQualityChecks).toHaveLength(0)
+    const paymentRequests = await getQualityCheckedPaymentRequests()
+    expect(paymentRequests).toHaveLength(0)
   })
 
   test('should return 0 payment request record when released is not null', async () => {
     await db.paymentRequest.truncate({ cascade: true })
     await db.paymentRequest.create({ ...paymentRequest, released: new Date() })
-    const completedQualityChecks = await getQualityCheckedPaymentRequests()
-    expect(completedQualityChecks).toHaveLength(0)
+    const paymentRequests = await getQualityCheckedPaymentRequests()
+    expect(paymentRequests).toHaveLength(0)
   })
 })

@@ -1,6 +1,6 @@
 const Joi = require('joi')
 
-const typeOfDebts = ['irr', 'admin']
+const typeOfDebts = ['irr', 'adm']
 const typeOfDebtsRegex = new RegExp(typeOfDebts.reduce((x, y) => x + '|' + y))
 
 module.exports = {

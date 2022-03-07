@@ -4,7 +4,11 @@ const schema = require('./schemas/capture-debt')
 const ViewModel = require('../models/capture-debt')
 
 const { getSchemeId, getSchemes } = require('../processing/scheme')
-const { convertToPounds, convertStringToPence, convertDateToDDMMYYYY } = require('../processing/conversion')
+const {
+  convertToPounds,
+  convertToPence,
+  convertDateToDDMMYYYY
+} = require('../processing/conversion')
 const { saveDebtData } = require('../processing/debt')
 
 module.exports = [{
@@ -30,7 +34,7 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const { scheme, frn, applicationIdentifier, net, debtType } = request.payload
-      const netValue = convertToPounds(convertStringToPence(String(net)))
+      const netValue = convertToPounds(convertToPence(String(net)))
       const schemeId = await getSchemeId(scheme)
       const recoveryDate = convertDateToDDMMYYYY(...['debt-discovered-day', 'debt-discovered-month', 'debt-discovered-year'].map(key => request.payload[key]))
 

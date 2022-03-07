@@ -8,6 +8,7 @@ describe('capture-debt route', () => {
   const db = require('../../../../app/data')
   const { SCHEMES, SCHEME_NAME_SFI } = require('../../../data/scheme')
   const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
+  const { DEBT_TYPE_ADMIN } = require('../../../data/debt-types')
 
   let createServer
   let server
@@ -17,7 +18,7 @@ describe('capture-debt route', () => {
     frn: '1234567890',
     applicationIdentifier: '43210987654321A',
     net: 312.2,
-    debtType: 'admin',
+    debtType: DEBT_TYPE_ADMIN,
     'debt-discovered-day': 2,
     'debt-discovered-month': 1,
     'debt-discovered-year': 2022
@@ -834,7 +835,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with invalid debt type returns "The type of debt can only be irr,admin." error message', async () => {
+  test('POST /capture-debt with invalid debt type returns "The type of debt can only be irr,adm." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -842,7 +843,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The type of debt can only be irr,admin.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The type of debt can only be irr,adm.')
   })
 
   test('POST /capture-debt with no debt day returns 400', async () => {
