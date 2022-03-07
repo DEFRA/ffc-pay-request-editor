@@ -1,7 +1,7 @@
 const { MessageReceiver, MessageSender } = require('ffc-messaging')
 const config = require('../config')
 const processDebtDataMessage = require('./process-debt-data-message')
-const publishQualityCheckedPaymentRequests = require('./publish-quality-checked-payment-request')
+const { publishQualityCheckedPaymentRequests } = require('./publish-quality-checked-payment-request')
 
 let debtDataReceiver
 let qualityCheckSender
