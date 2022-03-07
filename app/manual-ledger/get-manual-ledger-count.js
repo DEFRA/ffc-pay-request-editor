@@ -1,6 +1,7 @@
+const db = require('../data')
 
 const getManualLedgerCount = async () => {
-  return 10
+  return db.manualLedgerChecks.count()
 }
 
 module.exports = getManualLedgerCount

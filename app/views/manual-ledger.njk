@@ -46,17 +46,17 @@
           <tbody class="govuk-table__body">
             {% for data in ledgerData %}
               <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.scheme.name }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.frn }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.agreementNumber }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.invoiceNumber }}<th>
-                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequest.paymentRequestNumber }}<th>
-                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.paymentRequest.value }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.checkedBy }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.checkedDate }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.agreementNumber }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.invoiceNumber }}<th>
+                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequestNumber }}<th>
+                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.value }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.manualLedgerCheckedBy }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.manualLedgerCheckedDate }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">
-                  {% if not data.checked %}
-                    <a href="/manual-ledger-check?paymentrequestid={{data.paymentRequest.paymentRequestId}}">Check</a>
+                  {% if not data.manualLedgerChecked %}
+                    <a href="/manual-ledger-check?paymentrequestid={{data.paymentRequestId}}">Check</a>
                   {% endif %}    
                 <th>
               </tr>

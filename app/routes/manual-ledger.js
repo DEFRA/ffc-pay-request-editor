@@ -1,13 +1,15 @@
 const ViewModel = require('./models/search')
 const searchLabelText = 'Search for a request by FRN number'
-const manualLedgerMockData = require('./manual-ledger-check-data')
 const schema = require('./schemas/manual-ledger')
+const { getManualLedgers } = require('../manual-ledger')
 
 module.exports = [{
   method: 'GET',
   path: '/manual-ledger',
   handler: async (request, h) => {
-    return h.view('manual-ledger', { ledgerData: manualLedgerMockData, ...new ViewModel(searchLabelText) })
+    const ledgerData = await getManualLedgers()
+    console.log('Manual ledger data', JSON.stringify(ledgerData))
+    return h.view('manual-ledger', { ledgerData, ...new ViewModel(searchLabelText) })
   }
 },
 {
@@ -17,12 +19,14 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        return h.view('manual-ledger', { ledgerData: manualLedgerMockData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
+        const ledgerData = await getManualLedgers()
+        return h.view('manual-ledger', { ledgerData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
       const frn = request.payload.frn
-      const filteredManualLedger = manualLedgerMockData.filter(x => x.paymentRequest.frn === String(frn))
+      const ledgerData = await getManualLedgers()
+      const filteredManualLedger = ledgerData.filter(x => x.paymentRequest.frn === String(frn))
 
       if (filteredManualLedger.length) {
         return h.view('manual-ledger', { ledgerData: filteredManualLedger, ...new ViewModel(searchLabelText, frn) })

@@ -1,8 +1,9 @@
 const { convertToPounds } = require('../../currency-convert')
 
 module.exports = (sequelize, DataTypes) => {
-  const paymentRequest = sequelize.define('paymentRequest', {
-    paymentRequestId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  const manualLedgerChecks = sequelize.define('manualLedgerChecks', {
+    manualLedgerPaymentRequestId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    paymentRequestId: DataTypes.INTEGER,
     schemeId: DataTypes.INTEGER,
     sourceSystem: DataTypes.STRING,
     deliveryBody: DataTypes.STRING,
@@ -43,39 +44,19 @@ module.exports = (sequelize, DataTypes) => {
     released: DataTypes.DATE
   },
   {
-    tableName: 'paymentRequests',
+    tableName: 'manualLedgerChecks',
     freezeTableName: true,
     timestamps: false
   })
-  paymentRequest.associate = function (models) {
-    paymentRequest.belongsTo(models.scheme, {
+  manualLedgerChecks.associate = function (models) {
+    manualLedgerChecks.belongsTo(models.scheme, {
       foreignKey: 'schemeId',
       as: 'schemes'
     })
-    paymentRequest.hasOne(models.debtData, {
+    manualLedgerChecks.hasOne(models.paymentRequest, {
       foreignKey: 'paymentRequestId',
-      as: 'debtData',
-      allowNull: true
-    })
-    paymentRequest.hasMany(models.invoiceLine, {
-      foreignKey: 'paymentRequestId',
-      as: 'invoiceLines',
-      allowNull: true
-    })
-    paymentRequest.hasMany(models.qualityCheck, {
-      foreignKey: 'paymentRequestId',
-      as: 'qualityChecks'
-    })
-    paymentRequest.hasMany(models.manualLedgerChecks, {
-      foreignKey: 'paymentRequestId',
-      as: 'manualLedgerChecks',
-      allowNull: true
-    })
-    paymentRequest.hasOne(models.schedule, {
-      foreignKey: 'paymentRequestId',
-      as: 'schedules',
-      allowNull: true
+      as: 'paymentRequest'
     })
   }
-  return paymentRequest
+  return manualLedgerChecks
 }
