@@ -3,7 +3,7 @@ const Joi = require('joi')
 const yearNow = new Date().getFullYear()
 
 module.exports = {
-  'debt-discovered-year': Joi.number().integer().greater(2015).less(1 + yearNow).required()
+  'debt-discovered-year': Joi.number().integer().greater(2014).less(1 + yearNow).required()
     .error(errors => {
       errors.forEach(err => {
         switch (err.code) {
