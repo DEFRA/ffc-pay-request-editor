@@ -24,4 +24,7 @@ const publishPaymentRequest = async (paymentRequest, qualityCheckSender) => {
   console.log('Completed request sent:', util.inspect(message, false, null, true))
 }
 
-module.exports = publishQualityCheckedPaymentRequests
+module.exports = {
+  publishQualityCheckedPaymentRequests,
+  publishPaymentRequest
+}
