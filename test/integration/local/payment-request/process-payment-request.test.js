@@ -137,4 +137,17 @@ describe('process payment requests', () => {
       expect(error.message).toBeDefined()
     }
   })
+
+  test('should overwrite an existing primary key on invoice line', async () => {
+    paymentRequest.invoiceLines[0].paymentRequestId = 999
+    await processPaymentRequest(paymentRequest)
+    const paymentRequestRow = await db.paymentRequest.findOne()
+    const invoiceLinesRows = await db.invoiceLine.findAll({
+      where: {
+        paymentRequestId: paymentRequestRow.paymentRequestId
+      }
+    })
+
+    expect(invoiceLinesRows.length).toBe(2)
+  })
 })
