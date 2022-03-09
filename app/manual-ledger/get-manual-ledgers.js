@@ -9,7 +9,9 @@ const getManualLedgers = async (paymentRequestId) => {
           as: 'schemes',
           attributes: ['name']
         }
-      ]
-    })
+      ],
+      where: { categoryId: 2 }
+    }
+  )
 }
 module.exports = getManualLedgers

@@ -10,22 +10,19 @@ const processManualLedgerRequest = async (manualLedgerRequest) => {
   const paymentRequest = manualLedgerRequest.paymentRequest
   const transaction = await db.sequelize.transaction()
   try {
-    const existingPaymentRequest = await getExistingPaymentRequest(paymentRequest.invoiceNumber, transaction)
+    const existingPaymentRequest = await getExistingPaymentRequest(paymentRequest.invoiceNumber, 2, transaction)
     if (existingPaymentRequest) {
       console.info(`Duplicate payment request received, skipping ${existingPaymentRequest.invoiceNumber}`)
       await transaction.rollback()
     } else {
-      delete paymentRequest.paymentRequestId
-      const savedPaymentRequest = await savePaymentRequest(paymentRequest)
-      const paymentRequestId = savedPaymentRequest.paymentRequestId
+      const paymentRequestId = await savePaymentAndInvoiceLines(paymentRequest, 2)
       for (const paymentRequestDelta of manualLedgerRequest.paymentRequests) {
-        paymentRequestDelta.paymentRequestId = paymentRequestId
-        await saveManualLedger(paymentRequestDelta)
-        await saveInvoiceLines(paymentRequestDelta.invoiceLines, paymentRequestId)
+        const paymentRequestLedgerId = await savePaymentAndInvoiceLines(paymentRequestDelta, 3)
+        await saveManualLedger(paymentRequestId, paymentRequestLedgerId, transaction)
       }
-      await updateQualityCheck(paymentRequestId)
+      await updateQualityCheck(paymentRequestId, transaction)
       const scheduleId = manualLedgerRequest.scheduleId
-      await createSchedule(scheduleId, paymentRequestId)
+      await createSchedule(scheduleId, paymentRequestId, transaction)
 
       await transaction.commit()
     }
@@ -33,6 +30,15 @@ const processManualLedgerRequest = async (manualLedgerRequest) => {
     await transaction.rollback()
     throw (error)
   }
+}
+
+const savePaymentAndInvoiceLines = async (paymentRequest, categoryId, transaction) => {
+  delete paymentRequest.paymentRequestId
+  paymentRequest.categoryId = categoryId
+  const savedPaymentRequest = await savePaymentRequest(paymentRequest, transaction)
+  const paymentRequestId = savedPaymentRequest.paymentRequestId
+  await saveInvoiceLines(paymentRequest.invoiceLines, paymentRequestId, transaction)
+  return paymentRequestId
 }
 
 module.exports = processManualLedgerRequest

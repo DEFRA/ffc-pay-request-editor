@@ -1,7 +1,7 @@
 const db = require('../data')
 
-const saveManualLedger = async (paymentRequest) => {
-  return db.manualLedgerChecks.create({ ...paymentRequest, received: new Date() })
+const saveManualLedger = async (paymentRequestId, ledgerPaymentRequestId, transaction) => {
+  return db.manualLedgerPaymentRequest.create({ paymentRequestId, ledgerPaymentRequestId }, { transaction })
 }
 
 module.exports = saveManualLedger

@@ -14,9 +14,10 @@ module.exports = [{
       const manualLedgerData = await getManualLedger(paymentRequestId)
       manualLedgerData.arAutoValue = 0
       manualLedgerData.apAutoValue = 0
+      const ledgerPaymentRequests = manualLedgerData.manualLedgerChecks
 
-      for (const manualLedgerCheck of manualLedgerData.manualLedgerChecks) {
-        manualLedgerData[`${manualLedgerCheck.ledger.toLowerCase()}AutoValue`] = manualLedgerCheck.value
+      for (const manualLedgerCheck of ledgerPaymentRequests) {
+        manualLedgerData[`${manualLedgerCheck.ledgerPaymentRequest.ledger.toLowerCase()}AutoValue`] = manualLedgerCheck.ledgerPaymentRequest.value
       }
 
       console.log('Manual ledger data', manualLedgerData)
@@ -37,9 +38,8 @@ module.exports = [{
     handler: async (request, h) => {
       const { paymentRequestId, arValue } = request.payload
       const manualLedgerData = await getManualLedger(paymentRequestId)
-      const deltaManualLedgerData = manualLedgerData.manualLedgerChecks.find(ml => ml.ledger === 'AR')
-      manualLedgerData.value = deltaManualLedgerData.value
-      const splitLedger = await splitToLedger(manualLedgerData, arValue, 'ar')
+      const deltaManualLedgerData = manualLedgerData.manualLedgerChecks.find(ml => ml.ledgerPaymentRequest.ledger === 'AR')
+      const splitLedger = await splitToLedger(deltaManualLedgerData.ledgerPaymentRequest, arValue, 'ar')
       return h.view('manual-ledger-check')
     }
   }

@@ -7,7 +7,8 @@ const getPaymentRequestCount = async () => {
       as: 'debtData'
     }],
     where: {
-      $debtData$: null
+      $debtData$: null,
+      categoryId: 1
     }
   })
 }

@@ -20,7 +20,10 @@ const getPaymentRequest = async () => {
         'received',
         'receivedFormatted',
         'ledger'
-      ]
+      ],
+      where: {
+        categoryId: 1
+      }
     })
 }
 

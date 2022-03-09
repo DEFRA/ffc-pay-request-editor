@@ -5,8 +5,16 @@ const getManualLedger = async (paymentRequestId) => {
     {
       include: [
         {
-          model: db.manualLedgerChecks,
-          as: 'manualLedgerChecks'
+          model: db.manualLedgerPaymentRequest,
+          as: 'manualLedgerChecks',
+          include: [{
+            model: db.paymentRequest,
+            as: 'ledgerPaymentRequest',
+            include: [{
+              model: db.invoiceLine,
+              as: 'invoiceLines'
+            }]
+          }]
         },
         {
           model: db.scheme,

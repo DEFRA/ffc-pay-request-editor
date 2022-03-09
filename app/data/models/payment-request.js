@@ -4,6 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   const paymentRequest = sequelize.define('paymentRequest', {
     paymentRequestId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     schemeId: DataTypes.INTEGER,
+    categoryId: DataTypes.INTEGER,
     sourceSystem: DataTypes.STRING,
     deliveryBody: DataTypes.STRING,
     invoiceNumber: DataTypes.STRING,
@@ -52,6 +53,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'schemeId',
       as: 'schemes'
     })
+    paymentRequest.belongsTo(models.category, {
+      foreignKey: 'categoryId',
+      as: 'category'
+    })
     paymentRequest.hasOne(models.debtData, {
       foreignKey: 'paymentRequestId',
       as: 'debtData',
@@ -66,15 +71,17 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'paymentRequestId',
       as: 'qualityChecks'
     })
-    paymentRequest.hasMany(models.manualLedgerChecks, {
+    paymentRequest.hasMany(models.manualLedgerPaymentRequest, {
       foreignKey: 'paymentRequestId',
       as: 'manualLedgerChecks',
-      allowNull: true
+      allowNull: true,
+      onDelete: 'CASCADE'
     })
     paymentRequest.hasOne(models.schedule, {
       foreignKey: 'paymentRequestId',
       as: 'schedules',
-      allowNull: true
+      allowNull: true,
+      onDelete: 'CASCADE'
     })
   }
   return paymentRequest

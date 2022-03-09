@@ -1,5 +1,6 @@
 {% extends '_layout.njk' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "macros" import %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -17,7 +18,9 @@
     <div class="govuk-grid-column-full">
       <span class="govuk-caption-l">FRN: {{paymentRequestData.frn}}</span>
       <h1 class="govuk-heading-l">Review edited request for Invoice {{paymentRequestData.invoiceNumber}}</h1>
-      <table class="govuk-table">
+      
+
+      {# <table class="govuk-table">
         <caption class="govuk-table__caption govuk-table__caption--s">Header</caption>
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
@@ -41,7 +44,8 @@
             <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{paymentRequestData.ledger}}</td>
           </tr>
         </tbody>
-      </table>
+      </table> #}
+
       <table class="govuk-table">
         <caption class="govuk-table__caption govuk-table__caption--s">Lines</caption>
         <thead class="govuk-table__head">

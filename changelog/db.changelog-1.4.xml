@@ -4,37 +4,15 @@
     <tagDatabase tag="v1.0.3" />
   </changeSet>
   <changeSet author="Steve Dickinson" id="18">
-    <createTable tableName="manualLedgerChecks">
+    <createTable tableName="manualLedgerPaymentRequest">
       <column autoIncrement="true" name="manualLedgerPaymentRequestId" type="INTEGER">
         <constraints nullable="false" primaryKey="true" primaryKeyName="manualLedgerPaymentRequestId_pkey" />
       </column>
       <column name="paymentRequestId" type="SMALLINT" />
-      <column name="schemeId" type="SMALLINT" />
-      <column name="sourceSystem" type="VARCHAR(50)" />
-      <column name="deliveryBody" type="VARCHAR(4)" />
-      <column name="invoiceNumber" type="VARCHAR(30)" />
-      <column name="frn" type="BIGINT" />
-      <column name="sbi" type="INTEGER" />
-      <column name="ledger" type="VARCHAR(2)" />
-      <column name="marketingYear" type="INTEGER" />
-      <column name="agreementNumber" type="VARCHAR(20)" />
-      <column name="contractNumber" type="VARCHAR(10)" />
-      <column name="paymentRequestNumber" type="INTEGER" />
-      <column name="currency" type="VARCHAR(3)" />
-      <column name="schedule" type="VARCHAR(3)" />
-      <column name="dueDate" type="VARCHAR(10)" />
-      <column name="originalSettlementDate" type="TIMESTAMP" />
-      <column name="originalInvoiceNumber" type="VARCHAR(30)" />
-      <column name="invoiceCorrectionReference" type="VARCHAR(10)" />
-      <column name="value" type="DECIMAL" />
-      <column name="received" type="TIMESTAMP" />
-      <column name="released" type="TIMESTAMP" />
+      <column name="ledgerPaymentRequestId" type="SMALLINT" />
     </createTable>
   </changeSet>
   <changeSet author="Steve Dickinson" id="19">
-    <addForeignKeyConstraint baseColumnNames="schemeId" baseTableName="manualLedgerChecks" constraintName="fk_manualLedgerChecks_schemeId" referencedColumnNames="schemeId" referencedTableName="schemes" />
-  </changeSet>
-  <changeSet author="Steve Dickinson" id="20">
     <createTable tableName="schedule"> 
       <column name="scheduleId" type="INTEGER">
         <constraints nullable="false" primaryKey="true" primaryKeyName="scheduleId_pkey" />
@@ -42,10 +20,41 @@
       <column name="paymentRequestId" type="INTEGER" />
     </createTable>
   </changeSet>
+  <changeSet author="Steve Dickinson" id="20">
+    <createTable tableName="category"> 
+      <column autoIncrement="true" name="categoryId" type="INTEGER">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="categoryId_pkey" />
+      </column>
+      <column name="name" type="VARCHAR(25)" />
+    </createTable>
+    <insert tableName="category">
+      <column name="categoryId" value="1" />
+      <column name="name" value="Enrichment" />
+    </insert>
+    <insert tableName="category">
+      <column name="categoryId" value="2" />
+      <column name="name" value="Ledger Check" />
+    </insert>
+    <insert tableName="category">
+      <column name="categoryId" value="3" />
+      <column name="name" value="Provisional Ledger Check" />
+    </insert>
+  </changeSet>
   <changeSet author="Steve Dickinson" id="21">
     <addForeignKeyConstraint baseColumnNames="paymentRequestId" baseTableName="schedule" constraintName="fk_schedule_paymentRequestId" referencedColumnNames="paymentRequestId" referencedTableName="paymentRequests" />
   </changeSet>
   <changeSet author="Steve Dickinson" id="22">
-    <addForeignKeyConstraint baseColumnNames="paymentRequestId" baseTableName="manualLedgerChecks" constraintName="fk_manualLedgerChecks_paymentRequestId" referencedColumnNames="paymentRequestId" referencedTableName="paymentRequests" />
+    <addForeignKeyConstraint baseColumnNames="paymentRequestId" baseTableName="manualLedgerPaymentRequest" constraintName="fk_manualLedger_paymentRequestId" referencedColumnNames="paymentRequestId" referencedTableName="paymentRequests" />
+  </changeSet>
+  <changeSet author="Steve Dickinson" id="23">
+    <addForeignKeyConstraint baseColumnNames="ledgerPaymentRequestId" baseTableName="manualLedgerPaymentRequest" constraintName="fk_manualLedger_ledgerPaymentRequestId" referencedColumnNames="paymentRequestId" referencedTableName="paymentRequests" />
+  </changeSet>
+  <changeSet author="Steve Dickinson" id="24">
+    <addColumn tableName="paymentRequests">
+      <column name="categoryId" type="INTEGER" />
+    </addColumn>
+  </changeSet>
+  <changeSet author="Steve Dickinson" id="25">
+    <addForeignKeyConstraint baseColumnNames="categoryId" baseTableName="paymentRequests" constraintName="fk_paymentRequests_categoryId" referencedColumnNames="categoryId" referencedTableName="category" />
   </changeSet>
 </databaseChangeLog>
