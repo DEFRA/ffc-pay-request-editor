@@ -36,7 +36,7 @@ describe('Capture test', () => {
   })
 
   afterEach(async () => {
-    jest.resetAllMocks()
+    jest.clearAllMocks()
     await server.stop()
   })
 
