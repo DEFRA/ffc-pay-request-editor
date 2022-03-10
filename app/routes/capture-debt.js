@@ -4,11 +4,7 @@ const schema = require('./schemas/capture-debt')
 const ViewModel = require('../models/capture-debt')
 
 const { getSchemeId, getSchemes } = require('../processing/scheme')
-const {
-  convertToPounds,
-  convertToPence,
-  convertDateToDDMMYYYY
-} = require('../processing/conversion')
+const { convertToPounds, convertToPence, convertDateToDDMMYYYY } = require('../processing/conversion')
 const { saveDebtData } = require('../processing/debt')
 
 module.exports = [{

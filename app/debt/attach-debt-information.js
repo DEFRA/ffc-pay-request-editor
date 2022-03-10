@@ -2,10 +2,7 @@ const checkDebts = require('./check-debts')
 const saveDebtData = require('./save-debt-data')
 
 const attachDebtInformation = async (paymentRequestId, paymentRequest, transaction) => {
-  const frn = paymentRequest.frn
-  const agreementNumber = paymentRequest.agreementNumber
-  const value = paymentRequest.value
-
+  const { frn, agreementNumber, value } = paymentRequest
   const foundDebtData = await checkDebts(frn, agreementNumber, value, transaction)
 
   if (foundDebtData) {
