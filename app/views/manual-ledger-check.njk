@@ -5,6 +5,8 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "macros/payment-request-header.njk" import paymentRequestHeader %}
+{% from "macros/payment-request-invoice-lines.njk" import paymentRequestInvoiceLines %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -22,100 +24,42 @@
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l">Manual Ledger Check - {{manualLedgerData.invoiceNumber}}</h1>
     </div>
-    <div class="govuk-grid-column-one-half">
-      <h1 class="govuk-heading-m">Header:</h1>
-      <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
-          <dt class="govuk-summary-list__key">
-            FRN
-          </dt>
-          <dd class="govuk-summary-list__value">
-            {{manualLedgerData.frn}}
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
-          <dt class="govuk-summary-list__key">
-            Scheme
-          </dt>
-          <dd class="govuk-summary-list__value">
-            {{manualLedgerData.schemes.name}}
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
-          <dt class="govuk-summary-list__key">
-            Invoice
-          </dt>
-          <dd class="govuk-summary-list__value">
-            {{manualLedgerData.invoiceNumber}}
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
-          <dt class="govuk-summary-list__key">
-            Agreement
-          </dt>
-          <dd class="govuk-summary-list__value">
-            {{manualLedgerData.agreementNumber}}
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
-          <dt class="govuk-summary-list__key">
-            Request
-          </dt>
-          <dd class="govuk-summary-list__value">
-            {{manualLedgerData.paymentRequestNumber}}
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
-          <dt class="govuk-summary-list__key">
-            Currency
-          </dt>
-          <dd class="govuk-summary-list__value">
-            {{manualLedgerData.currency}}
-          </dd>
-        </div>
-      </dl>
-    </div>
-    <div class="govuk-grid-column-one-half">
-      <h1 class="govuk-heading-m">Orignal:</h1>
-      <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
-          <dt class="govuk-summary-list__key">
-            Ledger
-          </dt>
-          <dd class="govuk-summary-list__value">
-            {{manualLedgerData.ledger}}
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
-          <dt class="govuk-summary-list__key">
-            Value
-          </dt>
-          <dd class="govuk-summary-list__value">
-            {{manualLedgerData.value}}
-          </dd>
-        </div>
-      </dl>
-      <h1 class="govuk-heading-m">Calculated:</h1>
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-m">Original</h1>
+      {{paymentRequestHeader(manualLedgerData)}}
+      {{paymentRequestInvoiceLines(manualLedgerData.invoiceLines)}}
+      <h1 class="govuk-heading-m">Provisional</h1>
       {% for data in manualLedgerData.manualLedgerChecks %}
-        <dl class="govuk-summary-list">
-          <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
-            <dt class="govuk-summary-list__key">
-              Ledger
-            </dt>
-            <dd class="govuk-summary-list__value">
-              {{data.ledger}}
-            </dd>
-          </div>
-          <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
-            <dt class="govuk-summary-list__key">
-              Value
-            </dt>
-            <dd class="govuk-summary-list__value">
-              {{data.value}}
-            </dd>
-          </div>
-        </dl>
+        {{paymentRequestHeader(data.ledgerPaymentRequest)}}
+        {{paymentRequestInvoiceLines(data.ledgerPaymentRequest.invoiceLines)}}
       {% endfor %}
+
+      <form action="/review" method="post" novalidate="">
+        <div class="govuk-form-group">
+          <input type="hidden" name="paymentrequestid" value="{{manualLedgerData.paymentRequestId}}"/>
+          <input type="hidden" name="crumb" value="{{crumb}}"/>
+          <label class="govuk-label govuk-label--s" for="status">
+            Do you agree with the provisional values?
+          </label>
+          <div class="govuk-radios govuk-radios--small" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="status-1" name="status" type="radio" value="yes">
+              <label class="govuk-label govuk-radios__label" for="status">
+                Yes
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="status-2" name="status" type="radio" value="no">
+              <label class="govuk-label govuk-radios__label" for="status-2">
+                No
+              </label>
+            </div>
+          </div>
+        </div>
+        <button class="govuk-button" data-module="govuk-button">
+          Submit
+        </button>
+      </form>
     </div>
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-m">Ledger Split:</h1>

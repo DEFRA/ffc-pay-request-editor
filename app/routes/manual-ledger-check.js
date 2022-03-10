@@ -20,8 +20,6 @@ module.exports = [{
         manualLedgerData[`${manualLedgerCheck.ledgerPaymentRequest.ledger.toLowerCase()}AutoValue`] = manualLedgerCheck.ledgerPaymentRequest.value
       }
 
-      console.log('Manual ledger data', manualLedgerData)
-
       if (!manualLedgerData) {
         console.log(`No manual ledger record with paymentRequestId: ${paymentRequestId} exists in the database`)
         return h.view('404')
