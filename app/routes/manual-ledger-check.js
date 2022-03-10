@@ -1,4 +1,6 @@
+const Joi = require('joi')
 const { getManualLedger } = require('../manual-ledger')
+const ViewModel = require('./models/manual-ledger')
 const splitToLedger = require('../processing/ledger/split-to-ledger')
 
 module.exports = [{
@@ -10,28 +12,20 @@ module.exports = [{
       if (!paymentRequestId) {
         return h.view('404')
       }
-
       const manualLedgerData = await getManualLedger(paymentRequestId)
-      manualLedgerData.arAutoValue = 0
-      manualLedgerData.apAutoValue = 0
-      const ledgerPaymentRequests = manualLedgerData.manualLedgerChecks
-
-      for (const manualLedgerCheck of ledgerPaymentRequests) {
-        manualLedgerData[`${manualLedgerCheck.ledgerPaymentRequest.ledger.toLowerCase()}AutoValue`] = manualLedgerCheck.ledgerPaymentRequest.value
-      }
 
       if (!manualLedgerData) {
         console.log(`No manual ledger record with paymentRequestId: ${paymentRequestId} exists in the database`)
         return h.view('404')
       }
 
-      return h.view('manual-ledger-check', { manualLedgerData })
+      return h.view('manual-ledger-check', new ViewModel(manualLedgerData) })
     }
   }
 },
 {
-  method: 'POST',
-  path: '/manual-ledger-check',
+  method: 'GET',
+  path: '/manual-ledger-check/calculate',
   options: {
     handler: async (request, h) => {
       const { paymentRequestId, arValue } = request.payload
@@ -39,6 +33,33 @@ module.exports = [{
       const deltaManualLedgerData = manualLedgerData.manualLedgerChecks.find(ml => ml.ledgerPaymentRequest.ledger === 'AR')
       const splitLedger = await splitToLedger(deltaManualLedgerData.ledgerPaymentRequest, arValue, 'ar')
       return h.view('manual-ledger-check')
+    }
+  }
+},
+{
+  method: 'POST',
+  path: '/manual-ledger-check',
+  options: {
+    validate: {
+      payload: Joi.object({
+        paymentrequestid: Joi.string().required(),
+        agree: Joi.boolean().required()
+      }),
+      failAction: async (request, h, error) => {
+        const { paymentRequestId } = request.payload
+        const manualLedgerData = await getManualLedger(paymentRequestId)
+        return h.view('manual-ledger-check', new ViewModel(manualLedgerData, error)).code(400).takeover()
+      }
+    },
+    handler: async (request, h) => {
+      const { paymentRequestId, agree } = request.payload
+
+      if (!agree) {
+        const manualLedgerData = await getManualLedger(paymentRequestId)
+        return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData), showLedgerSplit: true }).code(400).takeover()
+      }
+
+      return h.redirect('/quality-check')
     }
   }
 }]

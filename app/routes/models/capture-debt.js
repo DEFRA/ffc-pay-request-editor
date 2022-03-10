@@ -1,7 +1,7 @@
 const {
   getObjectKey,
   getObjectKeyEquals
-} = require('../processing/object-check')
+} = require('../../processing/object-check')
 
 function ViewModel (schemes, payload, error) {
   const errorMessages = {}
