@@ -1,0 +1,46 @@
+{% extends '_layout.njk' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "macros/payment-request-header.njk" import paymentRequestHeader %}
+{% from "macros/payment-request-invoice-lines.njk" import paymentRequestInvoiceLines %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+        text: "Back",
+        href: "/quality-check",
+        attributes: {
+          id: "back"
+        }
+      }) 
+    }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">Review manual ledger - {{model.manualLedgerData.invoiceNumber}}</h1>
+      {% for data in model.manualLedgerData.manualLedgerChecks %}
+        {{paymentRequestHeader(data.ledgerPaymentRequest)}}
+        {{paymentRequestInvoiceLines(data.ledgerPaymentRequest.invoiceLines)}}
+      {% endfor %}
+      {% if model.errorMessage %}
+          {{ govukErrorSummary({
+              titleText: "There is a problem",
+              errorList: model.errorMessage
+            }) 
+          }}
+      {% endif %}
+      <form action="/manual-ledger-review" method="post" novalidate="">
+        <div class="govuk-form-group">
+          <input type="hidden" name="paymentRequestId" value="{{model.manualLedgerData.paymentRequestId}}"/>
+          <input type="hidden" name="crumb" value="{{crumb}}"/>
+          {{ govukRadios(model.ledgerAgreement) }}
+        </div>
+        <button class="govuk-button" data-module="govuk-button">
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

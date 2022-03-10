@@ -2,7 +2,7 @@ const Joi = require('joi')
 const { getManualLedger } = require('../manual-ledger')
 const ViewModel = require('./models/manual-ledger')
 const splitToLedger = require('../processing/ledger/split-to-ledger')
-const { updateQualityChecksStatus} = require('../quality-check')
+const { updateQualityChecksStatus } = require('../quality-check')
 
 module.exports = [{
   method: 'GET',

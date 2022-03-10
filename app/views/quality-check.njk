@@ -57,7 +57,7 @@
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.status }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">
                   {% if data.status === 'Pending' %}
-                    <a href="/review?paymentrequestid={{data.paymentRequest.paymentRequestId}}">Review</a>
+                    <a href="/manual-ledger-review?paymentrequestid={{data.paymentRequest.paymentRequestId}}">Review</a>
                   {% endif %}
                 <th>
               </tr>

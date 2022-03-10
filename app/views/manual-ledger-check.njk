@@ -30,7 +30,7 @@
 
       {% if showLedgerSplit %}
         <h1 class="govuk-heading-m">Ledger Split:</h1>
-        <form method="POST" action="/manual-ledger-check" novalidate>
+        <form method="POST" action="/manual-ledger-check/calculate" novalidate>
           <input type="hidden" name="crumb" value="{{crumb}}"/>
           <input type="hidden" name="paymentRequestId" value="{{ model.manualLedgerData.paymentRequestId }}"/>
           <div class="govuk-grid-column-one-half">
@@ -54,7 +54,7 @@
               </div>
             </div>
             {{ govukButton({
-                text: "Accept",
+                text: "Calculate",
                 attributes: {
                   id: "submit"
                 }
