@@ -8,9 +8,14 @@ const getManualLedgers = async (paymentRequestId) => {
           model: db.scheme,
           as: 'schemes',
           attributes: ['name']
+        },
+        {
+          model: db.qualityCheck,
+          as: 'qualityCheck',
+          attributes: ['status']
         }
       ],
-      where: { categoryId: 2 }
+      where: { categoryId: 2, status: 'Not ready' }
     }
   )
 }

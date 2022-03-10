@@ -58,7 +58,8 @@ module.exports = [{
         const manualLedgerData = await getManualLedger(paymentRequestId)
         return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData), showLedgerSplit: true }).code(400).takeover()
       }
-
+      
+      await updateQualityChecksStatus(paymentRequestId, 'Pending')
       return h.redirect('/quality-check')
     }
   }

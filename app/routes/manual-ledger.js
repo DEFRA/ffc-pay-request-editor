@@ -8,7 +8,6 @@ module.exports = [{
   path: '/manual-ledger',
   handler: async (request, h) => {
     const ledgerData = await getManualLedgers()
-    console.log('Manual ledger data', JSON.stringify(ledgerData))
     return h.view('manual-ledger', { ledgerData, ...new ViewModel(searchLabelText) })
   }
 },
