@@ -10,6 +10,9 @@
       </column>
       <column name="paymentRequestId" type="SMALLINT" />
       <column name="ledgerPaymentRequestId" type="SMALLINT" />
+      <column name="createdBy" type="VARCHAR(50)" />
+      <column name="createdDate" type="TIMESTAMP" />
+      <column name="status" type="VARCHAR(50)" />
     </createTable>
   </changeSet>
   <changeSet author="Steve Dickinson" id="19">
