@@ -31,6 +31,7 @@ const getQualityCheckedPaymentRequests = async () => {
     ],
     attributes: [
       'paymentRequestId',
+      'invoiceNumber',
       'frn',
       'released',
       [db.Sequelize.col('invoiceLines.schemeCode'), 'schemeCode'],
