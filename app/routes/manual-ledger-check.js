@@ -29,11 +29,18 @@ module.exports = [{
   path: '/manual-ledger-check/calculate',
   options: {
     handler: async (request, h) => {
-      const { paymentRequestId, arValue } = request.payload
+      const { paymentRequestId, arValue } = request.query
       const manualLedgerData = await getManualLedger(paymentRequestId)
       const deltaManualLedgerData = manualLedgerData.manualLedgerChecks.find(ml => ml.ledgerPaymentRequest.ledger === 'AR')
-      const splitLedger = await splitToLedger(deltaManualLedgerData.ledgerPaymentRequest, arValue, 'ar')
-      return h.view('manual-ledger-check')
+      const splitLedger = await splitToLedger(deltaManualLedgerData.ledgerPaymentRequest, arValue, 'AR')
+
+      manualLedgerData.manualLedgerChecks = splitLedger.map(ledger => {
+        return {
+          ledgerPaymentRequest: ledger
+        }
+      })
+
+      return h.view('manual-ledger-check', new ViewModel(manualLedgerData))
     }
   }
 },

@@ -30,8 +30,7 @@
 
       {% if showLedgerSplit %}
         <h1 class="govuk-heading-m">Ledger Split:</h1>
-        <form method="POST" action="/manual-ledger-check/calculate" novalidate>
-          <input type="hidden" name="crumb" value="{{crumb}}"/>
+        <form method="GET" action="/manual-ledger-check/calculate?paymentrequestid={{ model.manualLedgerData.paymentRequestId }}" novalidate>
           <input type="hidden" name="paymentRequestId" value="{{ model.manualLedgerData.paymentRequestId }}"/>
           <div class="govuk-grid-column-one-half">
             <h1 class="govuk-heading-s">AP:</h1>
@@ -41,7 +40,7 @@
               </label>
               <div class="govuk-input__wrapper">
                 <div class="govuk-input__prefix" aria-hidden="true">£</div>
-                <input class="govuk-input govuk-input--width-5" id="apValue" name="apValue" value="{{manualLedgerData.apAutoValue}}" type="text">
+                <input class="govuk-input govuk-input--width-5" id="apValue" name="apValue" value="{{model.manualLedgerData.apAutoValue}}" type="text">
               </div>
             </div>
             <div class="govuk-form-group">
@@ -69,7 +68,7 @@
               </label>
               <div class="govuk-input__wrapper">
                 <div class="govuk-input__prefix" aria-hidden="true">£</div>
-                <input class="govuk-input govuk-input--width-5" id="arValue" name="arValue" value="{{manualLedgerData.arAutoValue}}" type="text">
+                <input class="govuk-input govuk-input--width-5" id="arValue" name="arValue" value="{{model.manualLedgerData.arAutoValue}}" type="text">
               </div>
             </div>
             <div class="govuk-form-group">
@@ -126,7 +125,7 @@
 </div>
 
   <script>
-    const arAutoValue = {{manualLedgerData.arAutoValue}}
+    const arAutoValue = {{model.manualLedgerData.arAutoValue}}
     const apValue = document.getElementById("apValue")
     const apPercentage = document.getElementById("apPercentage")
     const arValue = document.getElementById("arValue")
