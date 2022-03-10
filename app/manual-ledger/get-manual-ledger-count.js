@@ -1,7 +1,18 @@
 const db = require('../data')
 
 const getManualLedgerCount = async () => {
-  return db.paymentRequest.count({ where: { categoryId: 2 } })
+  return db.paymentRequest.count(
+    {
+      include: [
+        {
+          model: db.qualityCheck,
+          as: 'qualityChecks',
+          where: { status: 'Not ready' }
+        }
+      ],
+      where: { categoryId: 2 }
+    }
+  )
 }
 
 module.exports = getManualLedgerCount

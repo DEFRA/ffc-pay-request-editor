@@ -2,6 +2,7 @@ const Joi = require('joi')
 const { getManualLedger } = require('../manual-ledger')
 const ViewModel = require('./models/manual-ledger')
 const splitToLedger = require('../processing/ledger/split-to-ledger')
+const { updateQualityChecksStatus} = require('../quality-check')
 
 module.exports = [{
   method: 'GET',
@@ -19,7 +20,7 @@ module.exports = [{
         return h.view('404')
       }
 
-      return h.view('manual-ledger-check', new ViewModel(manualLedgerData) })
+      return h.view('manual-ledger-check', new ViewModel(manualLedgerData))
     }
   }
 },
@@ -42,7 +43,7 @@ module.exports = [{
   options: {
     validate: {
       payload: Joi.object({
-        paymentrequestid: Joi.string().required(),
+        paymentRequestId: Joi.string().required(),
         agree: Joi.boolean().required()
       }),
       failAction: async (request, h, error) => {
@@ -58,7 +59,7 @@ module.exports = [{
         const manualLedgerData = await getManualLedger(paymentRequestId)
         return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData), showLedgerSplit: true }).code(400).takeover()
       }
-      
+
       await updateQualityChecksStatus(paymentRequestId, 'Pending')
       return h.redirect('/quality-check')
     }

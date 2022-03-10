@@ -99,7 +99,7 @@
         {% endif %}
         <form action="/manual-ledger-check" method="post" novalidate="">
           <div class="govuk-form-group">
-            <input type="hidden" name="paymentrequestid" value="{{model.manualLedgerData.paymentRequestId}}"/>
+            <input type="hidden" name="paymentRequestId" value="{{model.manualLedgerData.paymentRequestId}}"/>
             <input type="hidden" name="crumb" value="{{crumb}}"/>
             {{ govukRadios(model.ledgerAgreement) }}
             {{ govukButton({

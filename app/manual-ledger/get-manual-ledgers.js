@@ -11,11 +11,11 @@ const getManualLedgers = async (paymentRequestId) => {
         },
         {
           model: db.qualityCheck,
-          as: 'qualityCheck',
-          attributes: ['status']
+          as: 'qualityChecks',
+          where: { status: 'Not ready' }
         }
       ],
-      where: { categoryId: 2, status: 'Not ready' }
+      where: { categoryId: 2 }
     }
   )
 }
