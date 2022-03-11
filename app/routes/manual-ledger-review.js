@@ -31,7 +31,8 @@ module.exports = [{
     validate: {
       payload: Joi.object({
         paymentRequestId: Joi.string().required(),
-        status: Joi.boolean().required()
+        status: Joi.string().required()
+        // status: Joi.boolean().required()
       }),
       failAction: async (request, h, error) => {
         const { paymentRequestId } = request.payload
@@ -41,8 +42,8 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const status = request.payload.status ? request.payload.status : 'Pending'
-      if (request.payload.paymentrequestid) {
-        await updateQualityChecksStatus(request.payload.paymentrequestid, status)
+      if (request.payload.paymentRequestId) {
+        await updateQualityChecksStatus(request.payload.paymentRequestId, status)
         return h.redirect('/quality-check')
       }
       return h.redirect('/quality-check').code(301)
