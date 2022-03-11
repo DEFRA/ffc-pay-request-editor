@@ -835,7 +835,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with invalid debt type returns "The type of debt can only be irr,adm." error message', async () => {
+  test('POST /capture-debt with invalid debt type returns "The type of debt can only be adm,irr." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -843,7 +843,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The type of debt can only be irr,adm.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The type of debt can only be adm,irr.')
   })
 
   test('POST /capture-debt with no debt day returns 400', async () => {
