@@ -3,7 +3,7 @@ const { getQualityCheckedPaymentRequests } = require('../../../../app/payment-re
 
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
 const { SCHEME_NAME_SFI_PILOT } = require('../../../data/scheme')
-const { DEBT_TYPE_IRREGULAR } = require('../../../data/debt-types')
+const { IRREGULAR } = require('../../../../app/debt-types')
 
 describe('Get released payment request test', () => {
   let paymentRequest
@@ -29,7 +29,7 @@ describe('Get released payment request test', () => {
 
     debtData = {
       paymentRequestId: 1,
-      debtType: DEBT_TYPE_IRREGULAR,
+      debtType: IRREGULAR,
       recoveryDate: '10/11/2021'
     }
 

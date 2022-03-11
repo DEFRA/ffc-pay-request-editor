@@ -8,12 +8,14 @@ describe('Capture test', () => {
   let server
   const url = '/capture'
 
+  const { ADMINISTRATIVE, IRREGULAR } = require('../../../../app/debt-types')
+
   const debts = [{
     scheme: 'SFI Pilot',
     frn: '1234567890',
     reference: 'SFIP1234567',
     netValue: 1000.00,
-    debtType: 'Irregular',
+    debtType: IRREGULAR,
     recoveryDate: '19/01/2022',
     attachedDate: '',
     createdBy: 'John Watson'
@@ -23,7 +25,7 @@ describe('Capture test', () => {
     frn: '1234567891',
     reference: 'SFIP1234568',
     netValue: 570.00,
-    debtType: 'Administrative',
+    debtType: ADMINISTRATIVE,
     recoveryDate: '18/01/2022',
     attachedDate: '18/01/2022',
     createdBy: 'Steve Dickinson'

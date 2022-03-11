@@ -8,7 +8,7 @@ describe('capture-debt route', () => {
   const db = require('../../../../app/data')
   const { SCHEMES, SCHEME_NAME_SFI } = require('../../../data/scheme')
   const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
-  const { DEBT_TYPE_ADMIN } = require('../../../data/debt-types')
+  const { ADMINISTRATIVE } = require('../../../../app/debt-types')
 
   let createServer
   let server
@@ -18,7 +18,7 @@ describe('capture-debt route', () => {
     frn: '1234567890',
     applicationIdentifier: '43210987654321A',
     net: 312.2,
-    debtType: DEBT_TYPE_ADMIN,
+    debtType: ADMINISTRATIVE,
     'debt-discovered-day': 2,
     'debt-discovered-month': 1,
     'debt-discovered-year': 2022
