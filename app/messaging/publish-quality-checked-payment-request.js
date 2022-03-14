@@ -9,8 +9,10 @@ const publishQualityCheckedPaymentRequests = async (qualityCheckSender) => {
   try {
     const qualityCheckedPaymentRequests = await getQualityCheckedPaymentRequests()
     for (const paymentRequest of qualityCheckedPaymentRequests) {
+      const { paymentRequestId } = paymentRequest
+      delete paymentRequest.paymentRequestId
       await publishPaymentRequest(paymentRequest, qualityCheckSender)
-      await updatePaymentRequestReleased(paymentRequest.paymentRequestId)
+      await updatePaymentRequestReleased(paymentRequestId)
     }
   } catch (err) {
     console.error('Unable to process payment request message:', err)

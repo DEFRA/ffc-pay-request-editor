@@ -19,11 +19,6 @@ const getQualityCheckedPaymentRequests = async () => {
     },
     include: [
       {
-        model: db.invoiceLine,
-        as: 'invoiceLines',
-        attributes: []
-      },
-      {
         model: db.debtData,
         as: 'debtData',
         attributes: []
@@ -33,12 +28,6 @@ const getQualityCheckedPaymentRequests = async () => {
       'paymentRequestId',
       'invoiceNumber',
       'frn',
-      'released',
-      [db.Sequelize.col('invoiceLines.schemeCode'), 'schemeCode'],
-      [db.Sequelize.col('invoiceLines.accountCode'), 'accountCode'],
-      [db.Sequelize.col('invoiceLines.fundCode'), 'fundCode'],
-      [db.Sequelize.col('invoiceLines.description'), 'description'],
-      [db.Sequelize.col('invoiceLines.value'), 'value'],
       [db.Sequelize.col('debtData.debtType'), 'debtType'],
       [db.Sequelize.col('debtData.recoveryDate'), 'recoveryDate']
     ],
