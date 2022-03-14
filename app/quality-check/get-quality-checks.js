@@ -27,7 +27,10 @@ const getQualityChecks = async () => {
       ],
       attributes: [
         'status'
-      ]
+      ],
+      where: {
+        status: 'Pending'
+      }
     }
   )
 }

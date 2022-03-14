@@ -7,7 +7,7 @@ const getManualLedgerCount = async () => {
         {
           model: db.qualityCheck,
           as: 'qualityChecks',
-          where: { status: 'Not ready' }
+          where: { status: ['Not ready', 'Failed'] }
         }
       ],
       where: { categoryId: 2 }
