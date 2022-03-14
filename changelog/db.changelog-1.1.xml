@@ -1,9 +1,9 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.9.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
-  <changeSet author="Paul Popa" id="1">
+  <changeSet author="Paul Popa" id="2">
     <tagDatabase tag="v1.0.0" />
   </changeSet>
-  <changeSet author="Paul Popa" id="2">
+  <changeSet author="Paul Popa" id="3">
     <createTable tableName="schemes">
       <column autoIncrement="false" name="schemeId" type="SMALLINT">
         <constraints nullable="true" primaryKey="true" primaryKeyName="scheme_pkey" />
@@ -19,7 +19,7 @@
       <column name="name" value="SFI Pilot" />
     </insert>
   </changeSet>
-  <changeSet author="Paul Popa" id="3">
+  <changeSet author="Paul Popa" id="4">
     <createTable tableName="paymentRequests">
       <column autoIncrement="true" name="paymentRequestId" type="INTEGER">
         <constraints nullable="false" primaryKey="true" primaryKeyName="paymentRequestId_pkey" />
@@ -46,10 +46,10 @@
       <column name="released" type="TIMESTAMP" />
     </createTable>
   </changeSet>
-  <changeSet author="Paul Popa" id="4">
+  <changeSet author="Paul Popa" id="5">
     <addForeignKeyConstraint baseColumnNames="schemeId" baseTableName="paymentRequests" constraintName="fk_paymentRequest_schemeId" referencedColumnNames="schemeId" referencedTableName="schemes" />
   </changeSet>
-  <changeSet author="Paul Popa" id="5">
+  <changeSet author="Paul Popa" id="6">
     <createTable tableName="debtData"> 
       <column autoIncrement="true" name="debtDataId" type="INTEGER">
         <constraints nullable="false" primaryKey="true" primaryKeyName="debtDataId_pkey" />
@@ -66,11 +66,11 @@
       <column name="createdBy" type="VARCHAR(50)" />
     </createTable>
   </changeSet>
-  <changeSet author="Paul Popa" id="6">
+  <changeSet author="Paul Popa" id="7">
     <addForeignKeyConstraint baseColumnNames="schemeId" baseTableName="debtData" constraintName="fk_debtData_schemeId" referencedColumnNames="schemeId" referencedTableName="schemes" />
     <addForeignKeyConstraint baseColumnNames="paymentRequestId" baseTableName="debtData" constraintName="fk_debtData_paymentRequestId" referencedColumnNames="paymentRequestId" referencedTableName="paymentRequests" />
   </changeSet>
-  <changeSet author="Paul Popa" id="7">
+  <changeSet author="Paul Popa" id="8">
     <createTable tableName="qualityChecks"> 
       <column name="qualityCheckId" type="INTEGER">
         <constraints nullable="false" primaryKey="true" primaryKeyName="qualityCheckId_pkey" />
@@ -81,10 +81,10 @@
       <column name="status" type="VARCHAR(50)" />
     </createTable>
   </changeSet>
-  <changeSet author="Paul Popa" id="8">
+  <changeSet author="Paul Popa" id="9">
     <addForeignKeyConstraint baseColumnNames="paymentRequestId" baseTableName="qualityChecks" constraintName="fk_qualityChecks_paymentRequestId" referencedColumnNames="paymentRequestId" referencedTableName="paymentRequests" />
   </changeSet>
-  <changeSet author="Paul Popa" id="9">
+  <changeSet author="Paul Popa" id="10">
     <createTable tableName="invoiceLines"> 
       <column name="invoiceLineId" type="INTEGER">
         <constraints nullable="false" primaryKey="true" primaryKeyName="invoiceLineId_pkey" />
@@ -97,7 +97,7 @@
       <column name="value" type="DECIMAL" />
     </createTable>
   </changeSet>
-  <changeSet author="Paul Popa" id="10">
+  <changeSet author="Paul Popa" id="11">
     <addForeignKeyConstraint baseColumnNames="paymentRequestId" baseTableName="invoiceLines" constraintName="fk_invoiceLines_paymentRequestId" referencedColumnNames="paymentRequestId" referencedTableName="paymentRequests" />
   </changeSet>
 </databaseChangeLog>
