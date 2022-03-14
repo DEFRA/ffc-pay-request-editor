@@ -16,8 +16,8 @@ const processManualLedgerRequest = async (manualLedgerRequest) => {
       await transaction.rollback()
     } else {
       const paymentRequestId = await savePaymentAndInvoiceLines(paymentRequest, 2)
-      for (const paymentRequestDelta of manualLedgerRequest.paymentRequests) {
-        const paymentRequestLedgerId = await savePaymentAndInvoiceLines(paymentRequestDelta, 3)
+      for (const paymentRequestProvisional of manualLedgerRequest.paymentRequests) {
+        const paymentRequestLedgerId = await savePaymentAndInvoiceLines(paymentRequestProvisional, 3)
         await saveManualLedger(paymentRequestId, paymentRequestLedgerId, transaction)
       }
       await updateQualityCheck(paymentRequestId, transaction)

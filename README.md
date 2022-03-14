@@ -36,7 +36,7 @@ Example inbound payment request
    "sourceSystem":"SFIP",
    "frn":1234567890,
    "marketingYear":2022,
-   "paymentRequestNumber": 1,
+   "paymentRequestNumber": 2,
    "invoiceNumber":"S123456789A123456V001",
    "agreementNumber":"SIP000001234567",
    "contractNumber":"SFI12345",
@@ -45,7 +45,7 @@ Example inbound payment request
    "dueDate":"09/11/2022",
    "value":100000,
    "schemeId":2,
-   "ledger":"AP",
+   "ledger":"AR",
    "deliveryBody":"RP00",
    "schemeId":2,
    "invoiceLines":[
