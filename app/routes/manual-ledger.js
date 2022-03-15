@@ -25,7 +25,7 @@ module.exports = [{
     handler: async (request, h) => {
       const frn = request.payload.frn
       const ledgerData = await getManualLedgers()
-      const filteredManualLedger = ledgerData.filter(x => x.paymentRequest.frn === String(frn))
+      const filteredManualLedger = ledgerData.filter(x => x.paymentRequest?.frn === String(frn))
 
       if (filteredManualLedger.length) {
         return h.view('manual-ledger', { ledgerData: filteredManualLedger, ...new ViewModel(searchLabelText, frn) })
