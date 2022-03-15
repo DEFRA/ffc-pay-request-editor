@@ -15,3 +15,4 @@ dist
 *.lock
 # Generated views
 _layout.njk
+manual-ledger-check.template.njk

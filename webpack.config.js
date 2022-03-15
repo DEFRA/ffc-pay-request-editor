@@ -18,7 +18,8 @@ module.exports = {
       './app/frontend/images/defra-logo-white.png',
       './app/frontend/images/favicon.ico',
       './app/frontend/images/search-icon.png'
-    ]
+    ],
+    ledger: './app/frontend/js/ledger.js'
   },
   mode: isDev ? 'development' : 'production',
   module: {
@@ -39,7 +40,7 @@ module.exports = {
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: isDev,
+              sourceMap: true,
               sassOptions: {
                 outputStyle: 'compressed'
               }
@@ -80,6 +81,12 @@ module.exports = {
       filename: '../views/_layout.njk',
       template: 'app/views/_layout.template.njk',
       chunks: ['core']
+    }),
+    new HtmlWebpackPlugin({
+      inject: false,
+      filename: '../views/manual-ledger-check.njk',
+      template: 'app/views/_manual-ledger-check.template.njk',
+      chunks: ['ledger']
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[fullhash].css'

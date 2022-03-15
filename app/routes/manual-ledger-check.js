@@ -3,6 +3,7 @@ const { getManualLedger } = require('../manual-ledger')
 const ViewModel = require('./models/manual-ledger')
 const splitToLedger = require('../processing/ledger/split-to-ledger')
 const { updateQualityChecksStatus } = require('../quality-check')
+const { convertToPence, convertToPounds } = require('../currency-convert')
 
 module.exports = [{
   method: 'GET',
@@ -29,12 +30,13 @@ module.exports = [{
   path: '/manual-ledger-check/calculate',
   options: {
     handler: async (request, h) => {
-      const { paymentRequestId, arValue } = request.query
+      const paymentRequestId = request.query.paymentRequestId
+      const arValue = request.query['ar-value']
       const manualLedgerData = await getManualLedger(paymentRequestId)
-      const deltaManualLedgerData = manualLedgerData.manualLedgerChecks.find(ml => ml.ledgerPaymentRequest.ledger === 'AR')
-      const splitLedger = await splitToLedger(deltaManualLedgerData.ledgerPaymentRequest, arValue, 'AR')
-
+      const splitLedger = await splitToLedger(manualLedgerData, convertToPence(arValue), 'AR')
+      manualLedgerData.manualLedgerChecks = []
       manualLedgerData.manualLedgerChecks = splitLedger.map(ledger => {
+        ledger.valueDecimal = convertToPounds(ledger.value)
         return {
           ledgerPaymentRequest: ledger
         }

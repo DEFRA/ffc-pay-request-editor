@@ -1,0 +1,103 @@
+{% extends '_layout.njk' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "macros/payment-request-header.njk" import paymentRequestHeader %}
+{% from "macros/payment-request-invoice-lines.njk" import paymentRequestInvoiceLines %}
+{% from "macros/ledger-check.njk" import ledgerCheck %}
+
+{% block beforeContent %}
+  <% htmlWebpackPlugin.files.css.forEach(file => { %>
+    <link href="<%= file.replace('../dist/', '/static/') %>" rel="stylesheet">
+  <% }) %>
+  {{ govukBackLink({
+      text: "Back",
+      href: "/manual-ledger",
+      attributes: {
+        id: "back"
+      }
+    }) 
+  }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">Manual Ledger Check - {{model.manualLedgerData.invoiceNumber}}</h1>
+    </div>
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-m">Original</h1>
+      {{paymentRequestHeader(model.manualLedgerData)}}
+      {{paymentRequestInvoiceLines(model.manualLedgerData.invoiceLines)}}
+      {% if showLedgerSplit %}
+
+        <h1 class="govuk-heading-m">Ledger Split:</h1>
+        <form method="GET" action="/manual-ledger-check/calculate?paymentrequestid={{ model.manualLedgerData.paymentRequestId }}" novalidate>
+          <div id="ledger-wrapper" class="govuk-form-group">
+            <p id="ledger-value-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> The entered values must equal £{{ model.manualLedgerData.valueInPounds }}
+            </p>
+            <input type="hidden" name="paymentRequestId" value="{{ model.manualLedgerData.paymentRequestId }}"/>
+            {{ledgerCheck('ap', model.manualLedgerData.apAutoValue, model.manualLedgerData.valueInPounds)}}
+            {{ledgerCheck('ar', model.manualLedgerData.arAutoValue, model.manualLedgerData.valueInPounds)}}
+          </div>
+          <div class="govuk-grid-column-full">
+            {{ govukButton({
+                text: "Calculate",
+                attributes: {
+                  id: "calculate-ledger"
+                }
+              }) 
+            }}
+          </div>
+        </form>
+      {% else %}
+        <h1 class="govuk-heading-m">Provisional</h1>
+        {% for data in model.manualLedgerData.manualLedgerChecks %}
+          {{paymentRequestHeader(data.ledgerPaymentRequest)}}
+          {{paymentRequestInvoiceLines(data.ledgerPaymentRequest.invoiceLines)}}
+        {% endfor %}
+        {{ model.errorMessage.text }}
+        {% if model.errorMessage %}
+            {{ govukErrorSummary({
+                titleText: "There is a problem",
+                errorList: model.errorMessage
+              }) 
+            }}
+        {% endif %}
+        <form action="/manual-ledger-check" method="post" novalidate="">
+          <div class="govuk-form-group">
+            <input type="hidden" name="paymentRequestId" value="{{model.manualLedgerData.paymentRequestId}}"/>
+            <input type="hidden" name="crumb" value="{{crumb}}"/>
+            {{ govukRadios(model.ledgerAgreement) }}
+            {{ govukButton({
+                text: "Continue",
+                attributes: {
+                  id: "manual-ledger-continue"
+                }
+              }) 
+            }}
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+  
+  {% if model.errorSummary %}
+    {{ govukErrorSummary({
+      titleText: "There is a problem",
+      errorList: model.errorSummary
+    }) 
+  }}
+  {% endif %}
+
+</div>
+<% htmlWebpackPlugin.files.js.forEach(file => { %>
+  <script src="<%= file.replace('../dist/', '/static/') %>"></script>
+<% }) %>
+<script>
+  ledger.init({{model.manualLedgerData.valueInPounds}})
+</script>
+{% endblock %}

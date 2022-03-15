@@ -1,3 +1,4 @@
+const { convertToPounds } = require('../../currency-convert')
 const errorMessage = 'Please select Yes or No to agree if the provisional values are correct.'
 
 function ViewModel (manualLedgerData, error) {
@@ -12,12 +13,13 @@ function ViewModel (manualLedgerData, error) {
 }
 
 const buildManualLedger = (manualLedgerData) => {
+  manualLedgerData.valueInPounds = convertToPounds(manualLedgerData.value)
   manualLedgerData.arAutoValue = 0
   manualLedgerData.apAutoValue = 0
   const ledgerPaymentRequests = manualLedgerData.manualLedgerChecks
 
   for (const manualLedgerCheck of ledgerPaymentRequests) {
-    manualLedgerData[`${manualLedgerCheck.ledgerPaymentRequest.ledger.toLowerCase()}AutoValue`] = manualLedgerCheck.ledgerPaymentRequest.value
+    manualLedgerData[`${manualLedgerCheck.ledgerPaymentRequest.ledger.toLowerCase()}AutoValue`] = convertToPounds(manualLedgerCheck.ledgerPaymentRequest.value)
   }
 
   return manualLedgerData
