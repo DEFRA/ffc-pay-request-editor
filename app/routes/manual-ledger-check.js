@@ -31,12 +31,18 @@ module.exports = [{
   options: {
     handler: async (request, h) => {
       const paymentRequestId = request.query.paymentRequestId
-      const arValue = request.query['ar-value']
+      const arValue = convertToPence(request.query['ar-value'])
       const manualLedgerData = await getManualLedger(paymentRequestId)
-      const splitLedger = await splitToLedger(manualLedgerData, convertToPence(arValue), 'AR')
+      const copyManualLedgerData = JSON.parse(JSON.stringify(manualLedgerData))
+      const ledger = manualLedgerData.ledger === 'AP' ? 'AR' : 'AP'
+      const splitLedger = await splitToLedger(copyManualLedgerData, arValue, ledger)
       manualLedgerData.manualLedgerChecks = []
       manualLedgerData.manualLedgerChecks = splitLedger.map(ledger => {
         ledger.valueDecimal = convertToPounds(ledger.value)
+        ledger.invoiceLines.map(x => {
+          x.valueDecimal = convertToPounds(x.value)
+          return x
+        })
         return {
           ledgerPaymentRequest: ledger
         }
