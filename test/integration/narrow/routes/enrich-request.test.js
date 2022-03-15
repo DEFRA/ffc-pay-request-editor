@@ -1,5 +1,7 @@
 const db = require('../../../../app/data')
 
+const { ADMINISTRATIVE } = require('../../../../app/debt-types')
+
 describe('Enrich request test', () => {
   jest.mock('../../../../app/plugins/crumb')
   const createServer = require('../../../../app/server')
@@ -133,7 +135,7 @@ describe('Enrich request test', () => {
           day: 2,
           month: 2,
           year: 2022,
-          'debt-type': 'admin',
+          'debt-type': ADMINISTRATIVE,
           'invoice-number': 'S00000001SFIP000001V001'
         }
       }
@@ -183,7 +185,7 @@ describe('Enrich request test', () => {
           day: 2,
           month: 3,
           year: 4000,
-          'debt-type': 'admin',
+          'debt-type': ADMINISTRATIVE,
           'invoice-number': 'S00000001SFIP000001V001'
         }
       }
@@ -209,7 +211,7 @@ describe('Enrich request test', () => {
           day: 2,
           month: 3,
           year: 2021,
-          'debt-type': 'admin',
+          'debt-type': ADMINISTRATIVE,
           'invoice-number': 'S00000001SFIP000001V001'
         }
       }
@@ -237,7 +239,7 @@ describe('Enrich request test', () => {
       expect(debtDataRow[0].paymentRequestId).toBe(1)
       expect(debtDataRow[0].schemeId).toBe(1)
       expect(parseInt(debtDataRow[0].frn)).toBe(1234567890)
-      expect(debtDataRow[0].debtType).toBe('admin')
+      expect(debtDataRow[0].debtType).toBe(ADMINISTRATIVE)
       expect(debtDataRow[0].recoveryDate).toBe('02/03/2021')
 
       expect(response.request.response.statusCode).toBe(302)
@@ -252,7 +254,7 @@ describe('Enrich request test', () => {
           day: 12,
           month: 10,
           year: 2021,
-          'debt-type': 'admin',
+          'debt-type': ADMINISTRATIVE,
           'invoice-number': 'S00000001SFIP000001V001'
         }
       }
@@ -280,7 +282,7 @@ describe('Enrich request test', () => {
       expect(debtDataRow[0].paymentRequestId).toBe(1)
       expect(debtDataRow[0].schemeId).toBe(1)
       expect(parseInt(debtDataRow[0].frn)).toBe(1234567890)
-      expect(debtDataRow[0].debtType).toBe('admin')
+      expect(debtDataRow[0].debtType).toBe(ADMINISTRATIVE)
       expect(debtDataRow[0].recoveryDate).toBe('12/10/2021')
 
       expect(response.request.response.statusCode).toBe(302)

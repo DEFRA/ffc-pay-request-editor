@@ -1,3 +1,10 @@
+const { getObjectKeyEquals } = require('../../processing/object-check')
+
+const {
+  ADMINISTRATIVE,
+  IRREGULAR
+} = require('../../debt-types')
+
 function ViewModel (payload, error) {
   const errorMessage = { }
   if (error) {
@@ -48,14 +55,14 @@ function ViewModel (payload, error) {
       },
       items: [
         {
-          value: 'irregular',
           text: 'Irregular',
-          checked: payload ? payload['debt-type'] === 'irregular' : false
+          value: IRREGULAR,
+          checked: getObjectKeyEquals(payload, 'debtType', IRREGULAR)
         },
         {
-          value: 'admin',
           text: 'Administrative',
-          checked: payload ? payload['debt-type'] === 'admin' : false
+          value: ADMINISTRATIVE,
+          checked: getObjectKeyEquals(payload, 'debtType', ADMINISTRATIVE)
         }
       ],
       errorMessage: errorMessage['radio-error']

@@ -1,11 +1,11 @@
 const {
-  convertStringToPence,
+  convertToPence,
   convertToPounds
 } = require('./convert-currency')
 const { convertDateToDDMMYYYY } = require('./convert-date')
 
 module.exports = {
-  convertStringToPence,
+  convertToPence,
   convertToPounds,
   convertDateToDDMMYYYY
 }

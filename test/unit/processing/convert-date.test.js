@@ -1,6 +1,6 @@
 const { convertDateToDDMMYYYY } = require('../../../app/processing/conversion')
 
-describe('convert date', () => {
+describe('Date convertor', () => {
   test('converts 16/10/2020 to date', () => {
     const result = convertDateToDDMMYYYY(16, 10, 2020)
     expect(result).toEqual('16/10/2020')
