@@ -7,6 +7,7 @@ const schema = Joi.object({
   port: Joi.number().default(3001),
   env: Joi.string().valid('development', 'test', 'production').default('development'),
   staticCacheTimeoutMillis: Joi.number().default(7 * 24 * 60 * 60 * 1000), // 1 day
+  publishPollingInterval: Joi.number().default(60000), // 1 minute
   message: Joi.object({
     connection: Joi.object({
       host: Joi.string(),
@@ -53,6 +54,7 @@ const config = {
   port: process.env.PORT,
   env: process.env.NODE_ENV,
   staticCacheTimeoutMillis: process.env.STATIC_CACHE_TIMEOUT_IN_MILLIS,
+  publishPollingInterval: process.env.PUBLISH_POLLING_INTERVAL,
   message: {
     connection: {
       host: process.env.MESSAGE_QUEUE_HOST,

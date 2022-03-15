@@ -1,21 +1,36 @@
 const {
-  convertStringToPence,
+  convertToPence,
   convertToPounds
 } = require('../../../app/processing/conversion')
 
-describe('convert currency', () => {
+describe('Currency convertor', () => {
   test('converts 100 to pence', () => {
-    const result = convertStringToPence('100')
+    const result = convertToPence(100)
     expect(result).toEqual(10000)
   })
 
   test('converts 100.10 to pence', () => {
-    const result = convertStringToPence('100.10')
+    const result = convertToPence(100.10)
     expect(result).toEqual(10010)
   })
 
   test('converts 100.1 to pence', () => {
-    const result = convertStringToPence('100.1')
+    const result = convertToPence(100.1)
+    expect(result).toEqual(10010)
+  })
+
+  test('converts 100 to pence if string', () => {
+    const result = convertToPence('100')
+    expect(result).toEqual(10000)
+  })
+
+  test('converts 100.10 to pence if string', () => {
+    const result = convertToPence('100.10')
+    expect(result).toEqual(10010)
+  })
+
+  test('converts 100.1 to pence if string', () => {
+    const result = convertToPence('100.1')
     expect(result).toEqual(10010)
   })
 

@@ -1,6 +1,10 @@
 const Joi = require('joi')
+const {
+  ADMINISTRATIVE,
+  IRREGULAR
+} = require('../../debt-types')
 
-const typeOfDebts = ['irr', 'admin']
+const typeOfDebts = [ADMINISTRATIVE, IRREGULAR]
 const typeOfDebtsRegex = new RegExp(typeOfDebts.reduce((x, y) => x + '|' + y))
 
 module.exports = {
