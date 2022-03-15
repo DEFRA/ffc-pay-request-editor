@@ -21,7 +21,7 @@ describe('capture-debt route', () => {
     debtType: ADMINISTRATIVE,
     'debt-discovered-day': 2,
     'debt-discovered-month': 1,
-    'debt-discovered-year': 2022
+    'debt-discovered-year': 2015
   }
 
   beforeAll(async () => {
