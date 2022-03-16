@@ -2,3 +2,4 @@ resources:
   topics:
     - name: debt
     - name: qc
+    - name: debtResponse

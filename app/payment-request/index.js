@@ -3,7 +3,7 @@ const getPaymentRequestCount = require('./get-payment-request-count')
 const { getPaymentRequest, getPaymentRequestByInvoiceNumber } = require('./get-payment-request')
 const savePaymentRequest = require('./save-payment-request')
 const processPaymentRequest = require('./process-payment-request')
-const getQualityCheckedPaymentRequests = require('./get-quality-checked-payment-requests')
+const getEnrichedPaymentRequests = require('./get-enriched-payment-requests')
 const updatePaymentRequestReleased = require('./update-payment-request-released')
 
 module.exports = {
@@ -13,6 +13,6 @@ module.exports = {
   getPaymentRequestByInvoiceNumber,
   savePaymentRequest,
   processPaymentRequest,
-  getQualityCheckedPaymentRequests,
+  getEnrichedPaymentRequests,
   updatePaymentRequestReleased
 }

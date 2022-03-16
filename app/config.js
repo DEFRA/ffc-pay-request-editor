@@ -21,6 +21,9 @@ const schema = Joi.object({
       address: Joi.string(),
       type: Joi.string().default('subscription')
     }),
+    debtResponseTopic: Joi.object({
+      address: Joi.string()
+    }),
     qcTopic: Joi.object({
       address: Joi.string()
     })
@@ -67,6 +70,9 @@ const config = {
       topic: process.env.DEBT_TOPIC_ADDRESS,
       address: process.env.DEBT_SUBSCRIPTION_ADDRESS,
       type: 'subscription'
+    },
+    debtResponseTopic: {
+      address: process.env.DEBTRESPONSE_TOPIC_ADDRESS
     },
     qcTopic: {
       address: process.env.QC_TOPIC_ADDRESS
@@ -115,6 +121,7 @@ if (result.error) {
 const value = result.value
 
 value.debtSubscription = { ...value.message.connection, ...value.message.debtSubscription }
+value.debtResponseTopic = { ...value.message.connection, ...value.message.debtResponseTopic }
 value.qcTopic = { ...value.message.connection, ...value.message.qcTopic }
 
 value.isDev = value.env === 'development'

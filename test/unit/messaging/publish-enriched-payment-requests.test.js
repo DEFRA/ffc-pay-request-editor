@@ -1,33 +1,34 @@
+jest.mock('ffc-messaging')
 const { SCHEME_ID_SFI_PILOT } = require('../../data/scheme-id')
 
 jest.mock('../../../app/payment-request')
 const {
-  getQualityCheckedPaymentRequests,
+  getEnrichedPaymentRequests,
   updatePaymentRequestReleased
 } = require('../../../app/payment-request')
 
 const {
-  publishQualityCheckedPaymentRequests,
+  publishEnrichedPaymentRequests,
   publishPaymentRequest
-} = require('../../../app/messaging/publish-quality-checked-payment-request')
+} = require('../../../app/messaging/publish-enriched-payment-request')
 
-describe('Publish quality checked payment requests', () => {
-  let qualityCheckedPaymentRequests
-  let qualityCheckSender
+describe('Publish enriched payment requests', () => {
+  let enrichedPaymentRequests
+  let debtResponseSender
   let paymentRequest
   let message
 
   beforeEach(async () => {
-    qualityCheckedPaymentRequests = [{
+    enrichedPaymentRequests = [{
       paymentRequestId: 1,
       invoiceNumber: 'SFI123',
       frn: 1234567890,
       debtType: undefined,
       recoveryDate: undefined
     }]
-    getQualityCheckedPaymentRequests.mockReturnValue(JSON.parse(JSON.stringify(qualityCheckedPaymentRequests)))
+    getEnrichedPaymentRequests.mockReturnValue(JSON.parse(JSON.stringify(enrichedPaymentRequests)))
 
-    qualityCheckSender = { sendMessage: jest.fn() }
+    debtResponseSender = { sendMessage: jest.fn() }
 
     paymentRequest = {
       paymentRequestId: 1,
@@ -38,7 +39,7 @@ describe('Publish quality checked payment requests', () => {
 
     message = {
       body: paymentRequest,
-      type: 'uk.gov.pay.quality.check',
+      type: 'uk.gov.pay.debt.data.response',
       source: 'ffc-pay-request-editor'
     }
   })
@@ -48,23 +49,23 @@ describe('Publish quality checked payment requests', () => {
   })
 
   test('calls internal loop function', async () => {
-    await publishQualityCheckedPaymentRequests(qualityCheckSender)
+    await publishEnrichedPaymentRequests(debtResponseSender)
     expect(updatePaymentRequestReleased).toHaveBeenCalledTimes(1)
-    expect(updatePaymentRequestReleased).toHaveBeenCalledWith(qualityCheckedPaymentRequests[0].paymentRequestId)
+    expect(updatePaymentRequestReleased).toHaveBeenCalledWith(enrichedPaymentRequests[0].paymentRequestId)
   })
 
   test('error is caught and returned', async () => {
-    getQualityCheckedPaymentRequests.mockImplementation(() => {
+    getEnrichedPaymentRequests.mockImplementation(() => {
       throw new Error()
     })
 
-    await publishQualityCheckedPaymentRequests(qualityCheckSender)
+    await publishEnrichedPaymentRequests(debtResponseSender)
     expect(updatePaymentRequestReleased).not.toHaveBeenCalled()
   })
 
   test('completes valid message', async () => {
-    await publishPaymentRequest(paymentRequest, qualityCheckSender)
-    expect(qualityCheckSender.sendMessage).toHaveBeenCalled()
-    expect(qualityCheckSender.sendMessage).toHaveBeenCalledWith(message)
+    await publishPaymentRequest(paymentRequest, debtResponseSender)
+    expect(debtResponseSender.sendMessage).toHaveBeenCalled()
+    expect(debtResponseSender.sendMessage).toHaveBeenCalledWith(message)
   })
 })

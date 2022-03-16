@@ -1,5 +1,6 @@
+jest.mock('ffc-messaging')
 const db = require('../../../../app/data')
-const { getQualityCheckedPaymentRequests } = require('../../../../app/payment-request')
+const { getEnrichedPaymentRequests } = require('../../../../app/payment-request')
 
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
 const { SCHEME_NAME_SFI_PILOT } = require('../../../data/scheme')
@@ -41,47 +42,47 @@ describe('Get released payment request test', () => {
   })
 
   test('should return 1 payment request record when released is null and debt data record with matching id', async () => {
-    const paymentRequests = await getQualityCheckedPaymentRequests()
+    const paymentRequests = await getEnrichedPaymentRequests()
     expect(paymentRequests).toHaveLength(1)
   })
 
   test('should return 0 payment request records when no payment requests', async () => {
     await db.paymentRequest.truncate({ cascade: true })
-    const paymentRequests = await getQualityCheckedPaymentRequests()
+    const paymentRequests = await getEnrichedPaymentRequests()
     expect(paymentRequests).toHaveLength(0)
   })
 
   test('should return 0 payment request records when released is null and no debt data records', async () => {
     await db.debtData.truncate({ cascade: true })
-    const paymentRequests = await getQualityCheckedPaymentRequests()
+    const paymentRequests = await getEnrichedPaymentRequests()
     expect(paymentRequests).toHaveLength(0)
   })
 
   test('should return 0 payment request records when released is not null and debt data records', async () => {
     await db.paymentRequest.truncate({ cascade: true })
     await db.paymentRequest.create({ ...paymentRequest, released: new Date() })
-    const paymentRequests = await getQualityCheckedPaymentRequests()
+    const paymentRequests = await getEnrichedPaymentRequests()
     expect(paymentRequests).toHaveLength(0)
   })
 
   test('should return 0 payment request record when released is null and debt data record with matching id and null debtType', async () => {
     await db.debtData.truncate({ cascade: true })
     await db.debtData.create({ ...debtData, debtType: undefined })
-    const paymentRequests = await getQualityCheckedPaymentRequests()
+    const paymentRequests = await getEnrichedPaymentRequests()
     expect(paymentRequests).toHaveLength(0)
   })
 
   test('should return 0 payment request record when released is null and debt data record with matching id and null recoveryDate', async () => {
     await db.debtData.truncate({ cascade: true })
     await db.debtData.create({ ...debtData, recoveryDate: undefined })
-    const paymentRequests = await getQualityCheckedPaymentRequests()
+    const paymentRequests = await getEnrichedPaymentRequests()
     expect(paymentRequests).toHaveLength(0)
   })
 
   test('should return 0 payment request record when released is null and debt data record with matching id and null debtType and recoveryDate', async () => {
     await db.debtData.truncate({ cascade: true })
     await db.debtData.create({ ...debtData, debtType: undefined, recoveryDate: undefined })
-    const paymentRequests = await getQualityCheckedPaymentRequests()
+    const paymentRequests = await getEnrichedPaymentRequests()
     expect(paymentRequests).toHaveLength(0)
   })
 })

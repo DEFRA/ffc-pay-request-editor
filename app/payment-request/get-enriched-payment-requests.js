@@ -1,6 +1,6 @@
 const db = require('../data')
 
-const getQualityCheckedPaymentRequests = async () => {
+const getEnrichedPaymentRequests = async () => {
   const debtDatas = await db.debtData.findAll({
     where: {
       [db.Sequelize.Op.and]: [{
@@ -35,4 +35,4 @@ const getQualityCheckedPaymentRequests = async () => {
   })
 }
 
-module.exports = getQualityCheckedPaymentRequests
+module.exports = getEnrichedPaymentRequests

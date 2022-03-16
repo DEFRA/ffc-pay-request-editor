@@ -7,6 +7,7 @@ data:
   MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
   DEBT_TOPIC_ADDRESS: {{ quote .Values.container.debtTopicAddress }}
   DEBT_SUBSCRIPTION_ADDRESS: {{ quote .Values.container.debtSubscriptionAddress }}
+  DEBTRESPONSE_TOPIC_ADDRESS: {{ quote .Values.container.debtResponseTopicAddress }}
   QC_TOPIC_ADDRESS: {{ quote .Values.container.qcTopicAddress }}
   EDIT_TOPIC_ADDRESS: {{ quote .Values.container.editTopicAddress }}
   POSTGRES_DB: {{ quote .Values.postgresService.postgresDb }}

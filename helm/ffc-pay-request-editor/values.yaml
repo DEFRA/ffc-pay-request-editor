@@ -32,6 +32,7 @@ container:
   messageQueueHost: namespace.servicebus.windows.net
   debtTopicAddress: ffc-pay-debt-data
   debtSubscriptionAddress: ffc-pay-request-editor
+  debtResponseTopicAddress: ffc-pay-debt-data-response
   qcTopicAddress: ffc-pay-quality-check
   editTopicAddress: ffc-pay-request-edit
 
