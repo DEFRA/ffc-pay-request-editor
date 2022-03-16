@@ -1,9 +1,10 @@
 const Joi = require('joi')
-const { getManualLedger } = require('../manual-ledger')
-const ViewModel = require('./models/manual-ledger')
-const splitToLedger = require('../processing/ledger/split-to-ledger')
+const { getManualLedger, calculateManualLedger, saveCalculatedManualLedger } = require('../manual-ledger')
+const ViewModel = require('./models/manual-ledger-check')
 const { updateQualityChecksStatus } = require('../quality-check')
-const { convertToPence, convertToPounds } = require('../currency-convert')
+const { convertToPence } = require('../currency-convert')
+const sessionHandler = require('../session-handler')
+const sessionKey = 'provisionalLedgerData'
 
 module.exports = [{
   method: 'GET',
@@ -30,25 +31,12 @@ module.exports = [{
   path: '/manual-ledger-check/calculate',
   options: {
     handler: async (request, h) => {
+      sessionHandler.clear(request, sessionKey)
       const paymentRequestId = request.query.paymentRequestId
       const arValue = convertToPence(request.query['ar-value'])
-      const manualLedgerData = await getManualLedger(paymentRequestId)
-      const copyManualLedgerData = JSON.parse(JSON.stringify(manualLedgerData))
-      const ledger = manualLedgerData.ledger === 'AP' ? 'AR' : 'AP'
-      const splitLedger = await splitToLedger(copyManualLedgerData, arValue, ledger)
-      manualLedgerData.manualLedgerChecks = []
-      manualLedgerData.manualLedgerChecks = splitLedger.map(ledger => {
-        ledger.valueDecimal = convertToPounds(ledger.value)
-        ledger.invoiceLines.map(x => {
-          x.valueDecimal = convertToPounds(x.value)
-          return x
-        })
-        return {
-          ledgerPaymentRequest: ledger
-        }
-      })
-
-      return h.view('manual-ledger-check', new ViewModel(manualLedgerData))
+      const manualLedgerData = await calculateManualLedger(paymentRequestId, arValue)
+      sessionHandler.set(request, sessionKey, { paymentRequestId, provisionalLedgerData: manualLedgerData.manualLedgerChecks })
+      return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData), provisionalValue: arValue })
     }
   }
 },
@@ -60,7 +48,7 @@ module.exports = [{
       payload: Joi.object({
         paymentRequestId: Joi.string().required(),
         agree: Joi.boolean().required()
-      }),
+      }).options({ allowUnknown: true }),
       failAction: async (request, h, error) => {
         const { paymentRequestId } = request.payload
         const manualLedgerData = await getManualLedger(paymentRequestId)
@@ -72,7 +60,13 @@ module.exports = [{
 
       if (!agree) {
         const manualLedgerData = await getManualLedger(paymentRequestId)
-        return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData), showLedgerSplit: true }).code(400).takeover()
+        return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData), showLedgerSplit: true, provisionalValue: 0 }).code(400).takeover()
+      }
+
+      const provisionalLedgerData = sessionHandler.get(request, sessionKey)
+
+      if (provisionalLedgerData?.provisionalLedgerData) {
+        await saveCalculatedManualLedger(provisionalLedgerData)
       }
 
       await updateQualityChecksStatus(paymentRequestId, 'Pending')

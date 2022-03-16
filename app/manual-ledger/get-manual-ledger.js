@@ -7,7 +7,7 @@ const getManualLedger = async (paymentRequestId) => {
         {
           model: db.manualLedgerPaymentRequest,
           as: 'manualLedgerChecks',
-          where: { status: 'Active' },
+          where: { active: true },
           include: [{
             model: db.paymentRequest,
             as: 'ledgerPaymentRequest',
@@ -21,11 +21,6 @@ const getManualLedger = async (paymentRequestId) => {
           model: db.scheme,
           as: 'schemes',
           attributes: ['name']
-        },
-        {
-          model: db.schedule,
-          as: 'schedules',
-          attributes: ['scheduleId']
         },
         {
           model: db.invoiceLine,

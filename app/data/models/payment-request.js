@@ -77,12 +77,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       onDelete: 'CASCADE'
     })
-    paymentRequest.hasOne(models.schedule, {
-      foreignKey: 'paymentRequestId',
-      as: 'schedules',
-      allowNull: true,
-      onDelete: 'CASCADE'
-    })
   }
   return paymentRequest
 }

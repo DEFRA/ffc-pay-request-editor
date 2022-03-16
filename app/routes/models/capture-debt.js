@@ -56,7 +56,7 @@ function ViewModel (schemes, payload, error) {
 
   const applicationIdentifier = {
     label: {
-      text: 'Application identifier',
+      text: 'Agreement Number',
       classes: 'govuk-label--s'
     },
     hint: {

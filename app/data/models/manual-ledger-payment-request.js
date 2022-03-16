@@ -5,7 +5,14 @@ module.exports = (sequelize, DataTypes) => {
     ledgerPaymentRequestId: DataTypes.INTEGER,
     createdDate: DataTypes.DATE,
     createdBy: DataTypes.STRING,
-    status: DataTypes.STRING
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
+    original: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    }
   },
   {
     tableName: 'manualLedgerPaymentRequest',

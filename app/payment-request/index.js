@@ -3,6 +3,7 @@ const getPaymentRequestCount = require('./get-payment-request-count')
 const { getPaymentRequest, getPaymentRequestByInvoiceNumber } = require('./get-payment-request')
 const savePaymentRequest = require('./save-payment-request')
 const processPaymentRequest = require('./process-payment-request')
+const savePaymentAndInvoiceLines = require('./save-payment-and-invoice-lines')
 
 module.exports = {
   getExistingPaymentRequest,
@@ -10,5 +11,6 @@ module.exports = {
   getPaymentRequest,
   getPaymentRequestByInvoiceNumber,
   savePaymentRequest,
-  processPaymentRequest
+  processPaymentRequest,
+  savePaymentAndInvoiceLines
 }

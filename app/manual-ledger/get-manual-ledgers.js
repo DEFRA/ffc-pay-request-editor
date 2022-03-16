@@ -1,6 +1,6 @@
 const db = require('../data')
 
-const getManualLedgers = async (paymentRequestId) => {
+const getManualLedgers = async (statuses) => {
   return db.paymentRequest.findAll(
     {
       include: [
@@ -12,7 +12,7 @@ const getManualLedgers = async (paymentRequestId) => {
         {
           model: db.qualityCheck,
           as: 'qualityChecks',
-          where: { status: ['Not ready', 'Failed'] }
+          where: { status: statuses }
         }
       ],
       where: { categoryId: 2 }

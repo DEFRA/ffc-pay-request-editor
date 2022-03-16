@@ -1,11 +1,12 @@
 const db = require('../data')
 
-const saveManualLedger = async (paymentRequestId, ledgerPaymentRequestId, transaction) => {
+const saveManualLedger = async (paymentRequestId, ledgerPaymentRequestId, original, transaction) => {
   return db.manualLedgerPaymentRequest.create(
     {
       paymentRequestId,
       ledgerPaymentRequestId,
-      status: 'Active',
+      active: true,
+      original,
       createdDate: new Date(),
       createdBy: undefined
     },
