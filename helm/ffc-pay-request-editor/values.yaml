@@ -70,3 +70,7 @@ ingress:
   class: nginx
   endpoint: ffc-pay-request-editor
   server: example.com
+
+service:
+  port: 80
+  type: ClusterIP
