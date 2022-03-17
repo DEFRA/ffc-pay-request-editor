@@ -1,8 +1,7 @@
 const ViewModel = require('./models/search')
-const { getDebts } = require('../debt')
+const { getDebts, deleteDebt } = require('../debt')
 const schema = require('./schemas/capture')
 const Joi = require('joi')
-const deleteDebt = require('../debt/delete-debt')
 const searchLabelText = 'Search for data by FRN number'
 
 module.exports = [{
