@@ -12,12 +12,12 @@ describe('Debt type convertor', () => {
     expect(result).toEqual(ADMINISTRATIVE_TEXT)
   })
 
-  test('converts "irr" to "Irregular', () => {
+  test('converts "irr" to "Irregular"', () => {
     const result = convertDebtIdToText(IRREGULAR)
     expect(result).toEqual(IRREGULAR_TEXT)
   })
 
-  test('converts "notRealDebtType" to nothing', () => {
+  test('converts "notRealDebtType" to ""', () => {
     const result = convertDebtIdToText('notRealDebtType')
     expect(result).toEqual('')
   })
