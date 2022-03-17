@@ -29,15 +29,31 @@ const getPaymentRequest = async () => {
 
 const getPaymentRequestByInvoiceNumber = async (invoiceNumber) => {
   return db.paymentRequest.findOne({
-    lock: true,
-    skipLocked: true,
     where: {
       invoiceNumber
     }
   })
 }
 
+const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, agreementNumber, value) => {
+  return db.paymentRequest.findOne({
+    include: [{
+      model: db.debtData,
+      as: 'debtData'
+    }],
+    where: {
+      $debtData$: null,
+      released: null,
+      schemeId,
+      frn,
+      agreementNumber,
+      value
+    }
+  })
+}
+
 module.exports = {
   getPaymentRequest,
-  getPaymentRequestByInvoiceNumber
+  getPaymentRequestByInvoiceNumber,
+  getPaymentRequestAwaitingEnrichment
 }

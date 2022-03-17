@@ -13,7 +13,8 @@ const checkDebts = async (frn, reference, netValue, transaction) => {
       where: {
         frn: parsedFrn,
         reference,
-        netValue: convertNetValue
+        netValue: convertNetValue,
+        paymentRequestId: null
       }
     })
   }
