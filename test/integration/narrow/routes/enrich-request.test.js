@@ -3,6 +3,7 @@ const db = require('../../../../app/data')
 const { ADMINISTRATIVE } = require('../../../../app/debt-types')
 
 describe('Enrich request test', () => {
+  jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
   const createServer = require('../../../../app/server')
   let server
