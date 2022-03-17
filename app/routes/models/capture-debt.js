@@ -3,6 +3,11 @@ const {
   getObjectKeyEquals
 } = require('../../processing/object-check')
 
+const {
+  ADMINISTRATIVE,
+  IRREGULAR
+} = require('../debt-types')
+
 function ViewModel (schemes, payload, error) {
   const errorMessages = {}
 
@@ -98,13 +103,13 @@ function ViewModel (schemes, payload, error) {
     items: [
       {
         text: 'Irregular',
-        value: 'irr',
-        checked: getObjectKeyEquals(payload, 'debtType', 'irr')
+        value: IRREGULAR,
+        checked: getObjectKeyEquals(payload, 'debtType', IRREGULAR)
       },
       {
         text: 'Administrative',
-        value: 'admin',
-        checked: getObjectKeyEquals(payload, 'debtType', 'admin')
+        value: ADMINISTRATIVE,
+        checked: getObjectKeyEquals(payload, 'debtType', ADMINISTRATIVE)
       }
     ]
   }

@@ -15,6 +15,24 @@ const schema = Joi.object({
   cookiePassword: Joi.string().required(),
   sessionTimeoutMinutes: Joi.number().default(30),
   staticCacheTimeoutMillis: Joi.number().default(7 * 24 * 60 * 60 * 1000), // 1 day
+  publishPollingInterval: Joi.number().default(60000), // 1 minute
+  message: Joi.object({
+    connection: Joi.object({
+      host: Joi.string(),
+      useCredentialChain: Joi.bool().default(false),
+      appInsights: Joi.object(),
+      username: Joi.string(),
+      password: Joi.string()
+    }),
+    debtSubscription: Joi.object({
+      topic: Joi.string(),
+      address: Joi.string(),
+      type: Joi.string().default('subscription')
+    }),
+    qcTopic: Joi.object({
+      address: Joi.string()
+    })
+  }),
   database: Joi.object({
     database: Joi.string(),
     dialect: Joi.string().default('postgres'),
@@ -51,6 +69,24 @@ const config = {
   cookiePassword: process.env.COOKIE_PASSWORD,
   sessionTimeoutMinutes: process.env.SESSION_TIMEOUT_IN_MINUTES,
   staticCacheTimeoutMillis: process.env.STATIC_CACHE_TIMEOUT_IN_MILLIS,
+  publishPollingInterval: process.env.PUBLISH_POLLING_INTERVAL,
+  message: {
+    connection: {
+      host: process.env.MESSAGE_QUEUE_HOST,
+      useCredentialChain: process.env.NODE_ENV === 'production',
+      appInsights: process.env.NODE_ENV === 'production' ? require('applicationinsights') : undefined,
+      username: process.env.MESSAGE_QUEUE_USER,
+      password: process.env.MESSAGE_QUEUE_PASSWORD
+    },
+    debtSubscription: {
+      topic: process.env.DEBT_TOPIC_ADDRESS,
+      address: process.env.DEBT_SUBSCRIPTION_ADDRESS,
+      type: 'subscription'
+    },
+    qcTopic: {
+      address: process.env.QC_TOPIC_ADDRESS
+    }
+  },
   database: {
     database: process.env.POSTGRES_DB,
     dialect: 'postgres',

@@ -3,6 +3,7 @@ const getExistingPaymentRequest = require('./get-existing-payment-request')
 const savePaymentRequest = require('./save-payment-request')
 const saveInvoiceLines = require('../inbound/invoice-lines')
 const updateQualityCheck = require('../inbound/quality-checks')
+const { attachDebtInformation } = require('../debt')
 
 const processPaymentRequest = async (paymentRequest) => {
   const transaction = await db.sequelize.transaction()
@@ -16,9 +17,9 @@ const processPaymentRequest = async (paymentRequest) => {
       paymentRequest.categoryId = 1
       const savedPaymentRequest = await savePaymentRequest(paymentRequest)
       const paymentRequestId = savedPaymentRequest.paymentRequestId
-
       await saveInvoiceLines(paymentRequest.invoiceLines, paymentRequestId)
       await updateQualityCheck(paymentRequestId)
+      await attachDebtInformation(paymentRequestId, paymentRequest, transaction)
       await transaction.commit()
     }
   } catch (error) {

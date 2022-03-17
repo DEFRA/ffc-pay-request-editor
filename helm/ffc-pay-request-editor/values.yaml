@@ -67,3 +67,12 @@ aadPodIdentity: true
 azureIdentity:
   clientID: not-a-real-clientID
   resourceID: not-a-real-resourceID
+
+ingress:
+  class: nginx
+  endpoint: ffc-pay-request-editor
+  server: example.com
+
+service:
+  port: 80
+  type: ClusterIP

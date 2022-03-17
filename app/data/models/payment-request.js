@@ -1,4 +1,4 @@
-const { convertToPounds } = require('../../currency-convert')
+const { convertToPounds } = require('../../processing/conversion')
 
 module.exports = (sequelize, DataTypes) => {
   const paymentRequest = sequelize.define('paymentRequest', {
@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     currency: DataTypes.STRING,
     schedule: DataTypes.STRING,
     dueDate: DataTypes.STRING,
-    originalSettlementDate: DataTypes.DATE,
+    originalSettlementDate: DataTypes.STRING,
     originalInvoiceNumber: DataTypes.STRING,
     invoiceCorrectionReference: DataTypes.STRING,
     value: DataTypes.DECIMAL,
