@@ -6,7 +6,7 @@ const {
 const {
   ADMINISTRATIVE,
   IRREGULAR
-} = require('../debt-types')
+} = require('../../debt-types')
 
 function ViewModel (schemes, payload, error) {
   const errorMessages = {}

@@ -1,4 +1,4 @@
-const { convertToPounds } = require('../../currency-convert')
+const { convertToPounds } = require('../../processing/conversion')
 const errorMessage = 'Please select Yes or No to agree if the provisional values are correct.'
 
 function ViewModel (manualLedgerData, error) {

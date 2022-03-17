@@ -38,7 +38,6 @@
               <th scope="col" class="govuk-table__header govuk-body-s">Invoice<th>
               <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Request<th>
               <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount<th>
-              <th scope="col" class="govuk-table__header govuk-body-s">Checked by<th>
               <th scope="col" class="govuk-table__header govuk-body-s">Date<th>
               <th scope="col" class="govuk-table__header"><th>
             </tr>
@@ -51,9 +50,8 @@
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.agreementNumber }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.invoiceNumber }}<th>
                 <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequestNumber }}<th>
-                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.value }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.manualLedgerCheckedBy }}<th>
-                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.manualLedgerCheckedDate }}<th>
+                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.valueDecimal }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.receivedFormatted }}<th>
                 <th scope="col" class="govuk-table__cell govuk-body-s">
                   {% if not data.manualLedgerChecked %}
                     <a href="/manual-ledger-check?paymentrequestid={{data.paymentRequestId}}">Check</a>

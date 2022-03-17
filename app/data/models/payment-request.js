@@ -25,7 +25,11 @@ module.exports = (sequelize, DataTypes) => {
     valueDecimal: {
       type: DataTypes.VIRTUAL,
       get () {
-        return convertToPounds(this.value)
+        const value = convertToPounds(this.value)
+        if (Math.sign(value) === -1) {
+          return `-£${value.toString().replace("-", "")}`
+        }
+        return value
       }
     },
     received: DataTypes.DATE,
