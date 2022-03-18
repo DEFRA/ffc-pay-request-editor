@@ -1,4 +1,5 @@
 const db = require('../data')
+const getManualLedgerRequests = require('./get-manual-ledger-requests')
 
 const getManualLedger = async (paymentRequestId) => {
   const paymentRequest = await db.paymentRequest.findOne(
@@ -28,27 +29,6 @@ const getManualLedger = async (paymentRequestId) => {
   paymentRequest.manualLedgerChecks = await getManualLedgerRequests(paymentRequestId)
 
   return paymentRequest
-}
-
-const getManualLedgerRequests = async (paymentRequestId) => {
-  return db.manualLedgerPaymentRequest.findAll({
-    include: [{
-      model: db.paymentRequest,
-      as: 'ledgerPaymentRequest',
-      include: [{
-        model: db.invoiceLine,
-        as: 'invoiceLines'
-      },
-      {
-        model: db.scheme,
-        as: 'schemes'
-      }]
-    }],
-    where: {
-      paymentRequestId,
-      active: true
-    }
-  })
 }
 
 module.exports = getManualLedger

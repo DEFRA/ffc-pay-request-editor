@@ -1,10 +1,7 @@
 const util = require('util')
 const createMessage = require('./create-message')
-const { updateQualityChecksStatus } = require('../quality-check')
-const {
-  getQualityCheckedPaymentRequests,
-  updatePaymentRequestReleased
-} = require('../payment-request')
+const { updateQualityChecksStatus, getQualityCheckedPaymentRequests } = require('../quality-check')
+const { updatePaymentRequestReleased } = require('../payment-request')
 
 const publishQualityCheckedPaymentRequests = async (qualityCheckSender) => {
   try {

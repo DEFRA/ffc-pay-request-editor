@@ -4,7 +4,6 @@ const { getPaymentRequest, getPaymentRequestByInvoiceNumber } = require('./get-p
 const savePaymentRequest = require('./save-payment-request')
 const processPaymentRequest = require('./process-payment-request')
 const savePaymentAndInvoiceLines = require('./save-payment-and-invoice-lines')
-const getQualityCheckedPaymentRequests = require('./get-quality-checked-payment-requests')
 const updatePaymentRequestReleased = require('./update-payment-request-released')
 const getDebtPaymentRequests = require('./get-debt-payment-requests')
 
@@ -16,7 +15,6 @@ module.exports = {
   savePaymentRequest,
   processPaymentRequest,
   savePaymentAndInvoiceLines,
-  getQualityCheckedPaymentRequests,
   updatePaymentRequestReleased,
   getDebtPaymentRequests
 }

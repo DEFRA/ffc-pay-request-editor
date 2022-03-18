@@ -1,4 +1,5 @@
 const db = require('../data')
+const { getManualLedgerRequests } = require('../manual-ledger')
 
 const getQualityCheckedPaymentRequests = async () => {
   const qualityCheckedPaymentRequests = []
@@ -23,25 +24,6 @@ const getQualityCheckedPaymentRequests = async () => {
   }
 
   return qualityCheckedPaymentRequests
-}
-
-const getManualLedgerRequests = async (paymentRequestId) => {
-  const manualLedgerPaymentRequests = await db.manualLedgerPaymentRequest.findAll({
-    include: [{
-      model: db.paymentRequest,
-      as: 'ledgerPaymentRequest',
-      include: [{
-        model: db.invoiceLine,
-        as: 'invoiceLines'
-      }]
-    }],
-    where: {
-      paymentRequestId,
-      active: true
-    }
-  })
-
-  return manualLedgerPaymentRequests.map(x => x.ledgerPaymentRequest)
 }
 
 module.exports = getQualityCheckedPaymentRequests
