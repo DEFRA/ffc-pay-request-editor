@@ -8,7 +8,7 @@ const {
   ADMINISTRATIVE_TEXT,
   IRREGULAR,
   IRREGULAR_TEXT
-} = require('../debt-types')
+} = require('../../debt-types')
 
 function ViewModel (schemes, payload, error) {
   const errorMessages = {}
