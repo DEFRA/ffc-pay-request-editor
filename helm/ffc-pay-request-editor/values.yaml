@@ -24,10 +24,10 @@ deployment:
 
 container:
   imagePullPolicy: IfNotPresent
-  requestMemory: 10Mi
-  requestCpu: 10m
-  limitMemory: 120Mi
-  limitCpu: 120m
+  requestMemory: 120Mi
+  requestCpu: 40m
+  limitMemory: 200Mi
+  limitCpu: 400m
   port: 3001
   messageQueueHost: namespace.servicebus.windows.net
   debtTopicAddress: ffc-pay-debt-data

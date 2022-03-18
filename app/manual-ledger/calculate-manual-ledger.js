@@ -18,7 +18,7 @@ const calculateManualLedger = async (paymentRequestId, arValue, apValue) => {
 
 const updateManualLegerChecks = (manualLedgerData, splitLedger) => {
   manualLedgerData.manualLedgerChecks = []
-  manualLedgerData.manualLedgerChecks = splitLedger.map(ledger => {
+  manualLedgerData.manualLedgerChecks = splitLedger.filter(x => x.value !== 0).map(ledger => {
     ledger.valueDecimal = convertToPounds(ledger.value)
     ledger.invoiceLines.map(x => {
       x.valueDecimal = convertToPounds(x.value)

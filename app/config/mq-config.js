@@ -16,6 +16,9 @@ const mqSchema = Joi.object({
   qcTopic: Joi.object({
     address: Joi.string()
   }),
+  debtResponseTopic: Joi.object({
+    address: Joi.string()
+  }),
   manualLedgerSubscription: Joi.object({
     topic: Joi.string(),
     address: Joi.string(),
@@ -39,6 +42,9 @@ const mqConfig = {
   qcTopic: {
     address: process.env.QC_TOPIC_ADDRESS
   },
+  debtResponseTopic: {
+    address: process.env.DEBTRESPONSE_TOPIC_ADDRESS
+  },
   manualLedgerSubscription: {
     topic: process.env.MANUALLEDGER_TOPIC_ADDRESS,
     address: process.env.MANUALLEDGER_SUBSCRIPTION_ADDRESS,
@@ -57,9 +63,11 @@ if (mqResult.error) {
 const debtSubscription = { ...mqResult.value.messageQueue, ...mqResult.value.debtSubscription }
 const manualLedgerSubscription = { ...mqResult.value.messageQueue, ...mqResult.value.manualLedgerSubscription }
 const qcTopic = { ...mqResult.value.messageQueue, ...mqResult.value.qcTopic }
+const debtResponseTopic = { ...mqResult.value.messageQueue, ...mqResult.value.debtResponseTopic }
 
 module.exports = {
   debtSubscription,
   manualLedgerSubscription,
-  qcTopic
+  qcTopic,
+  debtResponseTopic
 }

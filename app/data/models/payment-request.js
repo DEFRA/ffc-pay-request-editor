@@ -21,13 +21,13 @@ module.exports = (sequelize, DataTypes) => {
     originalSettlementDate: DataTypes.STRING,
     originalInvoiceNumber: DataTypes.STRING,
     invoiceCorrectionReference: DataTypes.STRING,
-    value: DataTypes.DECIMAL,
+    value: DataTypes.INTEGER,
     valueDecimal: {
       type: DataTypes.VIRTUAL,
       get () {
         const value = convertToPounds(this.value)
         if (Math.sign(value) === -1) {
-          return `-£${value.toString().replace("-", "")}`
+          return `-£${value.toString().replace('-', '')}`
         }
         return value
       }

@@ -1,5 +1,6 @@
 const util = require('util')
 const createMessage = require('./create-message')
+const { updateQualityChecksStatus } = require('../quality-check')
 const {
   getQualityCheckedPaymentRequests,
   updatePaymentRequestReleased
@@ -8,11 +9,11 @@ const {
 const publishQualityCheckedPaymentRequests = async (qualityCheckSender) => {
   try {
     const qualityCheckedPaymentRequests = await getQualityCheckedPaymentRequests()
-    for (const paymentRequest of qualityCheckedPaymentRequests) {
-      const { paymentRequestId } = paymentRequest
-      delete paymentRequest.paymentRequestId
-      await publishPaymentRequest(paymentRequest, qualityCheckSender)
+    for (const qualityCheckedPaymentRequest of qualityCheckedPaymentRequests) {
+      const paymentRequestId = qualityCheckedPaymentRequest.paymentRequest.paymentRequestId
+      await publishPaymentRequest(qualityCheckedPaymentRequest, qualityCheckSender)
       await updatePaymentRequestReleased(paymentRequestId)
+      await updateQualityChecksStatus(paymentRequestId, 'Processed')
     }
   } catch (err) {
     console.error('Unable to process payment request message:', err)
