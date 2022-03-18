@@ -1,7 +1,6 @@
 const db = require('../data')
 
 const getDebts = async () => {
-
   return db.debtData.findAll({
     where: { paymentRequestId: null },
     include: [
