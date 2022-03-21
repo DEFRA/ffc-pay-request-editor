@@ -3,7 +3,6 @@ describe('Manual ledger test', () => {
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/manual-ledger')
   const { getManualLedgers } = require('../../../../app/manual-ledger')
-
   const createServer = require('../../../../app/server')
 
   let server
@@ -26,7 +25,6 @@ describe('Manual ledger test', () => {
 
   describe('GET requests', () => {
     const method = 'GET'
-
     test('GET /manual-ledger route returns 200', async () => {
       const options = {
         method,
@@ -36,6 +34,16 @@ describe('Manual ledger test', () => {
 
       const response = await server.inject(options)
       expect(response.statusCode).toBe(200)
+    })
+
+    test('GET /manual-ledger route returns manual-ledger view', async () => {
+      const options = {
+        method,
+        url,
+        payload: { frn: '1234567890' }
+
+      }
+      const response = await server.inject(options)
       expect(response.request.response.variety).toBe('view')
       expect(response.request.response.source.template).toBe('manual-ledger')
     })
@@ -57,6 +65,38 @@ describe('Manual ledger test', () => {
       expect(response.request.response.source.context.model.errorMessage.text).toEqual('No payments match the FRN provided.')
     })
 
+    test('POST /manual-ledger with no records returns error message ', async () => {
+      const options = {
+        method,
+        url,
+        payload: { frn: 1111111111 }
+
+      }
+      const response = await server.inject(options)
+      expect(response.request.response.source.context.model.errorMessage.text).toEqual('No payments match the FRN provided.')
+    })
+
+    test('POST /manual-ledger with empty frn returns error message ', async () => {
+      const options = {
+        method,
+        url,
+        payload: { frn: '' }
+      }
+
+      const response = await server.inject(options)
+      expect(response.request.response.source.context.model.errorMessage.text).toEqual('The FRN cannot be empty.')
+    })
+
+    test('POST /manual-ledger with invalid frn returns error message ', async () => {
+      const options = {
+        method,
+        url,
+        payload: { frn: 'abc123' }
+      }
+      const response = await server.inject(options)
+      expect(response.request.response.source.context.model.errorMessage.text).toEqual('The FRN must be a 10 digit number.')
+    })
+
     test('POST /manual-ledger route returns 200 code with valid frn', async () => {
       const options = {
         method,
@@ -65,6 +105,44 @@ describe('Manual ledger test', () => {
       }
       const response = await server.inject(options)
       expect(response.statusCode).toBe(200)
+    })
+
+    test('POST /manual-ledger route returns manual-ledger view', async () => {
+      const options = {
+        method,
+        url,
+        payload: { frn: '1234567890' }
+      }
+
+      const response = await server.inject(options)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('manual-ledger')
+    })
+
+    test('POST /manual-ledger route returns 400 code with a nine digit frn', async () => {
+      const options = {
+        method,
+        url,
+        payload: { frn: '123456789' }
+      }
+
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(400)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('manual-ledger')
+    })
+
+    test('POST /manual-ledger route returns 400 code with an eleven digit frn', async () => {
+      const options = {
+        method,
+        url,
+        payload: { frn: '12345678901' }
+      }
+
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(400)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('manual-ledger')
     })
   })
 })
