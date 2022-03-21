@@ -1,5 +1,6 @@
 const util = require('util')
 const createMessage = require('./create-message')
+const { updateQualityChecksStatus } = require('../quality-check')
 const {
   getDebtPaymentRequests,
   updatePaymentRequestReleased
@@ -13,6 +14,7 @@ const publishDebtPaymentRequests = async (debtSender) => {
       delete paymentRequest.paymentRequestId
       await publishPaymentRequest(paymentRequest, debtSender)
       await updatePaymentRequestReleased(paymentRequestId)
+      await updateQualityChecksStatus(paymentRequestId, 'Processed')
     }
   } catch (err) {
     console.error('Unable to process payment request message:', err)

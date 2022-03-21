@@ -1,4 +1,4 @@
-const { convertToPounds } = require('../../processing/conversion')
+const { convertValueToStringFormat } = require('../../processing/conversion')
 
 module.exports = (sequelize, DataTypes) => {
   const paymentRequest = sequelize.define('paymentRequest', {
@@ -25,11 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     valueDecimal: {
       type: DataTypes.VIRTUAL,
       get () {
-        const value = convertToPounds(this.value)
-        if (Math.sign(value) === -1) {
-          return `-£${value.toString().replace('-', '')}`
-        }
-        return value
+        return convertValueToStringFormat(this.value)
       }
     },
     received: DataTypes.DATE,

@@ -1,4 +1,4 @@
-const { convertToPounds } = require('../../processing/conversion')
+const { convertValueToStringFormat } = require('../../processing/conversion')
 
 module.exports = (sequelize, DataTypes) => {
   const invoiceLine = sequelize.define('invoiceLine', {
@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     valueDecimal: {
       type: DataTypes.VIRTUAL,
       get () {
-        return convertToPounds(this.value)
+        return convertValueToStringFormat(this.value)
       }
     }
   },

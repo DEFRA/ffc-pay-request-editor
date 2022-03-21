@@ -45,8 +45,9 @@ module.exports = [{
       const paymentRequestId = request.payload.paymentRequestId
       if (paymentRequestId) {
         await updateQualityChecksStatus(paymentRequestId, status)
-        await resetManualLedger(paymentRequestId)
-        return h.redirect('/quality-check')
+        if (status === 'Failed') {
+          await resetManualLedger(paymentRequestId)
+        }
       }
       return h.redirect('/quality-check').code(301)
     }

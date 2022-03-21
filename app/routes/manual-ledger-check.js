@@ -58,7 +58,7 @@ module.exports = [{
 
       if (Object.keys(manualLedgerData).length) {
         sessionHandler.set(request, sessionKey, { paymentRequestId, provisionalLedgerData: manualLedgerData.manualLedgerChecks })
-        return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData), provisionalValue: arValue })
+        return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData) })
       }
 
       return h.view('500').code(500).takeover()
