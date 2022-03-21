@@ -12,9 +12,9 @@ const processManualLedgerRequest = async (manualLedgerRequest) => {
       console.info(`Duplicate payment request received, skipping ${existingPaymentRequest.invoiceNumber}`)
       await transaction.rollback()
     } else {
-      const paymentRequestId = await savePaymentAndInvoiceLines(paymentRequest, 2)
+      const paymentRequestId = await savePaymentAndInvoiceLines(paymentRequest, 2, transaction)
       for (const paymentRequestProvisional of manualLedgerRequest.paymentRequests) {
-        const paymentRequestLedgerId = await savePaymentAndInvoiceLines(paymentRequestProvisional, 3)
+        const paymentRequestLedgerId = await savePaymentAndInvoiceLines(paymentRequestProvisional, 3, transaction)
         await saveManualLedger(paymentRequestId, paymentRequestLedgerId, true, transaction)
       }
       await updateQualityCheck(paymentRequestId, transaction)

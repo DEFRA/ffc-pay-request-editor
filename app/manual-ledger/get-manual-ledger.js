@@ -19,11 +19,10 @@ const getManualLedger = async (paymentRequestId) => {
           model: db.invoiceLine,
           as: 'invoiceLines'
         }
-      ]
-    },
-    {
+      ],
       where: { paymentRequestId }
-    })
+    }
+  )
 
   paymentRequest.manualLedgerChecks = []
   paymentRequest.manualLedgerChecks = await getManualLedgerRequests(paymentRequestId)

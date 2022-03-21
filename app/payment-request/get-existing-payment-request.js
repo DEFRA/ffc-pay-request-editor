@@ -4,7 +4,6 @@ const getExistingPaymentRequest = async (invoiceNumber, categoryId, transaction)
   return db.paymentRequest.findOne({
     transaction,
     lock: true,
-    skipLocked: true,
     where: {
       invoiceNumber,
       categoryId
