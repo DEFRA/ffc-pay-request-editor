@@ -1,6 +1,6 @@
 const db = require('../data')
 
-const getPaymentRequestCount = async () => {
+const getPaymentRequestCount = async (categoryId = 1) => {
   return db.paymentRequest.count({
     include: [{
       model: db.debtData,
@@ -8,7 +8,7 @@ const getPaymentRequestCount = async () => {
     }],
     where: {
       $debtData$: null,
-      categoryId: 1
+      categoryId
     }
   })
 }

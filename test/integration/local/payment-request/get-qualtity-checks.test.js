@@ -3,21 +3,41 @@ const db = require('../../../../app/data')
 
 describe('Get quality checks test', () => {
   let qualityCheck
+  let paymentRequest
+
+  const resetTables = async () => {
+    await db.qualityCheck.truncate({ cascade: true })
+    await db.paymentRequest.truncate({ cascade: true })
+    await db.scheme.truncate({ cascade: true })
+  }
 
   beforeEach(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await resetTables()
+
+    const scheme = { schemeId: 1, name: 'SFI' }
+
+    paymentRequest = {
+      paymentRequestId: 1,
+      schemeId: scheme.schemeId,
+      frn: 1234567890,
+      released: undefined,
+      categoryId: 2
+    }
 
     qualityCheck = {
+      paymentRequestId: 1,
       checkedDate: '2021-08-15',
       checkedBy: 'Mr T',
       status: 'Pending'
     }
 
+    await db.scheme.create(scheme)
+    await db.paymentRequest.create(paymentRequest)
     await db.qualityCheck.create(qualityCheck)
   })
 
   afterAll(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await resetTables()
     await db.sequelize.close()
   })
 
@@ -32,13 +52,13 @@ describe('Get quality checks test', () => {
   })
 
   test('should return zero quality check records', async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await resetTables()
     const qualityChecks = await getQualityChecks()
     expect(qualityChecks).toHaveLength(0)
   })
 
   test('should return count of 0 for quality check', async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await resetTables()
     const qualityCheckCount = await getQualityChecksCount()
     expect(qualityCheckCount).toEqual(0)
   })
