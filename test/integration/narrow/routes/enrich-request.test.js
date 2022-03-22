@@ -2,6 +2,13 @@ const db = require('../../../../app/data')
 
 const { ADMINISTRATIVE } = require('../../../../app/debt-types')
 
+const resetData = async () => {
+  await db.qualityCheck.truncate({ cascade: true })
+  await db.scheme.truncate({ cascade: true })
+  await db.debtData.truncate({ cascade: true })
+  await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
+}
+
 describe('Enrich request test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
@@ -49,13 +56,15 @@ describe('Enrich request test', () => {
   const qualityCheck = {
     qualityCheckId: 1,
     paymentRequestId: 1,
+    checkedDate: null,
+    checkedBy: null,
     status: 'Not ready'
   }
 
   beforeEach(async () => {
+    await resetData()
     server = await createServer()
     await server.initialize()
-    await db.sequelize.truncate({ cascade: true, restartIdentity: true })
   })
 
   afterEach(async () => {
@@ -63,7 +72,7 @@ describe('Enrich request test', () => {
   })
 
   afterAll(async () => {
-    await db.sequelize.truncate({ cascade: true, restartIdentity: true })
+    await resetData()
     await db.sequelize.close()
   })
 

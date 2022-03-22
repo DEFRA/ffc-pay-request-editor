@@ -2,9 +2,16 @@ const db = require('../../../../app/data')
 const { processPaymentRequest } = require('../../../../app/payment-request')
 let scheme
 let paymentRequest
+const resetData = async () => {
+  await db.qualityCheck.truncate({ cascade: true })
+  await db.scheme.truncate({ cascade: true })
+  await db.debtData.truncate({ cascade: true })
+  await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
+}
+
 describe('process payment requests', () => {
   beforeEach(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await resetData()
 
     scheme = {
       schemeId: 1,
@@ -47,7 +54,7 @@ describe('process payment requests', () => {
   })
 
   afterAll(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await resetData()
     await db.sequelize.close()
   })
 
