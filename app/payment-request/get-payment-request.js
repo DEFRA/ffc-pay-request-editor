@@ -1,6 +1,6 @@
 const db = require('../data')
 
-const getPaymentRequest = async () => {
+const getPaymentRequest = async (categoryId = 1) => {
   return db.paymentRequest.findAll({
     include: [{
       model: db.scheme,
@@ -11,7 +11,8 @@ const getPaymentRequest = async () => {
       as: 'debtData'
     }],
     where: {
-      $debtData$: null
+      $debtData$: null,
+      categoryId
     },
     attributes: [
       'paymentRequestId',
