@@ -2,8 +2,6 @@ const Joi = require('joi')
 const { getManualLedger, resetManualLedger } = require('../manual-ledger')
 const { updateQualityChecksStatus } = require('../quality-check')
 const ViewModel = require('./models/manual-ledger-review')
-const sessionHandler = require('../session-handler')
-const sessionKey = 'provisionalLedgerData'
 
 module.exports = [{
   method: 'GET',
@@ -43,7 +41,6 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      sessionHandler.clear(request, sessionKey)
       const status = request.payload.status ? request.payload.status : 'Pending'
       const paymentRequestId = request.payload.paymentRequestId
       if (paymentRequestId) {
