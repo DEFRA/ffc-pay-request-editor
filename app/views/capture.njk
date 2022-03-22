@@ -34,10 +34,6 @@
             </form>
           </div>
 
-          <p class="govuk-body">
-            <a href="/capture" class="govuk-link govuk-link--no-visited-state">View all existing reporting datasets</a>
-          </p>
-
           <div class="govuk-inset-text">
             It is not possible to delete a dataset that has already been attached to a request
           </div>
@@ -62,7 +58,7 @@
                   <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}<th>
                   <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.reference }}<th>
                   <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.netValue }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtType }}<th>
+                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}<th>
                   <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}<th>
                   <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}<th>
                   <th scope="col" class="govuk-table__cell govuk-body-s">

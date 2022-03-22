@@ -2,7 +2,9 @@ const { getObjectKeyEquals } = require('../../processing/object-check')
 
 const {
   ADMINISTRATIVE,
-  IRREGULAR
+  ADMINISTRATIVE_TEXT,
+  IRREGULAR,
+  IRREGULAR_TEXT
 } = require('../../debt-types')
 
 function ViewModel (payload, error) {
@@ -55,12 +57,12 @@ function ViewModel (payload, error) {
       },
       items: [
         {
-          text: 'Irregular',
+          text: IRREGULAR_TEXT,
           value: IRREGULAR,
           checked: getObjectKeyEquals(payload, 'debtType', IRREGULAR)
         },
         {
-          text: 'Administrative',
+          text: ADMINISTRATIVE_TEXT,
           value: ADMINISTRATIVE,
           checked: getObjectKeyEquals(payload, 'debtType', ADMINISTRATIVE)
         }
