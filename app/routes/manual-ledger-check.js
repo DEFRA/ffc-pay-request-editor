@@ -92,6 +92,7 @@ module.exports = [{
 
       if (provisionalLedgerData?.provisionalLedgerData) {
         await saveCalculatedManualLedger(provisionalLedgerData)
+        sessionHandler.clear(request, sessionKey)
       }
 
       await updateQualityChecksStatus(paymentRequestId, 'Pending')
