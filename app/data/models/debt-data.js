@@ -1,3 +1,5 @@
+const { convertDebtIdToText } = require('../../processing/conversion')
+
 module.exports = (sequelize, DataTypes) => {
   const debtData = sequelize.define('debtData', {
     debtDataId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -7,6 +9,12 @@ module.exports = (sequelize, DataTypes) => {
     reference: DataTypes.STRING,
     netValue: DataTypes.DECIMAL,
     debtType: DataTypes.STRING,
+    debtTypeText: {
+      type: DataTypes.VIRTUAL,
+      get () {
+        return convertDebtIdToText(this.debtType)
+      }
+    },
     recoveryDate: DataTypes.STRING,
     attachedDate: DataTypes.DATE,
     createdDate: DataTypes.DATE,

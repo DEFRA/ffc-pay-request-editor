@@ -6,6 +6,7 @@ const ViewModel = require('./models/capture-debt')
 const { getSchemeId, getSchemes } = require('../processing/scheme')
 const { convertToPounds, convertToPence, convertDateToDDMMYYYY } = require('../processing/conversion')
 const { saveDebtData } = require('../processing/debt')
+const { getPaymentRequestAwaitingEnrichment } = require('../payment-request/get-payment-request')
 
 module.exports = [{
   method: 'GET',
@@ -49,6 +50,10 @@ module.exports = [{
           createdBy: undefined
         }
 
+        const matchingPaymentRequest = await getPaymentRequestAwaitingEnrichment(schemeId, frn, applicationIdentifier, convertToPence(String(net)))
+        if (matchingPaymentRequest) {
+          debtData.paymentRequestId = matchingPaymentRequest.paymentRequestId
+        }
         await saveDebtData(debtData, transaction)
         await transaction.commit()
       } catch (error) {
