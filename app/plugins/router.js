@@ -11,7 +11,11 @@ const routes = [].concat(
   require('../routes/quality-check'),
   require('../routes/manual-ledger'),
   require('../routes/manual-ledger-check'),
-  require('../routes/manual-ledger-review')
+  require('../routes/manual-ledger-review'),
+  require('../routes/authenticate'),
+  require('../routes/login'),
+  require('../routes/logout'),
+  require('../routes/dev-auth')
 )
 
 module.exports = {
