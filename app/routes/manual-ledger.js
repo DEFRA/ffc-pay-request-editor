@@ -7,6 +7,9 @@ const statuses = ['Not ready', 'Failed']
 module.exports = [{
   method: 'GET',
   path: '/manual-ledger',
+  options: {
+    auth: false
+  },
   handler: async (request, h) => {
     const ledgerData = await getManualLedgers(statuses)
     return h.view('manual-ledger', { ledgerData, ...new ViewModel(searchLabelText) })
@@ -16,6 +19,7 @@ module.exports = [{
   method: 'POST',
   path: '/manual-ledger',
   options: {
+    auth: false,
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {

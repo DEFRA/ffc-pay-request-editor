@@ -7,6 +7,7 @@ module.exports = [{
   method: 'GET',
   path: '/manual-ledger-review',
   options: {
+    auth: false,
     handler: async (request, h) => {
       const paymentRequestId = parseInt(request.query.paymentrequestid)
 
@@ -28,6 +29,7 @@ module.exports = [{
   method: 'POST',
   path: '/manual-ledger-review',
   options: {
+    auth: false,
     validate: {
       payload: Joi.object({
         paymentRequestId: Joi.string().required(),

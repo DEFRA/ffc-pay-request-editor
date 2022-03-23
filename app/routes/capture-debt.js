@@ -12,6 +12,7 @@ module.exports = [{
   method: 'GET',
   path: '/capture-debt',
   options: {
+    auth: false,
     handler: async (request, h) => {
       const schemes = (await getSchemes()).map(x => x.name)
       return h.view('capture-debt', new ViewModel(schemes))
@@ -22,6 +23,7 @@ module.exports = [{
   method: 'POST',
   path: '/capture-debt',
   options: {
+    auth: false,
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {

@@ -8,6 +8,7 @@ module.exports = [{
   method: 'GET',
   path: '/quality-check',
   options: {
+    auth: false,
     handler: async (request, h) => {
       const qualityCheckData = await getQualityChecks()
       return h.view('quality-check', { status, qualityCheckData, ...new ViewModel(searchLabelText) })
@@ -18,6 +19,7 @@ module.exports = [{
   method: 'POST',
   path: '/quality-check',
   options: {
+    auth: false,
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {

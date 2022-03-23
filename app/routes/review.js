@@ -6,6 +6,7 @@ module.exports = [{
   method: 'GET',
   path: '/review',
   options: {
+    auth: false,
     handler: async (request, h) => {
       if (!request.query.paymentrequestid) {
         return h.redirect('/quality-check')
@@ -27,6 +28,7 @@ module.exports = [{
   method: 'POST',
   path: '/review',
   options: {
+    auth: false,
     handler: async (request, h) => {
       const status = request.payload.status ? request.payload.status : 'Pending'
       if (request.payload.paymentrequestid) {

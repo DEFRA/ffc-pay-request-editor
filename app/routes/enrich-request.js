@@ -10,6 +10,7 @@ module.exports = [{
   method: 'GET',
   path: '/enrich-request',
   options: {
+    auth: false,
     handler: async (request, h) => {
       const invoiceNumber = request.query.invoiceNumber
       if (!invoiceNumber) {
@@ -35,6 +36,7 @@ module.exports = [{
   method: 'POST',
   path: '/enrich-request',
   options: {
+    auth: false,
     handler: async (request, h) => {
       const payload = request.payload
 

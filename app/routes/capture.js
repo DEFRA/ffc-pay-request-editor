@@ -7,6 +7,7 @@ module.exports = [{
   method: 'GET',
   path: '/capture',
   options: {
+    auth: false,
     handler: async (request, h) => {
       const captureData = await getDebts()
       return h.view('capture', { captureData, ...new ViewModel(searchLabelText) })
@@ -17,6 +18,7 @@ module.exports = [{
   method: 'POST',
   path: '/capture',
   options: {
+    auth: false,
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {

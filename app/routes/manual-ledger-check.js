@@ -10,6 +10,7 @@ module.exports = [{
   method: 'GET',
   path: '/manual-ledger-check',
   options: {
+    auth: false,
     handler: async (request, h) => {
       const paymentRequestId = parseInt(request.query.paymentrequestid)
       if (!paymentRequestId) {
@@ -30,6 +31,7 @@ module.exports = [{
   method: 'GET',
   path: '/manual-ledger-check/calculate',
   options: {
+    auth: false,
     validate: {
       query: Joi.object({
         paymentRequestId: Joi.number().required(),
@@ -69,6 +71,7 @@ module.exports = [{
   method: 'POST',
   path: '/manual-ledger-check',
   options: {
+    auth: false,
     validate: {
       payload: Joi.object({
         paymentRequestId: Joi.string().required(),

@@ -7,6 +7,7 @@ module.exports = [{
   method: 'GET',
   path: '/enrich',
   options: {
+    auth: false,
     handler: async (request, h) => {
       const paymentRequest = await getPaymentRequest()
       return h.view('enrich', { enrichData: paymentRequest, ...new ViewModel(searchLabelText) })
@@ -17,6 +18,7 @@ module.exports = [{
   method: 'POST',
   path: '/enrich',
   options: {
+    auth: false,
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
