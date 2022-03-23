@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const { DefaultAzureCredential } = require('@azure/identity')
 const mqConfig = require('./mq-config')
+const authConfig = require('./auth')
 
 // Define config schema
 const schema = Joi.object({
@@ -94,6 +95,8 @@ if (result.error) {
 
 // Use the joi validated value
 const value = result.value
+
+value.authConfig = authConfig
 
 value.debtSubscription = mqConfig.debtSubscription
 value.manualLedgerSubscription = mqConfig.manualLedgerSubscription
