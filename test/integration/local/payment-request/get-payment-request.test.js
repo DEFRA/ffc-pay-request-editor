@@ -1,11 +1,15 @@
 const { getPaymentRequest, getPaymentRequestCount } = require('../../../../app/payment-request')
 const db = require('../../../../app/data')
 
+const resetData = async () => {
+  await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
+}
+
 describe('Get payment request test', () => {
   let paymentRequest
 
   beforeEach(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await resetData()
 
     paymentRequest = {
       sourceSystem: 'SFIP',
@@ -43,7 +47,7 @@ describe('Get payment request test', () => {
   })
 
   afterAll(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await resetData()
     await db.sequelize.close()
   })
 
@@ -58,13 +62,11 @@ describe('Get payment request test', () => {
   })
 
   test('should return zero payment requests', async () => {
-    await db.sequelize.truncate({ cascade: true })
     const paymentRequests = await getPaymentRequest()
     expect(paymentRequests).toHaveLength(0)
   })
 
   test('should return a count of 0 for payment request', async () => {
-    await db.sequelize.truncate({ cascade: true })
     const paymentRequestCount = await getPaymentRequestCount()
     expect(paymentRequestCount).toEqual(0)
   })
