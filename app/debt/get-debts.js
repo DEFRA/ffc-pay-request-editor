@@ -11,6 +11,7 @@ const getDebts = async () => {
       }
     ],
     attributes: [
+      'debtDataId',
       'frn',
       'reference',
       'netValue',
