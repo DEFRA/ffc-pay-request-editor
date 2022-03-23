@@ -76,3 +76,10 @@ ingress:
 service:
   port: 80
   type: ClusterIP
+
+azureAppRegistration:
+  enabled: true
+  clientId:
+  clientSecret:
+  tenantId:
+  redirectUrl: http://ffc-pay-request-editor/authenticate
