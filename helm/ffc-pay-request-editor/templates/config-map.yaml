@@ -20,6 +20,5 @@ data:
   {{ else }}
   REDIRECT_URL: https://{{ .Values.ingress.endpoint }}.{{ .Values.ingress.server }}/{{ .Values.azureAppRegistration.redirectUrl }}
   {{- end }}
-  REDIRECT_URL: http://{{ .Values.name }}/{{ .Values.azureAppRegistration.redirectUrl }}
   AUTHENTICATION_ENABLED: {{ quote .Values.azureAppRegistration.enabled }}
 {{- end -}}
