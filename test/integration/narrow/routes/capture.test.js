@@ -93,5 +93,22 @@ describe('Capture test', () => {
       expect(response.request.response.variety).toBe('view')
       expect(response.request.response.source.template).toBe('capture')
     })
+
+    test.each([
+      { debtDataId: 1, statusCode: 302 },
+      { debtDataId: '1', statusCode: 302 },
+      { debtDataId: 'X', statusCode: 400 },
+      { debtDataId: undefined, statusCode: 400 },
+      { debtDataId: null, statusCode: 400 }
+    ])('POST /capture/delete %p route returns the correct status code', async ({ debtDataId, statusCode }) => {
+      const options = {
+        method,
+        url: '/capture/delete',
+        payload: { debtDataId }
+      }
+
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(statusCode)
+    })
   })
 })
