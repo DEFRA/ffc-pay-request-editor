@@ -82,4 +82,4 @@ azureAppRegistration:
   clientId:
   clientSecret:
   tenantId:
-  redirectUrl: http://ffc-pay-request-editor/authenticate
+  redirectUrl: authenticate

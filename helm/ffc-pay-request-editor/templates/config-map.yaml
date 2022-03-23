@@ -15,6 +15,13 @@ data:
   POSTGRES_HOST: {{ quote .Values.postgresService.postgresHost }}
   POSTGRES_PORT: {{ quote .Values.postgresService.postgresPort }}
   POSTGRES_SCHEMA_NAME: {{ quote .Values.postgresService.postgresSchema }}
-  REDIRECT_URL: {{ quote .Values.azureAppRegistration.redirectUrl }}
+  {{- if .Values.ingress.endpoint }}
+    {{- if .Values.pr }}
+    REDIRECT_URL: https://{{ .Values.ingress.endpoint }}-{{ .Values.pr }}.{{ .Values.ingress.server }}/{{ .Values.azureAppRegistration.redirectUrl }}
+    {{ else }}
+    REDIRECT_URL: https://{{ .Values.ingress.endpoint }}.{{ .Values.ingress.server }}/{{ .Values.azureAppRegistration.redirectUrl }}
+    {{- end }}
+  {{- end }}
+  REDIRECT_URL: http://{{ .Values.name }}/{{ .Values.azureAppRegistration.redirectUrl }}
   AUTHENTICATION_ENABLED: {{ quote .Values.azureAppRegistration.enabled }}
 {{- end -}}
