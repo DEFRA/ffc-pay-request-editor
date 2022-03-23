@@ -5,8 +5,8 @@ const { getManualLedger } = require('../../manual-ledger')
 const calculate = async (paymentRequestId, arValue) => {
   const manualLedgerData = await getManualLedger(paymentRequestId)
   const copyManualLedgerData = JSON.parse(JSON.stringify(manualLedgerData))
-  const ledger = manualLedgerData.ledger === 'AP' ? 'AR' : 'AP'
-  const splitLedger = await splitToLedger(copyManualLedgerData, arValue, ledger)
+  const provisionalLedger = manualLedgerData.ledger === 'AP' ? 'AR' : 'AP'
+  const splitLedger = splitToLedger(copyManualLedgerData, arValue, provisionalLedger)
   manualLedgerData.manualLedgerChecks = []
   manualLedgerData.manualLedgerChecks = splitLedger.map(ledger => {
     ledger.valueDecimal = convertToPounds(ledger.value)
