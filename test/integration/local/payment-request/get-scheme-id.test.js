@@ -27,7 +27,7 @@ describe('Get scheme id test', () => {
     expect(foundSchemeId).toBe(1)
   })
 
-  test('Return undefined where invalid name given', async () => {
+  test('Return undefined where name does not match', async () => {
     const foundSchemeId = await getSchemeId('123')
     expect(foundSchemeId).toBe(undefined)
   })
