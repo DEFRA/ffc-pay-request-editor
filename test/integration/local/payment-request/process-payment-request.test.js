@@ -1,3 +1,4 @@
+const { uuid } = require('uuidv4')
 const db = require('../../../../app/data')
 const { processPaymentRequest } = require('../../../../app/payment-request')
 let scheme
@@ -112,7 +113,7 @@ describe('process payment requests', () => {
     expect(qualityChecksRow[0].status).toBe('Not ready')
   })
 
-  test('should only insert the first payment request', async () => {
+  test('should only insert the first payment request based on invoice number', async () => {
     await processPaymentRequest(paymentRequest)
     await processPaymentRequest(paymentRequest)
 
@@ -123,6 +124,34 @@ describe('process payment requests', () => {
     })
 
     expect(paymentRequestRow.length).toBe(1)
+  })
+
+  test('should only insert the first payment request based on reference Id', async () => {
+    paymentRequest.referenceId = uuid()
+    await processPaymentRequest(paymentRequest)
+    await processPaymentRequest(paymentRequest)
+
+    const paymentRequestRow = await db.paymentRequest.findAll({
+      where: {
+        agreementNumber: 'SIP00000000000001'
+      }
+    })
+
+    expect(paymentRequestRow.length).toBe(1)
+  })
+
+  test('should both payment requests if second has reference Id', async () => {
+    await processPaymentRequest(paymentRequest)
+    paymentRequest.referenceId = uuid()
+    await processPaymentRequest(paymentRequest)
+
+    const paymentRequestRow = await db.paymentRequest.findAll({
+      where: {
+        agreementNumber: 'SIP00000000000001'
+      }
+    })
+
+    expect(paymentRequestRow.length).toBe(2)
   })
 
   test('should error for empty payment request', async () => {

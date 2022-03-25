@@ -8,9 +8,9 @@ const { attachDebtInformation } = require('../debt')
 const processPaymentRequest = async (paymentRequest) => {
   const transaction = await db.sequelize.transaction()
   try {
-    const existingPaymentRequest = await getExistingPaymentRequest(paymentRequest.invoiceNumber, 1, transaction)
+    const existingPaymentRequest = await getExistingPaymentRequest(paymentRequest.invoiceNumber, paymentRequest.referenceId, 1, transaction)
     if (existingPaymentRequest) {
-      console.info(`Duplicate payment request received, skipping ${existingPaymentRequest.invoiceNumber}`)
+      console.info(`Duplicate payment request received, skipping ${paymentRequest.invoiceNumber}`)
       await transaction.rollback()
     } else {
       delete paymentRequest.paymentRequestId

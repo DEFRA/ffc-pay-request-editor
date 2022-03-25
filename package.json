@@ -44,7 +44,8 @@
     "nunjucks": "^3.2.3",
     "pg": "^8.6.0",
     "pg-hstore": "^2.3.3",
-    "sequelize": "^6.16.1"
+    "sequelize": "^6.16.1",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@hapi/catbox-memory": "^5.0.1",
