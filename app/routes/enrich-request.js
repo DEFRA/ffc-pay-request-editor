@@ -53,6 +53,7 @@ module.exports = [{
       const dateValidation = dateSchema.validate({
         date: `${year}-${month}-${day}`
       })
+
       if (dateValidation.error) {
         return h.view('enrich-request', { paymentRequest, ...new ViewModel(payload, dateValidation.error) }).code(400).takeover()
       }

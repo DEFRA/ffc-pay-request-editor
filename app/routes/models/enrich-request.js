@@ -18,7 +18,6 @@ const isLeapYear = (payload, errorMessage) => {
 
 function ViewModel (payload, error) {
   const errorMessage = { }
-  isLeapYear(payload, errorMessage)
 
   if (error) {
     for (const detail of error.details) {
@@ -47,7 +46,11 @@ function ViewModel (payload, error) {
         }
       }
     }
+  }
 
+  isLeapYear(payload, errorMessage)
+
+  if (Object.keys(errorMessage).length > 0) {
     errorMessage.summary = {
       titleText: 'There is a problem',
       errorList: error.details

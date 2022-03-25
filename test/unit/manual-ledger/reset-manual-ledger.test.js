@@ -39,8 +39,16 @@ describe('Get manual ledger test', () => {
     const paymentRequestId = 1
     await resetManualLedger(paymentRequestId)
     const manualLedgerPaymentRequest = await db.manualLedgerPaymentRequest.findAll()
-    console.log(manualLedgerPaymentRequest)
     expect(manualLedgerPaymentRequest.length).toBe(1)
     expect(manualLedgerPaymentRequest[0].active).toBe(true)
+  })
+
+  test('should return an error', async () => {
+    try {
+      const paymentRequestId = null
+      await resetManualLedger(paymentRequestId)
+    } catch (error) {
+      expect(error.message).toBeDefined()
+    }
   })
 })
