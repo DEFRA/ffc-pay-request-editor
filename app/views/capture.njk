@@ -65,9 +65,14 @@
                     {% if data.attachedDate %}
                       Attached
                     {% else %}
-                      <a href="#">Delete</a>
+                      <form action="/capture/delete" method="POST">
+                        <input type="hidden" name="crumb" value="{{crumb}}"/>
+                        <input type="hidden" name="debtDataId" value="{{data.debtDataId}}"/>
+                        <button class="govuk-button-link" data-module="govuk-button">
+                          Delete
+                        </button>
+                      </form>
                     {% endif %}
-
                   <th>
                 </tr>
               {% endfor %}
