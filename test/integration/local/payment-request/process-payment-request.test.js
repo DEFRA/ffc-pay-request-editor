@@ -1,4 +1,4 @@
-const { uuid } = require('uuidv4')
+const { v4: uuidv4 } = require('uuid')
 const db = require('../../../../app/data')
 const { processPaymentRequest } = require('../../../../app/payment-request')
 let scheme
@@ -127,7 +127,7 @@ describe('process payment requests', () => {
   })
 
   test('should only insert the first payment request based on reference Id', async () => {
-    paymentRequest.referenceId = uuid()
+    paymentRequest.referenceId = uuidv4()
     await processPaymentRequest(paymentRequest)
     await processPaymentRequest(paymentRequest)
 
@@ -142,7 +142,7 @@ describe('process payment requests', () => {
 
   test('should both payment requests if second has reference Id', async () => {
     await processPaymentRequest(paymentRequest)
-    paymentRequest.referenceId = uuid()
+    paymentRequest.referenceId = uuidv4()
     await processPaymentRequest(paymentRequest)
 
     const paymentRequestRow = await db.paymentRequest.findAll({
