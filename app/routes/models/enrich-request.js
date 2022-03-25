@@ -7,8 +7,19 @@ const {
   IRREGULAR_TEXT
 } = require('../../debt-types')
 
+const isLeapYear = (payload, errorMessage) => {
+  if (payload?.day === '29' && payload?.month === '02') {
+    const isLeap = new Date(payload?.year, 1, 29).getDate() === 29
+    if (!isLeap) {
+      errorMessage['date-error'] = { text: 'It is not currently a leap year.' }
+    }
+  }
+}
+
 function ViewModel (payload, error) {
   const errorMessage = { }
+  isLeapYear(payload, errorMessage)
+
   if (error) {
     for (const detail of error.details) {
       detail.text = detail.message

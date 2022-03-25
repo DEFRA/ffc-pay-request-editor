@@ -24,10 +24,13 @@ const getManualLedger = async (paymentRequestId) => {
     }
   )
 
-  paymentRequest.manualLedgerChecks = []
-  paymentRequest.manualLedgerChecks = await getManualLedgerRequests(paymentRequestId)
+  if (paymentRequest) {
+    paymentRequest.manualLedgerChecks = []
+    paymentRequest.manualLedgerChecks = await getManualLedgerRequests(paymentRequestId)
+    return paymentRequest
+  }
 
-  return paymentRequest
+  return {}
 }
 
 module.exports = getManualLedger

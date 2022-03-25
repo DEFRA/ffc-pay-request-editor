@@ -15,7 +15,7 @@ const schema = Joi.object({
   cookiePassword: Joi.string().required(),
   sessionTimeoutMinutes: Joi.number().default(30),
   staticCacheTimeoutMillis: Joi.number().default(7 * 24 * 60 * 60 * 1000), // 1 day
-  publishPollingInterval: Joi.number().default(60000), // 1 minute
+  publishPollingInterval: Joi.number().default(10000), // 1 minute
   database: Joi.object({
     database: Joi.string(),
     dialect: Joi.string().default('postgres'),
