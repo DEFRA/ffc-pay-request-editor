@@ -9,14 +9,10 @@ const ensureHasPermission = async (request, h, requiredPermissions, requireAll =
 }
 
 const hasPermission = (requiredPermissions, permissions, requireAll) => {
-  const userPermissions = Object.keys(permissions)
-  console.log(userPermissions)
-  console.log(requiredPermissions)
   if (!requireAll) {
-    return requiredPermissions.some(x => userPermissions.includes(x))
+    return requiredPermissions.some(x => permissions[x])
   }
-
-  return requiredPermissions.all(x => userPermissions.includes(x))
+  return requiredPermissions.all(x => permissions[x])
 }
 
 module.exports = ensureHasPermission
