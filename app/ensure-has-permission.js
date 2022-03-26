@@ -1,4 +1,4 @@
-const auth = require('../auth')
+const auth = require('./auth')
 
 const ensureHasPermission = async (request, h, requiredPermissions, requireAll = false) => {
   const permissions = await auth.refresh(request.auth.credentials.account, request.cookieAuth)
@@ -9,9 +9,14 @@ const ensureHasPermission = async (request, h, requiredPermissions, requireAll =
 }
 
 const hasPermission = (requiredPermissions, permissions, requireAll) => {
-  if (!permissions[role]) {
-
+  const userPermissions = Object.keys(permissions)
+  console.log(userPermissions)
+  console.log(requiredPermissions)
+  if (!requireAll) {
+    return requiredPermissions.some(x => userPermissions.includes(x))
   }
+
+  return requiredPermissions.all(x => userPermissions.includes(x))
 }
 
 module.exports = ensureHasPermission

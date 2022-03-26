@@ -1,14 +1,16 @@
 const ViewModel = require('./models/search')
 const { getPaymentRequest } = require('../payment-request')
 const schema = require('./schemas/enrich')
+const ensureHasPermission = require('../ensure-has-permission')
+const { enrichment } = require('../auth/permissions')
 const searchLabelText = 'Search for a request by FRN number'
 
 module.exports = [{
   method: 'GET',
   path: '/enrich',
   options: {
-    auth: false,
     handler: async (request, h) => {
+      await ensureHasPermission(request, h, [enrichment])
       const paymentRequest = await getPaymentRequest()
       return h.view('enrich', { enrichData: paymentRequest, ...new ViewModel(searchLabelText) })
     }
@@ -18,15 +20,16 @@ module.exports = [{
   method: 'POST',
   path: '/enrich',
   options: {
-    auth: false,
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
+        await ensureHasPermission(request, h, [enrichment])
         const paymentRequest = await getPaymentRequest()
         return h.view('enrich', { enrichData: paymentRequest, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
+      await ensureHasPermission(request, h, [enrichment])
       const frn = request.payload.frn
       const paymentRequest = await getPaymentRequest()
       const filteredEnrichData = paymentRequest.filter(x => x.frn === String(frn))

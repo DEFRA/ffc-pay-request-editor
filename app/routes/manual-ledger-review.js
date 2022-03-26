@@ -1,4 +1,6 @@
 const Joi = require('joi')
+const { ledgerCheck } = require('../auth/permissions')
+const ensureHasPermission = require('../ensure-has-permission')
 const { getManualLedger, resetManualLedger } = require('../manual-ledger')
 const { updateQualityChecksStatus } = require('../quality-check')
 const ViewModel = require('./models/manual-ledger-review')
@@ -7,8 +9,8 @@ module.exports = [{
   method: 'GET',
   path: '/manual-ledger-review',
   options: {
-    auth: false,
     handler: async (request, h) => {
+      await ensureHasPermission(request, h, [ledgerCheck])
       const paymentRequestId = parseInt(request.query.paymentrequestid)
 
       if (!paymentRequestId) {
@@ -29,7 +31,6 @@ module.exports = [{
   method: 'POST',
   path: '/manual-ledger-review',
   options: {
-    auth: false,
     validate: {
       payload: Joi.object({
         paymentRequestId: Joi.string().required(),
@@ -37,12 +38,14 @@ module.exports = [{
         // status: Joi.boolean().required()
       }),
       failAction: async (request, h, error) => {
+        await ensureHasPermission(request, h, [ledgerCheck])
         const { paymentRequestId } = request.payload
         const manualLedgerData = await getManualLedger(paymentRequestId)
         return h.view('manual-ledger-review', new ViewModel(manualLedgerData, error)).code(400).takeover()
       }
     },
     handler: async (request, h) => {
+      await ensureHasPermission(request, h, [ledgerCheck])
       const status = request.payload.status ? request.payload.status : 'Pending'
       const paymentRequestId = request.payload.paymentRequestId
       if (paymentRequestId) {

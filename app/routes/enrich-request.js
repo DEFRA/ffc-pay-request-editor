@@ -5,13 +5,15 @@ const format = require('../utils/date-formatter')
 const ViewModel = require('./models/enrich-request')
 const enrichRequestSchema = require('./schemas/enrich-request')
 const dateSchema = require('./schemas/date')
+const { enrichment } = require('../auth/permissions')
+const ensureHasPermission = require('../ensure-has-permission')
 
 module.exports = [{
   method: 'GET',
   path: '/enrich-request',
   options: {
-    auth: false,
     handler: async (request, h) => {
+      await ensureHasPermission(request, h, [enrichment])
       const invoiceNumber = request.query.invoiceNumber
       if (!invoiceNumber) {
         return h.view('404')
@@ -36,8 +38,8 @@ module.exports = [{
   method: 'POST',
   path: '/enrich-request',
   options: {
-    auth: false,
     handler: async (request, h) => {
+      await ensureHasPermission(request, h, [enrichment])
       const payload = request.payload
 
       const invoiceNumber = payload['invoice-number']

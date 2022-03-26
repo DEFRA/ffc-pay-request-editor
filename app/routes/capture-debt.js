@@ -7,13 +7,15 @@ const { getSchemeId, getSchemes } = require('../processing/scheme')
 const { convertToPounds, convertToPence, convertDateToDDMMYYYY } = require('../processing/conversion')
 const { saveDebtData } = require('../processing/debt')
 const { getPaymentRequestAwaitingEnrichment } = require('../payment-request/get-payment-request')
+const { enrichment } = require('../auth/permissions')
+const ensureHasPermission = require('../ensure-has-permission')
 
 module.exports = [{
   method: 'GET',
   path: '/capture-debt',
   options: {
-    auth: false,
     handler: async (request, h) => {
+      await ensureHasPermission(request, h, [enrichment])
       const schemes = (await getSchemes()).map(x => x.name)
       return h.view('capture-debt', new ViewModel(schemes))
     }
@@ -23,15 +25,16 @@ module.exports = [{
   method: 'POST',
   path: '/capture-debt',
   options: {
-    auth: false,
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
+        await ensureHasPermission(request, h, [enrichment])
         const schemes = (await getSchemes()).map(x => x.name)
         return h.view('capture-debt', new ViewModel(schemes, request.payload, error)).code(400).takeover()
       }
     },
     handler: async (request, h) => {
+      await ensureHasPermission(request, h, [enrichment])
       const { scheme, frn, applicationIdentifier, net, debtType } = request.payload
       const netValue = convertToPounds(convertToPence(String(net)))
       const schemeId = await getSchemeId(scheme)
