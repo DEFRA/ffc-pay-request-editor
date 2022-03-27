@@ -1,6 +1,5 @@
 const config = require('../config')
 const msal = require('@azure/msal-node')
-const getPermissions = require('./get-permissions')
 
 const msalLogging = config.isProd
   ? {}
@@ -33,7 +32,7 @@ const authenticate = async (redirectCode, cookieAuth) => {
   })
 
   cookieAuth.set({
-    permissions: getPermissions(token.idTokenClaims.roles),
+    scope: token.idTokenClaims.roles,
     account: token.account
   })
 }
@@ -44,13 +43,12 @@ const refresh = async (account, cookieAuth, forceRefresh = true) => {
     forceRefresh
   })
 
-  const perms = getPermissions(token.idTokenClaims.roles)
   cookieAuth.set({
-    permissions: perms,
+    scope: token.idTokenClaims.roles,
     account: token.account
   })
 
-  return perms
+  return token.idTokenClaims.roles
 }
 
 const logout = (account) => {

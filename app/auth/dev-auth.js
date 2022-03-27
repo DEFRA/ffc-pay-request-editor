@@ -1,4 +1,4 @@
-const getPermissions = require('./get-permissions')
+const { ledger, enrichment } = require('./permissions')
 
 const getAuthenticationUrl = () => {
   return '/dev-auth'
@@ -6,19 +6,18 @@ const getAuthenticationUrl = () => {
 
 const authenticate = async (redirectCode, cookieAuth) => {
   cookieAuth.set({
-    permissions: getPermissions(),
+    scope: [ledger, enrichment],
     account: 'Developer'
   })
 }
 
 const refresh = async (account, cookieAuth, forceRefresh = true) => {
-  const permissions = getPermissions()
   cookieAuth.set({
-    permissions: getPermissions(),
+    scope: [ledger, enrichment],
     account: 'Developer'
   })
 
-  return permissions
+  return [ledger, enrichment]
 }
 
 const logout = (account) => { return undefined }
