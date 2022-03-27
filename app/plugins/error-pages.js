@@ -16,7 +16,7 @@ module.exports = {
 
           // if not authorised then request login
           if (statusCode === 401 || statusCode === 403) {
-            return h.redirect('/login')
+            return h.view('unauthorized').code(statusCode)
           }
 
           // In the event of 404
