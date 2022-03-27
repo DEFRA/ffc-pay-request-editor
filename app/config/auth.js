@@ -2,7 +2,7 @@ const Joi = require('joi')
 
 // Define config schema
 const schema = Joi.object({
-  enabled: Joi.boolean().default(true),
+  enabled: Joi.boolean().default(false),
   azure: Joi.object({
     clientSecret: Joi.string().allow(''),
     clientId: Joi.string().allow(''),
