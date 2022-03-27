@@ -5,7 +5,7 @@ const { updateQualityChecksStatus } = require('../quality-check')
 const { convertToPence } = require('../processing/conversion')
 const sessionHandler = require('../session-handler')
 const ensureHasPermission = require('../ensure-has-permission')
-const { ledgerAmend } = require('../auth/permissions')
+const { ledger } = require('../auth/permissions')
 const sessionKey = 'provisionalLedgerData'
 
 module.exports = [{
@@ -13,7 +13,7 @@ module.exports = [{
   path: '/manual-ledger-check',
   options: {
     handler: async (request, h) => {
-      await ensureHasPermission(request, h, [ledgerAmend])
+      await ensureHasPermission(request, h, [ledger])
       const paymentRequestId = parseInt(request.query.paymentrequestid)
       if (!paymentRequestId) {
         return h.view('404')
@@ -42,7 +42,7 @@ module.exports = [{
         'ar-percentage': Joi.number().required()
       }).options({ allowUnknown: true }),
       failAction: async (request, h, error) => {
-        await ensureHasPermission(request, h, [ledgerAmend])
+        await ensureHasPermission(request, h, [ledger])
         const paymentRequestId = request.query.paymentRequestId
 
         if (!paymentRequestId) {
@@ -54,7 +54,7 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      await ensureHasPermission(request, h, [ledgerAmend])
+      await ensureHasPermission(request, h, [ledger])
       sessionHandler.clear(request, sessionKey)
       const paymentRequestId = request.query.paymentRequestId
       const arValue = convertToPence(request.query['ar-value'])
@@ -80,14 +80,14 @@ module.exports = [{
         agree: Joi.boolean().required()
       }).options({ allowUnknown: true }),
       failAction: async (request, h, error) => {
-        await ensureHasPermission(request, h, [ledgerAmend])
+        await ensureHasPermission(request, h, [ledger])
         const { paymentRequestId } = request.payload
         const manualLedgerData = await getManualLedger(paymentRequestId)
         return h.view('manual-ledger-check', new ViewModel(manualLedgerData, error)).code(400).takeover()
       }
     },
     handler: async (request, h) => {
-      await ensureHasPermission(request, h, [ledgerAmend])
+      await ensureHasPermission(request, h, [ledger])
       const { paymentRequestId, agree } = request.payload
 
       if (!agree) {

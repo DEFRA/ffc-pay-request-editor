@@ -2,7 +2,7 @@ const ViewModel = require('./models/search')
 const searchLabelText = 'Search for a request by FRN number'
 const schema = require('./schemas/manual-ledger')
 const { getManualLedgers } = require('../manual-ledger')
-const { ledgerAmend } = require('../auth/permissions')
+const { ledger } = require('../auth/permissions')
 const ensureHasPermission = require('../ensure-has-permission')
 const statuses = ['Not ready', 'Failed']
 
@@ -12,7 +12,7 @@ module.exports = [{
   options: {
   },
   handler: async (request, h) => {
-    await ensureHasPermission(request, h, [ledgerAmend])
+    await ensureHasPermission(request, h, [ledger])
     const ledgerData = await getManualLedgers(statuses)
     return h.view('manual-ledger', { ledgerData, ...new ViewModel(searchLabelText) })
   }
@@ -24,13 +24,13 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        await ensureHasPermission(request, h, [ledgerAmend])
+        await ensureHasPermission(request, h, [ledger])
         const ledgerData = await getManualLedgers(statuses)
         return h.view('manual-ledger', { ledgerData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
-      await ensureHasPermission(request, h, [ledgerAmend])
+      await ensureHasPermission(request, h, [ledger])
       const frn = request.payload.frn
       const ledgerData = await getManualLedgers(statuses)
       const filteredManualLedger = ledgerData.filter(x => x.paymentRequest?.frn === String(frn))

@@ -3,7 +3,7 @@ const { getQualityChecks } = require('../quality-check')
 const status = require('../status')
 const schema = require('./schemas/quality-check')
 const ensureHasPermission = require('../ensure-has-permission')
-const { ledgerCheck } = require('../auth/permissions')
+const { ledger } = require('../auth/permissions')
 const searchLabelText = 'Search for a request by FRN number'
 
 module.exports = [{
@@ -11,7 +11,7 @@ module.exports = [{
   path: '/quality-check',
   options: {
     handler: async (request, h) => {
-      await ensureHasPermission(request, h, [ledgerCheck])
+      await ensureHasPermission(request, h, [ledger])
       const qualityCheckData = await getQualityChecks()
       return h.view('quality-check', { status, qualityCheckData, ...new ViewModel(searchLabelText) })
     }
@@ -24,13 +24,13 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        await ensureHasPermission(request, h, [ledgerCheck])
+        await ensureHasPermission(request, h, [ledger])
         const qualityCheckData = await getQualityChecks()
         return h.view('quality-check', { status, qualityCheckData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
-      await ensureHasPermission(request, h, [ledgerCheck])
+      await ensureHasPermission(request, h, [ledger])
       const frn = request.payload.frn
       const qualityCheckData = await getQualityChecks()
       const filteredQualityCheckData = qualityCheckData.filter(x => x.frn === String(frn))

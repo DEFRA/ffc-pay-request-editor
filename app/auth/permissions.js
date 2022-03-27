@@ -1,7 +1,6 @@
 const permissions = {
   enrichment: 'Payments.Enrichment.Admin',
-  ledgerAmend: 'Payments.Ledger.Amend',
-  ledgerCheck: 'Payments.Ledger.Check'
+  ledger: 'Payments.Ledger.Admin'
 }
 
 module.exports = permissions

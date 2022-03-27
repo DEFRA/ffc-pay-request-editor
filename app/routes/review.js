@@ -2,14 +2,14 @@ const { getPaymentRequest } = require('../payment-request')
 const { getInvoiceLinesOfPaymentRequest } = require('../invoice-line')
 const { updateQualityChecksStatus } = require('../quality-check')
 const ensureHasPermission = require('../ensure-has-permission')
-const { ledgerCheck } = require('../auth/permissions')
+const { ledger } = require('../auth/permissions')
 
 module.exports = [{
   method: 'GET',
   path: '/review',
   options: {
     handler: async (request, h) => {
-      await ensureHasPermission(request, h, [ledgerCheck])
+      await ensureHasPermission(request, h, [ledger])
       if (!request.query.paymentrequestid) {
         return h.redirect('/quality-check')
       }
@@ -31,7 +31,7 @@ module.exports = [{
   path: '/review',
   options: {
     handler: async (request, h) => {
-      await ensureHasPermission(request, h, [ledgerCheck])
+      await ensureHasPermission(request, h, [ledger])
       const status = request.payload.status ? request.payload.status : 'Pending'
       if (request.payload.paymentrequestid) {
         await updateQualityChecksStatus(request.payload.paymentrequestid, status)
