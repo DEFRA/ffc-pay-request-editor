@@ -1,3 +1,5 @@
+const { ledger } = require('../../../../app/auth/permissions')
+
 describe('Quality check test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
@@ -8,6 +10,8 @@ describe('Quality check test', () => {
 
   let server
   const url = '/quality-check'
+
+  const auth = { strategy: 'session-auth', credentials: { scope: [ledger] } }
 
   beforeEach(async () => {
     server = await createServer()
@@ -25,6 +29,7 @@ describe('Quality check test', () => {
     test('GET /quality-check route returns 200', async () => {
       const options = {
         method,
+        auth,
         url
       }
 
@@ -41,7 +46,8 @@ describe('Quality check test', () => {
     test('POST /quality-check with no records returns "No debts match the FRN provided.', async () => {
       const options = {
         method: method,
-        url: url,
+        auth,
+        url,
         payload: { frn: '1234567893' }
       }
 
@@ -61,6 +67,7 @@ describe('Quality check test', () => {
     ])('POST /quality-check %p route returns the correct status code', async ({ frn, statusCode }) => {
       const options = {
         method,
+        auth,
         url,
         payload: { frn }
       }

@@ -1,3 +1,5 @@
+const { ledger } = require('../../../../app/auth/permissions')
+
 describe('Manual-ledger-check tests', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
@@ -7,6 +9,8 @@ describe('Manual-ledger-check tests', () => {
 
   let server
   const url = '/manual-ledger-check'
+
+  const auth = { strategy: 'session-auth', credentials: { scope: [ledger] } }
 
   beforeEach(async () => {
     server = await createServer()
@@ -29,7 +33,8 @@ describe('Manual-ledger-check tests', () => {
     test('GET /manual-ledger-check with no paymentRequestId returns 404 view', async () => {
       const options = {
         method,
-        url
+        url,
+        auth
       }
       const response = await server.inject(options)
       expect(response.request.response.source.template).toBe('404')

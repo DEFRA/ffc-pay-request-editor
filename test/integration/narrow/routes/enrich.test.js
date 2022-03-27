@@ -1,3 +1,5 @@
+const { enrichment } = require('../../../../app/auth/permissions')
+
 describe('Enrich test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
@@ -8,6 +10,8 @@ describe('Enrich test', () => {
 
   let server
   const url = '/enrich'
+
+  const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
 
   beforeEach(async () => {
     server = await createServer()
@@ -33,7 +37,8 @@ describe('Enrich test', () => {
     test('GET /capture route returns 200', async () => {
       const options = {
         method,
-        url
+        url,
+        auth
       }
 
       const response = await server.inject(options)
@@ -49,7 +54,8 @@ describe('Enrich test', () => {
     test('POST /enrich with no records returns "No debts match the FRN provided.', async () => {
       const options = {
         method: method,
-        url: url,
+        url,
+        auth,
         payload: { frn: '1234567893' }
       }
 
@@ -70,6 +76,7 @@ describe('Enrich test', () => {
       const options = {
         method,
         url,
+        auth,
         payload: { frn }
       }
 

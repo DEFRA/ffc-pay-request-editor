@@ -1,3 +1,5 @@
+const { ledger } = require('../../../../app/auth/permissions')
+
 describe('Review test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
@@ -11,6 +13,8 @@ describe('Review test', () => {
 
   let server
   const url = '/review'
+
+  const auth = { strategy: 'session-auth', credentials: { scope: [ledger] } }
 
   beforeEach(async () => {
     server = await createServer()
@@ -29,6 +33,7 @@ describe('Review test', () => {
     test('GET /review route returns 200 if paymentrequestid in query-string and exist in database', async () => {
       const options = {
         method,
+        auth,
         url: '/review?paymentrequestid=1'
       }
 
@@ -42,6 +47,7 @@ describe('Review test', () => {
     test('GET /review route redirects to /quality-check if paymentrequestid not in query-string', async () => {
       const options = {
         method,
+        auth,
         url: '/review'
       }
 
@@ -54,6 +60,7 @@ describe('Review test', () => {
     test('GET /review route redirects to /quality-check if paymentrequestid in query-string but not in the database', async () => {
       const options = {
         method,
+        auth,
         url: '/review?paymentrequestid=6'
       }
 
@@ -70,6 +77,7 @@ describe('Review test', () => {
     test('POST /review with paymentrequestid  redirect to quality-check after update with code 302', async () => {
       const options = {
         method: method,
+        auth,
         url: url,
         payload: { paymentrequestid: '1', status: 'False' }
       }
@@ -83,6 +91,7 @@ describe('Review test', () => {
     test('POST /review with  no paymentrequestid redirect to quality-check with code 301', async () => {
       const options = {
         method: method,
+        auth,
         url: url,
         payload: { }
       }

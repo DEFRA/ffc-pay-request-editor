@@ -1,3 +1,5 @@
+const { ledger } = require('../../../../app/auth/permissions')
+
 describe('Manual ledger test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
@@ -7,6 +9,8 @@ describe('Manual ledger test', () => {
 
   let server
   const url = '/manual-ledger'
+
+  const auth = { strategy: 'session-auth', credentials: { scope: [ledger] } }
 
   beforeEach(async () => {
     server = await createServer()
@@ -28,6 +32,7 @@ describe('Manual ledger test', () => {
     test('GET /manual-ledger route returns 200', async () => {
       const options = {
         method,
+        auth,
         url,
         payload: { frn: '1234567890' }
       }
@@ -39,6 +44,7 @@ describe('Manual ledger test', () => {
     test('GET /manual-ledger route returns manual-ledger view', async () => {
       const options = {
         method,
+        auth,
         url,
         payload: { frn: '1234567890' }
 
@@ -55,6 +61,7 @@ describe('Manual ledger test', () => {
     test('POST /manual-ledger with no records returns error message ', async () => {
       const options = {
         method,
+        auth,
         url,
         payload: { frn: '1234567891' }
       }
@@ -68,6 +75,7 @@ describe('Manual ledger test', () => {
     test('POST /manual-ledger with no records returns error message ', async () => {
       const options = {
         method,
+        auth,
         url,
         payload: { frn: 1111111111 }
 
@@ -79,6 +87,7 @@ describe('Manual ledger test', () => {
     test('POST /manual-ledger with empty frn returns error message ', async () => {
       const options = {
         method,
+        auth,
         url,
         payload: { frn: '' }
       }
@@ -90,6 +99,7 @@ describe('Manual ledger test', () => {
     test('POST /manual-ledger with invalid frn returns error message ', async () => {
       const options = {
         method,
+        auth,
         url,
         payload: { frn: 'abc123' }
       }
@@ -100,6 +110,7 @@ describe('Manual ledger test', () => {
     test('POST /manual-ledger route returns 200 code with valid frn', async () => {
       const options = {
         method,
+        auth,
         url,
         payload: { frn: '1234567890' }
       }
@@ -110,6 +121,7 @@ describe('Manual ledger test', () => {
     test('POST /manual-ledger route returns manual-ledger view', async () => {
       const options = {
         method,
+        auth,
         url,
         payload: { frn: '1234567890' }
       }
@@ -122,6 +134,7 @@ describe('Manual ledger test', () => {
     test('POST /manual-ledger route returns 400 code with a nine digit frn', async () => {
       const options = {
         method,
+        auth,
         url,
         payload: { frn: '123456789' }
       }
@@ -135,6 +148,7 @@ describe('Manual ledger test', () => {
     test('POST /manual-ledger route returns 400 code with an eleven digit frn', async () => {
       const options = {
         method,
+        auth,
         url,
         payload: { frn: '12345678901' }
       }
