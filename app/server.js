@@ -35,6 +35,7 @@ async function createServer () {
   await server.register(require('./plugins/crumb'))
   await server.register(require('./plugins/session-cache'))
   await server.register(require('./plugins/logging'))
+  await server.register(require('./plugins/view-context'))
 
   if (config.isDev) {
     await server.register(require('blipp'))
