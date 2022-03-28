@@ -8,7 +8,7 @@ const calculateManualLedger = async (paymentRequestId, arValue, apValue) => {
     const copyManualLedgerData = JSON.parse(JSON.stringify(manualLedgerData))
     const targetLedger = manualLedgerData.ledger === 'AP' ? 'AR' : 'AP'
     const targetValue = targetLedger === 'AP' ? apValue : arValue
-    const splitLedger = await splitToLedger(copyManualLedgerData, targetValue, targetLedger)
+    const splitLedger = splitToLedger(copyManualLedgerData, targetValue, targetLedger)
     updateManualLegerChecks(manualLedgerData, splitLedger)
     return manualLedgerData
   }

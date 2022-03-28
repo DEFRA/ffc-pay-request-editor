@@ -6,7 +6,7 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "macros/payment-request-header.njk" import paymentRequestHeader %}
 {% from "macros/payment-request-invoice-lines.njk" import paymentRequestInvoiceLines %}
-{% from "macros/ledger-check.njk" import ledger %}
+{% from "macros/ledger-check.njk" import ledgerCheck %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -37,8 +37,8 @@
               <span class="govuk-visually-hidden">Error:</span> The entered values must equal £{{ model.manualLedgerData.valueInPounds }}
             </p>
             <input type="hidden" name="paymentRequestId" value="{{ model.manualLedgerData.paymentRequestId }}"/>
-            {{ledger('ap', model.manualLedgerData.apAutoValue, model.manualLedgerData.valueInPounds)}}
-            {{ledger('ar', model.manualLedgerData.arAutoValue, model.manualLedgerData.valueInPounds)}}
+            {{ledgerCheck('ap', model.manualLedgerData.apAutoValue, model.manualLedgerData.valueInPounds)}}
+            {{ledgerCheck('ar', model.manualLedgerData.arAutoValue, model.manualLedgerData.valueInPounds)}}
           </div>
           <div class="govuk-grid-column-full">
             {{ govukButton({
