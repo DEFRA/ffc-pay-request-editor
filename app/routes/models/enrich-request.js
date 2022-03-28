@@ -37,6 +37,13 @@ function ViewModel (payload, error) {
         errorMessage['date-error'] = {
           text
         }
+      } else if (detail.context.label === 'date-not-leap-year') {
+        const text = 'Recovery date entered is not a leap year'
+        detail.href = '#debt-discovered-date-day'
+        detail.text = text
+        errorMessage['date-error'] = {
+          text
+        }
       } else {
         const text = 'Select the type of debt'
         detail.href = `#${detail.context.label}`
