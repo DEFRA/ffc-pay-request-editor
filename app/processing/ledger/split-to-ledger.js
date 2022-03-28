@@ -3,7 +3,6 @@ const ensureValueConsistency = require('./ensure-value-consistency')
 
 const splitToLedger = (paymentRequest, targetValue, targetLedger) => {
   const originalValue = paymentRequest.value
-  // const updatedValue = targetLedger === AP ? originalValue + targetValue : originalValue - targetValue
 
   paymentRequest.originalInvoiceNumber = paymentRequest.invoiceNumber
   paymentRequest.invoiceNumber = createSplitInvoiceNumber(paymentRequest.invoiceNumber, 'A')

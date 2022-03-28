@@ -9,6 +9,7 @@ const {
 
 function ViewModel (payload, error) {
   const errorMessage = { }
+
   if (error) {
     for (const detail of error.details) {
       detail.text = detail.message
@@ -22,6 +23,13 @@ function ViewModel (payload, error) {
         }
       } else if (detail.context.label === 'date') {
         const text = 'Recovery date must be today or in the past'
+        detail.href = '#debt-discovered-date-day'
+        detail.text = text
+        errorMessage['date-error'] = {
+          text
+        }
+      } else if (detail.context.label === 'date-not-leap-year') {
+        const text = 'Recovery date entered is not a leap year'
         detail.href = '#debt-discovered-date-day'
         detail.text = text
         errorMessage['date-error'] = {

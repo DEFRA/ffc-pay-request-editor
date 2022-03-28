@@ -30,7 +30,12 @@ const getQualityCheckedPaymentRequests = async () => {
     }
   }
 
-  return qualityCheckedPaymentRequests
+  return qualityCheckedPaymentRequests.map(x => {
+    return {
+      paymentRequest: x.paymentRequest.get({ plain: true }),
+      paymentRequests: x.paymentRequests.map(y => y.get({ plain: true }))
+    }
+  })
 }
 
 module.exports = getQualityCheckedPaymentRequests
