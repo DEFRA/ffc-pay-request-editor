@@ -20,7 +20,7 @@ const refresh = async (account, cookieAuth, forceRefresh = true) => {
   return [ledger, enrichment]
 }
 
-const logout = (account) => { return undefined }
+const logout = async (account) => { return undefined }
 
 module.exports = {
   getAuthenticationUrl,
