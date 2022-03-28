@@ -4,7 +4,7 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-xl">{{serviceName}}</h1>
+      <h1 class="govuk-heading-l">{{serviceName}}</h1>
       <div class="govuk-cards govuk-cards--2">
         <div class="govuk-cards--2__item govuk-card--dashboard">
           <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Unattached reporting datasets</h2>
@@ -28,6 +28,21 @@
             <li>
               {% if enrichCount > 0 %}
                 <a href="/enrich" class="govuk-link">View awaiting reporting data</a>
+              {% endif %}
+            </li>
+          </ul>
+        </div>
+    </div>
+    <div class="govuk-cards govuk-cards--2">
+        <div class="govuk-cards--2__item govuk-card--dashboard">
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Awaiting Manual Ledger Assignment</h2>
+          <p class="govuk-heading-xl govuk-!-margin-bottom-5">
+            {{ manualLedgerCount }}
+          </p>
+          <ul class="govuk-list">
+            <li>
+              {% if manualLedgerCount > 0 %}
+                <a href="/manual-ledger" class="govuk-link">View  Manual Ledger Assignment</a>
               {% endif %}
             </li>
           </ul>

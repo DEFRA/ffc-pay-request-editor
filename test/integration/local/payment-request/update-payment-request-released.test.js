@@ -4,6 +4,11 @@ const { updatePaymentRequestReleased } = require('../../../../app/payment-reques
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
 const { SCHEME_NAME_SFI_PILOT } = require('../../../data/scheme')
 
+const resetData = async () => {
+  await db.scheme.truncate({ cascade: true })
+  await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
+}
+
 describe('Update payment request released test', () => {
   let paymentRequest
 
@@ -20,7 +25,7 @@ describe('Update payment request released test', () => {
       released: undefined
     }
 
-    await db.sequelize.truncate({ cascade: true })
+    await resetData()
     await db.scheme.create(scheme)
     await db.paymentRequest.create(paymentRequest)
   })

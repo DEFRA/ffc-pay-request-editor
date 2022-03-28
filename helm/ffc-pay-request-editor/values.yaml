@@ -24,16 +24,19 @@ deployment:
 
 container:
   imagePullPolicy: IfNotPresent
-  requestMemory: 10Mi
-  requestCpu: 10m
-  limitMemory: 120Mi
-  limitCpu: 120m
+  requestMemory: 120Mi
+  requestCpu: 40m
+  limitMemory: 200Mi
+  limitCpu: 400m
   port: 3001
   messageQueueHost: namespace.servicebus.windows.net
   debtTopicAddress: ffc-pay-debt-data
   debtSubscriptionAddress: ffc-pay-request-editor
+  manualLedgerTopicAddress: ffc-pay-manual-check-data
+  manualLedgerSubscriptionAddress: ffc-pay-request-editor
   qcTopicAddress: ffc-pay-quality-check
   editTopicAddress: ffc-pay-request-edit
+  cookiePassword:
 
 livenessProbe:
   path: /healthz

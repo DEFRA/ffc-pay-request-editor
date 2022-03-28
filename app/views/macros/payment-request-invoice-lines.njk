@@ -1,0 +1,25 @@
+{% macro paymentRequestInvoiceLines(invoiceLines) %}
+  <table class="govuk-table">
+    <caption class="govuk-table__caption govuk-table__caption--s">Invoice Lines</caption>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header govuk-body-s">Description</th>
+        <th scope="col" class="govuk-table__header govuk-body-s">Fund</th>
+        <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
+        <th scope="col" class="govuk-table__header govuk-body-s">Account</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Amount</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      {% for data in invoiceLines %}
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell govuk-body-s">{{ data.description }}</td>
+          <td class="govuk-table__cell govuk-body-s">{{ data.fundCode }}</td>
+          <td class="govuk-table__cell govuk-body-s">{{ data.schemeCode }}</td>
+          <td class="govuk-table__cell govuk-body-s">{{ data.accountCode }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.valueDecimal }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endmacro %}

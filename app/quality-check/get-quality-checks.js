@@ -14,6 +14,9 @@ const getQualityChecks = async () => {
               attributes: ['name']
             }
           ],
+          where: {
+            categoryId: 2
+          },
           attributes: [
             'paymentRequestId',
             'frn',
@@ -27,7 +30,10 @@ const getQualityChecks = async () => {
       ],
       attributes: [
         'status'
-      ]
+      ],
+      where: {
+        status: 'Pending'
+      }
     }
   )
 }

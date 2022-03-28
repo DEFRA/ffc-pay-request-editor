@@ -53,8 +53,23 @@ module.exports = [{
       const dateValidation = dateSchema.validate({
         date: `${year}-${month}-${day}`
       })
+
       if (dateValidation.error) {
         return h.view('enrich-request', { paymentRequest, ...new ViewModel(payload, dateValidation.error) }).code(400).takeover()
+      }
+
+      if (payload?.day === '29' && payload?.month === '02') {
+        const isLeap = new Date(payload?.year, 1, 29).getDate() === 29
+        if (!isLeap) {
+          const leapError = {
+            details: [{
+              context: {
+                label: 'date-not-leap-year'
+              }
+            }]
+          }
+          return h.view('enrich-request', { paymentRequest, ...new ViewModel(payload, leapError) }).code(400).takeover()
+        }
       }
 
       if (paymentRequest.released) {

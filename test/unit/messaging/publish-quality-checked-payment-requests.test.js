@@ -1,10 +1,10 @@
-const { SCHEME_ID_SFI_PILOT } = require('../../data/scheme-id')
+const { SCHEME_ID_SFI } = require('../../data/scheme-id')
 
 jest.mock('../../../app/payment-request')
-const {
-  getQualityCheckedPaymentRequests,
-  updatePaymentRequestReleased
-} = require('../../../app/payment-request')
+const { updatePaymentRequestReleased } = require('../../../app/payment-request')
+
+jest.mock('../../../app/quality-check')
+const { getQualityCheckedPaymentRequests } = require('../../../app/quality-check')
 
 const {
   publishQualityCheckedPaymentRequests,
@@ -18,23 +18,20 @@ describe('Publish quality checked payment requests', () => {
   let message
 
   beforeEach(async () => {
-    qualityCheckedPaymentRequests = [{
-      paymentRequestId: 1,
-      invoiceNumber: 'SFI123',
-      frn: 1234567890,
-      debtType: undefined,
-      recoveryDate: undefined
-    }]
-    getQualityCheckedPaymentRequests.mockReturnValue(JSON.parse(JSON.stringify(qualityCheckedPaymentRequests)))
-
-    qualityCheckSender = { sendMessage: jest.fn() }
-
     paymentRequest = {
       paymentRequestId: 1,
-      schemeId: SCHEME_ID_SFI_PILOT,
+      schemeId: SCHEME_ID_SFI,
       frn: 1234567890,
       released: undefined
     }
+
+    qualityCheckedPaymentRequests = [{
+      paymentRequest
+    }]
+
+    getQualityCheckedPaymentRequests.mockReturnValue(qualityCheckedPaymentRequests)
+
+    qualityCheckSender = { sendMessage: jest.fn() }
 
     message = {
       body: paymentRequest,
@@ -50,7 +47,7 @@ describe('Publish quality checked payment requests', () => {
   test('calls internal loop function', async () => {
     await publishQualityCheckedPaymentRequests(qualityCheckSender)
     expect(updatePaymentRequestReleased).toHaveBeenCalledTimes(1)
-    expect(updatePaymentRequestReleased).toHaveBeenCalledWith(qualityCheckedPaymentRequests[0].paymentRequestId)
+    expect(updatePaymentRequestReleased).toHaveBeenCalledWith(qualityCheckedPaymentRequests[0].paymentRequest.paymentRequestId)
   })
 
   test('error is caught and returned', async () => {

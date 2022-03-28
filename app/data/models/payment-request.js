@@ -1,9 +1,10 @@
-const { convertToPounds } = require('../../processing/conversion')
+const { convertValueToStringFormat } = require('../../processing/conversion')
 
 module.exports = (sequelize, DataTypes) => {
   const paymentRequest = sequelize.define('paymentRequest', {
     paymentRequestId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     schemeId: DataTypes.INTEGER,
+    categoryId: DataTypes.INTEGER,
     sourceSystem: DataTypes.STRING,
     deliveryBody: DataTypes.STRING,
     invoiceNumber: DataTypes.STRING,
@@ -20,11 +21,11 @@ module.exports = (sequelize, DataTypes) => {
     originalSettlementDate: DataTypes.STRING,
     originalInvoiceNumber: DataTypes.STRING,
     invoiceCorrectionReference: DataTypes.STRING,
-    value: DataTypes.DECIMAL,
+    value: DataTypes.INTEGER,
     valueDecimal: {
       type: DataTypes.VIRTUAL,
       get () {
-        return convertToPounds(this.value)
+        return convertValueToStringFormat(this.value)
       }
     },
     received: DataTypes.DATE,
@@ -52,17 +53,29 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'schemeId',
       as: 'schemes'
     })
+    paymentRequest.belongsTo(models.category, {
+      foreignKey: 'categoryId',
+      as: 'category'
+    })
     paymentRequest.hasOne(models.debtData, {
       foreignKey: 'paymentRequestId',
-      as: 'debtData'
+      as: 'debtData',
+      allowNull: true
     })
     paymentRequest.hasMany(models.invoiceLine, {
       foreignKey: 'paymentRequestId',
-      as: 'invoiceLines'
+      as: 'invoiceLines',
+      allowNull: true
     })
     paymentRequest.hasMany(models.qualityCheck, {
       foreignKey: 'paymentRequestId',
       as: 'qualityChecks'
+    })
+    paymentRequest.hasMany(models.manualLedgerPaymentRequest, {
+      foreignKey: 'paymentRequestId',
+      as: 'manualLedgerChecks',
+      allowNull: true,
+      onDelete: 'CASCADE'
     })
   }
   return paymentRequest

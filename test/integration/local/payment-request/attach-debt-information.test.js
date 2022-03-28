@@ -10,9 +10,15 @@ let frn
 let reference
 let netValue
 
+const resetData = async () => {
+  await db.qualityCheck.truncate({ cascade: true })
+  await db.debtData.truncate({ cascade: true })
+  await db.paymentRequest.truncate({ cascade: true })
+}
+
 describe('Attach debt information tests', () => {
   beforeEach(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await resetData()
 
     qualityData = {
       qualityCheckId: 1,
@@ -72,7 +78,7 @@ describe('Attach debt information tests', () => {
   })
 
   afterAll(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await resetData()
     await db.sequelize.close()
   })
 

@@ -4,9 +4,15 @@ const { getInvoiceLinesOfPaymentRequest } = require('../../../../app/invoice-lin
 let scheme
 let paymentRequest
 let paymentRequestId
+
+const resetData = async () => {
+  await db.scheme.truncate({ cascade: true })
+  await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
+}
+
 describe('process payment requests', () => {
   beforeEach(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await resetData()
 
     scheme = {
       schemeId: 1,
@@ -49,7 +55,7 @@ describe('process payment requests', () => {
   })
 
   afterAll(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await resetData()
     await db.sequelize.close()
   })
 

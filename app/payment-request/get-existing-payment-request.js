@@ -1,11 +1,12 @@
 const db = require('../data')
 
-const getExistingPaymentRequest = async (invoiceNumber, transaction) => {
+const getExistingPaymentRequest = async (invoiceNumber, categoryId, transaction) => {
   return db.paymentRequest.findOne({
     transaction,
     lock: true,
     where: {
-      invoiceNumber
+      invoiceNumber,
+      categoryId
     }
   })
 }

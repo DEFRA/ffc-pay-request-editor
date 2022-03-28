@@ -1,30 +1,21 @@
 const Joi = require('joi')
 const { DefaultAzureCredential } = require('@azure/identity')
+const mqConfig = require('./mq-config')
 
 // Define config schema
 const schema = Joi.object({
   serviceName: Joi.string().default('Request Editor'),
   port: Joi.number().default(3001),
   env: Joi.string().valid('development', 'test', 'production').default('development'),
+  cacheName: Joi.string(),
+  redisHost: Joi.string(),
+  redisPort: Joi.number().default(6379),
+  redisPassword: Joi.string().default(''),
+  redisPartition: Joi.string().default('ffc-pay-request-editor'),
+  cookiePassword: Joi.string().required(),
+  sessionTimeoutMinutes: Joi.number().default(30),
   staticCacheTimeoutMillis: Joi.number().default(7 * 24 * 60 * 60 * 1000), // 1 day
-  publishPollingInterval: Joi.number().default(60000), // 1 minute
-  message: Joi.object({
-    connection: Joi.object({
-      host: Joi.string(),
-      useCredentialChain: Joi.bool().default(false),
-      appInsights: Joi.object(),
-      username: Joi.string(),
-      password: Joi.string()
-    }),
-    debtSubscription: Joi.object({
-      topic: Joi.string(),
-      address: Joi.string(),
-      type: Joi.string().default('subscription')
-    }),
-    qcTopic: Joi.object({
-      address: Joi.string()
-    })
-  }),
+  publishPollingInterval: Joi.number().default(10000), // 1 minute
   database: Joi.object({
     database: Joi.string(),
     dialect: Joi.string().default('postgres'),
@@ -53,25 +44,15 @@ const config = {
   serviceName: process.env.SERVICE_NAME,
   port: process.env.PORT,
   env: process.env.NODE_ENV,
+  cacheName: 'redisCache',
+  redisPartition: process.env.REDIS_PARTITION,
+  redisHost: process.env.REDIS_HOSTNAME,
+  redisPort: process.env.REDIS_PORT,
+  redisPassword: process.env.REDIS_PASSWORD,
+  cookiePassword: process.env.COOKIE_PASSWORD,
+  sessionTimeoutMinutes: process.env.SESSION_TIMEOUT_IN_MINUTES,
   staticCacheTimeoutMillis: process.env.STATIC_CACHE_TIMEOUT_IN_MILLIS,
   publishPollingInterval: process.env.PUBLISH_POLLING_INTERVAL,
-  message: {
-    connection: {
-      host: process.env.MESSAGE_QUEUE_HOST,
-      useCredentialChain: process.env.NODE_ENV === 'production',
-      appInsights: process.env.NODE_ENV === 'production' ? require('applicationinsights') : undefined,
-      username: process.env.MESSAGE_QUEUE_USER,
-      password: process.env.MESSAGE_QUEUE_PASSWORD
-    },
-    debtSubscription: {
-      topic: process.env.DEBT_TOPIC_ADDRESS,
-      address: process.env.DEBT_SUBSCRIPTION_ADDRESS,
-      type: 'subscription'
-    },
-    qcTopic: {
-      address: process.env.QC_TOPIC_ADDRESS
-    }
-  },
   database: {
     database: process.env.POSTGRES_DB,
     dialect: 'postgres',
@@ -114,11 +95,21 @@ if (result.error) {
 // Use the joi validated value
 const value = result.value
 
-value.debtSubscription = { ...value.message.connection, ...value.message.debtSubscription }
-value.qcTopic = { ...value.message.connection, ...value.message.qcTopic }
+value.debtSubscription = mqConfig.debtSubscription
+value.manualLedgerSubscription = mqConfig.manualLedgerSubscription
+value.qcTopic = mqConfig.qcTopic
+value.debtResponseTopic = mqConfig.debtResponseTopic
 
 value.isDev = value.env === 'development'
 value.isTest = value.env === 'test'
 value.isProd = value.env === 'production'
+
+value.catboxOptions = {
+  host: value.redisHost,
+  port: value.redisPort,
+  password: value.redisPassword,
+  tls: value.isProd ? {} : undefined,
+  partition: value.redisPartition
+}
 
 module.exports = value

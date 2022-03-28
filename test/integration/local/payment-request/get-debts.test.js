@@ -9,12 +9,12 @@ describe('Get debts test', () => {
   }
 
   beforeEach(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await db.debtData.truncate({ cascade: true })
     await db.debtData.create(debts)
   })
 
   afterAll(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await db.debtData.truncate({ cascade: true })
     await db.sequelize.close()
   })
 
@@ -29,13 +29,13 @@ describe('Get debts test', () => {
   })
 
   test('should return zero debt records', async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await db.debtData.truncate({ cascade: true })
     const debt = await getDebts()
     expect(debt).toHaveLength(0)
   })
 
   test('should return count of zero for debt', async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await db.debtData.truncate({ cascade: true })
     const debtCount = await getDebtsCount()
     expect(debtCount).toEqual(0)
   })

@@ -1,6 +1,7 @@
 const { getDebtsCount } = require('../debt')
 const { getPaymentRequestCount } = require('../payment-request')
 const { getQualityChecksCount } = require('../quality-check')
+const { getManualLedgerCount } = require('../manual-ledger')
 
 module.exports = {
   method: 'GET',
@@ -11,7 +12,8 @@ module.exports = {
         {
           captureCount: await getDebtsCount(),
           enrichCount: await getPaymentRequestCount(),
-          qualityCheckCount: await getQualityChecksCount()
+          qualityCheckCount: await getQualityChecksCount(),
+          manualLedgerCount: await getManualLedgerCount()
         })
     }
   }

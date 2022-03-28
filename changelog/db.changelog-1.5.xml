@@ -1,0 +1,67 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.9.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+  <changeSet author="Steve Dickinson" id="26">
+    <tagDatabase tag="v1.0.4" />
+  </changeSet>
+  <changeSet author="Steve Dickinson" id="18">
+    <createTable tableName="manualLedgerPaymentRequest">
+      <column autoIncrement="true" name="manualLedgerPaymentRequestId" type="INTEGER">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="manualLedgerPaymentRequestId_pkey" />
+      </column>
+      <column name="paymentRequestId" type="SMALLINT" />
+      <column name="ledgerPaymentRequestId" type="SMALLINT" />
+    </createTable>
+  </changeSet>
+  <changeSet author="Steve Dickinson" id="19">
+    <createTable tableName="schedule"> 
+      <column name="scheduleId" type="INTEGER">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="scheduleId_pkey" />
+      </column>
+      <column name="paymentRequestId" type="INTEGER" />
+    </createTable>
+  </changeSet>
+  <changeSet author="Steve Dickinson" id="20">
+    <createTable tableName="category"> 
+      <column autoIncrement="true" name="categoryId" type="INTEGER">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="categoryId_pkey" />
+      </column>
+      <column name="name" type="VARCHAR(25)" />
+    </createTable>
+    <insert tableName="category">
+      <column name="categoryId" value="1" />
+      <column name="name" value="Enrichment" />
+    </insert>
+    <insert tableName="category">
+      <column name="categoryId" value="2" />
+      <column name="name" value="Ledger Check" />
+    </insert>
+    <insert tableName="category">
+      <column name="categoryId" value="3" />
+      <column name="name" value="Provisional Ledger Check" />
+    </insert>
+  </changeSet>
+  <changeSet author="Steve Dickinson" id="21">
+    <addForeignKeyConstraint baseColumnNames="paymentRequestId" baseTableName="schedule" constraintName="fk_schedule_paymentRequestId" referencedColumnNames="paymentRequestId" referencedTableName="paymentRequests" />
+  </changeSet>
+  <changeSet author="Steve Dickinson" id="22">
+    <addForeignKeyConstraint baseColumnNames="paymentRequestId" baseTableName="manualLedgerPaymentRequest" constraintName="fk_manualLedger_paymentRequestId" referencedColumnNames="paymentRequestId" referencedTableName="paymentRequests" />
+  </changeSet>
+  <changeSet author="Steve Dickinson" id="23">
+    <addForeignKeyConstraint baseColumnNames="ledgerPaymentRequestId" baseTableName="manualLedgerPaymentRequest" constraintName="fk_manualLedger_ledgerPaymentRequestId" referencedColumnNames="paymentRequestId" referencedTableName="paymentRequests" />
+  </changeSet>
+  <changeSet author="Steve Dickinson" id="24">
+    <addColumn tableName="paymentRequests">
+      <column name="categoryId" type="INTEGER" />
+    </addColumn>
+  </changeSet>
+  <changeSet author="Steve Dickinson" id="25">
+    <addForeignKeyConstraint baseColumnNames="categoryId" baseTableName="paymentRequests" constraintName="fk_paymentRequests_categoryId" referencedColumnNames="categoryId" referencedTableName="category" />
+  </changeSet>
+  <changeSet author="Steve Dickinson" id="27">
+    <addColumn tableName="manualLedgerPaymentRequest">
+      <column name="createdBy" type="VARCHAR(50)" />
+      <column name="createdDate" type="TIMESTAMP" />
+      <column name="status" type="VARCHAR(50)" />
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>
