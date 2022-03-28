@@ -4,6 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     paymentRequestId: DataTypes.INTEGER,
     checkedDate: DataTypes.DATE,
     checkedBy: DataTypes.STRING,
+    checkedById: DataTypes.STRING,
     status: DataTypes.STRING
   },
   {
