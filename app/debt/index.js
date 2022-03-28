@@ -4,6 +4,7 @@ const checkDebts = require('./check-debts')
 const attachDebtInformation = require('./attach-debt-information')
 const saveDebtData = require('./save-debt-data')
 const saveDebt = require('./save-debt')
+const deleteDebt = require('./delete-debt')
 
 module.exports = {
   getDebts,
@@ -11,5 +12,6 @@ module.exports = {
   checkDebts,
   attachDebtInformation,
   saveDebtData,
-  saveDebt
+  saveDebt,
+  deleteDebt
 }
