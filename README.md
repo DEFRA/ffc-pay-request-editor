@@ -60,6 +60,8 @@ Example inbound payment request
 }
 ```
 
+Note that duplicate message detection is based on a `referenceId` property which must be a `UUID`.  If this property is not provided then the `invoiceNumber` property is used instead.
+
 ## Azure App Registration
 
 This service has been integrated into Azure App Registration using the msal-node [npm package](https://www.npmjs.com/package/@azure/msal-node)

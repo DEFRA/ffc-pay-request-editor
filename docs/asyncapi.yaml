@@ -78,6 +78,9 @@ components:
           invoiceCorrectionReference:
             type: string
             description: Original invoice number if correction to AR
+          referenceId:
+            type: string
+            description: Optional UUID used for duplicate detection.  If not provided InvoiceNumber is used instead
           invoiceLines:
             type: array
             description: List of Invoice lines that make up request

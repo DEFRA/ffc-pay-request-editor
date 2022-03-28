@@ -7,7 +7,7 @@ const processManualLedgerRequest = async (manualLedgerRequest) => {
   const paymentRequest = manualLedgerRequest.paymentRequest
   const transaction = await db.sequelize.transaction()
   try {
-    const existingPaymentRequest = await getExistingPaymentRequest(paymentRequest.invoiceNumber, 2, transaction)
+    const existingPaymentRequest = await getExistingPaymentRequest(paymentRequest.invoiceNumber, paymentRequest.referenceId, 2, transaction)
     if (existingPaymentRequest) {
       console.info(`Duplicate payment request received, skipping ${existingPaymentRequest.invoiceNumber}`)
       await transaction.rollback()
