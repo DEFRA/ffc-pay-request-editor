@@ -36,6 +36,7 @@ container:
   manualLedgerSubscriptionAddress: ffc-pay-request-editor
   qcTopicAddress: ffc-pay-quality-check
   editTopicAddress: ffc-pay-request-edit
+  cookiePassword:
 
 livenessProbe:
   path: /healthz
