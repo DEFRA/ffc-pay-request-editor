@@ -41,7 +41,8 @@ module.exports = (sequelize, DataTypes) => {
         return ''
       }
     },
-    released: DataTypes.DATE
+    released: DataTypes.DATE,
+    referenceId: DataTypes.UUID
   },
   {
     tableName: 'paymentRequests',
