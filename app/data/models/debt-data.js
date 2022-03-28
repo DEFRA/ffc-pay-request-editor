@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     recoveryDate: DataTypes.STRING,
     attachedDate: DataTypes.DATE,
     createdDate: DataTypes.DATE,
-    createdBy: DataTypes.STRING
+    createdBy: DataTypes.STRING,
+    createdById: DataTypes.STRING
   },
   {
     tableName: 'debtData',
