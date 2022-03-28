@@ -51,8 +51,8 @@ const refresh = async (account, cookieAuth, forceRefresh = true) => {
   return token.idTokenClaims.roles
 }
 
-const logout = (account) => {
-  msalClientApplication.getTokenCache().removeAccount(account)
+const logout = async (account) => {
+  await msalClientApplication.getTokenCache().removeAccount(account)
 }
 
 module.exports = {
