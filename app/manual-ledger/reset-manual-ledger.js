@@ -3,8 +3,8 @@ const db = require('../data')
 const resetManualLedger = async (paymentRequestId) => {
   const transaction = await db.sequelize.transaction()
   try {
-    cleanUpManualLedger(paymentRequestId, transaction)
-    activateOrginalManualLedger(paymentRequestId, transaction)
+    await cleanUpManualLedger(paymentRequestId, transaction)
+    await activateOriginalManualLedger(paymentRequestId, transaction)
     await transaction.commit()
   } catch (error) {
     await transaction.rollback()
@@ -12,7 +12,7 @@ const resetManualLedger = async (paymentRequestId) => {
   }
 }
 
-const activateOrginalManualLedger = (paymentRequestId, transaction) => {
+const activateOriginalManualLedger = (paymentRequestId, transaction) => {
   return db.manualLedgerPaymentRequest.update({ active: true }, { where: { paymentRequestId, original: true } }, { transaction })
 }
 
