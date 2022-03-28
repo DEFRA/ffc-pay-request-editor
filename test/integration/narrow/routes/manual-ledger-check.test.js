@@ -30,10 +30,10 @@ describe('Manual-ledger-check tests', () => {
       getManualLedger.mockResolvedValue(paymentRequest)
       const options = {
         method,
-        url: manualLedgerCheckUrl
+        url: `${manualLedgerCheckUrl}?paymentrequestid=${paymentRequest.paymentRequestId}`
       }
       const response = await server.inject(options)
-      expect(response.request.response.source.template).toBe('404')
+      expect(response.request.response.source.template).toBe('manual-ledger-check')
     })
 
     test('GET /manual-ledger-check with no manua Ledger data returns 404 view', async () => {
