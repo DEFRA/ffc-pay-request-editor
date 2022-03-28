@@ -44,14 +44,7 @@
 
 {% block beforeContent %}
   {% if auth.isAuthenticated %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <a href="/logout" class="govuk-link">Sign out</a>
-      </div>
-      <div class="govuk-grid-column-one-third">
-        <p class="govuk-body govuk-!-text-align-right">{{ user.username }}</p>
-      </div>
-    </div>
+    <a href="/logout" class="govuk-body govuk-link">Sign out</a>    
   {% endif %}
 {% endblock %}
 
