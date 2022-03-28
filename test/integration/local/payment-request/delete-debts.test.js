@@ -3,7 +3,7 @@ const db = require('../../../../app/data')
 
 describe('Delete debts test', () => {
   beforeEach(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await db.debtData.truncate({ cascade: true })
     await db.debtData.create({
       debtDataId: 1,
       frn: 1234567890,
@@ -13,7 +13,8 @@ describe('Delete debts test', () => {
   })
 
   afterAll(async () => {
-    await db.sequelize.truncate({ cascade: true })
+    await db.debtData.truncate({ cascade: true })
+    await db.paymentRequest.truncate({ cascade: true })
     await db.sequelize.close()
   })
 
