@@ -122,7 +122,7 @@
   }
 
   const calculatePercentage = (partialValue, totalValue) => {
-    return (100 * partialValue) / totalValue
+    return ((100 * partialValue) / totalValue).toFixed(2)
   }
 
   const calculatePercentValue = (percentValue, partialValue) => {
