@@ -2,6 +2,7 @@ const db = require('../data')
 const saveManualLedger = require('./save-manual-ledger')
 const updateQualityCheck = require('../inbound/quality-checks')
 const { getExistingPaymentRequest, savePaymentAndInvoiceLines } = require('../payment-request')
+const { getUser } = require('../auth')
 
 const processManualLedgerRequest = async (manualLedgerRequest) => {
   const paymentRequest = manualLedgerRequest.paymentRequest
@@ -15,7 +16,7 @@ const processManualLedgerRequest = async (manualLedgerRequest) => {
       const paymentRequestId = await savePaymentAndInvoiceLines(paymentRequest, 2, transaction)
       for (const paymentRequestProvisional of manualLedgerRequest.paymentRequests) {
         const paymentRequestLedgerId = await savePaymentAndInvoiceLines(paymentRequestProvisional, 3, transaction)
-        await saveManualLedger(paymentRequestId, paymentRequestLedgerId, true, transaction)
+        await saveManualLedger(paymentRequestId, paymentRequestLedgerId, true, getUser(), transaction)
       }
       await updateQualityCheck(paymentRequestId, transaction)
       await transaction.commit()

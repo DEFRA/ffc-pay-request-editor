@@ -1,6 +1,6 @@
 const db = require('../data')
 
-const saveManualLedger = async (paymentRequestId, ledgerPaymentRequestId, original, transaction) => {
+const saveManualLedger = async (paymentRequestId, ledgerPaymentRequestId, original, user, transaction) => {
   return db.manualLedgerPaymentRequest.create(
     {
       paymentRequestId,
@@ -8,7 +8,8 @@ const saveManualLedger = async (paymentRequestId, ledgerPaymentRequestId, origin
       active: true,
       original,
       createdDate: new Date(),
-      createdBy: undefined
+      createdBy: user.username,
+      createdById: user.userId
     },
     { transaction })
 }

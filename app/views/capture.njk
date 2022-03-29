@@ -54,14 +54,14 @@
             <tbody class="govuk-table__body">
               {% for data in captureData %}
                 <tr class="govuk-table__row">
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.reference }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.netValue }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">
+                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}<th>
+                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}<th>
+                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.reference }}<th>
+                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.netValue }}<th>
+                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}<th>
+                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}<th>
+                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}<th>
+                  <td scope="col" class="govuk-table__cell govuk-body-s">
                     {% if data.attachedDate %}
                       Attached
                     {% else %}

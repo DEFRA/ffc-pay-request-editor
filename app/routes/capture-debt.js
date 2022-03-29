@@ -8,6 +8,7 @@ const { convertToPounds, convertToPence, convertDateToDDMMYYYY } = require('../p
 const { saveDebtData } = require('../processing/debt')
 const { getPaymentRequestAwaitingEnrichment } = require('../payment-request/get-payment-request')
 const { enrichment } = require('../auth/permissions')
+const { getUser } = require('../auth')
 
 module.exports = [{
   method: 'GET',
@@ -37,6 +38,7 @@ module.exports = [{
       const netValue = convertToPounds(convertToPence(String(net)))
       const schemeId = await getSchemeId(scheme)
       const recoveryDate = convertDateToDDMMYYYY(...['debt-discovered-day', 'debt-discovered-month', 'debt-discovered-year'].map(key => request.payload[key]))
+      const { userId, username } = getUser(request)
 
       const transaction = await db.sequelize.transaction()
       try {
@@ -50,7 +52,8 @@ module.exports = [{
           recoveryDate,
           attachedDate: undefined,
           createdDate: new Date(),
-          createdBy: undefined
+          createdBy: username,
+          createdById: userId
         }
 
         const matchingPaymentRequest = await getPaymentRequestAwaitingEnrichment(schemeId, frn, applicationIdentifier, convertToPence(String(net)))

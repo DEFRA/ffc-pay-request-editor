@@ -6,6 +6,7 @@ const ViewModel = require('./models/enrich-request')
 const enrichRequestSchema = require('./schemas/enrich-request')
 const dateSchema = require('./schemas/date')
 const { enrichment } = require('../auth/permissions')
+const { getUser } = require('../auth')
 
 module.exports = [{
   method: 'GET',
@@ -80,13 +81,17 @@ module.exports = [{
         return h.redirect('/enrich')
       }
 
+      const { userId, username } = getUser(request)
+
       await saveDebt({
         paymentRequestId: paymentRequest.paymentRequestId,
         schemeId: paymentRequest.schemeId,
         frn: paymentRequest.frn,
         debtType: payload['debt-type'],
         recoveryDate: `${day}/${month}/${year}`,
-        createdDate: new Date()
+        createdDate: new Date(),
+        createdBy: username,
+        createdById: userId
       })
 
       await updateQualityChecksStatus(paymentRequest.paymentRequestId, 'Pending')

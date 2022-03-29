@@ -5,6 +5,7 @@ const { updateQualityChecksStatus } = require('../quality-check')
 const { convertToPence } = require('../processing/conversion')
 const sessionHandler = require('../session-handler')
 const { ledger } = require('../auth/permissions')
+const getUser = require('../auth/get-user')
 const sessionKey = 'provisionalLedgerData'
 
 module.exports = [{
@@ -95,7 +96,8 @@ module.exports = [{
       const provisionalLedgerData = sessionHandler.get(request, sessionKey)
 
       if (provisionalLedgerData?.provisionalLedgerData) {
-        await saveCalculatedManualLedger(provisionalLedgerData)
+        const user = getUser(request)
+        await saveCalculatedManualLedger(provisionalLedgerData, user)
         sessionHandler.clear(request, sessionKey)
       }
 
