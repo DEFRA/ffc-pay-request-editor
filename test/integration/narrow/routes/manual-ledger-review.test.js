@@ -4,6 +4,8 @@ const { PENDING, FAILED, NOT_READY } = require('../../../../app/quality-check/st
 describe('Manual-ledger-review tests', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
+  jest.mock('../../../../app/auth')
+  const mockAuth = require('../../../../app/auth')
   jest.mock('../../../../app/manual-ledger')
   const { getManualLedger } = require('../../../../app/manual-ledger')
   const createServer = require('../../../../app/server')
@@ -13,17 +15,24 @@ describe('Manual-ledger-review tests', () => {
 
   const auth = { strategy: 'session-auth', credentials: { scope: [ledger] } }
 
+  const user = {
+    homeAccountId: '1',
+    username: 'Developer'
+  }
+
   beforeEach(async () => {
     server = await createServer()
     await server.initialize()
-    getManualLedger.mockResolvedValue([
-      {
-        ledgerPaymentRequest: [{
-          ledger: 'AR',
-          value: -10000
-        }]
-      }
-    ])
+    mockAuth.getUser.mockResolvedValue(user)
+    getManualLedger.mockResolvedValue({
+      ledgerPaymentRequest: [{
+        ledger: 'AR',
+        value: -10000
+      }],
+      manualLedgerChecks: [{
+        createdById: '1'
+      }]
+    })
   })
 
   afterEach(async () => {
