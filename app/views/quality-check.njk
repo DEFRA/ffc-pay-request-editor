@@ -31,7 +31,7 @@
           </p>
 
           <table class="govuk-table">
-            <caption class="govuk-table__caption govuk-table__caption--s">Requests</caption>
+            <caption class="govuk-table__caption govuk-table__caption--s">Ledger assignments</caption>
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header govuk-body-s">Scheme<th>
@@ -46,23 +46,23 @@
               </tr>
             </thead>
             <tbody class="govuk-table__body">
-              {% for data in qualityCheckData %}
-                <tr class="govuk-table__row">
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.schemes.name }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.frn }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.agreementNumber }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.invoiceNumber }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequest.paymentRequestNumber }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequest.valueDecimal }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.status }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">
-                    {% if data.status === 'Pending' %}
-                      <a href="/manual-ledger-review?paymentrequestid={{data.paymentRequest.paymentRequestId}}">Review</a>
-                    {% endif %}
-                  <th>
-                </tr>
-              {% endfor %}
+            {% for qualityCheck in qualityCheckData %}
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.schemes.name }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.frn }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.agreementNumber }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.invoiceNumber }}<th>
+                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ qualityCheck.paymentRequest.paymentRequestNumber }}<th>
+                <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ qualityCheck.paymentRequest.valueDecimal }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.manualLedgerChecks[0].createdBy }}<th>
+                <th scope="col" class="govuk-table__cell govuk-body-s"><strong class="govuk-tag">{{ qualityCheck.status }}</strong><th>
+                <th scope="col" class="govuk-table__cell govuk-body-s">
+                  {% if data.status === 'Pending' and qualityCheck.paymentRequest.manualLedgerChecks[0].createdById !== user.userId %}
+                    <a href="/manual-ledger-review?paymentrequestid={{qualityCheck.paymentRequest.paymentRequestId}}">Review</a>
+                  {% endif %}
+                <th>
+              </tr>
+            {% endfor %}
             </tbody>
           </table>
         <div>
