@@ -22,7 +22,9 @@ const refresh = async (account, cookieAuth, forceRefresh = true) => {
   return [ledger, enrichment]
 }
 
-const logout = async (account) => { return undefined }
+const logout = async (account) => {
+  devAccount.homeAccountId = uuidv4()
+}
 
 module.exports = {
   getAuthenticationUrl,
