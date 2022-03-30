@@ -37,8 +37,8 @@
               <span class="govuk-visually-hidden">Error:</span> The entered values must equal £{{ model.manualLedgerData.valueInPounds }}
             </p>
             <input type="hidden" name="paymentRequestId" value="{{ model.manualLedgerData.paymentRequestId }}"/>
-            {{ledgerCheck('ap', model.manualLedgerData.apAutoValue, model.manualLedgerData.valueInPounds)}}
-            {{ledgerCheck('ar', model.manualLedgerData.arAutoValue, model.manualLedgerData.valueInPounds)}}
+            {{ledgerCheck('ap', model.manualLedgerData.apAutoValue)}}
+            {{ledgerCheck('ar', model.manualLedgerData.arAutoValue)}}
           </div>
           <div class="govuk-grid-column-full">
             {{ govukButton({
@@ -93,7 +93,8 @@
 
 </div>
 <script>
-  const valueInPounds = {{model.manualLedgerData.valueInPounds}};
+  const totalValueInPounds = {{model.manualLedgerData.valueInPounds}}
+  const totalValueInPence = {{model.manualLedgerData.value}}
 
   const apValueId = 'ap-value'
   const arValueId = 'ar-value'
@@ -109,8 +110,19 @@
   const arValue = document.getElementById(arValueId)
   const arPercentage = document.getElementById(arPercentageId)
 
+  const convertToPence = (valueInPounds) => {
+    const currencyArray = valueInPounds.toString().split('.')
+    const pounds = currencyArray[0]
+    const pence = (currencyArray[1] || '00').substring(0, 2).padEnd(2, '0')
+    return Number(pounds + pence)
+  }
+
+  const convertToPounds = (valueInPence) => {
+    return valueInPence / 100
+  }
+
   const calculatePercentage = (partialValue, totalValue) => {
-    return (100 * partialValue) / totalValue
+    return ((100 * partialValue) / totalValue).toFixed(2)
   }
 
   const calculatePercentValue = (percentValue, partialValue) => {
@@ -146,8 +158,8 @@
   }
 
   const setDefaultPercentage = () => {
-    apPercentage.value = calculatePercentage(apValue.value, valueInPounds)
-    arPercentage.value = calculatePercentage(arValue.value, valueInPounds)
+    apPercentage.value = calculatePercentage(apValue.value, totalValueInPounds)
+    arPercentage.value = calculatePercentage(arValue.value, totalValueInPounds)
     validateValues()
   }
 
@@ -155,19 +167,21 @@
 
   const setValue = (changedValue, valueToChange) => {
     const value = document.getElementById(changedValue).value
-    const calculate = valueInPounds - value
-    document.getElementById(valueToChange).value = calculate
+    const valueInPence = convertToPence(value)
+    const calculate = totalValueInPence - valueInPence
+    const valueInPounds = convertToPounds(calculate)
+    document.getElementById(valueToChange).value = valueInPounds
     validateValues()
     setDefaultPercentage()
   }
 
   const setPercentage = (percentageChangeValue, valueToChange, percentageToCalculate, valueToCalculate) => {
     const value = document.getElementById(percentageChangeValue).value
-    const percentValue = calculatePercentValue(value, valueInPounds)
+    const percentValue = calculatePercentValue(value, totalValueInPounds)
     document.getElementById(valueToChange).value = percentValue
     const calculate = 100 - value
     document.getElementById(percentageToCalculate).value = calculate
-    document.getElementById(valueToCalculate).value = calculatePercentValue(calculate, valueInPounds)
+    document.getElementById(valueToCalculate).value = calculatePercentValue(calculate, totalValueInPounds)
     validateValues()
   }
 

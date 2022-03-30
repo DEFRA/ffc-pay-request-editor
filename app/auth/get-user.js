@@ -1,7 +1,7 @@
 const getUser = (request) => {
   return {
-    userId: request ? request.auth.credentials.account.homeAccountId : 'ffc-pay-request-editor',
-    username: request ? request.auth.credentials.account.name : 'ffc-pay-request-editor'
+    userId: request ? request.auth.credentials.account.homeAccountId : 'Automated',
+    username: request ? request.auth.credentials.account.name : 'Automated'
   }
 }
 
