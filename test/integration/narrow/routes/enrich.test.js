@@ -4,6 +4,8 @@ describe('Enrich test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/payment-request')
+  jest.mock('../../../../app/auth')
+  const mockAuth = require('../../../../app/auth')
   const { getPaymentRequest } = require('../../../../app/payment-request')
 
   const createServer = require('../../../../app/server')
@@ -13,7 +15,13 @@ describe('Enrich test', () => {
 
   const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
 
+  const user = {
+    homeAccountId: '1',
+    username: 'Developer'
+  }
+
   beforeEach(async () => {
+    mockAuth.getUser.mockResolvedValue(user)
     server = await createServer()
     await server.initialize()
     getPaymentRequest.mockResolvedValue([
