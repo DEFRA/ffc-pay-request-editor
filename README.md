@@ -86,6 +86,8 @@ The following roles need [setting up](https://docs.microsoft.com/en-us/azure/act
 
 For users to access this service, the users need to be assigned to the relevant roles above through Azure Enterprise Applications.
 
+When authentication is disabled, then the user will automatically be given all roles within the service and assigned a unique user Id.  For testing scenarios where multiple users are required, for example quality checks, then sign in again and a new Id will be assigned.
+
 ## Running the application
 
 The application is designed to run in containerised environments, using Docker Compose in development and Kubernetes in production.
