@@ -25,7 +25,7 @@ function ViewModel (schemes, payload, error) {
       }
     })
 
-    errorMessages.debtDate = Object.entries(errorMessages).filter(x => x[0].startsWith('debt-discovered')).map(x => x[1]).join(' ')
+    errorMessages.debtDate = Object.entries(errorMessages).filter(x => x[0].startsWith('debt-discovered') || x[0] === 'date').map(x => x[1]).join(' ')
   }
 
   const scheme = {
