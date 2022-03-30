@@ -14,8 +14,15 @@ const resetData = async () => {
 describe('Enrich request test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
+  jest.mock('../../../../app/auth')
+  const mockAuth = require('../../../../app/auth')
   const createServer = require('../../../../app/server')
   let server
+
+  const user = {
+    homeAccountId: '1',
+    username: 'Developer'
+  }
 
   const paymentRequest = {
     sourceSystem: 'SFIP',
@@ -66,6 +73,7 @@ describe('Enrich request test', () => {
   const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
 
   beforeEach(async () => {
+    mockAuth.getUser.mockResolvedValue(user)
     await resetData()
     server = await createServer()
     await server.initialize()
