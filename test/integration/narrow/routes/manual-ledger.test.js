@@ -3,6 +3,8 @@ const { ledger } = require('../../../../app/auth/permissions')
 describe('Manual ledger test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
+  jest.mock('../../../../app/auth')
+  const mockAuth = require('../../../../app/auth')
   jest.mock('../../../../app/manual-ledger')
   const { getManualLedgers } = require('../../../../app/manual-ledger')
   const createServer = require('../../../../app/server')
@@ -12,9 +14,15 @@ describe('Manual ledger test', () => {
 
   const auth = { strategy: 'session-auth', credentials: { scope: [ledger] } }
 
+  const user = {
+    homeAccountId: '1',
+    username: 'Developer'
+  }
+
   beforeEach(async () => {
     server = await createServer()
     await server.initialize()
+    mockAuth.getUser.mockResolvedValue(user)
     getManualLedgers.mockResolvedValue([{
       paymentRequest: {
         frn: '1234567890'
