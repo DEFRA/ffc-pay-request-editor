@@ -2,7 +2,7 @@ const db = require('../data')
 const { savePaymentAndInvoiceLines } = require('../payment-request')
 const saveManualLedger = require('./save-manual-ledger')
 
-const saveCalculatedManualLedger = async (calculatedManualLedgers, user) => {
+const saveCalculatedManualLedger = async (calculatedManualLedgers) => {
   const transaction = await db.sequelize.transaction()
   try {
     const paymentRequestId = calculatedManualLedgers.paymentRequestId
@@ -13,7 +13,7 @@ const saveCalculatedManualLedger = async (calculatedManualLedgers, user) => {
     for (const paymentRequest of provisionalLedgerData) {
       const ledgerPaymentRequest = paymentRequest.ledgerPaymentRequest
       const paymentRequestLedgerId = await savePaymentAndInvoiceLines(ledgerPaymentRequest, 3, transaction)
-      await saveManualLedger(paymentRequestId, paymentRequestLedgerId, false, user, transaction)
+      await saveManualLedger(paymentRequestId, paymentRequestLedgerId, false, transaction)
     }
 
     await transaction.commit()

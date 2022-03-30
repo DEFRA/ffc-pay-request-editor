@@ -25,8 +25,8 @@ const getQualityCheckedPaymentRequests = async () => {
     for (const qualityCheck of qualityChecks) {
       const paymentRequest = qualityCheck.paymentRequest
       const manualLedgerRequests = await getManualLedgerRequests(paymentRequest.paymentRequestId)
-      const transfromManualLedgerRequest = manualLedgerRequests.map(x => x.ledgerPaymentRequest)
-      qualityCheckedPaymentRequests.push({ paymentRequest: paymentRequest, paymentRequests: transfromManualLedgerRequest })
+      const transformManualLedgerRequest = manualLedgerRequests.map(x => x.ledgerPaymentRequest)
+      qualityCheckedPaymentRequests.push({ paymentRequest: paymentRequest, paymentRequests: transformManualLedgerRequest })
     }
   }
 

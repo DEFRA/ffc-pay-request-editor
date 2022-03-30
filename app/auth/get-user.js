@@ -1,7 +1,7 @@
 const getUser = (request) => {
   return {
-    userId: request ? request.auth.credentials.account.homeAccountId : 'Automated',
-    username: request ? request.auth.credentials.account.name : 'Automated'
+    userId: request.auth.credentials.account.homeAccountId,
+    username: request.auth.credentials.account.name
   }
 }
 

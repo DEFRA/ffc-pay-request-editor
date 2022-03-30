@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { getManualLedger, calculateManualLedger, saveCalculatedManualLedger } = require('../manual-ledger')
+const { getManualLedger, calculateManualLedger, saveCalculatedManualLedger, updateManualLedgerUser } = require('../manual-ledger')
 const ViewModel = require('./models/manual-ledger-check')
 const { updateQualityChecksStatus } = require('../quality-check')
 const { convertToPence } = require('../processing/conversion')
@@ -96,11 +96,11 @@ module.exports = [{
       const provisionalLedgerData = sessionHandler.get(request, sessionKey)
 
       if (provisionalLedgerData?.provisionalLedgerData) {
-        const user = getUser(request)
-        await saveCalculatedManualLedger(provisionalLedgerData, user)
+        await saveCalculatedManualLedger(provisionalLedgerData)
         sessionHandler.clear(request, sessionKey)
       }
-
+      const user = getUser(request)
+      await updateManualLedgerUser(paymentRequestId, user)
       await updateQualityChecksStatus(paymentRequestId, 'Pending')
       return h.redirect('/quality-check')
     }
