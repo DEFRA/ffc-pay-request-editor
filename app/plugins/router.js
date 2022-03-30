@@ -7,7 +7,6 @@ const routes = [].concat(
   require('../routes/capture'),
   require('../routes/enrich'),
   require('../routes/enrich-request'),
-  require('../routes/review'),
   require('../routes/quality-check'),
   require('../routes/manual-ledger'),
   require('../routes/manual-ledger-check'),

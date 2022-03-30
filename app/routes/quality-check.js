@@ -2,7 +2,7 @@ const ViewModel = require('./models/search')
 const { getQualityChecks } = require('../quality-check')
 const schema = require('./schemas/quality-check')
 const { ledger } = require('../auth/permissions')
-const getUser = require('../auth/get-user')
+const { getUser } = require('../auth')
 const searchLabelText = 'Search for a request by FRN number'
 
 module.exports = [{
