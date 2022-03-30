@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     fundCode: DataTypes.STRING,
     description: DataTypes.STRING,
     value: DataTypes.INTEGER,
-    valueDecimal: {
+    valueText: {
       type: DataTypes.VIRTUAL,
       get () {
         return convertValueToStringFormat(this.value)
