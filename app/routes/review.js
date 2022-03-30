@@ -2,6 +2,7 @@ const { getPaymentRequest } = require('../payment-request')
 const { getInvoiceLinesOfPaymentRequest } = require('../invoice-line')
 const { updateQualityChecksStatus } = require('../quality-check')
 const { ledger } = require('../auth/permissions')
+const { PENDING } = require('../quality-check/statuses')
 
 module.exports = [{
   method: 'GET',
@@ -31,7 +32,7 @@ module.exports = [{
   options: {
     auth: { scope: [ledger] },
     handler: async (request, h) => {
-      const status = request.payload.status ? request.payload.status : 'Pending'
+      const status = request.payload.status ? request.payload.status : PENDING
       if (request.payload.paymentrequestid) {
         await updateQualityChecksStatus(request.payload.paymentrequestid, status)
         return h.redirect('/quality-check')

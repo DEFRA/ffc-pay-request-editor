@@ -7,6 +7,7 @@ const enrichRequestSchema = require('./schemas/enrich-request')
 const dateSchema = require('./schemas/date')
 const { enrichment } = require('../auth/permissions')
 const { getUser } = require('../auth')
+const { PENDING } = require('../quality-check/statuses')
 
 module.exports = [{
   method: 'GET',
@@ -94,7 +95,7 @@ module.exports = [{
         createdById: userId
       })
 
-      await updateQualityChecksStatus(paymentRequest.paymentRequestId, 'Pending')
+      await updateQualityChecksStatus(paymentRequest.paymentRequestId, PENDING)
 
       return h.redirect('/enrich')
     }

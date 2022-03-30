@@ -1,4 +1,5 @@
 const db = require('../data')
+const { PENDING } = require('./statuses')
 
 const getQualityChecksCount = async () => {
   return db.qualityCheck.count(
@@ -12,7 +13,7 @@ const getQualityChecksCount = async () => {
           }
         }
       ],
-      where: { status: 'Pending' }
+      where: { status: PENDING }
     })
 }
 

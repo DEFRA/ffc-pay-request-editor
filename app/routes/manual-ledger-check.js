@@ -6,6 +6,7 @@ const { convertToPence } = require('../processing/conversion')
 const sessionHandler = require('../session-handler')
 const { ledger } = require('../auth/permissions')
 const getUser = require('../auth/get-user')
+const { PENDING } = require('../quality-check/statuses')
 const sessionKey = 'provisionalLedgerData'
 
 module.exports = [{
@@ -101,7 +102,7 @@ module.exports = [{
       }
       const user = getUser(request)
       await updateManualLedgerUser(paymentRequestId, user)
-      await updateQualityChecksStatus(paymentRequestId, 'Pending')
+      await updateQualityChecksStatus(paymentRequestId, PENDING)
       return h.redirect('/quality-check')
     }
   }

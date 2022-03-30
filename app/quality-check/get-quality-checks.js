@@ -1,4 +1,5 @@
 const db = require('../data')
+const { PENDING } = require('./statuses')
 
 const getQualityChecks = async () => {
   return db.qualityCheck.findAll({
@@ -31,7 +32,7 @@ const getQualityChecks = async () => {
       'status'
     ],
     where: {
-      status: 'Pending'
+      status: PENDING
     }
   })
 }

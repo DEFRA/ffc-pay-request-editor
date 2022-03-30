@@ -2,6 +2,7 @@ const { enrichment } = require('../../../../app/auth/permissions')
 const db = require('../../../../app/data')
 
 const { ADMINISTRATIVE } = require('../../../../app/debt-types')
+const { PENDING } = require('../../../../app/quality-check/statuses')
 
 const resetData = async () => {
   await db.qualityCheck.truncate({ cascade: true })
@@ -255,7 +256,7 @@ describe('Enrich request test', () => {
           paymentRequestId: 1
         }
       })
-      expect(qualityChecksRow[0].status).toBe('Pending')
+      expect(qualityChecksRow[0].status).toBe(PENDING)
 
       expect(debtDataRow[0].paymentRequestId).toBe(1)
       expect(debtDataRow[0].schemeId).toBe(1)
@@ -299,7 +300,7 @@ describe('Enrich request test', () => {
           paymentRequestId: 1
         }
       })
-      expect(qualityChecksRow[0].status).toBe('Pending')
+      expect(qualityChecksRow[0].status).toBe(PENDING)
 
       expect(debtDataRow[0].paymentRequestId).toBe(1)
       expect(debtDataRow[0].schemeId).toBe(1)

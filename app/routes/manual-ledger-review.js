@@ -2,6 +2,7 @@ const Joi = require('joi')
 const { ledger } = require('../auth/permissions')
 const { getManualLedger, resetManualLedger } = require('../manual-ledger')
 const { updateQualityChecksStatus } = require('../quality-check')
+const { FAILED, PENDING } = require('../quality-check/statuses')
 const ViewModel = require('./models/manual-ledger-review')
 
 module.exports = [{
@@ -35,7 +36,6 @@ module.exports = [{
       payload: Joi.object({
         paymentRequestId: Joi.string().required(),
         status: Joi.string().required()
-        // status: Joi.boolean().required()
       }),
       failAction: async (request, h, error) => {
         const { paymentRequestId } = request.payload
@@ -44,11 +44,11 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      const status = request.payload.status ? request.payload.status : 'Pending'
+      const status = request.payload.status ? request.payload.status : PENDING
       const paymentRequestId = request.payload.paymentRequestId
       if (paymentRequestId) {
         await updateQualityChecksStatus(paymentRequestId, status)
-        if (status === 'Failed') {
+        if (status === FAILED) {
           await resetManualLedger(paymentRequestId)
         }
       }
