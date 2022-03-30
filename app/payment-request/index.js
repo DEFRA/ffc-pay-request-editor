@@ -6,6 +6,7 @@ const processPaymentRequest = require('./process-payment-request')
 const savePaymentAndInvoiceLines = require('./save-payment-and-invoice-lines')
 const updatePaymentRequestReleased = require('./update-payment-request-released')
 const getDebtPaymentRequests = require('./get-debt-payment-requests')
+const updatePaymentRequestCategory = require('./update-payment-request-category')
 
 module.exports = {
   getExistingPaymentRequest,
@@ -16,5 +17,6 @@ module.exports = {
   processPaymentRequest,
   savePaymentAndInvoiceLines,
   updatePaymentRequestReleased,
-  getDebtPaymentRequests
+  getDebtPaymentRequests,
+  updatePaymentRequestCategory
 }

@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { getManualLedger, resetManualLedger } = require('../manual-ledger')
+const { getManualLedger, resetManualLedger, updateManualLedgerWithDebtData } = require('../manual-ledger')
 const { updateQualityChecksStatus } = require('../quality-check')
 const ViewModel = require('./models/manual-ledger-review')
 
@@ -44,9 +44,17 @@ module.exports = [{
       const status = request.payload.status ? request.payload.status : 'Pending'
       const paymentRequestId = request.payload.paymentRequestId
       if (paymentRequestId) {
-        await updateQualityChecksStatus(paymentRequestId, status)
-        if (status === 'Failed') {
-          await resetManualLedger(paymentRequestId)
+        switch (status) {
+          case 'Passed':
+            await updateManualLedgerWithDebtData(paymentRequestId, status)
+            break
+          case 'Failed':
+            await updateQualityChecksStatus(paymentRequestId, status)
+            await resetManualLedger(paymentRequestId)
+            break
+          default:
+            await updateQualityChecksStatus(paymentRequestId, status)
+            break
         }
       }
       return h.redirect('/quality-check').code(301)

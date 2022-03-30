@@ -1,6 +1,7 @@
 const util = require('util')
 const createMessage = require('./create-message')
 const { updateQualityChecksStatus } = require('../quality-check')
+const { isManualLedgerAwaitingDebtData } = require('../manual-ledger')
 const {
   getDebtPaymentRequests,
   updatePaymentRequestReleased
@@ -11,10 +12,16 @@ const publishDebtPaymentRequests = async (debtSender) => {
     const debtPaymentRequests = await getDebtPaymentRequests()
     for (const paymentRequest of debtPaymentRequests) {
       const { paymentRequestId } = paymentRequest
-      delete paymentRequest.paymentRequestId
-      await publishPaymentRequest(paymentRequest, debtSender)
-      await updatePaymentRequestReleased(paymentRequestId)
-      await updateQualityChecksStatus(paymentRequestId, 'Processed')
+      const inManualLedgerAwaitingDebtData = await isManualLedgerAwaitingDebtData(paymentRequestId)
+
+      if (inManualLedgerAwaitingDebtData) {
+        await updateQualityChecksStatus(paymentRequestId, 'Passed')
+      } else {
+        delete paymentRequest.paymentRequestId
+        await publishPaymentRequest(paymentRequest, debtSender)
+        await updatePaymentRequestReleased(paymentRequestId)
+        await updateQualityChecksStatus(paymentRequestId, 'Processed')
+      }
     }
   } catch (err) {
     console.error('Unable to process payment request message:', err)
