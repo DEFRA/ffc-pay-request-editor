@@ -34,8 +34,8 @@
               <span class="govuk-visually-hidden">Error:</span> The entered values must equal {{ model.manualLedgerData.valueInPoundsText }}
             </p>
             <input type="hidden" name="paymentRequestId" value="{{ model.manualLedgerData.paymentRequestId }}"/>
-            {{ledgerCheck('ap', model.manualLedgerData.apAutoValue)}}
-            {{ledgerCheck('ar', model.manualLedgerData.arAutoValue)}}
+            {{ledgerCheck('Accounts payable', model.manualLedgerData.apAutoValue)}}
+            {{ledgerCheck('Accounts receivable', model.manualLedgerData.arAutoValue)}}
           </div>
           <div class="govuk-grid-column-full">
             {{ govukButton({
