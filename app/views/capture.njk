@@ -2,7 +2,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "macros/search-box.njk" import searchBox %}
 
-{% block beforeContent %}
+{% block content %}
   {{ govukBackLink({
         text: "Back",
         href: "/",
@@ -11,9 +11,6 @@
         }
       }) 
     }}
-{% endblock %}
-
-{% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l">Capture reporting data</h1>

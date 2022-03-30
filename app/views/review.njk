@@ -1,7 +1,7 @@
 {% extends '_layout.njk' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
-{% block beforeContent %}
+{% block content %}
   {{ govukBackLink({
         text: "Back",
         href: "/quality-check",
@@ -10,9 +10,6 @@
         }
       }) 
     }}
-{% endblock %}
-
-{% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <span class="govuk-caption-l">FRN: {{paymentRequestData.frn}}</span>
