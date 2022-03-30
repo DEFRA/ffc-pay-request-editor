@@ -1,8 +1,9 @@
 const db = require('../data')
 
-const getDebts = async () => {
+const getDebts = async (includeAttached = false) => {
+  const where = includeAttached ? {} : { paymentRequestId: null }
   return db.debtData.findAll({
-    where: { paymentRequestId: null },
+    where,
     include: [
       {
         model: db.scheme,
@@ -15,11 +16,13 @@ const getDebts = async () => {
       'frn',
       'reference',
       'netValue',
+      'netValueText',
       'debtType',
       'debtTypeText',
       'recoveryDate',
       'createdBy',
-      'attachedDate'
+      'attachedDate',
+      'paymentRequestId'
     ]
   })
 }
