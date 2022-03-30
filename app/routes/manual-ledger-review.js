@@ -4,6 +4,7 @@ const { getManualLedger, resetManualLedger } = require('../manual-ledger')
 const { updateQualityChecksStatus } = require('../quality-check')
 const { FAILED, PENDING } = require('../quality-check/statuses')
 const ViewModel = require('./models/manual-ledger-review')
+const { getUser } = require('../auth')
 
 module.exports = [{
   method: 'GET',
@@ -18,8 +19,8 @@ module.exports = [{
       }
 
       const manualLedgerData = await getManualLedger(paymentRequestId)
-
-      if (manualLedgerData) {
+      const { userId } = getUser(request)
+      if (manualLedgerData && manualLedgerData.manualLedgerChecks[0].createdById !== userId) {
         return h.view('manual-ledger-review', new ViewModel(manualLedgerData))
       }
 
@@ -47,9 +48,13 @@ module.exports = [{
       const status = request.payload.status ? request.payload.status : PENDING
       const paymentRequestId = request.payload.paymentRequestId
       if (paymentRequestId) {
-        await updateQualityChecksStatus(paymentRequestId, status)
-        if (status === FAILED) {
-          await resetManualLedger(paymentRequestId)
+        const manualLedgerData = await getManualLedger(paymentRequestId)
+        const { userId } = getUser(request)
+        if (manualLedgerData && manualLedgerData.manualLedgerChecks[0].createdById !== userId) {
+          await updateQualityChecksStatus(paymentRequestId, status)
+          if (status === FAILED) {
+            await resetManualLedger(paymentRequestId)
+          }
         }
       }
       return h.redirect('/quality-check').code(301)
