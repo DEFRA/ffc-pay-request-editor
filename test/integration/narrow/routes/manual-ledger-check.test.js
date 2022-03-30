@@ -4,10 +4,17 @@ describe('Manual-ledger-check tests', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/manual-ledger')
+  jest.mock('../../../../app/auth')
+  const mockAuth = require('../../../../app/auth')
   const { getManualLedgers, getManualLedger } = require('../../../../app/manual-ledger')
   const createServer = require('../../../../app/server')
 
   const auth = { strategy: 'session-auth', credentials: { scope: [ledger] } }
+
+  const user = {
+    homeAccountId: '1',
+    username: 'Developer'
+  }
 
   let server
   let paymentRequest
@@ -15,6 +22,8 @@ describe('Manual-ledger-check tests', () => {
   beforeEach(async () => {
     server = await createServer()
     await server.initialize()
+
+    mockAuth.getUser.mockResolvedValue(user)
 
     getManualLedgers.mockResolvedValue([{
       paymentRequest: {
