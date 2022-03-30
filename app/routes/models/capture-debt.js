@@ -33,7 +33,7 @@ function ViewModel (schemes, payload, error) {
     name: 'scheme',
     fieldset: {
       legend: {
-        text: 'Scheme',
+        text: 'Select a scheme',
         classes: 'govuk-fieldset__legend--s'
       }
     },
@@ -50,8 +50,11 @@ function ViewModel (schemes, payload, error) {
 
   const frn = {
     label: {
-      text: 'Firm Reference Number (FRN)',
+      text: 'Firm reference number (FRN)',
       classes: 'govuk-label--s'
+    },
+    hint: {
+      text: 'Enter the 10-digit FRN'
     },
     classes: 'govuk-input--width-10',
     id: 'frn',
@@ -63,11 +66,11 @@ function ViewModel (schemes, payload, error) {
 
   const applicationIdentifier = {
     label: {
-      text: 'Agreement Number',
+      text: 'Agreement number',
       classes: 'govuk-label--s'
     },
     hint: {
-      text: 'Unique reference number to identify application.'
+      text: 'Enter the 15-digit agreement number'
     },
     classes: 'govuk-input--width-10',
     id: 'applicationIdentifier',
@@ -82,7 +85,7 @@ function ViewModel (schemes, payload, error) {
       text: '£'
     },
     label: {
-      text: 'Net value, in pounds',
+      text: 'Net value',
       classes: 'govuk-label--s'
     },
     classes: 'govuk-input--width-5',
@@ -98,7 +101,7 @@ function ViewModel (schemes, payload, error) {
     name: 'debtType',
     fieldset: {
       legend: {
-        text: 'Type of debt',
+        text: 'Select a type of debt',
         classes: 'govuk-fieldset__legend--s'
       }
     },
@@ -128,7 +131,7 @@ function ViewModel (schemes, payload, error) {
       }
     },
     hint: {
-      text: 'For example, 27 3 2017'
+      text: 'For example, 27 3 2022. The debt must be from 2015 onwards'
     },
     items: [
       {
