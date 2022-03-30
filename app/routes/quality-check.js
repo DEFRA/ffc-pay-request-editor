@@ -1,6 +1,5 @@
 const ViewModel = require('./models/search')
 const { getQualityChecks } = require('../quality-check')
-const status = require('../status')
 const schema = require('./schemas/quality-check')
 const { ledger } = require('../auth/permissions')
 const getUser = require('../auth/get-user')
@@ -14,7 +13,7 @@ module.exports = [{
     handler: async (request, h) => {
       const qualityCheckData = await getQualityChecks()
       const { userId } = getUser(request)
-      return h.view('quality-check', { status, qualityCheckData, userId, ...new ViewModel(searchLabelText) })
+      return h.view('quality-check', { qualityCheckData, userId, ...new ViewModel(searchLabelText) })
     }
   }
 },
@@ -28,7 +27,7 @@ module.exports = [{
       failAction: async (request, h, error) => {
         const qualityCheckData = await getQualityChecks()
         const { userId } = getUser(request)
-        return h.view('quality-check', { status, qualityCheckData, userId, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
+        return h.view('quality-check', { qualityCheckData, userId, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
@@ -38,10 +37,10 @@ module.exports = [{
       const { userId } = getUser(request)
 
       if (filteredQualityCheckData.length) {
-        return h.view('quality-check', { status, qualityCheckData: filteredQualityCheckData, userId, ...new ViewModel(searchLabelText, frn) })
+        return h.view('quality-check', { qualityCheckData: filteredQualityCheckData, userId, ...new ViewModel(searchLabelText, frn) })
       }
 
-      return h.view('quality-check', { status, userId, ...new ViewModel(searchLabelText, frn, { message: 'No quality checks match the FRN provided.' }) }).code(400)
+      return h.view('quality-check', { userId, ...new ViewModel(searchLabelText, frn, { message: 'No quality checks match the FRN provided.' }) }).code(400)
     }
   }
 }]

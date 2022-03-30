@@ -1,5 +1,6 @@
-
 module.exports = {
   PENDING: 'Pending',
-  FAILED: 'Failed'
+  FAILED: 'Failed',
+  NOT_READY: 'Not Ready',
+  PASSED: 'Passed'
 }

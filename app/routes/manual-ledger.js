@@ -3,7 +3,8 @@ const searchLabelText = 'Search for a request by FRN number'
 const schema = require('./schemas/manual-ledger')
 const { getManualLedgers } = require('../manual-ledger')
 const { ledger } = require('../auth/permissions')
-const statuses = ['Not ready', 'Failed']
+const { NOT_READY, FAILED } = require('../quality-check/statuses')
+const statuses = [NOT_READY, FAILED]
 
 module.exports = [{
   method: 'GET',

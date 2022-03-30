@@ -2,7 +2,7 @@ const { enrichment } = require('../../../../app/auth/permissions')
 const db = require('../../../../app/data')
 
 const { ADMINISTRATIVE } = require('../../../../app/debt-types')
-const { PENDING } = require('../../../../app/quality-check/statuses')
+const { PENDING, NOT_READY } = require('../../../../app/quality-check/statuses')
 
 const resetData = async () => {
   await db.qualityCheck.truncate({ cascade: true })
@@ -60,7 +60,7 @@ describe('Enrich request test', () => {
     paymentRequestId: 1,
     checkedDate: null,
     checkedBy: null,
-    status: 'Not ready'
+    status: NOT_READY
   }
 
   const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }

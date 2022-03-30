@@ -1,5 +1,6 @@
 const db = require('../data')
 const { getManualLedgerRequests } = require('../manual-ledger')
+const { PASSED } = require('./statuses')
 
 const getQualityCheckedPaymentRequests = async () => {
   const qualityCheckedPaymentRequests = []
@@ -17,7 +18,7 @@ const getQualityCheckedPaymentRequests = async () => {
       }
     ],
     where: {
-      status: 'Passed'
+      status: PASSED
     }
   })
 

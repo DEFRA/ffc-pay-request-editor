@@ -1,5 +1,6 @@
 const db = require('../../../../app/data')
 const { attachDebtInformation, checkDebts } = require('../../../../app/debt')
+const { NOT_READY } = require('../../../../app/quality-check/statuses')
 
 global.console.log = jest.fn()
 let paymentRequestData
@@ -24,7 +25,7 @@ describe('Attach debt information tests', () => {
       qualityCheckId: 1,
       checkedDate: null,
       checkedBy: null,
-      status: 'Not ready'
+      status: NOT_READY
     }
 
     debtData = {

@@ -1,5 +1,5 @@
 const { ledger } = require('../../../../app/auth/permissions')
-const { PENDING } = require('../../../../app/quality-check/statuses')
+const { PENDING, FAILED, NOT_READY } = require('../../../../app/quality-check/statuses')
 
 describe('Manual-ledger-review tests', () => {
   jest.mock('ffc-messaging')
@@ -137,7 +137,7 @@ describe('Manual-ledger-review tests', () => {
         url: `${url}?paymentrequestid=1`,
         payload: {
           paymentRequestId: '1',
-          status: 'Failed'
+          status: FAILED
         }
 
       }
@@ -169,7 +169,7 @@ describe('Manual-ledger-review tests', () => {
         url: `${url}?paymentrequestid=1`,
         payload: {
           paymentRequestId: '1',
-          status: 'Not ready'
+          status: NOT_READY
         }
 
       }

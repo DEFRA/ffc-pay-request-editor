@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid')
 const db = require('../../../../app/data')
 const { processPaymentRequest } = require('../../../../app/payment-request')
+const { NOT_READY } = require('../../../../app/quality-check/statuses')
 let scheme
 let paymentRequest
 const resetData = async () => {
@@ -110,7 +111,7 @@ describe('process payment requests', () => {
       }]
     })
 
-    expect(qualityChecksRow[0].status).toBe('Not ready')
+    expect(qualityChecksRow[0].status).toBe(NOT_READY)
   })
 
   test('should only insert the first payment request based on invoice number', async () => {
