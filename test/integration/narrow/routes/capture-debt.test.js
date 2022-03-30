@@ -4,6 +4,8 @@ describe('capture-debt route', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/processing/scheme')
+  jest.mock('../../../../app/auth')
+  const mockAuth = require('../../../../app/auth')
 
   const { getSchemeId, getSchemes } = require('../../../../app/processing/scheme')
 
@@ -13,6 +15,11 @@ describe('capture-debt route', () => {
   const { ADMINISTRATIVE } = require('../../../../app/debt-types')
 
   const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
+
+  const user = {
+    homeAccountId: '1',
+    username: 'Developer'
+  }
 
   let createServer
   let server
@@ -36,6 +43,7 @@ describe('capture-debt route', () => {
   })
 
   beforeEach(async () => {
+    mockAuth.getUser.mockResolvedValue(user)
     getSchemes.mockResolvedValue(SCHEMES)
     getSchemeId.mockResolvedValue(SCHEME_ID_SFI)
 

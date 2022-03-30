@@ -5,6 +5,8 @@ describe('Capture test', () => {
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/debt')
   const { getDebts } = require('../../../../app/debt')
+  jest.mock('../../../../app/auth')
+  const mockAuth = require('../../../../app/auth')
 
   const createServer = require('../../../../app/server')
   let server
@@ -13,6 +15,11 @@ describe('Capture test', () => {
   const { ADMINISTRATIVE, IRREGULAR } = require('../../../../app/debt-types')
 
   const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
+
+  const user = {
+    homeAccountId: '1',
+    username: 'Developer'
+  }
 
   const debts = [{
     scheme: 'SFI Pilot',
@@ -37,6 +44,7 @@ describe('Capture test', () => {
 
   beforeEach(async () => {
     getDebts.mockResolvedValue(debts)
+    mockAuth.getUser.mockResolvedValue(user)
     server = await createServer()
     await server.initialize()
   })
