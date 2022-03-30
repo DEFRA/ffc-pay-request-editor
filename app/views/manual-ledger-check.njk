@@ -177,11 +177,11 @@
 
   const setPercentage = (percentageChangeValue, valueToChange, percentageToCalculate, valueToCalculate) => {
     const value = document.getElementById(percentageChangeValue).value
-    const percentValue = calculatePercentValue(value, valueInPounds)
+    const percentValue = calculatePercentValue(value, totalValueInPounds)
     document.getElementById(valueToChange).value = percentValue
     const calculate = 100 - value
     document.getElementById(percentageToCalculate).value = calculate
-    document.getElementById(valueToCalculate).value = calculatePercentValue(calculate, valueInPounds)
+    document.getElementById(valueToCalculate).value = calculatePercentValue(calculate, totalValueInPounds)
     validateValues()
   }
 
