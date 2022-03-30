@@ -1,8 +1,8 @@
 const { PublishEvent } = require('ffc-pay-event-publisher')
-const config = require('./config')
+const { eventTopic } = require('../config/mq-config')
 
 const raiseEvent = async (event, status = 'success', error = '') => {
-  const eventPublisher = new PublishEvent(config.eventTopic)
+  const eventPublisher = new PublishEvent(eventTopic)
 
   const eventMessage = {
     name: event.name,

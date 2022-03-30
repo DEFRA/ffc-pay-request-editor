@@ -2,6 +2,7 @@ const Joi = require('joi')
 const { getManualLedger, resetManualLedger } = require('../manual-ledger')
 const { updateQualityChecksStatus } = require('../quality-check')
 const ViewModel = require('./models/manual-ledger-review')
+const { sendManualLedgerReviewEvent } = require('../event')
 
 module.exports = [{
   method: 'GET',
@@ -49,6 +50,7 @@ module.exports = [{
           await resetManualLedger(paymentRequestId)
         }
       }
+      await sendManualLedgerReviewEvent(paymentRequestId)
       return h.redirect('/quality-check').code(301)
     }
   }

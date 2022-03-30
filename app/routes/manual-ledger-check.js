@@ -5,6 +5,7 @@ const { updateQualityChecksStatus } = require('../quality-check')
 const { convertToPence } = require('../processing/conversion')
 const sessionHandler = require('../session-handler')
 const sessionKey = 'provisionalLedgerData'
+const { sendManualLedgerCheckEvent } = require('../event')
 
 module.exports = [{
   method: 'GET',
@@ -96,6 +97,7 @@ module.exports = [{
       }
 
       await updateQualityChecksStatus(paymentRequestId, 'Pending')
+      await sendManualLedgerCheckEvent(paymentRequestId)
       return h.redirect('/quality-check')
     }
   }
