@@ -52,7 +52,11 @@ const refresh = async (account, cookieAuth, forceRefresh = true) => {
 }
 
 const logout = async (account) => {
-  await msalClientApplication.getTokenCache().removeAccount(account)
+  try {
+    await msalClientApplication.getTokenCache().removeAccount(account)
+  } catch (err) {
+    console.error('Unable to end session', err)
+  }
 }
 
 module.exports = {

@@ -1,5 +1,6 @@
 const { ledger, enrichment } = require('./permissions')
-const devAccount = { homeAccountId: 'Developer', name: 'Developer' }
+const { v4: uuidv4 } = require('uuid')
+const devAccount = { homeAccountId: uuidv4(), name: 'Developer' }
 
 const getAuthenticationUrl = () => {
   return '/dev-auth'
