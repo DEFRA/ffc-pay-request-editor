@@ -20,7 +20,7 @@ describe('Enrich request test', () => {
   let server
 
   const user = {
-    homeAccountId: '1',
+    userId: '1',
     username: 'Developer'
   }
 

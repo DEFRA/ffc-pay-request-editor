@@ -3,6 +3,8 @@ const { ledger } = require('../../../../app/auth/permissions')
 describe('Quality check test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
+  jest.mock('../../../../app/auth')
+  const mockAuth = require('../../../../app/auth')
   jest.mock('../../../../app/quality-check')
   const { getQualityChecks } = require('../../../../app/quality-check')
 
@@ -13,9 +15,15 @@ describe('Quality check test', () => {
 
   const auth = { strategy: 'session-auth', credentials: { scope: [ledger] } }
 
+  const user = {
+    userId: '1',
+    username: 'Developer'
+  }
+
   beforeEach(async () => {
     server = await createServer()
     await server.initialize()
+    mockAuth.getUser.mockResolvedValue(user)
     getQualityChecks.mockResolvedValue([{ frn: '1234567890' }])
   })
 

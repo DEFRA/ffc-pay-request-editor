@@ -17,7 +17,7 @@ describe('Capture test', () => {
   const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
 
   const user = {
-    homeAccountId: '1',
+    userId: '1',
     username: 'Developer'
   }
 

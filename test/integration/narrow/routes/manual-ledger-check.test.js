@@ -12,7 +12,7 @@ describe('Manual-ledger-check tests', () => {
   const auth = { strategy: 'session-auth', credentials: { scope: [ledger] } }
 
   const user = {
-    homeAccountId: '1',
+    userId: '1',
     username: 'Developer'
   }
 
