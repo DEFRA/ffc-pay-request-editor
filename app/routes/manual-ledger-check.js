@@ -97,7 +97,7 @@ module.exports = [{
       }
 
       await updateQualityChecksStatus(paymentRequestId, 'Pending')
-      await sendManualLedgerCheckEvent(paymentRequestId)
+      await sendManualLedgerCheckEvent(paymentRequestId, provisionalLedgerData)
       return h.redirect('/quality-check')
     }
   }

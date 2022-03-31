@@ -50,7 +50,7 @@ module.exports = [{
           await resetManualLedger(paymentRequestId)
         }
       }
-      await sendManualLedgerReviewEvent(paymentRequestId)
+      await sendManualLedgerReviewEvent(paymentRequestId, status)
       return h.redirect('/quality-check').code(301)
     }
   }
