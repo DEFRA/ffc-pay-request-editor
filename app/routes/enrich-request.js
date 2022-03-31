@@ -5,6 +5,7 @@ const format = require('../utils/date-formatter')
 const ViewModel = require('./models/enrich-request')
 const enrichRequestSchema = require('./schemas/enrich-request')
 const dateSchema = require('./schemas/date')
+const { sendEnrichRequestEvent } = require('../event')
 
 module.exports = [{
   method: 'GET',
@@ -87,6 +88,7 @@ module.exports = [{
       })
 
       await updateQualityChecksStatus(paymentRequest.paymentRequestId, 'Pending')
+      await sendEnrichRequestEvent(paymentRequest)
 
       return h.redirect('/enrich')
     }
