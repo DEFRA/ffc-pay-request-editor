@@ -1,9 +1,20 @@
+const { ledger } = require('../../../../app/auth/permissions')
+
 describe('Manual-ledger-check tests', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/manual-ledger')
-  const { getManualLedger } = require('../../../../app/manual-ledger')
+  jest.mock('../../../../app/auth')
+  const mockAuth = require('../../../../app/auth')
+  const { getManualLedgers, getManualLedger } = require('../../../../app/manual-ledger')
   const createServer = require('../../../../app/server')
+
+  const auth = { strategy: 'session-auth', credentials: { scope: [ledger] } }
+
+  const user = {
+    userId: '1',
+    username: 'Developer'
+  }
 
   let server
   let paymentRequest
@@ -11,6 +22,15 @@ describe('Manual-ledger-check tests', () => {
   beforeEach(async () => {
     server = await createServer()
     await server.initialize()
+
+    mockAuth.getUser.mockResolvedValue(user)
+
+    getManualLedgers.mockResolvedValue([{
+      paymentRequest: {
+        frn: '1234567890'
+      }
+    }
+    ])
 
     paymentRequest = {
       paymentRequestId: 1,
@@ -30,6 +50,7 @@ describe('Manual-ledger-check tests', () => {
       getManualLedger.mockResolvedValue(paymentRequest)
       const options = {
         method,
+        auth,
         url: `${manualLedgerCheckUrl}?paymentrequestid=${paymentRequest.paymentRequestId}`
       }
       const response = await server.inject(options)
@@ -40,6 +61,7 @@ describe('Manual-ledger-check tests', () => {
       getManualLedger.mockResolvedValue(null)
       const options = {
         method,
+        auth,
         url: manualLedgerCheckUrl
       }
       const response = await server.inject(options)
@@ -49,6 +71,7 @@ describe('Manual-ledger-check tests', () => {
     test('GET /manual-ledger-check with no paymentRequestId returns 404 view', async () => {
       const options = {
         method,
+        auth,
         url: manualLedgerCheckUrl
       }
       const response = await server.inject(options)
@@ -63,6 +86,7 @@ describe('Manual-ledger-check tests', () => {
     test('GET /manual-ledger-check/calculate with no paymentRequestId returns 404 view', async () => {
       const options = {
         method,
+        auth,
         url: manualLedgerCalculateUrl
       }
       const response = await server.inject(options)
@@ -85,6 +109,7 @@ describe('Manual-ledger-check tests', () => {
       getManualLedger.mockResolvedValue(paymentRequest)
       const options = {
         method,
+        auth,
         url: `${manualLedgerCalculateUrl}?paymentRequestId=${paymentRequestId}&ar-value=${arValue}&ap-value=${apValue}&ar-percentage=${arPercentage}&ap-percentage=${apPercentage}`
       }
       const response = await server.inject(options)
@@ -92,8 +117,4 @@ describe('Manual-ledger-check tests', () => {
       expect(response.statusCode).toBe(400)
     })
   })
-
-//   describe('POST requests', () => {
-//     const method = 'POST'
-//   })
 })

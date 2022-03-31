@@ -7,11 +7,14 @@ const { getSchemeId, getSchemes } = require('../processing/scheme')
 const { convertToPounds, convertToPence, convertDateToDDMMYYYY } = require('../processing/conversion')
 const { saveDebtData } = require('../processing/debt')
 const { getPaymentRequestAwaitingEnrichment } = require('../payment-request/get-payment-request')
+const { enrichment } = require('../auth/permissions')
+const { getUser } = require('../auth')
 
 module.exports = [{
   method: 'GET',
   path: '/capture-debt',
   options: {
+    auth: { scope: [enrichment] },
     handler: async (request, h) => {
       const schemes = (await getSchemes()).map(x => x.name)
       return h.view('capture-debt', new ViewModel(schemes))
@@ -22,6 +25,7 @@ module.exports = [{
   method: 'POST',
   path: '/capture-debt',
   options: {
+    auth: { scope: [enrichment] },
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
@@ -34,6 +38,7 @@ module.exports = [{
       const netValue = convertToPounds(convertToPence(String(net)))
       const schemeId = await getSchemeId(scheme)
       const recoveryDate = convertDateToDDMMYYYY(...['debt-discovered-day', 'debt-discovered-month', 'debt-discovered-year'].map(key => request.payload[key]))
+      const { userId, username } = getUser(request)
 
       const transaction = await db.sequelize.transaction()
       try {
@@ -47,7 +52,8 @@ module.exports = [{
           recoveryDate,
           attachedDate: undefined,
           createdDate: new Date(),
-          createdBy: undefined
+          createdBy: username,
+          createdById: userId
         }
 
         const matchingPaymentRequest = await getPaymentRequestAwaitingEnrichment(schemeId, frn, applicationIdentifier, convertToPence(String(net)))

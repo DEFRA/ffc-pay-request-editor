@@ -1,9 +1,12 @@
 const Joi = require('joi')
-const { getManualLedger, calculateManualLedger, saveCalculatedManualLedger } = require('../manual-ledger')
+const { getManualLedger, calculateManualLedger, saveCalculatedManualLedger, updateManualLedgerUser } = require('../manual-ledger')
 const ViewModel = require('./models/manual-ledger-check')
 const { updateQualityChecksStatus } = require('../quality-check')
 const { convertToPence } = require('../processing/conversion')
 const sessionHandler = require('../session-handler')
+const { ledger } = require('../auth/permissions')
+const getUser = require('../auth/get-user')
+const { PENDING } = require('../quality-check/statuses')
 const sessionKey = 'provisionalLedgerData'
 const { sendManualLedgerCheckEvent } = require('../event')
 
@@ -11,6 +14,7 @@ module.exports = [{
   method: 'GET',
   path: '/manual-ledger-check',
   options: {
+    auth: { scope: [ledger] },
     handler: async (request, h) => {
       const paymentRequestId = parseInt(request.query.paymentrequestid)
       if (!paymentRequestId) {
@@ -31,6 +35,7 @@ module.exports = [{
   method: 'GET',
   path: '/manual-ledger-check/calculate',
   options: {
+    auth: { scope: [ledger] },
     validate: {
       query: Joi.object({
         paymentRequestId: Joi.number().required(),
@@ -70,6 +75,7 @@ module.exports = [{
   method: 'POST',
   path: '/manual-ledger-check',
   options: {
+    auth: { scope: [ledger] },
     validate: {
       payload: Joi.object({
         paymentRequestId: Joi.string().required(),
@@ -96,8 +102,10 @@ module.exports = [{
         sessionHandler.clear(request, sessionKey)
       }
 
-      await updateQualityChecksStatus(paymentRequestId, 'Pending')
-      await sendManualLedgerCheckEvent(paymentRequestId, provisionalLedgerData)
+      const user = getUser(request)
+      await updateManualLedgerUser(paymentRequestId, user)
+      await updateQualityChecksStatus(paymentRequestId, PENDING)
+      await sendManualLedgerCheckEvent(paymentRequestId, user, provisionalLedgerData)
       return h.redirect('/quality-check')
     }
   }

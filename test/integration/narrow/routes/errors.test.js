@@ -1,3 +1,5 @@
+const { enrichment } = require('../../../../app/auth/permissions')
+
 describe('errors test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/debt')
@@ -5,6 +7,8 @@ describe('errors test', () => {
 
   const createServer = require('../../../../app/server')
   let server
+
+  const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
 
   beforeEach(async () => {
     server = await createServer()
@@ -24,7 +28,8 @@ describe('errors test', () => {
   test('GET /capture route throws an error within getDebts() and returns 500', async () => {
     const options = {
       method: 'GET',
-      url: '/capture'
+      url: '/capture',
+      auth
     }
     mockDebts.getDebts.mockImplementation(() => { throw new Error() })
     const response = await server.inject(options)

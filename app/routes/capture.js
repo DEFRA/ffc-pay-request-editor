@@ -2,12 +2,14 @@ const ViewModel = require('./models/search')
 const { getDebts, deleteDebt } = require('../debt')
 const schema = require('./schemas/capture')
 const Joi = require('joi')
+const { enrichment } = require('../auth/permissions')
 const searchLabelText = 'Search for data by FRN number'
 
 module.exports = [{
   method: 'GET',
   path: '/capture',
   options: {
+    auth: { scope: [enrichment] },
     handler: async (request, h) => {
       const captureData = await getDebts()
       return h.view('capture', { captureData, ...new ViewModel(searchLabelText) })
@@ -18,6 +20,7 @@ module.exports = [{
   method: 'POST',
   path: '/capture',
   options: {
+    auth: { scope: [enrichment] },
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
@@ -41,6 +44,7 @@ module.exports = [{
   method: 'POST',
   path: '/capture/delete',
   options: {
+    auth: { scope: [enrichment] },
     validate: {
       payload: Joi.object({
         debtDataId: Joi.number().integer().required()

@@ -4,6 +4,7 @@ const { getQualityCheckedPaymentRequests } = require('../../../../app/quality-ch
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
 const { SCHEME_NAME_SFI_PILOT } = require('../../../data/scheme')
 const { IRREGULAR } = require('../../../../app/debt-types')
+const { PASSED } = require('../../../../app/quality-check/statuses')
 
 const resetData = async () => {
   await db.invoiceLine.truncate({ cascade: true })
@@ -55,7 +56,7 @@ describe('Get released payment request test', () => {
 
     qualityCheck = {
       paymentRequestId: 1,
-      status: 'Passed'
+      status: PASSED
     }
 
     debtData = {

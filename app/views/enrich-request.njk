@@ -5,7 +5,7 @@
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% block beforeContent %}
+{% block content %}
   {{ govukBackLink({
         text: "Back",
         href: "/enrich",
@@ -14,9 +14,6 @@
         }
       }) 
     }}
-{% endblock %}
-
-{% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <span class="govuk-caption-l">FRN: {{ paymentRequest.frn }}</span>

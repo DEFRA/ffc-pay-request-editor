@@ -1,13 +1,17 @@
 const Joi = require('joi')
+const { ledger } = require('../auth/permissions')
 const { getManualLedger, resetManualLedger } = require('../manual-ledger')
 const { updateQualityChecksStatus } = require('../quality-check')
+const { FAILED, PENDING } = require('../quality-check/statuses')
 const ViewModel = require('./models/manual-ledger-review')
 const { sendManualLedgerReviewEvent } = require('../event')
+const { getUser } = require('../auth')
 
 module.exports = [{
   method: 'GET',
   path: '/manual-ledger-review',
   options: {
+    auth: { scope: [ledger] },
     handler: async (request, h) => {
       const paymentRequestId = parseInt(request.query.paymentrequestid)
 
@@ -16,8 +20,8 @@ module.exports = [{
       }
 
       const manualLedgerData = await getManualLedger(paymentRequestId)
-
-      if (manualLedgerData) {
+      const { userId } = getUser(request)
+      if (manualLedgerData && manualLedgerData.manualLedgerChecks[0].createdById !== userId) {
         return h.view('manual-ledger-review', new ViewModel(manualLedgerData))
       }
 
@@ -29,11 +33,11 @@ module.exports = [{
   method: 'POST',
   path: '/manual-ledger-review',
   options: {
+    auth: { scope: [ledger] },
     validate: {
       payload: Joi.object({
         paymentRequestId: Joi.string().required(),
         status: Joi.string().required()
-        // status: Joi.boolean().required()
       }),
       failAction: async (request, h, error) => {
         const { paymentRequestId } = request.payload
@@ -42,18 +46,20 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      const status = request.payload.status ? request.payload.status : 'Pending'
+      const status = request.payload.status ? request.payload.status : PENDING
       const paymentRequestId = request.payload.paymentRequestId
       if (paymentRequestId) {
-        await updateQualityChecksStatus(paymentRequestId, status)
-        if (status === 'Failed') {
-          await resetManualLedger(paymentRequestId)
+        const manualLedgerData = await getManualLedger(paymentRequestId)
+        const user = getUser(request)
+        if (manualLedgerData && manualLedgerData.manualLedgerChecks[0].createdById !== user.userId) {
+          await updateQualityChecksStatus(paymentRequestId, status)
+          if (status === FAILED) {
+            await resetManualLedger(paymentRequestId)
+          }
         }
       }
-      await sendManualLedgerReviewEvent(paymentRequestId, status)
+      await sendManualLedgerReviewEvent(paymentRequestId, user, status)
       return h.redirect('/quality-check').code(301)
     }
   }
-}
-
-]
+}]

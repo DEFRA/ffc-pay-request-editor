@@ -1,6 +1,7 @@
 const db = require('../../../../app/data')
 const { processPaymentRequest } = require('../../../../app/payment-request')
 const { updateQualityChecksStatus } = require('../../../../app/quality-check')
+const { NOT_READY, PASSED } = require('../../../../app/quality-check/statuses')
 let scheme
 let paymentRequest
 let paymentRequestId
@@ -74,9 +75,9 @@ describe('process payment requests', () => {
 
     paymentRequestId = qualityChecksRowBeforeUpdate[0].paymentRequestId
 
-    expect(qualityChecksRowBeforeUpdate[0].status).toBe('Not ready')
+    expect(qualityChecksRowBeforeUpdate[0].status).toBe(NOT_READY)
 
-    await updateQualityChecksStatus(paymentRequestId, 'Passed')
+    await updateQualityChecksStatus(paymentRequestId, PASSED)
 
     const qualityChecksRowAfterUpdate = await db.qualityCheck.findAll({
       where: { paymentRequestId: paymentRequestId },
@@ -86,6 +87,6 @@ describe('process payment requests', () => {
         required: true
       }]
     })
-    expect(qualityChecksRowAfterUpdate[0].status).toBe('Passed')
+    expect(qualityChecksRowAfterUpdate[0].status).toBe(PASSED)
   })
 })

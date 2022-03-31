@@ -2,7 +2,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "macros/search-box.njk" import searchBox %}
 
-{% block beforeContent %}
+{% block content %}
   {{ govukBackLink({
         text: "Back",
         href: "/",
@@ -11,9 +11,6 @@
         }
       }) 
     }}
-{% endblock %}
-
-{% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l">Capture reporting data</h1>
@@ -41,27 +38,27 @@
             <caption class="govuk-table__caption govuk-table__caption--s">Existing reporting datasets</caption>
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header govuk-body-s">Scheme<th>
-                <th scope="col" class="govuk-table__header govuk-body-s">FRN<th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Application ID<th>
-                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Net value<th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Debt type<th>
-                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Date of Discovery<th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Created by<th>
-                <th scope="col" class="govuk-table__header"><th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">FRN</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Application ID</th>
+                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Net value</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Debt type</th>
+                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Date of Discovery</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Created by</th>
+                <th scope="col" class="govuk-table__header"></th>
               </tr>
             </thead>
             <tbody class="govuk-table__body">
               {% for data in captureData %}
                 <tr class="govuk-table__row">
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.reference }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.netValue }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">
+                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
+                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
+                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.reference }}</td>
+                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">£{{ data.netValue }}</td>
+                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}</td>
+                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}</td>
+                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}</td>
+                  <td scope="col" class="govuk-table__cell govuk-body-s">
                     {% if data.attachedDate %}
                       Attached
                     {% else %}
@@ -73,7 +70,7 @@
                         </button>
                       </form>
                     {% endif %}
-                  <th>
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>

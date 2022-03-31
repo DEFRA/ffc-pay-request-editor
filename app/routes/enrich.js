@@ -1,12 +1,14 @@
 const ViewModel = require('./models/search')
 const { getPaymentRequest } = require('../payment-request')
 const schema = require('./schemas/enrich')
+const { enrichment } = require('../auth/permissions')
 const searchLabelText = 'Search for a request by FRN number'
 
 module.exports = [{
   method: 'GET',
   path: '/enrich',
   options: {
+    auth: { scope: [enrichment] },
     handler: async (request, h) => {
       const paymentRequest = await getPaymentRequest()
       return h.view('enrich', { enrichData: paymentRequest, ...new ViewModel(searchLabelText) })
@@ -17,6 +19,7 @@ module.exports = [{
   method: 'POST',
   path: '/enrich',
   options: {
+    auth: { scope: [enrichment] },
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
@@ -36,5 +39,4 @@ module.exports = [{
       return h.view('enrich', new ViewModel(searchLabelText, frn, { message: 'No payments match the FRN provided.' })).code(400)
     }
   }
-}
-]
+}]

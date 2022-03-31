@@ -1,3 +1,5 @@
+const { FAILED, PASSED } = require('../../quality-check/statuses')
+
 const errorMessage = 'Please select Yes or No to agree if the request has been edited correctly.'
 
 function ViewModel (manualLedgerData, error) {
@@ -28,11 +30,11 @@ const createLedgerAgreementComponent = (error) => {
     items: [
       {
         text: 'Yes',
-        value: 'Passed'
+        value: PASSED
       },
       {
         text: 'No',
-        value: 'Failed'
+        value: FAILED
       }
     ]
   }

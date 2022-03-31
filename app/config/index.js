@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const { DefaultAzureCredential } = require('@azure/identity')
 const mqConfig = require('./mq-config')
+const authConfig = require('./auth')
 
 // Define config schema
 const schema = Joi.object({
@@ -15,7 +16,7 @@ const schema = Joi.object({
   cookiePassword: Joi.string().required(),
   sessionTimeoutMinutes: Joi.number().default(30),
   staticCacheTimeoutMillis: Joi.number().default(7 * 24 * 60 * 60 * 1000), // 1 day
-  publishPollingInterval: Joi.number().default(10000), // 1 minute
+  publishPollingInterval: Joi.number().default(10000), // 10 seconds
   database: Joi.object({
     database: Joi.string(),
     dialect: Joi.string().default('postgres'),
@@ -94,6 +95,8 @@ if (result.error) {
 
 // Use the joi validated value
 const value = result.value
+
+value.authConfig = authConfig
 
 value.debtSubscription = mqConfig.debtSubscription
 value.manualLedgerSubscription = mqConfig.manualLedgerSubscription
