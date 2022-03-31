@@ -22,19 +22,13 @@ const updateManualLedgerWithDebtData = async (paymentRequestId) => {
   })
 
   const { frn, agreementNumber, value } = paymentRequest
-  const transaction = await db.sequelize.transaction()
-  const foundDebtData = await checkDebts(frn, agreementNumber, value, transaction)
+  const foundDebtData = await checkDebts(frn, agreementNumber, value)
   if (foundDebtData) {
-    try {
-      await attachDebtInformation(paymentRequestId, paymentRequest, transaction)
-      await transaction.commit()
-      await updateQualityChecksStatus(paymentRequestId, 'Passed')
-      return
-    } catch (error) {
-      await transaction.rollback()
-      throw (error)
-    }
+    await attachDebtInformation(paymentRequestId, paymentRequest)
+    await updateQualityChecksStatus(paymentRequestId, 'Passed')
+    return
   }
+
   await updatePaymentRequestCategory(paymentRequestId, 1)
   await updateQualityChecksStatus(paymentRequestId, 'Awaiting Enrichment')
 }

@@ -30,6 +30,10 @@ describe('Update payment request category test', () => {
     await db.paymentRequest.create(paymentRequest)
   })
 
+  afterAll(async () => {
+    await db.sequelize.close()
+  })
+
   test('should return categoryId = 2  before updating', async () => {
     const paymentRequestBeforeUpdate = await db.paymentRequest.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
     expect(paymentRequestBeforeUpdate.categoryId).toBe(2)
