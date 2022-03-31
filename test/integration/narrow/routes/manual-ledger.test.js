@@ -101,7 +101,7 @@ describe('Manual ledger test', () => {
       }
 
       const response = await server.inject(options)
-      expect(response.request.response.source.context.model.errorMessage.text).toEqual('The FRN cannot be empty.')
+      expect(response.request.response.source.context.model.errorMessage.text).toEqual('The FRN must be 10 digits')
     })
 
     test('POST /manual-ledger with invalid frn returns error message ', async () => {
@@ -112,7 +112,7 @@ describe('Manual ledger test', () => {
         payload: { frn: 'abc123' }
       }
       const response = await server.inject(options)
-      expect(response.request.response.source.context.model.errorMessage.text).toEqual('The FRN must be a 10 digit number.')
+      expect(response.request.response.source.context.model.errorMessage.text).toEqual('The FRN must be 10 digits')
     })
 
     test('POST /manual-ledger route returns 200 code with valid frn', async () => {
