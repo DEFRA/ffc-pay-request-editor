@@ -68,7 +68,7 @@ describe('process payment requests', () => {
     await db.sequelize.close()
   })
 
-  test('confirm record is not returned when status is not  Awaiting-Enrichment', async () => {
+  test('confirm manual ledger is added to awaiting enrichment when no matching debt-data', async () => {
     await db.paymentRequest.create(paymentRequest)
     await db.qualityCheck.create(qualityCheck)
     await db.debtData.create({
@@ -83,7 +83,7 @@ describe('process payment requests', () => {
     expect(paymentRequestAfterUpdate.categoryId).toBe(1)
   })
 
-  test('confirm record is not returned when status is not  Awaiting-Enrichment', async () => {
+  test('confirm manual ledger is published to ffc-pay-quality-check if debt data is already attached', async () => {
     await db.paymentRequest.create(paymentRequest)
     await db.qualityCheck.create(qualityCheck)
     await db.debtData.create({
@@ -98,7 +98,7 @@ describe('process payment requests', () => {
     expect(qualityCheckAfterUpdate.status).toBe('Passed')
   })
 
-  test('confirm record is not returned when status is not  Awaiting-Enrichment', async () => {
+  test('confirm manual ledger with no attached debt data searches for matching debt-data and attach found debt-data', async () => {
     await db.paymentRequest.create(paymentRequest)
     await db.qualityCheck.create(qualityCheck)
     await db.debtData.create({
