@@ -13,7 +13,7 @@ const resetManualLedger = async (paymentRequestId) => {
 }
 
 const activateOriginalManualLedger = (paymentRequestId, transaction) => {
-  return db.manualLedgerPaymentRequest.update({ active: true }, { where: { paymentRequestId, original: true } }, { transaction })
+  return db.manualLedgerPaymentRequest.update({ active: true, createdById: null, createdBy: null }, { where: { paymentRequestId, original: true } }, { transaction })
 }
 
 const cleanUpManualLedger = (paymentRequestId, transaction) => {

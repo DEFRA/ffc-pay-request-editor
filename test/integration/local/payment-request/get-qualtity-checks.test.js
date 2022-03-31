@@ -1,5 +1,6 @@
 const { getQualityChecks, getQualityChecksCount } = require('../../../../app/quality-check')
 const db = require('../../../../app/data')
+const { PENDING } = require('../../../../app/quality-check/statuses')
 
 describe('Get quality checks test', () => {
   let qualityCheck
@@ -28,7 +29,7 @@ describe('Get quality checks test', () => {
       paymentRequestId: 1,
       checkedDate: '2021-08-15',
       checkedBy: 'Mr T',
-      status: 'Pending'
+      status: PENDING
     }
 
     await db.scheme.create(scheme)

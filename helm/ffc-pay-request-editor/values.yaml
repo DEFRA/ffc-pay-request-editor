@@ -36,7 +36,7 @@ container:
   manualLedgerSubscriptionAddress: ffc-pay-request-editor
   qcTopicAddress: ffc-pay-quality-check
   debtResponseTopicAddress: ffc-pay-debt-data-response
-  cookiePassword:
+  cookiePassword: cookiecookiecookiecookiecookiecookie
 
 livenessProbe:
   path: /healthz
@@ -77,3 +77,10 @@ ingress:
 service:
   port: 80
   type: ClusterIP
+
+azureAppRegistration:
+  enabled: true
+  clientId:
+  clientSecret:
+  tenantId:
+  redirectUrl: authenticate

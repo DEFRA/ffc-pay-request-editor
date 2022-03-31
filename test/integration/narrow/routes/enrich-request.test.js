@@ -1,6 +1,8 @@
+const { enrichment } = require('../../../../app/auth/permissions')
 const db = require('../../../../app/data')
 
 const { ADMINISTRATIVE } = require('../../../../app/debt-types')
+const { PENDING, NOT_READY } = require('../../../../app/quality-check/statuses')
 
 const resetData = async () => {
   await db.qualityCheck.truncate({ cascade: true })
@@ -12,8 +14,15 @@ const resetData = async () => {
 describe('Enrich request test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
+  jest.mock('../../../../app/auth')
+  const mockAuth = require('../../../../app/auth')
   const createServer = require('../../../../app/server')
   let server
+
+  const user = {
+    userId: '1',
+    username: 'Developer'
+  }
 
   const paymentRequest = {
     sourceSystem: 'SFIP',
@@ -58,10 +67,13 @@ describe('Enrich request test', () => {
     paymentRequestId: 1,
     checkedDate: null,
     checkedBy: null,
-    status: 'Not ready'
+    status: NOT_READY
   }
 
+  const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
+
   beforeEach(async () => {
+    mockAuth.getUser.mockResolvedValue(user)
     await resetData()
     server = await createServer()
     await server.initialize()
@@ -82,6 +94,7 @@ describe('Enrich request test', () => {
     test('GET /enrich-request route returns 404 view when no query parameter provided', async () => {
       const options = {
         method,
+        auth,
         url: '/enrich-request'
       }
 
@@ -93,6 +106,7 @@ describe('Enrich request test', () => {
     test('GET /enrich-request route returns 404 view when invoiceNumber does not exist in the database', async () => {
       const options = {
         method,
+        auth,
         url: '/enrich-request?invoiceNumber=S00000001SFIP000001V002'
       }
 
@@ -104,6 +118,7 @@ describe('Enrich request test', () => {
     test('GET /enrich-request route returns 404 view when request has been enriched already', async () => {
       const options = {
         method,
+        auth,
         url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001'
       }
 
@@ -120,6 +135,7 @@ describe('Enrich request test', () => {
     test('GET /enrich-request route returns 200', async () => {
       const options = {
         method,
+        auth,
         url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001'
       }
 
@@ -140,6 +156,7 @@ describe('Enrich request test', () => {
     test('POST /enrich-request route redirects to /enrich when request has been enriched already', async () => {
       const options = {
         method,
+        auth,
         url: '/enrich-request',
         payload: {
           day: 2,
@@ -163,6 +180,7 @@ describe('Enrich request test', () => {
     test('POST /enrich-request route displays errors when input validation fails', async () => {
       const options = {
         method,
+        auth,
         url: '/enrich-request',
         payload: {
           'invoice-number': 'S00000001SFIP000001V001'
@@ -190,6 +208,7 @@ describe('Enrich request test', () => {
     test('POST /enrich-request route displays errors when date is in the future', async () => {
       const options = {
         method,
+        auth,
         url: '/enrich-request',
         payload: {
           day: 2,
@@ -216,6 +235,7 @@ describe('Enrich request test', () => {
     test('POST /enrich-request route saves debt data when day and month are 1 digit then redirects to /enrich', async () => {
       const options = {
         method,
+        auth,
         url: '/enrich-request',
         payload: {
           day: 2,
@@ -244,7 +264,7 @@ describe('Enrich request test', () => {
           paymentRequestId: 1
         }
       })
-      expect(qualityChecksRow[0].status).toBe('Pending')
+      expect(qualityChecksRow[0].status).toBe(PENDING)
 
       expect(debtDataRow[0].paymentRequestId).toBe(1)
       expect(debtDataRow[0].schemeId).toBe(1)
@@ -259,6 +279,7 @@ describe('Enrich request test', () => {
     test('POST /enrich-request route saves debt data when day and month are 2 digits then redirects to /enrich', async () => {
       const options = {
         method,
+        auth,
         url: '/enrich-request',
         payload: {
           day: 12,
@@ -287,7 +308,7 @@ describe('Enrich request test', () => {
           paymentRequestId: 1
         }
       })
-      expect(qualityChecksRow[0].status).toBe('Pending')
+      expect(qualityChecksRow[0].status).toBe(PENDING)
 
       expect(debtDataRow[0].paymentRequestId).toBe(1)
       expect(debtDataRow[0].schemeId).toBe(1)

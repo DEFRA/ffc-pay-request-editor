@@ -1,4 +1,5 @@
 const db = require('../data')
+const { FAILED, NOT_READY } = require('../quality-check/statuses')
 
 const getManualLedgerCount = async () => {
   return db.paymentRequest.count(
@@ -7,7 +8,7 @@ const getManualLedgerCount = async () => {
         {
           model: db.qualityCheck,
           as: 'qualityChecks',
-          where: { status: ['Not ready', 'Failed'] }
+          where: { status: [NOT_READY, FAILED] }
         }
       ],
       where: { categoryId: 2 }

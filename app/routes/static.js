@@ -4,6 +4,7 @@ module.exports = [{
   method: 'GET',
   path: '/assets/{path*}',
   options: {
+    auth: false,
     handler: {
       directory: {
         path: [
@@ -20,6 +21,7 @@ module.exports = [{
   method: 'GET',
   path: '/govuk-frontend/govuk/{path*}',
   options: {
+    auth: false,
     handler: {
       directory: {
         path: [
@@ -36,6 +38,7 @@ module.exports = [{
   method: 'GET',
   path: '/static/{path*}',
   options: {
+    auth: false,
     handler: {
       directory: {
         path: [

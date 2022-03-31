@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     ledgerPaymentRequestId: DataTypes.INTEGER,
     createdDate: DataTypes.DATE,
     createdBy: DataTypes.STRING,
+    createdById: DataTypes.STRING,
     active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true

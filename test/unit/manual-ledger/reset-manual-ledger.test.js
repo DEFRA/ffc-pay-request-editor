@@ -35,7 +35,7 @@ describe('Get manual ledger test', () => {
     await db.sequelize.close()
   })
 
-  test('should return 1 payment request record with a provisional paymaent request', async () => {
+  test('should return 1 payment request record with a provisional payment request', async () => {
     const paymentRequestId = 1
     await resetManualLedger(paymentRequestId)
     const manualLedgerPaymentRequest = await db.manualLedgerPaymentRequest.findAll()

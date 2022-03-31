@@ -6,6 +6,7 @@ const calculateManualLedger = require('./calculate-manual-ledger')
 const saveCalculatedManualLedger = require('./save-calculated-manual-ledger')
 const resetManualLedger = require('./reset-manual-ledger')
 const getManualLedgerRequests = require('./get-manual-ledger-requests')
+const updateManualLedgerUser = require('./update-manual-ledger-user')
 
 module.exports = {
   getManualLedgerCount,
@@ -15,5 +16,6 @@ module.exports = {
   calculateManualLedger,
   saveCalculatedManualLedger,
   resetManualLedger,
-  getManualLedgerRequests
+  getManualLedgerRequests,
+  updateManualLedgerUser
 }
