@@ -27,15 +27,15 @@
       {{paymentRequestHeader(model.manualLedgerData)}}
       {{paymentRequestInvoiceLines(model.manualLedgerData.invoiceLines)}}
       {% if showLedgerSplit %}
-        <h2 class="govuk-heading-m">Ledger Split</h2>
+        <h2 class="govuk-heading-m">Change ledger allocation</h2>
         <form method="GET" action="/manual-ledger-check/calculate?paymentrequestid={{ model.manualLedgerData.paymentRequestId }}" novalidate>
           <div id="ledger-wrapper" class="govuk-form-group">
             <p id="ledger-value-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span> The entered values must equal {{ model.manualLedgerData.valueInPoundsText }}
             </p>
             <input type="hidden" name="paymentRequestId" value="{{ model.manualLedgerData.paymentRequestId }}"/>
-            {{ledgerCheck('Accounts payable', model.manualLedgerData.apAutoValue)}}
-            {{ledgerCheck('Accounts receivable', model.manualLedgerData.arAutoValue)}}
+            {{ledgerCheck('ap', model.manualLedgerData.apAutoValue)}}
+            {{ledgerCheck('ar', model.manualLedgerData.arAutoValue)}}
           </div>
           <div class="govuk-grid-column-full">
             {{ govukButton({
