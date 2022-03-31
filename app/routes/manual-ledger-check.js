@@ -91,7 +91,7 @@ module.exports = [{
 
       if (!agree) {
         const manualLedgerData = await getManualLedger(paymentRequestId)
-        return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData), showLedgerSplit: true, provisionalValue: 0 }).code(400).takeover()
+        return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData), showLedgerSplit: true, provisionalValue: 0 }).takeover()
       }
 
       const provisionalLedgerData = sessionHandler.get(request, sessionKey)
