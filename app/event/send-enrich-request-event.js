@@ -3,10 +3,10 @@ const getCorrelationId = require('../payment-request/get-correlation-id')
 
 const sendEnrichRequestEvent = async (paymentRequest, user) => {
   const { paymentRequestId } = paymentRequest
-  const { correlationId } = await getCorrelationId(paymentRequestId)
+  const correlationId = await getCorrelationId(paymentRequestId)
   const event = {
     id: correlationId,
-    name: 'payment-request-enrich-request-event',
+    name: 'payment-request-enrich-request',
     type: 'info',
     message: 'Debt data succesfully enriched.',
     data: { paymentRequest, user }

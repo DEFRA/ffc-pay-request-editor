@@ -107,7 +107,6 @@ value.isDev = value.env === 'development'
 value.isTest = value.env === 'test'
 value.isProd = value.env === 'production'
 value.eventTopic = mqConfig.eventTopic
-value.eventTopic = mqConfig.eventTopic
 
 value.catboxOptions = {
   host: value.redisHost,
