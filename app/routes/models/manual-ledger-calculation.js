@@ -10,9 +10,9 @@ const calculate = async (paymentRequestId, arValue) => {
   const splitLedger = await splitToLedger(copyManualLedgerData, arValue, ledger)
   manualLedgerData.manualLedgerChecks = []
   manualLedgerData.manualLedgerChecks = splitLedger.map(x => {
-    x.valueDecimal = convertToPounds(x.value)
+    x.valueText = convertToPounds(x.value)
     x.invoiceLines.map(l => {
-      l.valueDecimal = convertToPounds(l.value)
+      l.valueText = convertToPounds(l.value)
       return l
     })
     return {

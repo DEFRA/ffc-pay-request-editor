@@ -201,7 +201,7 @@ describe('Enrich request test', () => {
       expect(response.request.response.source.context.model.errorMessage.errorList[1].message).toBe('"month" is required')
       expect(response.request.response.source.context.model.errorMessage.errorList[2].message).toBe('"year" is required')
       expect(response.request.response.source.context.model.errorMessage.errorList[3].message).toBe('"debt-type" is required')
-      expect(response.request.response.source.context.model.radio.errorMessage.text).toBe('Select the type of debt')
+      expect(response.request.response.source.context.model.radio.errorMessage.text).toBe('Select a type of debt')
       expect(response.request.response.source.context.model.date.errorMessage.text).toBe('The date submitted is not valid')
     })
 

@@ -132,7 +132,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no scheme selected returns "The scheme cannot be empty." error message', async () => {
+  test('POST /capture-debt with no scheme selected returns "Select a scheme" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -141,7 +141,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The scheme cannot be empty.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Select a scheme')
   })
 
   test('POST /capture-debt with invalid scheme returns 400', async () => {
@@ -181,7 +181,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with invalid scheme returns "The scheme can only be SFI,SFI Pilot." error message', async () => {
+  test('POST /capture-debt with invalid scheme returns "Select a scheme" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -191,7 +191,7 @@ describe('capture-debt route', () => {
 
     const result = await server.inject(options)
     // TODO: add errorSummary length = 1
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The scheme can only be SFI,SFI Pilot.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Select a scheme')
   })
 
   test('POST /capture-debt with no FRN returns 400', async () => {
@@ -231,7 +231,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no FRN returns "The FRN cannot be empty." error message', async () => {
+  test('POST /capture-debt with no FRN returns "The FRN must be 10 digits" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -240,7 +240,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN cannot be empty.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits')
   })
 
   test('POST /capture-debt with a nine digit FRN returns 400', async () => {
@@ -280,7 +280,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with a nine digit FRN returns "The FRN is too short. This must be 10 digits." error message', async () => {
+  test('POST /capture-debt with a nine digit FRN returns "The FRN must be 10 digits" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -289,7 +289,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN is too short. This must be 10 digits.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits')
   })
 
   test('POST /capture-debt with an eleven digit FRN returns 400', async () => {
@@ -329,7 +329,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with an eleven digit FRN returns "The FRN is too long. This must be 10 digits." error message', async () => {
+  test('POST /capture-debt with an eleven digit FRN returns "The FRN must be 10 digits" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -338,7 +338,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN is too long. This must be 10 digits.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits')
   })
 
   test('POST /capture-debt with alphanumeric characters in the FRN returns 400', async () => {
@@ -378,7 +378,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with alphanumeric characters in the FRN returns "The FRN must be a 10 digit number." error message', async () => {
+  test('POST /capture-debt with alphanumeric characters in the FRN returns "The FRN must be 10 digits" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -387,10 +387,10 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be a 10 digit number.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits')
   })
 
-  test('POST /capture-debt with no application identifier returns 400', async () => {
+  test('POST /capture-debt with no agreement number returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -402,7 +402,7 @@ describe('capture-debt route', () => {
     expect(result.statusCode).toBe(400)
   })
 
-  test('POST /capture-debt with no application identifier returns capture-debt view', async () => {
+  test('POST /capture-debt with no agreement number returns capture-debt view', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -415,7 +415,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.template).toBe('capture-debt')
   })
 
-  test('POST /capture-debt with no application identifier returns all scheme names', async () => {
+  test('POST /capture-debt with no agreement number returns all scheme names', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -427,7 +427,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no application identifier returns "The application identifier cannot be empty." error message', async () => {
+  test('POST /capture-debt with no agreement number returns "The agreement number cannot be empty." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -436,10 +436,10 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The application identifier cannot be empty.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number cannot be empty.')
   })
 
-  test('POST /capture-debt with a nine character application identifier returns 400', async () => {
+  test('POST /capture-debt with a nine character agreement number returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -451,7 +451,7 @@ describe('capture-debt route', () => {
     expect(result.statusCode).toBe(400)
   })
 
-  test('POST /capture-debt with a nine character application identifier returns capture-debt view', async () => {
+  test('POST /capture-debt with a nine character agreement number returns capture-debt view', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -464,7 +464,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.template).toBe('capture-debt')
   })
 
-  test('POST /capture-debt with a nine character application identifier returns all scheme names', async () => {
+  test('POST /capture-debt with a nine character agreement number returns all scheme names', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -476,7 +476,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with a nine character application identifier returns "The application identifier is too short. This must be 15 characters." error message', async () => {
+  test('POST /capture-debt with a nine character agreement number returns "The agreement number is too short. This must be 15 characters." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -485,10 +485,10 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The application identifier is too short. This must be 15 characters.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number is too short. This must be 15 characters.')
   })
 
-  test('POST /capture-debt with a 16 character application identifier returns 400', async () => {
+  test('POST /capture-debt with a 16 character agreement number returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -500,7 +500,7 @@ describe('capture-debt route', () => {
     expect(result.statusCode).toBe(400)
   })
 
-  test('POST /capture-debt with a 16 application identifier returns capture-debt view', async () => {
+  test('POST /capture-debt with a 16 agreement number returns capture-debt view', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -513,7 +513,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.template).toBe('capture-debt')
   })
 
-  test('POST /capture-debt with a 16 character application identifier returns all scheme names', async () => {
+  test('POST /capture-debt with a 16 character agreement number returns all scheme names', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -525,7 +525,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with a 16 character application identifier returns "The application identifier is too long. This must be 15 characters." error message', async () => {
+  test('POST /capture-debt with a 16 character agreement number returns "The agreement number is too long. This must be 15 characters." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -534,10 +534,10 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The application identifier is too long. This must be 15 characters.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number is too long. This must be 15 characters.')
   })
 
-  test('POST /capture-debt with non alphanumeric characters in the application identifier returns 400', async () => {
+  test('POST /capture-debt with non alphanumeric characters in the agreement number returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -549,7 +549,7 @@ describe('capture-debt route', () => {
     expect(result.statusCode).toBe(400)
   })
 
-  test('POST /capture-debt with non alphanumeric characters in the application identifier returns capture-debt view', async () => {
+  test('POST /capture-debt with non alphanumeric characters in the agreement number returns capture-debt view', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -562,7 +562,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.template).toBe('capture-debt')
   })
 
-  test('POST /capture-debt with non alphanumeric characters in the application identifier returns all scheme names', async () => {
+  test('POST /capture-debt with non alphanumeric characters in the agreement number returns all scheme names', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -574,7 +574,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with non alphanumeric characters in the application identifier returns "The application identifier can only have alphanumeric characters." error message', async () => {
+  test('POST /capture-debt with non alphanumeric characters in the agreement number returns "The agreement number can only have alphanumeric characters." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -583,7 +583,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The application identifier can only have alphanumeric characters.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number can only have alphanumeric characters.')
   })
 
   test('POST /capture-debt with no net returns 400', async () => {
@@ -877,7 +877,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The type of debt cannot be empty.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Select a type of debt')
   })
 
   test('POST /capture-debt with invalid debt type returns 400', async () => {
@@ -926,7 +926,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The type of debt can only be adm,irr.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Select a type of debt')
   })
 
   test('POST /capture-debt with no debt day returns 400', async () => {

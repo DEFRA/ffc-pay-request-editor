@@ -45,7 +45,7 @@ function ViewModel (payload, error) {
           text
         }
       } else {
-        const text = 'Select the type of debt'
+        const text = 'Select a type of debt'
         detail.href = `#${detail.context.label}`
         detail.text = text
         errorMessage['radio-error'] = {
@@ -72,7 +72,7 @@ function ViewModel (payload, error) {
       classes: 'govuk-radios--small',
       fieldset: {
         legend: {
-          text: 'Type of debt',
+          text: 'Select a type of debt',
           classes: 'govuk-label govuk-label--s'
         }
       },
@@ -99,7 +99,7 @@ function ViewModel (payload, error) {
         }
       },
       hint: {
-        text: 'For example, 27 3 2007'
+        text: 'For example, 27 3 2022. The debt must be from 2015 onwards'
       },
       errorMessage: errorMessage['date-error'],
       items: [

@@ -11,7 +11,7 @@ module.exports = [{
   options: {
     auth: { scope: [enrichment] },
     handler: async (request, h) => {
-      const captureData = await getDebts()
+      const captureData = await getDebts(true)
       return h.view('capture', { captureData, ...new ViewModel(searchLabelText) })
     }
   }
@@ -24,13 +24,13 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        const captureData = await getDebts()
+        const captureData = await getDebts(true)
         return h.view('capture', { captureData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
       const frn = request.payload.frn
-      const captureData = await getDebts()
+      const captureData = await getDebts(true)
       const filteredCaptureData = captureData.filter(x => x.frn === String(frn))
 
       if (filteredCaptureData.length) {
@@ -50,7 +50,7 @@ module.exports = [{
         debtDataId: Joi.number().integer().required()
       }),
       failAction: async (request, h, error) => {
-        const captureData = await getDebts()
+        const captureData = await getDebts(true)
         return h.view('capture', { captureData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
       }
     },

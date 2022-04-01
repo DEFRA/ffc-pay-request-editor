@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     originalInvoiceNumber: DataTypes.STRING,
     invoiceCorrectionReference: DataTypes.STRING,
     value: DataTypes.INTEGER,
-    valueDecimal: {
+    valueText: {
       type: DataTypes.VIRTUAL,
       get () {
         return convertValueToStringFormat(this.value)

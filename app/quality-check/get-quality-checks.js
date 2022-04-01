@@ -2,7 +2,7 @@ const db = require('../data')
 const { PENDING } = require('./statuses')
 
 const getQualityChecks = async () => {
-  return db.qualityCheck.findAll({
+  const qualityChecks = await db.qualityCheck.findAll({
     include: [{
       model: db.paymentRequest,
       as: 'paymentRequest',
@@ -13,7 +13,8 @@ const getQualityChecks = async () => {
       }, {
         model: db.manualLedgerPaymentRequest,
         as: 'manualLedgerChecks',
-        attributes: ['createdBy', 'createdById']
+        attributes: ['createdBy', 'createdById'],
+        where: { active: true }
       }],
       where: {
         categoryId: 2
@@ -25,7 +26,7 @@ const getQualityChecks = async () => {
         'invoiceNumber',
         'paymentRequestNumber',
         'value',
-        'valueDecimal'
+        'valueText'
       ]
     }],
     attributes: [
@@ -35,6 +36,7 @@ const getQualityChecks = async () => {
       status: PENDING
     }
   })
+  return qualityChecks.map(x => x.get({ plain: true }))
 }
 
 module.exports = getQualityChecks

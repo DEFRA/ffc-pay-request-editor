@@ -5,6 +5,8 @@ const { PENDING } = require('../../../../app/quality-check/statuses')
 describe('Get quality checks test', () => {
   let qualityCheck
   let paymentRequest
+  let ledgerPaymentRequest
+  let manualLedgerPaymentRequest
 
   const resetTables = async () => {
     await db.qualityCheck.truncate({ cascade: true })
@@ -25,6 +27,19 @@ describe('Get quality checks test', () => {
       categoryId: 2
     }
 
+    ledgerPaymentRequest = {
+      paymentRequestId: 2,
+      schemeId: scheme.schemeId,
+      frn: 1234567890,
+      released: undefined,
+      categoryId: 3
+    }
+
+    manualLedgerPaymentRequest = {
+      paymentRequestId: 1,
+      ledgerPaymentRequestId: 2
+    }
+
     qualityCheck = {
       paymentRequestId: 1,
       checkedDate: '2021-08-15',
@@ -34,6 +49,9 @@ describe('Get quality checks test', () => {
 
     await db.scheme.create(scheme)
     await db.paymentRequest.create(paymentRequest)
+    await db.paymentRequest.create(ledgerPaymentRequest)
+    await db.manualLedgerPaymentRequest.create(manualLedgerPaymentRequest)
+
     await db.qualityCheck.create(qualityCheck)
   })
 
