@@ -37,6 +37,7 @@ Example inbound payment request
    "frn":1234567890,
    "marketingYear":2022,
    "paymentRequestNumber": 2,
+   "correlationId":"9e016c50-046b-4597-b79a-ebe4f0bf8505",
    "invoiceNumber":"S123456789A123456V001",
    "agreementNumber":"SIP000001234567",
    "contractNumber":"SFI12345",
