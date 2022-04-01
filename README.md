@@ -62,6 +62,32 @@ Example inbound payment request
 
 Note that duplicate message detection is based on a `referenceId` property which must be a `UUID`.  If this property is not provided then the `invoiceNumber` property is used instead.
 
+## Azure App Registration
+
+This service has been integrated into Azure App Registration using the msal-node [npm package](https://www.npmjs.com/package/@azure/msal-node)
+
+By default, authentication is disabled.  It can be enabled by setting the `AUTHENTICATION_ENABLED` environment variable to `true`
+
+If authentication is enabled, this service needs to be registered with [Azure App Registration](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+
+The following environment varibles need to be set:
+
+- AZURE_CLIENT_ID
+- AZURE_TENANT_ID
+- AZURE_CLIENT_SECRET
+
+These can be retrieved from the App Registration overview blade.
+
+The following roles need [setting up](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps)
+
+- Payments.Enrichment.Admin
+- Payments.Ledger.Amend
+- Payments.Ledger.Check
+
+For users to access this service, the users need to be assigned to the relevant roles above through Azure Enterprise Applications.
+
+When authentication is disabled, then the user will automatically be given all roles within the service and assigned a unique user Id.  For testing scenarios where multiple users are required, for example quality checks, then sign in again and a new Id will be assigned.
+
 ## Running the application
 
 The application is designed to run in containerised environments, using Docker Compose in development and Kubernetes in production.

@@ -1,5 +1,6 @@
 const db = require('../../../../app/data')
 const { isManualLedgerAwaitingDebtData } = require('../../../../app/manual-ledger')
+const { AWAITING_ENRICHMENT } = require('../../../../app/quality-check/statuses')
 let scheme
 let paymentRequest
 let qualityCheck
@@ -73,7 +74,7 @@ describe('process payment requests', () => {
   })
 
   test('confirm record is returned when status is Awaiting-Enrichment', async () => {
-    qualityCheck.status = 'Awaiting Enrichment'
+    qualityCheck.status = AWAITING_ENRICHMENT
     await db.paymentRequest.create(paymentRequest)
     await db.qualityCheck.create(qualityCheck)
     const inManualLedgerAwaitingDebtData = await isManualLedgerAwaitingDebtData(paymentRequest.paymentRequestId)

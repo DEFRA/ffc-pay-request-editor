@@ -1,14 +1,25 @@
+const { enrichment } = require('../../../../app/auth/permissions')
+
 describe('Capture test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/debt')
   const { getDebts } = require('../../../../app/debt')
+  jest.mock('../../../../app/auth')
+  const mockAuth = require('../../../../app/auth')
 
   const createServer = require('../../../../app/server')
   let server
   const url = '/capture'
 
   const { ADMINISTRATIVE, IRREGULAR } = require('../../../../app/debt-types')
+
+  const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
+
+  const user = {
+    userId: '1',
+    username: 'Developer'
+  }
 
   const debts = [{
     scheme: 'SFI Pilot',
@@ -33,6 +44,7 @@ describe('Capture test', () => {
 
   beforeEach(async () => {
     getDebts.mockResolvedValue(debts)
+    mockAuth.getUser.mockResolvedValue(user)
     server = await createServer()
     await server.initialize()
   })
@@ -48,7 +60,8 @@ describe('Capture test', () => {
     test('GET /capture route returns 200', async () => {
       const options = {
         method,
-        url
+        url,
+        auth
       }
 
       const response = await server.inject(options)
@@ -64,8 +77,9 @@ describe('Capture test', () => {
     test('POST /capture with no records returns "No debts match the FRN provided.', async () => {
       const options = {
         method: method,
-        url: url,
-        payload: { frn: '1234567893' }
+        url,
+        payload: { frn: '1234567893' },
+        auth
       }
 
       const response = await server.inject(options)
@@ -85,7 +99,8 @@ describe('Capture test', () => {
       const options = {
         method,
         url,
-        payload: { frn }
+        payload: { frn },
+        auth
       }
 
       const response = await server.inject(options)
@@ -104,7 +119,8 @@ describe('Capture test', () => {
       const options = {
         method,
         url: '/capture/delete',
-        payload: { debtDataId }
+        payload: { debtDataId },
+        auth
       }
 
       const response = await server.inject(options)

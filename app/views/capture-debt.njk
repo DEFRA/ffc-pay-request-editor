@@ -6,7 +6,7 @@
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
-{% block beforeContent %}
+{% block content %}
   {{ govukBackLink({
       text: "Back",
       href: "/",
@@ -15,9 +15,6 @@
       }
     }) 
   }}
-{% endblock %}
-
-{% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">Create new reporting dataset</h1>

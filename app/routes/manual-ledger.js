@@ -2,11 +2,16 @@ const ViewModel = require('./models/search')
 const searchLabelText = 'Search for a request by FRN number'
 const schema = require('./schemas/manual-ledger')
 const { getManualLedgers } = require('../manual-ledger')
-const statuses = ['Not ready', 'Failed']
+const { ledger } = require('../auth/permissions')
+const { NOT_READY, FAILED } = require('../quality-check/statuses')
+const statuses = [NOT_READY, FAILED]
 
 module.exports = [{
   method: 'GET',
   path: '/manual-ledger',
+  options: {
+    auth: { scope: [ledger] }
+  },
   handler: async (request, h) => {
     const ledgerData = await getManualLedgers(statuses)
     return h.view('manual-ledger', { ledgerData, ...new ViewModel(searchLabelText) })
@@ -16,6 +21,7 @@ module.exports = [{
   method: 'POST',
   path: '/manual-ledger',
   options: {
+    auth: { scope: [ledger] },
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
@@ -35,5 +41,4 @@ module.exports = [{
       return h.view('manual-ledger', new ViewModel(searchLabelText, frn, { message: 'No payments match the FRN provided.' })).code(400)
     }
   }
-}
-]
+}]

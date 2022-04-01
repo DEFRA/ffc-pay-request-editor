@@ -1,7 +1,11 @@
+const { enrichment } = require('../../../../app/auth/permissions')
+
 describe('Enrich test', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/payment-request')
+  jest.mock('../../../../app/auth')
+  const mockAuth = require('../../../../app/auth')
   const { getPaymentRequest } = require('../../../../app/payment-request')
 
   const createServer = require('../../../../app/server')
@@ -9,7 +13,15 @@ describe('Enrich test', () => {
   let server
   const url = '/enrich'
 
+  const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
+
+  const user = {
+    userId: '1',
+    username: 'Developer'
+  }
+
   beforeEach(async () => {
+    mockAuth.getUser.mockResolvedValue(user)
     server = await createServer()
     await server.initialize()
     getPaymentRequest.mockResolvedValue([
@@ -33,7 +45,8 @@ describe('Enrich test', () => {
     test('GET /capture route returns 200', async () => {
       const options = {
         method,
-        url
+        url,
+        auth
       }
 
       const response = await server.inject(options)
@@ -49,7 +62,8 @@ describe('Enrich test', () => {
     test('POST /enrich with no records returns "No debts match the FRN provided.', async () => {
       const options = {
         method: method,
-        url: url,
+        url,
+        auth,
         payload: { frn: '1234567893' }
       }
 
@@ -70,6 +84,7 @@ describe('Enrich test', () => {
       const options = {
         method,
         url,
+        auth,
         payload: { frn }
       }
 

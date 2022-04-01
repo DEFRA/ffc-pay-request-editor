@@ -1,15 +1,19 @@
 const Joi = require('joi')
-const { getManualLedger, calculateManualLedger, saveCalculatedManualLedger } = require('../manual-ledger')
+const { getManualLedger, calculateManualLedger, saveCalculatedManualLedger, updateManualLedgerUser } = require('../manual-ledger')
 const ViewModel = require('./models/manual-ledger-check')
 const { updateQualityChecksStatus } = require('../quality-check')
 const { convertToPence } = require('../processing/conversion')
 const sessionHandler = require('../session-handler')
+const { ledger } = require('../auth/permissions')
+const getUser = require('../auth/get-user')
+const { PENDING } = require('../quality-check/statuses')
 const sessionKey = 'provisionalLedgerData'
 
 module.exports = [{
   method: 'GET',
   path: '/manual-ledger-check',
   options: {
+    auth: { scope: [ledger] },
     handler: async (request, h) => {
       const paymentRequestId = parseInt(request.query.paymentrequestid)
       if (!paymentRequestId) {
@@ -30,6 +34,7 @@ module.exports = [{
   method: 'GET',
   path: '/manual-ledger-check/calculate',
   options: {
+    auth: { scope: [ledger] },
     validate: {
       query: Joi.object({
         paymentRequestId: Joi.number().required(),
@@ -69,6 +74,7 @@ module.exports = [{
   method: 'POST',
   path: '/manual-ledger-check',
   options: {
+    auth: { scope: [ledger] },
     validate: {
       payload: Joi.object({
         paymentRequestId: Joi.string().required(),
@@ -85,7 +91,7 @@ module.exports = [{
 
       if (!agree) {
         const manualLedgerData = await getManualLedger(paymentRequestId)
-        return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData), showLedgerSplit: true, provisionalValue: 0 }).code(400).takeover()
+        return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData), showLedgerSplit: true, provisionalValue: 0 }).takeover()
       }
 
       const provisionalLedgerData = sessionHandler.get(request, sessionKey)
@@ -94,8 +100,9 @@ module.exports = [{
         await saveCalculatedManualLedger(provisionalLedgerData)
         sessionHandler.clear(request, sessionKey)
       }
-
-      await updateQualityChecksStatus(paymentRequestId, 'Pending')
+      const user = getUser(request)
+      await updateManualLedgerUser(paymentRequestId, user)
+      await updateQualityChecksStatus(paymentRequestId, PENDING)
       return h.redirect('/quality-check')
     }
   }

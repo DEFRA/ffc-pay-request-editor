@@ -7,8 +7,7 @@ const saveManualLedger = async (paymentRequestId, ledgerPaymentRequestId, origin
       ledgerPaymentRequestId,
       active: true,
       original,
-      createdDate: new Date(),
-      createdBy: undefined
+      createdDate: new Date()
     },
     { transaction })
 }

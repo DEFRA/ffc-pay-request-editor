@@ -2,7 +2,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "macros/search-box.njk" import searchBox %}
 
-{% block beforeContent %}
+{% block content %}
   {{ govukBackLink({
         text: "Back",
         href: "/",
@@ -11,12 +11,9 @@
         }
       }) 
     }}
-{% endblock %}
-
-{% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-l">Requests awaiting Quality Check</h1>
+      <h1 class="govuk-heading-l">Ledger assignments awaiting quality check</h1>
       {% if qualityCheckData.length %}
         <div class="govuk-!-padding-bottom-3">
           <div class="user-search-box govuk-!-width-one-third">
@@ -27,42 +24,42 @@
           </div>
 
           <p class="govuk-body">
-            <a href="/quality-check" class="govuk-link govuk-link--no-visited-state">View all existing reporting datasets</a>
+            <a href="/quality-check" class="govuk-link govuk-link--no-visited-state">View all outstanding quality checks</a>
           </p>
 
           <table class="govuk-table">
-            <caption class="govuk-table__caption govuk-table__caption--s">Requests</caption>
+            <caption class="govuk-table__caption govuk-table__caption--s">Ledger assignments</caption>
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header govuk-body-s">Scheme<th>
-                <th scope="col" class="govuk-table__header govuk-body-s">FRN<th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Application ID<th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Invoice<th>
-                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Request<th>
-                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount<th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Amended by<th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Status<th>
-                <th scope="col" class="govuk-table__header"><th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">FRN</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Agreement</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Invoice</th>
+                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Request</th>
+                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Reviewed by</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Status</th>
+                <th scope="col" class="govuk-table__header"></th>
               </tr>
             </thead>
             <tbody class="govuk-table__body">
-              {% for data in qualityCheckData %}
-                <tr class="govuk-table__row">
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.schemes.name }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.frn }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.agreementNumber }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.paymentRequest.invoiceNumber }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequest.paymentRequestNumber }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequest.valueDecimal }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.amendedBy }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">{{ data.status }}<th>
-                  <th scope="col" class="govuk-table__cell govuk-body-s">
-                    {% if data.status === 'Pending' %}
-                      <a href="/manual-ledger-review?paymentrequestid={{data.paymentRequest.paymentRequestId}}">Review</a>
-                    {% endif %}
-                  <th>
-                </tr>
-              {% endfor %}
+            {% for qualityCheck in qualityCheckData %}
+              <tr class="govuk-table__row">
+                <td scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.schemes.name }}</td>
+                <td scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.frn }}</td>
+                <td scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.agreementNumber }}</td>
+                <td scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.invoiceNumber }}</td>
+                <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ qualityCheck.paymentRequest.paymentRequestNumber }}</td>
+                <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ qualityCheck.paymentRequest.valueText }}</td>
+                <td scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.manualLedgerChecks[0].createdBy }}</td>
+                <td scope="col" class="govuk-table__cell govuk-body-s"><strong class="govuk-tag">{{ qualityCheck.status }}</strong></td>
+                <td scope="col" class="govuk-table__cell govuk-body-s">
+                  {% if qualityCheck.status === 'Pending' and qualityCheck.paymentRequest.manualLedgerChecks[0].createdById != user.userId %}
+                    <a href="/manual-ledger-review?paymentrequestid={{qualityCheck.paymentRequest.paymentRequestId}}">Review</a>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
             </tbody>
           </table>
         <div>

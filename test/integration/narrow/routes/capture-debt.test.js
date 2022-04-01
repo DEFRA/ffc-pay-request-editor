@@ -1,7 +1,11 @@
+const { enrichment } = require('../../../../app/auth/permissions')
+
 describe('capture-debt route', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/processing/scheme')
+  jest.mock('../../../../app/auth')
+  const mockAuth = require('../../../../app/auth')
 
   const { getSchemeId, getSchemes } = require('../../../../app/processing/scheme')
 
@@ -9,6 +13,13 @@ describe('capture-debt route', () => {
   const { SCHEMES, SCHEME_NAME_SFI } = require('../../../data/scheme')
   const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
   const { ADMINISTRATIVE } = require('../../../../app/debt-types')
+
+  const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
+
+  const user = {
+    userId: '1',
+    username: 'Developer'
+  }
 
   let createServer
   let server
@@ -32,6 +43,7 @@ describe('capture-debt route', () => {
   })
 
   beforeEach(async () => {
+    mockAuth.getUser.mockResolvedValue(user)
     getSchemes.mockResolvedValue(SCHEMES)
     getSchemeId.mockResolvedValue(SCHEME_ID_SFI)
 
@@ -52,7 +64,8 @@ describe('capture-debt route', () => {
   test('GET /capture-debt returns 200', async () => {
     const options = {
       method: 'GET',
-      url: '/capture-debt'
+      url: '/capture-debt',
+      auth
     }
 
     const result = await server.inject(options)
@@ -62,7 +75,8 @@ describe('capture-debt route', () => {
   test('GET /capture-debt returns capture-debt view', async () => {
     const options = {
       method: 'GET',
-      url: '/capture-debt'
+      url: '/capture-debt',
+      auth
     }
 
     const result = await server.inject(options)
@@ -73,7 +87,8 @@ describe('capture-debt route', () => {
   test('GET /capture-debt returns all scheme names', async () => {
     const options = {
       method: 'GET',
-      url: '/capture-debt'
+      url: '/capture-debt',
+      auth
     }
 
     const result = await server.inject(options)
@@ -84,7 +99,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, scheme: '' }
+      payload: { ...VALID_PAYLOAD, scheme: '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -95,7 +111,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, scheme: '' }
+      payload: { ...VALID_PAYLOAD, scheme: '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -107,29 +124,32 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, scheme: '' }
+      payload: { ...VALID_PAYLOAD, scheme: '' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no scheme selected returns "The scheme cannot be empty." error message', async () => {
+  test('POST /capture-debt with no scheme selected returns "Select a scheme" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, scheme: '' }
+      payload: { ...VALID_PAYLOAD, scheme: '' },
+      auth
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The scheme cannot be empty.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Select a scheme')
   })
 
   test('POST /capture-debt with invalid scheme returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, scheme: 'not-a-scheme' }
+      payload: { ...VALID_PAYLOAD, scheme: 'not-a-scheme' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -140,7 +160,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, scheme: 'not-a-scheme' }
+      payload: { ...VALID_PAYLOAD, scheme: 'not-a-scheme' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -152,30 +173,33 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, scheme: 'not-a-scheme' }
+      payload: { ...VALID_PAYLOAD, scheme: 'not-a-scheme' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with invalid scheme returns "The scheme can only be SFI,SFI Pilot." error message', async () => {
+  test('POST /capture-debt with invalid scheme returns "Select a scheme" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, scheme: 'not-a-scheme' }
+      payload: { ...VALID_PAYLOAD, scheme: 'not-a-scheme' },
+      auth
     }
 
     const result = await server.inject(options)
     // TODO: add errorSummary length = 1
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The scheme can only be SFI,SFI Pilot.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Select a scheme')
   })
 
   test('POST /capture-debt with no FRN returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '' }
+      payload: { ...VALID_PAYLOAD, frn: '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -186,7 +210,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '' }
+      payload: { ...VALID_PAYLOAD, frn: '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -198,29 +223,32 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '' }
+      payload: { ...VALID_PAYLOAD, frn: '' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no FRN returns "The FRN cannot be empty." error message', async () => {
+  test('POST /capture-debt with no FRN returns "The FRN must be 10 digits" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '' }
+      payload: { ...VALID_PAYLOAD, frn: '' },
+      auth
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN cannot be empty.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits')
   })
 
   test('POST /capture-debt with a nine digit FRN returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '123456789' }
+      payload: { ...VALID_PAYLOAD, frn: '123456789' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -231,7 +259,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '123456789' }
+      payload: { ...VALID_PAYLOAD, frn: '123456789' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -243,29 +272,32 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '123456789' }
+      payload: { ...VALID_PAYLOAD, frn: '123456789' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with a nine digit FRN returns "The FRN is too short. This must be 10 digits." error message', async () => {
+  test('POST /capture-debt with a nine digit FRN returns "The FRN must be 10 digits" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '123456789' }
+      payload: { ...VALID_PAYLOAD, frn: '123456789' },
+      auth
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN is too short. This must be 10 digits.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits')
   })
 
   test('POST /capture-debt with an eleven digit FRN returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '12345678910' }
+      payload: { ...VALID_PAYLOAD, frn: '12345678910' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -276,7 +308,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '12345678910' }
+      payload: { ...VALID_PAYLOAD, frn: '12345678910' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -288,29 +321,32 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '12345678910' }
+      payload: { ...VALID_PAYLOAD, frn: '12345678910' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with an eleven digit FRN returns "The FRN is too long. This must be 10 digits." error message', async () => {
+  test('POST /capture-debt with an eleven digit FRN returns "The FRN must be 10 digits" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '12345678910' }
+      payload: { ...VALID_PAYLOAD, frn: '12345678910' },
+      auth
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN is too long. This must be 10 digits.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits')
   })
 
   test('POST /capture-debt with alphanumeric characters in the FRN returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '123456789A' }
+      payload: { ...VALID_PAYLOAD, frn: '123456789A' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -321,7 +357,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '123456789A' }
+      payload: { ...VALID_PAYLOAD, frn: '123456789A' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -333,40 +370,44 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '123456789A' }
+      payload: { ...VALID_PAYLOAD, frn: '123456789A' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with alphanumeric characters in the FRN returns "The FRN must be a 10 digit number." error message', async () => {
+  test('POST /capture-debt with alphanumeric characters in the FRN returns "The FRN must be 10 digits" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, frn: '123456789A' }
+      payload: { ...VALID_PAYLOAD, frn: '123456789A' },
+      auth
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be a 10 digit number.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits')
   })
 
-  test('POST /capture-debt with no application identifier returns 400', async () => {
+  test('POST /capture-debt with no agreement number returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.statusCode).toBe(400)
   })
 
-  test('POST /capture-debt with no application identifier returns capture-debt view', async () => {
+  test('POST /capture-debt with no agreement number returns capture-debt view', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -374,44 +415,48 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.template).toBe('capture-debt')
   })
 
-  test('POST /capture-debt with no application identifier returns all scheme names', async () => {
+  test('POST /capture-debt with no agreement number returns all scheme names', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no application identifier returns "The application identifier cannot be empty." error message', async () => {
+  test('POST /capture-debt with no agreement number returns "The agreement number cannot be empty." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '' },
+      auth
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The application identifier cannot be empty.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number cannot be empty.')
   })
 
-  test('POST /capture-debt with a nine character application identifier returns 400', async () => {
+  test('POST /capture-debt with a nine character agreement number returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.statusCode).toBe(400)
   })
 
-  test('POST /capture-debt with a nine character application identifier returns capture-debt view', async () => {
+  test('POST /capture-debt with a nine character agreement number returns capture-debt view', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -419,44 +464,48 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.template).toBe('capture-debt')
   })
 
-  test('POST /capture-debt with a nine character application identifier returns all scheme names', async () => {
+  test('POST /capture-debt with a nine character agreement number returns all scheme names', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with a nine character application identifier returns "The application identifier is too short. This must be 15 characters." error message', async () => {
+  test('POST /capture-debt with a nine character agreement number returns "The agreement number is too short. This must be 15 characters." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' },
+      auth
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The application identifier is too short. This must be 15 characters.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number is too short. This must be 15 characters.')
   })
 
-  test('POST /capture-debt with a 16 character application identifier returns 400', async () => {
+  test('POST /capture-debt with a 16 character agreement number returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.statusCode).toBe(400)
   })
 
-  test('POST /capture-debt with a 16 application identifier returns capture-debt view', async () => {
+  test('POST /capture-debt with a 16 agreement number returns capture-debt view', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -464,44 +513,48 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.template).toBe('capture-debt')
   })
 
-  test('POST /capture-debt with a 16 character application identifier returns all scheme names', async () => {
+  test('POST /capture-debt with a 16 character agreement number returns all scheme names', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with a 16 character application identifier returns "The application identifier is too long. This must be 15 characters." error message', async () => {
+  test('POST /capture-debt with a 16 character agreement number returns "The agreement number is too long. This must be 15 characters." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' },
+      auth
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The application identifier is too long. This must be 15 characters.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number is too long. This must be 15 characters.')
   })
 
-  test('POST /capture-debt with non alphanumeric characters in the application identifier returns 400', async () => {
+  test('POST /capture-debt with non alphanumeric characters in the agreement number returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.statusCode).toBe(400)
   })
 
-  test('POST /capture-debt with non alphanumeric characters in the application identifier returns capture-debt view', async () => {
+  test('POST /capture-debt with non alphanumeric characters in the agreement number returns capture-debt view', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -509,33 +562,36 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.template).toBe('capture-debt')
   })
 
-  test('POST /capture-debt with non alphanumeric characters in the application identifier returns all scheme names', async () => {
+  test('POST /capture-debt with non alphanumeric characters in the agreement number returns all scheme names', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A' },
+      auth
     }
 
     const result = await server.inject(options)
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with non alphanumeric characters in the application identifier returns "The application identifier can only have alphanumeric characters." error message', async () => {
+  test('POST /capture-debt with non alphanumeric characters in the agreement number returns "The agreement number can only have alphanumeric characters." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A12345' }
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '!23456789A12345' },
+      auth
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The application identifier can only have alphanumeric characters.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number can only have alphanumeric characters.')
   })
 
   test('POST /capture-debt with no net returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: '' }
+      payload: { ...VALID_PAYLOAD, net: '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -546,7 +602,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: '' }
+      payload: { ...VALID_PAYLOAD, net: '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -558,7 +615,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: '' }
+      payload: { ...VALID_PAYLOAD, net: '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -569,7 +627,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: '' }
+      payload: { ...VALID_PAYLOAD, net: '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -580,7 +639,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: -100.20 }
+      payload: { ...VALID_PAYLOAD, net: -100.20 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -591,7 +651,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: -100.20 }
+      payload: { ...VALID_PAYLOAD, net: -100.20 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -603,7 +664,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: -100.20 }
+      payload: { ...VALID_PAYLOAD, net: -100.20 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -614,7 +676,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: -100.20 }
+      payload: { ...VALID_PAYLOAD, net: -100.20 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -625,7 +688,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: 0 }
+      payload: { ...VALID_PAYLOAD, net: 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -636,7 +700,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: 0 }
+      payload: { ...VALID_PAYLOAD, net: 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -648,7 +713,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: 0 }
+      payload: { ...VALID_PAYLOAD, net: 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -659,7 +725,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: 0 }
+      payload: { ...VALID_PAYLOAD, net: 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -670,7 +737,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: 1200000000 }
+      payload: { ...VALID_PAYLOAD, net: 1200000000 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -681,7 +749,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: 1200000000 }
+      payload: { ...VALID_PAYLOAD, net: 1200000000 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -693,7 +762,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: 1200000000 }
+      payload: { ...VALID_PAYLOAD, net: 1200000000 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -704,7 +774,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: 1200000000 }
+      payload: { ...VALID_PAYLOAD, net: 1200000000 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -715,7 +786,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: '2,000.50' }
+      payload: { ...VALID_PAYLOAD, net: '2,000.50' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -726,7 +798,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: '2,000.50' }
+      payload: { ...VALID_PAYLOAD, net: '2,000.50' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -738,7 +811,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: '2,000.50' }
+      payload: { ...VALID_PAYLOAD, net: '2,000.50' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -749,7 +823,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: '2,000.50' }
+      payload: { ...VALID_PAYLOAD, net: '2,000.50' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -760,7 +835,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, debtType: '' }
+      payload: { ...VALID_PAYLOAD, debtType: '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -771,7 +847,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, debtType: '' }
+      payload: { ...VALID_PAYLOAD, debtType: '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -783,7 +860,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, debtType: '' }
+      payload: { ...VALID_PAYLOAD, debtType: '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -794,18 +872,20 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, debtType: '' }
+      payload: { ...VALID_PAYLOAD, debtType: '' },
+      auth
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The type of debt cannot be empty.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Select a type of debt')
   })
 
   test('POST /capture-debt with invalid debt type returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, debtType: 'not-a-debt-type' }
+      payload: { ...VALID_PAYLOAD, debtType: 'not-a-debt-type' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -816,7 +896,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, debtType: 'not-a-debt-type' }
+      payload: { ...VALID_PAYLOAD, debtType: 'not-a-debt-type' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -828,7 +909,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, debtType: 'not-a-debt-type' }
+      payload: { ...VALID_PAYLOAD, debtType: 'not-a-debt-type' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -839,18 +921,20 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, debtType: 'not-a-debt-type' }
+      payload: { ...VALID_PAYLOAD, debtType: 'not-a-debt-type' },
+      auth
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The type of debt can only be adm,irr.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Select a type of debt')
   })
 
   test('POST /capture-debt with no debt day returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -861,7 +945,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -873,7 +958,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -884,7 +970,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -895,7 +982,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': -4 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': -4 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -906,7 +994,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': -4 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': -4 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -918,7 +1007,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': -4 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': -4 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -929,7 +1019,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': -4 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': -4 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -940,7 +1031,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 0 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -951,7 +1043,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 0 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -963,7 +1056,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 0 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -974,7 +1068,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 0 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -985,7 +1080,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 34 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 34 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -996,7 +1092,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 34 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 34 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1008,7 +1105,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 34 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 34 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1019,7 +1117,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 34 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': 34 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1030,7 +1129,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '2nd' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '2nd' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1041,7 +1141,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '2nd' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '2nd' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1053,7 +1154,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '2nd' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '2nd' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1064,7 +1166,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '2nd' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-day': '2nd' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1075,7 +1178,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': '' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1086,7 +1190,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': '' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1098,7 +1203,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': '' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1109,7 +1215,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': '' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1120,7 +1227,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': -4 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': -4 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1131,7 +1239,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': -4 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': -4 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1143,7 +1252,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': -4 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': -4 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1154,7 +1264,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': -4 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': -4 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1165,7 +1276,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 0 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1176,7 +1288,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 0 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1188,7 +1301,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 0 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1199,7 +1313,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 0 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1210,7 +1325,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 15 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 15 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1221,7 +1337,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 15 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 15 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1233,7 +1350,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 15 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 15 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1244,7 +1362,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 15 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 15 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1255,7 +1374,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 'March' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 'March' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1266,7 +1386,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 'March' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 'March' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1278,7 +1399,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 'March' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 'March' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1289,7 +1411,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 'March' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-month': 'March' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1300,7 +1423,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1311,7 +1435,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1323,7 +1448,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1334,7 +1460,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1345,7 +1472,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': -4 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': -4 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1356,7 +1484,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': -4 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': -4 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1368,7 +1497,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': -4 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': -4 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1379,7 +1509,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': -4 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': -4 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1390,7 +1521,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 0 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1401,7 +1533,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 0 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1413,7 +1546,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 0 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1424,7 +1558,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 0 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 0 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1435,7 +1570,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 1878 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 1878 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1446,7 +1582,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 1878 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 1878 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1458,7 +1595,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 1878 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 1878 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1469,7 +1607,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 1878 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 1878 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1480,7 +1619,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 2108 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 2108 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1491,7 +1631,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 2108 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 2108 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1503,7 +1644,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 2108 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 2108 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1514,7 +1656,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 2108 }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': 2108 },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1525,7 +1668,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '2020!' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '2020!' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1536,7 +1680,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '2020!' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '2020!' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1548,7 +1693,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '2020!' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '2020!' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1559,7 +1705,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '2020!' }
+      payload: { ...VALID_PAYLOAD, 'debt-discovered-year': '2020!' },
+      auth
     }
 
     const result = await server.inject(options)
@@ -1570,7 +1717,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: VALID_PAYLOAD
+      payload: VALID_PAYLOAD,
+      auth
     }
     const result = await server.inject(options)
     expect(result.statusCode).toBe(302)
@@ -1580,7 +1728,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: VALID_PAYLOAD
+      payload: VALID_PAYLOAD,
+      auth
     }
     const result = await server.inject(options)
     expect(result.headers.location).toBe('/')
@@ -1590,7 +1739,8 @@ describe('capture-debt route', () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: VALID_PAYLOAD
+      payload: VALID_PAYLOAD,
+      auth
     }
     await db.paymentRequest.create({ schemeId: 1, frn: VALID_PAYLOAD.frn })
 

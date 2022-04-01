@@ -5,22 +5,21 @@
 {% from "macros/payment-request-header.njk" import paymentRequestHeader %}
 {% from "macros/payment-request-invoice-lines.njk" import paymentRequestInvoiceLines %}
 
-{% block beforeContent %}
-  {{ govukBackLink({
-        text: "Back",
-        href: "/quality-check",
-        attributes: {
-          id: "back"
-        }
-      }) 
-    }}
-{% endblock %}
-
 {% block content %}
+  {{ govukBackLink({
+      text: "Back",
+      href: "/quality-check",
+      attributes: {
+        id: "back"
+      }
+    }) 
+  }}
   <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">{{model.manualLedgerData.invoiceNumber}}</span>
+      <h1 class="govuk-heading-l">Quality check ledger assignment</h1>
+    </div>
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-l">Review manual ledger - {{model.manualLedgerData.invoiceNumber}}</h1>
-      
       <h2 class="govuk-heading-m">Original</h2>
       {{paymentRequestHeader(model.manualLedgerData)}}
       {{paymentRequestInvoiceLines(model.manualLedgerData.invoiceLines)}}

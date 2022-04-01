@@ -1,4 +1,5 @@
 const { convertToPounds } = require('../../processing/conversion')
+const toCurrencyString = require('../../utils/to-currency-string')
 const errorMessage = 'Please select Yes or No to agree if the provisional values are correct.'
 
 function ViewModel (manualLedgerData, error) {
@@ -14,6 +15,7 @@ function ViewModel (manualLedgerData, error) {
 
 const buildManualLedger = (manualLedgerData) => {
   manualLedgerData.valueInPounds = convertToPounds(manualLedgerData.value)
+  manualLedgerData.valueInPoundsText = toCurrencyString(manualLedgerData.valueInPounds)
   manualLedgerData.arAutoValue = 0
   manualLedgerData.apAutoValue = 0
   const ledgerPaymentRequests = manualLedgerData.manualLedgerChecks

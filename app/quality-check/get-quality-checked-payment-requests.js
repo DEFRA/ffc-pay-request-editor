@@ -1,5 +1,6 @@
 const db = require('../data')
 const { getManualLedgerRequests } = require('../manual-ledger')
+const { PASSED } = require('./statuses')
 
 const getQualityCheckedPaymentRequests = async () => {
   const qualityCheckedPaymentRequests = []
@@ -17,7 +18,7 @@ const getQualityCheckedPaymentRequests = async () => {
       }
     ],
     where: {
-      status: 'Passed'
+      status: PASSED
     }
   })
 
@@ -25,8 +26,8 @@ const getQualityCheckedPaymentRequests = async () => {
     for (const qualityCheck of qualityChecks) {
       const paymentRequest = qualityCheck.paymentRequest
       const manualLedgerRequests = await getManualLedgerRequests(paymentRequest.paymentRequestId)
-      const transfromManualLedgerRequest = manualLedgerRequests.map(x => x.ledgerPaymentRequest)
-      qualityCheckedPaymentRequests.push({ paymentRequest: paymentRequest, paymentRequests: transfromManualLedgerRequest })
+      const transformManualLedgerRequest = manualLedgerRequests.map(x => x.ledgerPaymentRequest)
+      qualityCheckedPaymentRequests.push({ paymentRequest: paymentRequest, paymentRequests: transformManualLedgerRequest })
     }
   }
 
