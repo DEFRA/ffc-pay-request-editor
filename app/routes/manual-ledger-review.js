@@ -59,7 +59,7 @@ module.exports = [{
         }
         await sendManualLedgerReviewEvent(paymentRequestId, user, status)
       }
-      
+
       return h.redirect('/quality-check').code(301)
     }
   }
