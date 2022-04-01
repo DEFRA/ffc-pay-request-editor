@@ -8,7 +8,7 @@ const saveCalculatedManualLedger = async (calculatedManualLedgers) => {
     const paymentRequestId = calculatedManualLedgers.paymentRequestId
     const provisionalLedgerData = calculatedManualLedgers.provisionalLedgerData
 
-    updateManualLedger(paymentRequestId, transaction)
+    await updateManualLedger(paymentRequestId, transaction)
 
     for (const paymentRequest of provisionalLedgerData) {
       const ledgerPaymentRequest = paymentRequest.ledgerPaymentRequest
@@ -23,7 +23,7 @@ const saveCalculatedManualLedger = async (calculatedManualLedgers) => {
   }
 }
 
-const updateManualLedger = (paymentRequestId, transaction) => {
+const updateManualLedger = async (paymentRequestId, transaction) => {
   return db.manualLedgerPaymentRequest.update({ active: false }, { where: { paymentRequestId } }, { transaction })
 }
 
