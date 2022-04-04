@@ -5,9 +5,9 @@ const sendManualLedgerReviewEvent = async (paymentRequestId, user, status) => {
   const correlationId = await getCorrelationId(paymentRequestId)
   const event = {
     id: correlationId,
-    name: 'payment-request-quality-review-event',
+    name: 'payment-request-ledger-assignment-quality-checked',
     type: 'info',
-    message: 'Manual ledger check sucessfully reviewed.',
+    message: 'Payment request ledger assignment quality checked',
     data: { status, user }
   }
   await raiseEvent(event)

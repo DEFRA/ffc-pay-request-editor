@@ -6,9 +6,9 @@ const sendEnrichRequestEvent = async (paymentRequest, user) => {
   const correlationId = await getCorrelationId(paymentRequestId)
   const event = {
     id: correlationId,
-    name: 'payment-request-enrich-request',
+    name: 'payment-request-enriched',
     type: 'info',
-    message: 'Debt data succesfully enriched.',
+    message: 'Debt data attached to payment request.',
     data: { paymentRequest, user }
   }
   await raiseEvent(event)
