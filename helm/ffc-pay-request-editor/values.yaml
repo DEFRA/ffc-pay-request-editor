@@ -35,6 +35,7 @@ container:
   manualLedgerTopicAddress: ffc-pay-manual-check-data
   manualLedgerSubscriptionAddress: ffc-pay-request-editor
   qcTopicAddress: ffc-pay-quality-check
+  eventTopicAddress: ffc-pay-event
   debtResponseTopicAddress: ffc-pay-debt-data-response
   cookiePassword: cookiecookiecookiecookiecookiecookie
 

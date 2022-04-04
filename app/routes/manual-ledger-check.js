@@ -8,6 +8,7 @@ const { ledger } = require('../auth/permissions')
 const getUser = require('../auth/get-user')
 const { PENDING } = require('../quality-check/statuses')
 const sessionKey = 'provisionalLedgerData'
+const { sendManualLedgerCheckEvent } = require('../event')
 
 module.exports = [{
   method: 'GET',
@@ -100,9 +101,11 @@ module.exports = [{
         await saveCalculatedManualLedger(provisionalLedgerData)
         sessionHandler.clear(request, sessionKey)
       }
+
       const user = getUser(request)
       await updateManualLedgerUser(paymentRequestId, user)
       await updateQualityChecksStatus(paymentRequestId, PENDING)
+      await sendManualLedgerCheckEvent(paymentRequestId, user, provisionalLedgerData)
       return h.redirect('/quality-check')
     }
   }

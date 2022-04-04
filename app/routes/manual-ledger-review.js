@@ -4,6 +4,7 @@ const { getManualLedger, resetManualLedger } = require('../manual-ledger')
 const { updateQualityChecksStatus } = require('../quality-check')
 const { FAILED, PENDING } = require('../quality-check/statuses')
 const ViewModel = require('./models/manual-ledger-review')
+const { sendManualLedgerReviewEvent } = require('../event')
 const { getUser } = require('../auth')
 
 module.exports = [{
@@ -49,14 +50,16 @@ module.exports = [{
       const paymentRequestId = request.payload.paymentRequestId
       if (paymentRequestId) {
         const manualLedgerData = await getManualLedger(paymentRequestId)
-        const { userId } = getUser(request)
-        if (manualLedgerData && manualLedgerData.manualLedgerChecks[0].createdById !== userId) {
+        const user = getUser(request)
+        if (manualLedgerData && manualLedgerData.manualLedgerChecks[0].createdById !== user.userId) {
           await updateQualityChecksStatus(paymentRequestId, status)
           if (status === FAILED) {
             await resetManualLedger(paymentRequestId)
           }
         }
+        await sendManualLedgerReviewEvent(paymentRequestId, user, status)
       }
+
       return h.redirect('/quality-check').code(301)
     }
   }
