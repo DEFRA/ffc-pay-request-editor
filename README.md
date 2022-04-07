@@ -71,11 +71,11 @@ By default, authentication is disabled.  It can be enabled by setting the `AUTHE
 
 If authentication is enabled, this service needs to be registered with [Azure App Registration](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
 
-The following environment varibles need to be set:
+The following environment variables need to be set:
 
-- AZURE_CLIENT_ID
-- AZURE_TENANT_ID
-- AZURE_CLIENT_SECRET
+- AZUREID_CLIENT_ID
+- AZUREID_TENANT_ID
+- AZUREID_CLIENT_SECRET
 
 These can be retrieved from the App Registration overview blade.
 
