@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     originalInvoiceNumber: DataTypes.STRING,
     invoiceCorrectionReference: DataTypes.STRING,
     value: DataTypes.INTEGER,
+    netValue: DataTypes.INTEGER,
     valueText: {
       type: DataTypes.VIRTUAL,
       get () {
