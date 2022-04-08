@@ -99,7 +99,7 @@ function ViewModel (payload, error) {
         }
       },
       hint: {
-        text: 'For example, 27 3 2022. The debt must be from 2015 onwards'
+        text: 'For example, 27 3 2022. The debt must be from 2021 onwards'
       },
       errorMessage: errorMessage['date-error'],
       items: [
