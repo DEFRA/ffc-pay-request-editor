@@ -29,6 +29,13 @@ module.exports = (sequelize, DataTypes) => {
         return convertValueToStringFormat(this.value)
       }
     },
+    daysWaiting: {
+      type: DataTypes.VIRTUAL,
+      get () {
+        const recievedDate = this.received
+        return (Math.round((Date.now() - recievedDate) / (1000 * 60 * 60 * 24)))
+      }
+    },
     received: DataTypes.DATE,
     receivedFormatted: {
       type: DataTypes.VIRTUAL,

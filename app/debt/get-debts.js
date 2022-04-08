@@ -23,7 +23,8 @@ const getDebts = async (includeAttached = false) => {
       'createdBy',
       'attachedDate',
       'paymentRequestId'
-    ]
+    ],
+    order: [['createdDate', 'DESC']]
   })
 }
 
