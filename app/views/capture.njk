@@ -78,7 +78,7 @@
             </thead>
             <tbody class="govuk-table__body">
               {% for data in captureData %}
-                <tr class="govuk-table__row">
+                <tr class="govuk-table__row capture-datasets">
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">{% if data.reference %}{{ data.reference }}{%else%}Manual enrichment{%endif%}</td>
@@ -88,9 +88,9 @@
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}</td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">
                     {% if data.paymentRequestId %}
-                      <strong class="govuk-tag govuk-tag--green">Attached</strong>
+                      <strong class="govuk-tag govuk-tag--green capture-status">Attached</strong>
                     {% else %}
-                     <strong class="govuk-tag">Pending</strong>
+                     <strong class="govuk-tag capture-status">Pending</strong>
                     {% endif %}
                   </td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">
@@ -123,16 +123,15 @@
   const toggleUnattachedData = () => {
     const yesToggle = document.getElementById('unattached-data-yes')
     const noToggle = document.getElementById('unattached-data-no')
-    const tableRows = document.querySelectorAll('.govuk-table__row')
+    const tableRows = document.querySelectorAll('.govuk-table__row.capture-datasets')
     
     if (noToggle.checked) {
-      for (let i = 1; i < tableRows.length; i++) {
-        const status = (tableRows[i].childNodes[15].childNodes[1].childNodes[0].nodeValue)
-        if (status === 'Attached') {
+      for (let i = 0; i < tableRows.length; i++) {
+        if (tableRows[i].querySelector('.capture-status').innerHTML === 'Attached') {
           tableRows[i].style.display = 'none'
         }
       }
-    } else if (yesToggle.checked) {
+    } else {
       tableRows.forEach(x => x.removeAttribute('style'))
     }
   }
