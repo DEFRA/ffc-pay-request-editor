@@ -37,7 +37,7 @@ const copyPaymentRequest = (paymentRequest, ledger) => {
 
 const calculateInvoiceLines = (invoiceLines, apportionmentPercent) => {
   invoiceLines.map(x => {
-    x.value = x.value > 0 ? Math.ceil(x.value * apportionmentPercent) : Math.floor(x.value * apportionmentPercent)
+    x.value = Math.trunc(x.value * apportionmentPercent)
     return x
   })
 }
