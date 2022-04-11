@@ -35,6 +35,7 @@ describe('process payment requests', () => {
       schedule: 'M12',
       dueDate: '2021-08-15',
       value: 2000,
+      netValue: 3000,
       categoryId: 2,
       invoiceLines: [
         {
@@ -106,10 +107,10 @@ describe('process payment requests', () => {
       frn: 1234567890,
       reference: 'SIP00000000000001',
       paymentRequestId: null,
-      netValue: 20
+      netValue: 30
     })
-    const debtDatakBeforeUpdate = await db.debtData.findOne({ where: { debtDataId: 1 } })
-    expect(debtDatakBeforeUpdate.paymentRequestId).toBeNull()
+    const debtDataBeforeUpdate = await db.debtData.findOne({ where: { debtDataId: 1 } })
+    expect(debtDataBeforeUpdate.paymentRequestId).toBeNull()
     await updateManualLedgerWithDebtData(paymentRequest.paymentRequestId)
     const debtDatakAfterUpdate = await db.debtData.findOne({ where: { debtDataId: 1 } })
     expect(debtDatakAfterUpdate.paymentRequestId).toBe(1)

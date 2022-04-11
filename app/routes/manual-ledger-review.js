@@ -4,7 +4,9 @@ const { getManualLedger, resetManualLedger, updateManualLedgerWithDebtData } = r
 const { updateQualityChecksStatus } = require('../quality-check')
 const { PASSED, FAILED, PENDING } = require('../quality-check/statuses')
 const ViewModel = require('./models/manual-ledger-review')
+const { sendManualLedgerReviewEvent } = require('../event')
 const { getUser } = require('../auth')
+const { AR } = require('../processing/ledger/ledgers')
 
 module.exports = [{
   method: 'GET',
@@ -49,11 +51,20 @@ module.exports = [{
       const paymentRequestId = request.payload.paymentRequestId
       if (paymentRequestId) {
         const manualLedgerData = await getManualLedger(paymentRequestId)
-        const { userId } = getUser(request)
-        if (manualLedgerData && manualLedgerData.manualLedgerChecks[0].createdById !== userId) {
+        console.log('Abidemi')
+        console.log(manualLedgerData)
+        const user = getUser(request)
+        if (manualLedgerData && manualLedgerData.manualLedgerChecks[0].createdById !== user.userId) {
+          const hasArLedger = manualLedgerData.ledgerPaymentRequest.find(x => x.ledger === AR)
+          console.log('Abidemi Adio')
+          console.log(hasArLedger)
           switch (status) {
             case PASSED:
-              await updateManualLedgerWithDebtData(paymentRequestId, status)
+              if (hasArLedger) {
+                await updateManualLedgerWithDebtData(paymentRequestId, status)
+              } else {
+                await updateQualityChecksStatus(paymentRequestId, status)
+              }
               break
             case FAILED:
               await updateQualityChecksStatus(paymentRequestId, status)
@@ -64,7 +75,9 @@ module.exports = [{
               break
           }
         }
+        await sendManualLedgerReviewEvent(paymentRequestId, user, status)
       }
+
       return h.redirect('/quality-check').code(301)
     }
   }

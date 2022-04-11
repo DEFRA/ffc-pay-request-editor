@@ -22,9 +22,10 @@ const updateManualLedgerWithDebtData = async (paymentRequestId) => {
     }
   })
 
-  const { frn, agreementNumber, value } = paymentRequest
-  const foundDebtData = await checkDebts(frn, agreementNumber, value)
+  const { frn, agreementNumber, netValue } = paymentRequest
+  const foundDebtData = await checkDebts(frn, agreementNumber, netValue)
   if (foundDebtData) {
+    paymentRequest.value = paymentRequest.netValue
     await attachDebtInformation(paymentRequestId, paymentRequest)
     await updateQualityChecksStatus(paymentRequestId, PASSED)
     return

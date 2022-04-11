@@ -3,6 +3,7 @@ const { convertValueToStringFormat } = require('../../processing/conversion')
 module.exports = (sequelize, DataTypes) => {
   const paymentRequest = sequelize.define('paymentRequest', {
     paymentRequestId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    correlationId: DataTypes.STRING,
     schemeId: DataTypes.INTEGER,
     categoryId: DataTypes.INTEGER,
     sourceSystem: DataTypes.STRING,
@@ -22,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     originalInvoiceNumber: DataTypes.STRING,
     invoiceCorrectionReference: DataTypes.STRING,
     value: DataTypes.INTEGER,
+    netValue: DataTypes.INTEGER,
     valueText: {
       type: DataTypes.VIRTUAL,
       get () {

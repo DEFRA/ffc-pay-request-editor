@@ -11,6 +11,7 @@ data:
   MANUALLEDGER_SUBSCRIPTION_ADDRESS: {{ quote .Values.container.manualLedgerSubscriptionAddress }}
   QC_TOPIC_ADDRESS: {{ quote .Values.container.qcTopicAddress }}
   DEBTRESPONSE_TOPIC_ADDRESS: {{ quote .Values.container.debtResponseTopicAddress }}
+  EVENT_TOPIC_ADDRESS: {{ quote .Values.container.eventTopicAddress }}
   POSTGRES_DB: {{ quote .Values.postgresService.postgresDb }}
   POSTGRES_HOST: {{ quote .Values.postgresService.postgresHost }}
   POSTGRES_PORT: {{ quote .Values.postgresService.postgresPort }}

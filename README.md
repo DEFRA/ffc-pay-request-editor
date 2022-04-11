@@ -37,6 +37,7 @@ Example inbound payment request
    "frn":1234567890,
    "marketingYear":2022,
    "paymentRequestNumber": 2,
+   "correlationId":"9e016c50-046b-4597-b79a-ebe4f0bf8505",
    "invoiceNumber":"S123456789A123456V001",
    "agreementNumber":"SIP000001234567",
    "contractNumber":"SFI12345",
@@ -70,11 +71,11 @@ By default, authentication is disabled.  It can be enabled by setting the `AUTHE
 
 If authentication is enabled, this service needs to be registered with [Azure App Registration](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
 
-The following environment varibles need to be set:
+The following environment variables need to be set:
 
-- AZURE_CLIENT_ID
-- AZURE_TENANT_ID
-- AZURE_CLIENT_SECRET
+- AZUREID_CLIENT_ID
+- AZUREID_TENANT_ID
+- AZUREID_CLIENT_SECRET
 
 These can be retrieved from the App Registration overview blade.
 

@@ -8,6 +8,7 @@ const dateSchema = require('./schemas/date')
 const { enrichment } = require('../auth/permissions')
 const { getUser } = require('../auth')
 const { PENDING } = require('../quality-check/statuses')
+const { sendEnrichRequestEvent } = require('../event')
 
 module.exports = [{
   method: 'GET',
@@ -82,7 +83,7 @@ module.exports = [{
         return h.redirect('/enrich')
       }
 
-      const { userId, username } = getUser(request)
+      const user = getUser(request)
 
       await saveDebt({
         paymentRequestId: paymentRequest.paymentRequestId,
@@ -91,11 +92,12 @@ module.exports = [{
         debtType: payload['debt-type'],
         recoveryDate: `${day}/${month}/${year}`,
         createdDate: new Date(),
-        createdBy: username,
-        createdById: userId
+        createdBy: user.username,
+        createdById: user.userId
       })
 
       await updateQualityChecksStatus(paymentRequest.paymentRequestId, PENDING)
+      await sendEnrichRequestEvent(paymentRequest, user)
 
       return h.redirect('/enrich')
     }
