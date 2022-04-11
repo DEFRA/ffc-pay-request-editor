@@ -54,7 +54,7 @@
                 <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ qualityCheck.paymentRequest.paymentRequestNumber }}</td>
                 <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ qualityCheck.paymentRequest.valueText }}</td>
                 <td scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.manualLedgerChecks[0].createdBy }}</td>
-                <td scope="col" class="govuk-table__cell govuk-body-s"> </td>
+                <td scope="col" class="govuk-table__cell govuk-body-s"> {{ qualityCheck.hasDismissed }}</td>
                 <td scope="col" class="govuk-table__cell govuk-body-s">
                   {% if qualityCheck.status === 'Pending' and qualityCheck.paymentRequest.manualLedgerChecks[0].createdById != user.userId %}
                     <a href="/manual-ledger-review?paymentrequestid={{qualityCheck.paymentRequest.paymentRequestId}}">Review</a>

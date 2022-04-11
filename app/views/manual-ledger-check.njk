@@ -119,17 +119,14 @@
 
   const apValueId = 'ap-value'
   const arValueId = 'ar-value'
-  const apPercentageId = 'ap-percentage'
-  const arPercentageId = 'ar-percentage'
+
 
   const ledgerWrapper = document.getElementById('ledger-wrapper')
   const ledgerError = document.getElementById('ledger-value-error')
   const calculateAction = document.getElementById('calculate-ledger')
 
   const apValue = document.getElementById(apValueId)
-  const apPercentage = document.getElementById(apPercentageId)
   const arValue = document.getElementById(arValueId)
-  const arPercentage = document.getElementById(arPercentageId)
 
   if (ledgerWrapper) {
     const convertToPence = (valueInPounds) => {
@@ -139,16 +136,9 @@
       return Number(pounds + pence)
     }
 
+
     const convertToPounds = (valueInPence) => {
       return valueInPence / 100
-    }
-
-    const calculatePercentage = (partialValue, totalValue) => {
-      return ((100 * partialValue) / totalValue).toFixed(2)
-    }
-
-    const calculatePercentValue = (percentValue, partialValue) => {
-      return ((percentValue * partialValue) / 100).toFixed(2)
     }
 
     const raiseError = (component, action, classType) => {
@@ -156,13 +146,12 @@
     }
 
     const validateValues = () => {
-      const valuesToCheck = [apValue, arValue, arPercentage, apPercentage]
+      const valuesToCheck = [apValue, arValue]
       const inputErrorClass = 'govuk-input--error'
       const formErrorClass = 'govuk-form-group--error'
-
       const checkIfValueString = valuesToCheck.every(value => isNaN(value.value))
 
-      if (checkIfValueString || apPercentageId.value > 100 || arPercentage.value > 100) {
+      if (checkIfValueString) {
         valuesToCheck.forEach(value => {
           raiseError(value, 'add', inputErrorClass)
         })
@@ -179,13 +168,7 @@
       }
     }
 
-    const setDefaultPercentage = () => {
-      apPercentage.value = calculatePercentage(apValue.value, totalValueInPounds)
-      arPercentage.value = calculatePercentage(arValue.value, totalValueInPounds)
-      validateValues()
-    }
-
-    setDefaultPercentage()
+    validateValues()
 
     const setValue = (changedValue, valueToChange) => {
       const value = document.getElementById(changedValue).value
@@ -193,17 +176,6 @@
       const calculate = totalValueInPence - valueInPence
       const valueInPounds = convertToPounds(calculate)
       document.getElementById(valueToChange).value = valueInPounds
-      validateValues()
-      setDefaultPercentage()
-    }
-
-    const setPercentage = (percentageChangeValue, valueToChange, percentageToCalculate, valueToCalculate) => {
-      const value = document.getElementById(percentageChangeValue).value
-      const percentValue = calculatePercentValue(value, totalValueInPounds)
-      document.getElementById(valueToChange).value = percentValue
-      const calculate = 100 - value
-      document.getElementById(percentageToCalculate).value = calculate
-      document.getElementById(valueToCalculate).value = calculatePercentValue(calculate, totalValueInPounds)
       validateValues()
     }
 
@@ -213,14 +185,6 @@
 
     apValue.addEventListener('input', (event) => {
       setValue(apValueId, arValueId)
-    })
-
-    arPercentage.addEventListener('input', (event) => {
-      setPercentage(arPercentageId, arValueId, apPercentageId, apValueId)
-    })
-
-    apPercentage.addEventListener('input', (event) => {
-      setPercentage(apPercentageId, apValueId, arPercentageId, arValueId)
     })
   }
 </script>
