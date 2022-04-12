@@ -1,6 +1,12 @@
 const db = require('../../../../app/data')
+
+jest.mock('../../../../app/event', () => ({
+  sendEnrichRequestBlockedEvent: () => {}
+}))
+
 const { processPaymentRequest } = require('../../../../app/payment-request')
 const { getInvoiceLinesOfPaymentRequest } = require('../../../../app/invoice-line')
+
 let scheme
 let paymentRequest
 let paymentRequestId

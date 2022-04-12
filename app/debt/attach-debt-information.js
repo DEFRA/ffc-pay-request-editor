@@ -1,3 +1,5 @@
+const config = require('../config')
+const { sendEnrichRequestBlockedEvent } = require('../event')
 const checkDebts = require('./check-debts')
 const saveDebtData = require('./save-debt-data')
 
@@ -13,6 +15,9 @@ const attachDebtInformation = async (paymentRequestId, paymentRequest, transacti
     console.log('debt data updated')
   } else {
     console.log('no debt data found')
+    if (config.isAlerting) {
+      await sendEnrichRequestBlockedEvent(paymentRequest)
+    }
   }
 }
 

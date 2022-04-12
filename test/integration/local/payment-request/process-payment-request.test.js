@@ -1,9 +1,16 @@
 const { v4: uuidv4 } = require('uuid')
 const db = require('../../../../app/data')
+
+jest.mock('../../../../app/event', () => ({
+  sendEnrichRequestBlockedEvent: () => {}
+}))
+
 const { processPaymentRequest } = require('../../../../app/payment-request')
 const { NOT_READY } = require('../../../../app/quality-check/statuses')
+
 let scheme
 let paymentRequest
+
 const resetData = async () => {
   await db.qualityCheck.truncate({ cascade: true })
   await db.scheme.truncate({ cascade: true })
