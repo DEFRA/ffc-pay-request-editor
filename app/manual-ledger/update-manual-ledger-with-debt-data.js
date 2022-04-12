@@ -3,8 +3,22 @@ const { updateQualityChecksStatus } = require('../quality-check')
 const { updatePaymentRequestCategory } = require('../payment-request')
 const { checkDebts, attachDebtInformation } = require('../debt')
 const { PASSED, AWAITING_ENRICHMENT } = require('../quality-check/statuses')
+const getManualLedgerRequestsDebt = require('../manual-ledger/get-manual-ledger-requests')
+const { AR } = require('../processing/ledger/ledgers')
 
 const updateManualLedgerWithDebtData = async (paymentRequestId) => {
+  const manualLedgerRequest = await getManualLedgerRequestsDebt(paymentRequestId)
+  if (!manualLedgerRequest) {
+    await updateQualityChecksStatus(paymentRequestId, PASSED)
+    return
+  }
+
+  const isArLedger = manualLedgerRequest.find(x => x.ledgerPaymentRequest.ledger === AR && x.ledgerPaymentRequest.value !== 0)
+  if (!isArLedger) {
+    await updateQualityChecksStatus(paymentRequestId, PASSED)
+    return
+  }
+
   const updatedDebtData = await db.debtData.findOne({
     where: {
       paymentRequestId
