@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { ledger } = require('../auth/permissions')
-const { getManualLedger, resetManualLedger, updateManualLedgerWithDebtData } = require('../manual-ledger')
+const { getManualLedger, resetManualLedger, updateManualLedgerWithDebtData, getManualLedgerRequests } = require('../manual-ledger')
 const { updateQualityChecksStatus } = require('../quality-check')
 const { PASSED, FAILED, PENDING } = require('../quality-check/statuses')
 const ViewModel = require('./models/manual-ledger-review')
@@ -49,15 +49,19 @@ module.exports = [{
     handler: async (request, h) => {
       const status = request.payload.status ? request.payload.status : PENDING
       const paymentRequestId = request.payload.paymentRequestId
+
       if (paymentRequestId) {
         const manualLedgerData = await getManualLedger(paymentRequestId)
-        console.log('Abidemi')
-        console.log(manualLedgerData)
         const user = getUser(request)
+
         if (manualLedgerData && manualLedgerData.manualLedgerChecks[0].createdById !== user.userId) {
-          const hasArLedger = manualLedgerData.ledgerPaymentRequest.find(x => x.ledger === AR)
-          console.log('Abidemi Adio')
-          console.log(hasArLedger)
+          let hasArLedger
+          const manualLedgerRequest = await getManualLedgerRequests(paymentRequestId)
+
+          if (manualLedgerRequest) {
+            hasArLedger = manualLedgerRequest.find(x => x.ledgerPaymentRequest.ledger === AR && x.ledgerPaymentRequest.value !== 0)
+          }
+
           switch (status) {
             case PASSED:
               if (hasArLedger) {
