@@ -95,7 +95,7 @@ describe('Manual-ledger-check tests', () => {
     })
 
     test.each([
-      { paymentRequestId: null, arValue: null, apValue: null, arPercentage: null, apPercentage: null },
+      { paymentRequestId: null, arValue: null, apValue: null, apPercentage: null },
       { paymentRequestId: 1, arValue: null, apValue: null, arPercentage: null, apPercentage: null },
       { paymentRequestId: 1, arValue: 2, apValue: null, arPercentage: null, apPercentage: null },
       { paymentRequestId: 1, arValue: 2, apValue: 3, arPercentage: null, apPercentage: null },

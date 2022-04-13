@@ -32,7 +32,7 @@ describe('capture-debt route', () => {
     debtType: ADMINISTRATIVE,
     'debt-discovered-day': 2,
     'debt-discovered-month': 1,
-    'debt-discovered-year': 2015
+    'debt-discovered-year': 2021
   }
 
   beforeAll(async () => {
@@ -1505,7 +1505,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with a negative debt year returns "The debt year cannot be before 2015." error message', async () => {
+  test('POST /capture-debt with a negative debt year returns "The debt year cannot be before 2021." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -1514,7 +1514,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt year cannot be before 2015.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt year cannot be before 2021.')
   })
 
   test('POST /capture-debt with debt year 0 returns 400', async () => {
@@ -1554,7 +1554,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with debt year 0 returns "The debt year cannot be before 2015." error message', async () => {
+  test('POST /capture-debt with debt year 0 returns "The debt year cannot be before 2021." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -1563,7 +1563,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt year cannot be before 2015.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt year cannot be before 2021.')
   })
 
   test('POST /capture-debt with debt year 1878 returns 400', async () => {
@@ -1603,7 +1603,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with debt year 1878 returns "The debt year cannot be before 2015." error message', async () => {
+  test('POST /capture-debt with debt year 1878 returns "The debt year cannot be before 2021." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -1612,7 +1612,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt year cannot be before 2015.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt year cannot be before 2021.')
   })
 
   test('POST /capture-debt with debt year 2108 returns 400', async () => {
