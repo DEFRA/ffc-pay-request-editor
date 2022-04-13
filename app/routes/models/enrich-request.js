@@ -31,14 +31,14 @@ function ViewModel (payload, error) {
           text: 'The date submitted is not valid'
         }
       } else if (detail.context.label === 'date') {
-        const text = 'Recovery date must be today or in the past'
+        const text = 'Debt cannot be discovered in the future'
         detail.href = '#debt-discovered-date-day'
         detail.text = text
         errorMessage['date-error'] = {
           text
         }
       } else if (detail.context.label === 'date-not-leap-year') {
-        const text = 'Recovery date entered is not a leap year'
+        const text = 'Debt date entered is not a leap year'
         detail.href = '#debt-discovered-date-day'
         detail.text = text
         errorMessage['date-error'] = {
