@@ -40,12 +40,11 @@ module.exports = [{
       const month = format(request.payload['debt-discovered-month'])
       const year = request.payload['debt-discovered-year']
 
-      const dateValidation = dateSchema.validate({
-        date: `${year}-${month}-${day}`
-      })
-      if (dateValidation.error) {
+      const validDate = dateSchema({ date: `${year}-${month}-${day}` })
+
+      if (validDate.error) {
         const schemes = (await getSchemes()).map(x => x.name)
-        return h.view('capture-debt', new ViewModel(schemes, request.payload, dateValidation.error)).code(400).takeover()
+        return h.view('capture-debt', new ViewModel(schemes, request.payload, validDate.error)).code(400).takeover()
       }
 
       const netValue = convertToPounds(convertToPence(String(net)))

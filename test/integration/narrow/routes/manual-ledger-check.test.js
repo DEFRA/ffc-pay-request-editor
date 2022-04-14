@@ -95,22 +95,22 @@ describe('Manual-ledger-check tests', () => {
     })
 
     test.each([
-      { paymentRequestId: null, arValue: null, apValue: null, apPercentage: null },
-      { paymentRequestId: 1, arValue: null, apValue: null, arPercentage: null, apPercentage: null },
-      { paymentRequestId: 1, arValue: 2, apValue: null, arPercentage: null, apPercentage: null },
-      { paymentRequestId: 1, arValue: 2, apValue: 3, arPercentage: null, apPercentage: null },
-      { paymentRequestId: 1, arValue: 2, apValue: 3, arPercentage: 4, apPercentage: null },
-      { paymentRequestId: 'a', arValue: 2, apValue: 3, arPercentage: 4, apPercentage: 5 },
-      { paymentRequestId: 1, arValue: 'b', apValue: 3, arPercentage: 4, apPercentage: 5 },
-      { paymentRequestId: 1, arValue: 2, apValue: 'c', arPercentage: 4, apPercentage: 5 },
-      { paymentRequestId: 1, arValue: 2, apValue: 3, arPercentage: 'd', apPercentage: 5 },
-      { paymentRequestId: 1, arValue: 2, apValue: 3, arPercentage: 4, apPercentage: 'e' }
-    ])('GET /manual-ledger-check/calculate with invalid querystring values %p returns manual-ledger-check view', async ({ paymentRequestId, arValue, apValue, arPercentage, apPercentage }) => {
+      { paymentRequestId: null, arValue: null, apValue: null },
+      { paymentRequestId: 1, arValue: null, apValue: null },
+      { paymentRequestId: 1, arValue: 2, apValue: null },
+      { paymentRequestId: 1, arValue: 2, apValue: 3 },
+      { paymentRequestId: 1, arValue: 2, apValue: 3 },
+      { paymentRequestId: 'a', arValue: 2, apValue: 3 },
+      { paymentRequestId: 1, arValue: 'b', apValue: 3 },
+      { paymentRequestId: 1, arValue: 2, apValue: 'c' },
+      { paymentRequestId: 1, arValue: 2, apValue: 3 },
+      { paymentRequestId: 1, arValue: 2, apValue: 3 }
+    ])('GET /manual-ledger-check/calculate with invalid querystring values %p returns manual-ledger-check view', async ({ paymentRequestId, arValue, apValue }) => {
       getManualLedger.mockResolvedValue(paymentRequest)
       const options = {
         method,
         auth,
-        url: `${manualLedgerCalculateUrl}?paymentRequestId=${paymentRequestId}&ar-value=${arValue}&ap-value=${apValue}&ar-percentage=${arPercentage}&ap-percentage=${apPercentage}`
+        url: `${manualLedgerCalculateUrl}?paymentRequestId=${paymentRequestId}&ar-value=${arValue}&ap-value=${apValue}`
       }
       const response = await server.inject(options)
       expect(response.request.response.source.template).toBe('manual-ledger-check')

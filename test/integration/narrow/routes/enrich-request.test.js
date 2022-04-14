@@ -37,8 +37,9 @@ describe('Enrich request test', () => {
     marketingYear: 2022,
     currency: 'GBP',
     schedule: 'M12',
-    dueDate: '2021-08-15',
+    dueDate: '2021-10-25',
     value: 15000,
+    received: '2021-10-25',
     invoiceLines: [
       {
         schemeCode: '80001',
@@ -159,9 +160,9 @@ describe('Enrich request test', () => {
         auth,
         url: '/enrich-request',
         payload: {
-          day: 2,
-          month: 2,
-          year: 2022,
+          day: 16,
+          month: 10,
+          year: 2021,
           'debt-type': ADMINISTRATIVE,
           'invoice-number': 'S00000001SFIP000001V001'
         }
@@ -238,8 +239,8 @@ describe('Enrich request test', () => {
         auth,
         url: '/enrich-request',
         payload: {
-          day: 2,
-          month: 3,
+          day: 1,
+          month: 9,
           year: 2021,
           'debt-type': ADMINISTRATIVE,
           'invoice-number': 'S00000001SFIP000001V001'
@@ -270,7 +271,7 @@ describe('Enrich request test', () => {
       expect(debtDataRow[0].schemeId).toBe(1)
       expect(parseInt(debtDataRow[0].frn)).toBe(1234567890)
       expect(debtDataRow[0].debtType).toBe(ADMINISTRATIVE)
-      expect(debtDataRow[0].recoveryDate).toBe('02/03/2021')
+      expect(debtDataRow[0].recoveryDate).toBe('01/09/2021')
 
       expect(response.request.response.statusCode).toBe(302)
       expect(response.headers.location).toBe('/enrich')
