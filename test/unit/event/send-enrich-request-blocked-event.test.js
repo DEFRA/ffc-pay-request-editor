@@ -22,6 +22,10 @@ describe('Payment requests requiring debt data with none to attach', () => {
     }
   })
 
+  afterEach(async () => {
+    jest.resetAllMocks()
+  })
+
   test('should call getCorrelationId when a paymentRequest with a valid paymentRequestId is received', async () => {
     await sendEnrichRequestBlockedEvent(paymentRequest)
     expect(getCorrelationId).toHaveBeenCalled()
@@ -32,16 +36,10 @@ describe('Payment requests requiring debt data with none to attach', () => {
     expect(getCorrelationId).toHaveBeenCalledWith(paymentRequest.paymentRequestId)
   })
 
-  test('should call getCorrelationId when a paymentRequest with an invalid paymentRequestId is received', async () => {
+  test('should not call getCorrelationId when a paymentRequest with an invalid paymentRequestId is received', async () => {
     paymentRequest.paymentRequestId = undefined
     await sendEnrichRequestBlockedEvent(paymentRequest)
-    expect(getCorrelationId).toHaveBeenCalled()
-  })
-
-  test('should call getCorrelationId with paymentRequestId when a paymentRequest with an invalid paymentRequestId is received', async () => {
-    paymentRequest.paymentRequestId = undefined
-    await sendEnrichRequestBlockedEvent(paymentRequest)
-    expect(getCorrelationId).toHaveBeenCalledWith(paymentRequest.paymentRequestId)
+    expect(getCorrelationId).not.toHaveBeenCalled()
   })
 
   test('should call raiseEvent when a valid paymentRequest is received', async () => {
@@ -49,7 +47,7 @@ describe('Payment requests requiring debt data with none to attach', () => {
     expect(raiseEvent).toHaveBeenCalled()
   })
 
-  test('should call raiseEvent with event when a paymentRequest with a valid paymentRequestId is received', async () => {
+  test('should call raiseEvent with event including correlationId when a paymentRequest with a valid paymentRequestId is received and when getCorrelationId returns a GUID', async () => {
     getCorrelationId.mockImplementation(() => '9e016c50-046b-4597-b79a-ebe4f0bf8505')
     const correlationId = getCorrelationId()
     event = {
@@ -62,22 +60,39 @@ describe('Payment requests requiring debt data with none to attach', () => {
     expect(raiseEvent).toHaveBeenCalledWith(event)
   })
 
-  test('should call raiseEvent when a paymentRequest with an invalid paymentRequestId is received', async () => {
-    await sendEnrichRequestBlockedEvent(paymentRequest)
-    expect(raiseEvent).toHaveBeenCalled()
-  })
-
-  test('should call raiseEvent with event when a paymentRequest with an invalid paymentRequestId is received', async () => {
-    paymentRequest.paymentRequestId = undefined
-    getCorrelationId.mockImplementation(() => undefined)
-    const correlationId = getCorrelationId()
+  test('should call raiseEvent with event including paymentRequestId when a paymentRequest with a valid paymentRequestId is received and when getCorrelationId returns an empty string', async () => {
+    getCorrelationId.mockImplementation(() => '')
     event = {
       ...event,
-      id: correlationId,
+      id: paymentRequest.paymentRequestId,
       data: { paymentRequest }
     }
 
     await sendEnrichRequestBlockedEvent(paymentRequest)
     expect(raiseEvent).toHaveBeenCalledWith(event)
+  })
+
+  test('should call raiseEvent with event including paymentRequestId when a paymentRequest with a valid paymentRequestId is received and when getCorrelationId returns undefined', async () => {
+    getCorrelationId.mockImplementation(() => undefined)
+    event = {
+      ...event,
+      id: paymentRequest.paymentRequestId,
+      data: { paymentRequest }
+    }
+
+    await sendEnrichRequestBlockedEvent(paymentRequest)
+    expect(raiseEvent).toHaveBeenCalledWith(event)
+  })
+
+  test('should not call raiseEvent when a paymentRequest with an undefined paymentRequestId is received', async () => {
+    paymentRequest.paymentRequestId = undefined
+    await sendEnrichRequestBlockedEvent(paymentRequest)
+    expect(raiseEvent).not.toHaveBeenCalled()
+  })
+
+  test('should not call raiseEvent when a paymentRequest with an empty string paymentRequestId is received', async () => {
+    paymentRequest.paymentRequestId = ''
+    await sendEnrichRequestBlockedEvent(paymentRequest)
+    expect(raiseEvent).not.toHaveBeenCalled()
   })
 })
