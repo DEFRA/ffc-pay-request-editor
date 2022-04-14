@@ -1,4 +1,5 @@
-const { getPaymentRequestByInvoiceNumber } = require('../payment-request')
+const db = require('../data')
+const { getPaymentRequestByInvoiceNumber, updatePaymentRequestCategory } = require('../payment-request')
 const { saveDebt } = require('../debt')
 const { updateQualityChecksStatus } = require('../quality-check')
 const format = require('../utils/date-formatter')
@@ -7,7 +8,7 @@ const enrichRequestSchema = require('./schemas/enrich-request')
 const dateSchema = require('./schemas/date')
 const { enrichment } = require('../auth/permissions')
 const { getUser } = require('../auth')
-const { PENDING } = require('../quality-check/statuses')
+const { PENDING, PASSED, AWAITING_ENRICHMENT } = require('../quality-check/statuses')
 const { sendEnrichRequestEvent } = require('../event')
 
 module.exports = [{
@@ -84,11 +85,11 @@ module.exports = [{
       }
 
       const user = getUser(request)
-
+      const { paymentRequestId, schemeId, frn } = paymentRequest
       await saveDebt({
-        paymentRequestId: paymentRequest.paymentRequestId,
-        schemeId: paymentRequest.schemeId,
-        frn: paymentRequest.frn,
+        paymentRequestId: paymentRequestId,
+        schemeId: schemeId,
+        frn: frn,
         debtType: payload['debt-type'],
         recoveryDate: `${day}/${month}/${year}`,
         createdDate: new Date(),
@@ -96,9 +97,20 @@ module.exports = [{
         createdById: user.userId
       })
 
-      await updateQualityChecksStatus(paymentRequest.paymentRequestId, PENDING)
-      await sendEnrichRequestEvent(paymentRequest, user)
+      const isAwaitingManualLedgerDebtData = await db.qualityCheck.findOne({
+        where: {
+          paymentRequestId,
+          status: AWAITING_ENRICHMENT
+        }
+      })
 
+      if (isAwaitingManualLedgerDebtData) {
+        await updatePaymentRequestCategory(paymentRequestId, 2)
+        await updateQualityChecksStatus(paymentRequestId, PASSED)
+      } else {
+        await updateQualityChecksStatus(paymentRequestId, PENDING)
+        await sendEnrichRequestEvent(paymentRequest, user)
+      }
       return h.redirect('/enrich')
     }
   }

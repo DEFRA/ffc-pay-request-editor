@@ -3,7 +3,7 @@ const db = require('../../../../app/data')
 
 const { ADMINISTRATIVE } = require('../../../../app/debt-types')
 const { PENDING, NOT_READY } = require('../../../../app/quality-check/statuses')
-
+const { AR } = require('../../../../app/processing/ledger/ledgers')
 const resetData = async () => {
   await db.qualityCheck.truncate({ cascade: true })
   await db.scheme.truncate({ cascade: true })
@@ -140,7 +140,7 @@ describe('Enrich request test', () => {
       }
 
       paymentRequest.released = undefined
-
+      paymentRequest.ledger = AR
       await db.scheme.create(scheme)
       await db.paymentRequest.create(paymentRequest)
 
@@ -170,6 +170,7 @@ describe('Enrich request test', () => {
       paymentRequest.released = new Date()
 
       await db.scheme.create(scheme)
+      paymentRequest.ledger = AR
       await db.paymentRequest.create(paymentRequest)
 
       const response = await server.inject(options)
@@ -247,7 +248,7 @@ describe('Enrich request test', () => {
       }
 
       paymentRequest.released = undefined
-
+      paymentRequest.ledger = AR
       await db.scheme.create(scheme)
       await db.paymentRequest.create(paymentRequest)
       await db.qualityCheck.create(qualityCheck)
@@ -291,7 +292,7 @@ describe('Enrich request test', () => {
       }
 
       paymentRequest.released = undefined
-
+      paymentRequest.ledger = AR
       await db.scheme.create(scheme)
       await db.paymentRequest.create(paymentRequest)
       await db.qualityCheck.create(qualityCheck)

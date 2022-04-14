@@ -2,10 +2,11 @@ const db = require('../data')
 const util = require('util')
 const createMessage = require('./create-message')
 const { updateQualityChecksStatus } = require('../quality-check')
-const { AWAITING_ENRICHMENT } = require('../quality-check/statuses')
+const { AWAITING_ENRICHMENT, PASSED } = require('../quality-check/statuses')
 const {
   getDebtPaymentRequests,
-  updatePaymentRequestReleased
+  updatePaymentRequestReleased,
+  updatePaymentRequestCategory
 } = require('../payment-request')
 
 const publishDebtPaymentRequests = async (debtSender) => {
@@ -21,7 +22,8 @@ const publishDebtPaymentRequests = async (debtSender) => {
       })
 
       if (inManualLedgerAwaitingDebtData) {
-        await updateQualityChecksStatus(paymentRequestId, 'Passed')
+        await updatePaymentRequestCategory(paymentRequestId, 2)
+        await updateQualityChecksStatus(paymentRequestId, PASSED)
       } else {
         delete paymentRequest.paymentRequestId
         await publishPaymentRequest(paymentRequest, debtSender)
