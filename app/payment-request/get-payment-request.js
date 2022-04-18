@@ -24,7 +24,8 @@ const getPaymentRequest = async (categoryId = 1) => {
       'value',
       'received',
       'receivedFormatted',
-      'ledger'
+      'ledger',
+      'netValue'
     ]
   })
 }

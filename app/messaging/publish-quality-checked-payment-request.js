@@ -2,11 +2,13 @@ const util = require('util')
 const createMessage = require('./create-message')
 const { updateQualityChecksStatus, getQualityCheckedPaymentRequests } = require('../quality-check')
 const { updatePaymentRequestReleased } = require('../payment-request')
+const { attachDebtToManualLedger } = require('../manual-ledger')
 
 const publishQualityCheckedPaymentRequests = async (qualityCheckSender) => {
   try {
     const qualityCheckedPaymentRequests = await getQualityCheckedPaymentRequests()
     for (const qualityCheckedPaymentRequest of qualityCheckedPaymentRequests) {
+      await attachDebtToManualLedger(qualityCheckedPaymentRequest.paymentRequest)
       const paymentRequestId = qualityCheckedPaymentRequest.paymentRequest.paymentRequestId
       await publishPaymentRequest(qualityCheckedPaymentRequest, qualityCheckSender)
       await updatePaymentRequestReleased(paymentRequestId)

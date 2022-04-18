@@ -8,6 +8,7 @@ const resetManualLedger = require('./reset-manual-ledger')
 const getManualLedgerRequests = require('./get-manual-ledger-requests')
 const updateManualLedgerUser = require('./update-manual-ledger-user')
 const updateManualLedgerWithDebtData = require('./update-manual-ledger-with-debt-data')
+const attachDebtToManualLedger = require('./attach-debt-to-manual-ledger')
 
 module.exports = {
   getManualLedgerCount,
@@ -19,5 +20,6 @@ module.exports = {
   resetManualLedger,
   getManualLedgerRequests,
   updateManualLedgerUser,
-  updateManualLedgerWithDebtData
+  updateManualLedgerWithDebtData,
+  attachDebtToManualLedger
 }

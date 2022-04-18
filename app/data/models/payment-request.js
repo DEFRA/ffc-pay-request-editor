@@ -23,11 +23,17 @@ module.exports = (sequelize, DataTypes) => {
     originalInvoiceNumber: DataTypes.STRING,
     invoiceCorrectionReference: DataTypes.STRING,
     value: DataTypes.INTEGER,
-    netValue: DataTypes.INTEGER,
     valueText: {
       type: DataTypes.VIRTUAL,
       get () {
         return convertValueToStringFormat(this.value)
+      }
+    },
+    netValue: DataTypes.INTEGER,
+    netValueText: {
+      type: DataTypes.VIRTUAL,
+      get () {
+        return this.netValue ? convertValueToStringFormat(this.netValue) : convertValueToStringFormat(this.value)
       }
     },
     received: DataTypes.DATE,
