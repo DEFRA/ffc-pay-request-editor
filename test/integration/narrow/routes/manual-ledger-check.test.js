@@ -98,13 +98,10 @@ describe('Manual-ledger-check tests', () => {
       { paymentRequestId: null, arValue: null, apValue: null },
       { paymentRequestId: 1, arValue: null, apValue: null },
       { paymentRequestId: 1, arValue: 2, apValue: null },
-      { paymentRequestId: 1, arValue: 2, apValue: 3 },
-      { paymentRequestId: 1, arValue: 2, apValue: 3 },
+      { paymentRequestId: 1, arValue: null, apValue: 3 },
       { paymentRequestId: 'a', arValue: 2, apValue: 3 },
       { paymentRequestId: 1, arValue: 'b', apValue: 3 },
-      { paymentRequestId: 1, arValue: 2, apValue: 'c' },
-      { paymentRequestId: 1, arValue: 2, apValue: 3 },
-      { paymentRequestId: 1, arValue: 2, apValue: 3 }
+      { paymentRequestId: 1, arValue: 2, apValue: 'c' }
     ])('GET /manual-ledger-check/calculate with invalid querystring values %p returns manual-ledger-check view', async ({ paymentRequestId, arValue, apValue }) => {
       getManualLedger.mockResolvedValue(paymentRequest)
       const options = {
