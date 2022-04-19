@@ -1,7 +1,13 @@
 const db = require('../../../../app/data')
+
+jest.mock('../../../../app/event', () => ({
+  sendEnrichRequestBlockedEvent: () => {}
+}))
+
 const { processPaymentRequest } = require('../../../../app/payment-request')
 const { updateQualityChecksStatus } = require('../../../../app/quality-check')
 const { NOT_READY, PASSED } = require('../../../../app/quality-check/statuses')
+
 let scheme
 let paymentRequest
 let paymentRequestId
