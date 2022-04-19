@@ -1,7 +1,8 @@
 const db = require('../../../../app/data')
-const { updateManualLedgerWithDebtData } = require('../../../../app/manual-ledger')
+const { updateManualLedgerWithDebtData, attachDebtToManualLedger } = require('../../../../app/manual-ledger')
 const { AR, AP } = require('../../../../app/processing/ledger/ledgers')
 const { PENDING, PASSED } = require('../../../../app/quality-check/statuses')
+
 let scheme
 let paymentRequest
 let qualityCheck
@@ -200,5 +201,23 @@ describe('process payment requests', () => {
     await updateManualLedgerWithDebtData(2)
     const qualityCheckAfterUpdate = await db.qualityCheck.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
     expect(qualityCheckAfterUpdate.status).toBe(PENDING)
+  })
+
+  test('confirm  debt data is attached to manualledgerPayRequest', async () => {
+    await db.paymentRequest.create(paymentRequest)
+    await db.qualityCheck.create(qualityCheck)
+    await db.manualLedgerPaymentRequest.create(manualLedgerPaymentRequest)
+    await db.debtData.create({
+      debtDataId: 1,
+      frn: 1234567890,
+      reference: 'SIP00000000000001',
+      paymentRequestId: 1,
+      debtType: 'adm'
+    })
+
+    const paymentRequestBeforeDebtAttachment = await db.paymentRequest.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
+    expect(paymentRequestBeforeDebtAttachment.debtType).toBe(undefined)
+    await attachDebtToManualLedger(paymentRequestBeforeDebtAttachment)
+    expect(paymentRequestBeforeDebtAttachment.debtType).toBe('adm')
   })
 })
