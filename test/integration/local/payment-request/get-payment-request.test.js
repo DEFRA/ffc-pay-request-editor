@@ -17,7 +17,8 @@ describe('Get payment request test', () => {
       paymentRequestNumber: 1,
       agreementNumber: 'SIP00000000000001',
       value: 15000,
-      categoryId: 1
+      categoryId: 1,
+      received: new Date()
     }
 
     await db.paymentRequest.create(paymentRequest)
@@ -48,5 +49,12 @@ describe('Get payment request test', () => {
     const categoryId = 2
     const paymentRequestCount = await getPaymentRequestCount(categoryId)
     expect(paymentRequestCount).toEqual(0)
+  })
+
+  test('should create a receivedFormatted virtual type when paymentRequest has a received value', async () => {
+    const paymentRequests = await getPaymentRequest()
+    expect(typeof paymentRequests[0].receivedFormatted).toBe('string')
+    expect(paymentRequests[0].receivedFormatted).not.toBe(null)
+    expect(paymentRequests[0].receivedFormatted).toBe(paymentRequests[0].received.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' }))
   })
 })

@@ -113,5 +113,19 @@ describe('Manual-ledger-check tests', () => {
       expect(response.request.response.source.template).toBe('manual-ledger-check')
       expect(response.statusCode).toBe(400)
     })
+
+    test('GET /manual-ledger-check/calculate with valid query string returns/manual-ledger-check', async () => {
+      const paymentRequestId = 1
+      const arValue = 1
+      const apValue = 1
+
+      const options = {
+        method,
+        auth,
+        url: `${manualLedgerCalculateUrl}?paymentRequestId=${paymentRequestId}&ar-value=${arValue}&ap-value=${apValue}`
+      }
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(200)
+    })
   })
 })
