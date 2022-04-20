@@ -1,11 +1,10 @@
-const db = require('../data')
 const { updateQualityChecksStatus } = require('../quality-check')
-const { updatePaymentRequestCategory } = require('../payment-request')
-const { checkDebts, attachDebtInformation } = require('../debt')
+const { updatePaymentRequestCategory, getPaymentRequestByRequestId } = require('../payment-request')
+const { checkDebts, attachDebtInformation, getDebtData } = require('../debt')
 const { PASSED, AWAITING_ENRICHMENT } = require('../quality-check/statuses')
 const getManualLedgerRequestsDebt = require('../manual-ledger/get-manual-ledger-requests')
 const { AR } = require('../processing/ledger/ledgers')
-
+const { ENRICHMENT } = require('../payment-request/categories')
 const updateManualLedgerWithDebtData = async (paymentRequestId) => {
   const manualLedgerRequest = await getManualLedgerRequestsDebt(paymentRequestId)
   if (!manualLedgerRequest) {
@@ -19,22 +18,14 @@ const updateManualLedgerWithDebtData = async (paymentRequestId) => {
     return
   }
 
-  const updatedDebtData = await db.debtData.findOne({
-    where: {
-      paymentRequestId
-    }
-  })
+  const updatedDebtData = await getDebtData(paymentRequestId)
 
   if (updatedDebtData) {
     await updateQualityChecksStatus(paymentRequestId, PASSED)
     return
   }
 
-  const paymentRequest = await db.paymentRequest.findOne({
-    where: {
-      paymentRequestId
-    }
-  })
+  const paymentRequest = await getPaymentRequestByRequestId(paymentRequestId)
 
   const { frn, agreementNumber, netValue } = paymentRequest
   const foundDebtData = await checkDebts(frn, agreementNumber, netValue)
@@ -45,7 +36,7 @@ const updateManualLedgerWithDebtData = async (paymentRequestId) => {
     return
   }
 
-  await updatePaymentRequestCategory(paymentRequestId, 1)
+  await updatePaymentRequestCategory(paymentRequestId, ENRICHMENT)
   await updateQualityChecksStatus(paymentRequestId, AWAITING_ENRICHMENT)
 }
 module.exports = updateManualLedgerWithDebtData

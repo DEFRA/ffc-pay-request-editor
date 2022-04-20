@@ -1,6 +1,6 @@
 const db = require('../../../../app/data')
 const { updatePaymentRequestCategory } = require('../../../../app/payment-request')
-
+const { LEDGER_CHECK } = require('../../../../app/payment-request/categories')
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
 const { SCHEME_NAME_SFI_PILOT } = require('../../../data/scheme')
 
@@ -36,7 +36,7 @@ describe('Update payment request category test', () => {
 
   test('should return categoryId = 2  before updating', async () => {
     const paymentRequestBeforeUpdate = await db.paymentRequest.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
-    expect(paymentRequestBeforeUpdate.categoryId).toBe(2)
+    expect(paymentRequestBeforeUpdate.categoryId).toBe(LEDGER_CHECK)
   })
 
   test('should return categoryId = 1   after updating', async () => {

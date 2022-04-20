@@ -3,5 +3,6 @@ module.exports = {
   FAILED: 'Failed',
   NOT_READY: 'Not Ready',
   PASSED: 'Passed',
-  AWAITING_ENRICHMENT: 'Awaiting Enrichment'
+  AWAITING_ENRICHMENT: 'Awaiting Enrichment',
+  PROCESSED: 'Processed'
 }

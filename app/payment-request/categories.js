@@ -1,0 +1,5 @@
+module.exports = {
+  ENRICHMENT: 1,
+  LEDGER_CHECK: 2,
+  PROVISIONAL_LEDGER_CHECK: 3
+}

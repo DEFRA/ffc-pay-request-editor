@@ -1,8 +1,9 @@
-const db = require('../data')
 const util = require('util')
 const createMessage = require('./create-message')
 const { updateQualityChecksStatus } = require('../quality-check')
-const { AWAITING_ENRICHMENT, PASSED } = require('../quality-check/statuses')
+const { PASSED, PROCESSED } = require('../quality-check/statuses')
+const { LEDGER_CHECK } = require('../payment-request/categories')
+const { checkAwaitingManualLedgerDebtData } = require('../manual-ledger')
 const {
   getDebtPaymentRequests,
   updatePaymentRequestReleased,
@@ -14,21 +15,16 @@ const publishDebtPaymentRequests = async (debtSender) => {
     const debtPaymentRequests = await getDebtPaymentRequests()
     for (const paymentRequest of debtPaymentRequests) {
       const { paymentRequestId } = paymentRequest
-      const inManualLedgerAwaitingDebtData = await db.qualityCheck.findOne({
-        where: {
-          paymentRequestId,
-          status: AWAITING_ENRICHMENT
-        }
-      })
+      const inManualLedgerAwaitingDebtData = await checkAwaitingManualLedgerDebtData(paymentRequestId)
 
       if (inManualLedgerAwaitingDebtData) {
-        await updatePaymentRequestCategory(paymentRequestId, 2)
+        await updatePaymentRequestCategory(paymentRequestId, LEDGER_CHECK)
         await updateQualityChecksStatus(paymentRequestId, PASSED)
       } else {
         delete paymentRequest.paymentRequestId
         await publishPaymentRequest(paymentRequest, debtSender)
         await updatePaymentRequestReleased(paymentRequestId)
-        await updateQualityChecksStatus(paymentRequestId, 'Processed')
+        await updateQualityChecksStatus(paymentRequestId, PROCESSED)
       }
     }
   } catch (err) {

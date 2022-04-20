@@ -30,7 +30,7 @@ const getPaymentRequest = async (categoryId = 1) => {
   })
 }
 
-const getPaymentRequestByInvoiceNumber = async (invoiceNumber) => {
+const getArPaymentRequestByInvoiceNumber = async (invoiceNumber) => {
   return db.paymentRequest.findOne({
     where: {
       invoiceNumber,
@@ -56,8 +56,17 @@ const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, agreementNumbe
   })
 }
 
+const getPaymentRequestByRequestId = async (paymentRequestId) => {
+  return db.paymentRequest.findOne({
+    where: {
+      paymentRequestId
+    }
+  })
+}
+
 module.exports = {
   getPaymentRequest,
-  getPaymentRequestByInvoiceNumber,
-  getPaymentRequestAwaitingEnrichment
+  getArPaymentRequestByInvoiceNumber,
+  getPaymentRequestAwaitingEnrichment,
+  getPaymentRequestByRequestId
 }
