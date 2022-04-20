@@ -6,7 +6,7 @@ describe('Manual-ledger-check tests', () => {
   jest.mock('../../../../app/manual-ledger')
   jest.mock('../../../../app/auth')
   const mockAuth = require('../../../../app/auth')
-  const { getManualLedgers, getManualLedger } = require('../../../../app/manual-ledger')
+  const { getManualLedgers, getManualLedger, calculateManualLedger } = require('../../../../app/manual-ledger')
   const createServer = require('../../../../app/server')
 
   const auth = { strategy: 'session-auth', credentials: { scope: [ledger] } }
@@ -32,6 +32,11 @@ describe('Manual-ledger-check tests', () => {
     }
     ])
 
+    calculateManualLedger.mockResolvedValue({
+      someValue: 'aaaa',
+      someOtherValue: 'bbbb'
+    })
+
     paymentRequest = {
       paymentRequestId: 1,
       manualLedgerChecks: []
@@ -39,6 +44,7 @@ describe('Manual-ledger-check tests', () => {
   })
 
   afterEach(async () => {
+    jest.resetAllMocks()
     await server.stop()
   })
 
