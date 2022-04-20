@@ -32,11 +32,6 @@ describe('Manual-ledger-check tests', () => {
     }
     ])
 
-    calculateManualLedger.mockResolvedValue({
-      someValue: 'aaaa',
-      someOtherValue: 'bbbb'
-    })
-
     paymentRequest = {
       paymentRequestId: 1,
       manualLedgerChecks: []
@@ -44,8 +39,8 @@ describe('Manual-ledger-check tests', () => {
   })
 
   afterEach(async () => {
-    jest.resetAllMocks()
     await server.stop()
+    jest.clearAllMocks()
   })
 
   describe('GET /manual-ledger-check requests', () => {
@@ -121,6 +116,14 @@ describe('Manual-ledger-check tests', () => {
     })
 
     test('GET /manual-ledger-check/calculate with valid query string returns/manual-ledger-check', async () => {
+      calculateManualLedger.mockResolvedValue({
+        valueInPounds: 1,
+        valueinPoundsText: '1',
+        manualLedgerChecks: []
+      })
+
+      getManualLedger.mockResolvedValue(paymentRequest)
+
       const paymentRequestId = 1
       const arValue = 1
       const apValue = 1
@@ -132,6 +135,31 @@ describe('Manual-ledger-check tests', () => {
       }
       const response = await server.inject(options)
       expect(response.statusCode).toBe(200)
+      expect(response.request.response.source.template).toBe('manual-ledger-check')
+    })
+
+    // test if it fails it goes to 500 error
+    test('GET /manual-ledger-check/calculate with valid query string returns/manual-ledger-check', async () => {
+      calculateManualLedger.mockResolvedValue({
+        valueInPounds: 1,
+        valueinPoundsText: '1',
+        manualLedgerChecks: []
+      })
+
+      getManualLedger.mockResolvedValue(paymentRequest)
+
+      const paymentRequestId = 1
+      const arValue = 1
+      const apValue = 1
+
+      const options = {
+        method,
+        auth,
+        url: `${manualLedgerCalculateUrl}?paymentRequestId=${paymentRequestId}&ar-value=${arValue}&ap-value=${apValue}`
+      }
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(200)
+      expect(response.request.response.source.template).toBe('manual-ledger-check')
     })
   })
 })
