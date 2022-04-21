@@ -13,6 +13,7 @@ const {
 const publishDebtPaymentRequests = async (debtSender) => {
   try {
     const debtPaymentRequests = await getDebtPaymentRequests()
+
     for (const paymentRequest of debtPaymentRequests) {
       const { paymentRequestId } = paymentRequest
       const inManualLedgerAwaitingDebtData = await checkAwaitingManualLedgerDebtData(paymentRequestId)
