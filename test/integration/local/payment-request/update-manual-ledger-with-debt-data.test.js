@@ -2,6 +2,9 @@ const db = require('../../../../app/data')
 const { updateManualLedgerWithDebtData, attachDebtToManualLedger } = require('../../../../app/manual-ledger')
 const { AR, AP } = require('../../../../app/processing/ledger/ledgers')
 const { PENDING, PASSED } = require('../../../../app/quality-check/statuses')
+const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
+const { SCHEME_NAME_SFI_PILOT } = require('../../../data/scheme')
+const { ADMINISTRATIVE } = require('../../../../app/debt-types')
 
 let scheme
 let paymentRequest
@@ -21,8 +24,8 @@ describe('process payment requests', () => {
     await resetData()
 
     scheme = {
-      schemeId: 1,
-      name: 'SFI'
+      schemeId: SCHEME_ID_SFI_PILOT,
+      name: SCHEME_NAME_SFI_PILOT
     }
 
     paymentRequest = {
@@ -63,7 +66,7 @@ describe('process payment requests', () => {
     qualityCheck = {
       qualityCheckId: 1,
       paymentRequestId: 1,
-      status: 'Pending'
+      status: PENDING
     }
 
     manualLedgerPaymentRequest = {
@@ -212,12 +215,12 @@ describe('process payment requests', () => {
       frn: 1234567890,
       reference: 'SIP00000000000001',
       paymentRequestId: 1,
-      debtType: 'adm'
+      debtType: ADMINISTRATIVE
     })
 
     const paymentRequestBeforeDebtAttachment = await db.paymentRequest.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
     expect(paymentRequestBeforeDebtAttachment.debtType).toBe(undefined)
     await attachDebtToManualLedger(paymentRequestBeforeDebtAttachment)
-    expect(paymentRequestBeforeDebtAttachment.debtType).toBe('adm')
+    expect(paymentRequestBeforeDebtAttachment.debtType).toBe(ADMINISTRATIVE)
   })
 })

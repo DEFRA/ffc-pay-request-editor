@@ -1,6 +1,6 @@
 const db = require('../../../../app/data')
 const { updatePaymentRequestCategory } = require('../../../../app/payment-request')
-const { LEDGER_CHECK } = require('../../../../app/payment-request/categories')
+const { LEDGER_CHECK, ENRICHMENT } = require('../../../../app/payment-request/categories')
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
 const { SCHEME_NAME_SFI_PILOT } = require('../../../data/scheme')
 
@@ -22,7 +22,7 @@ describe('Update payment request category test', () => {
       paymentRequestId: 1,
       schemeId: SCHEME_ID_SFI_PILOT,
       frn: 1234567890,
-      categoryId: 2
+      categoryId: LEDGER_CHECK
     }
 
     await resetData()
@@ -34,14 +34,14 @@ describe('Update payment request category test', () => {
     await db.sequelize.close()
   })
 
-  test('should return categoryId = 2  before updating', async () => {
+  test('should return LEDGER_CHECK before update', async () => {
     const paymentRequestBeforeUpdate = await db.paymentRequest.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
     expect(paymentRequestBeforeUpdate.categoryId).toBe(LEDGER_CHECK)
   })
 
-  test('should return categoryId = 1   after updating', async () => {
-    await updatePaymentRequestCategory(paymentRequest.paymentRequestId, 1)
+  test('should return ENRICHMENT category after update', async () => {
+    await updatePaymentRequestCategory(paymentRequest.paymentRequestId, ENRICHMENT)
     const paymentRequestAfterUpdate = await db.paymentRequest.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
-    expect(paymentRequestAfterUpdate.categoryId).toBe(1)
+    expect(paymentRequestAfterUpdate.categoryId).toBe(ENRICHMENT)
   })
 })
