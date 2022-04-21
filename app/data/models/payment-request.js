@@ -29,6 +29,13 @@ module.exports = (sequelize, DataTypes) => {
         return convertValueToStringFormat(this.value)
       }
     },
+    netValue: DataTypes.INTEGER,
+    netValueText: {
+      type: DataTypes.VIRTUAL,
+      get () {
+        return this.netValue ? convertValueToStringFormat(this.netValue) : convertValueToStringFormat(this.value)
+      }
+    },
     received: DataTypes.DATE,
     receivedFormatted: {
       type: DataTypes.VIRTUAL,
