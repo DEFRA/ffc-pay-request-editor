@@ -34,9 +34,6 @@
         </div>
       </details>
 
-
-      
-
       <h2 class="govuk-heading-m">Provisional</h2>
       {% for data in model.manualLedgerData.manualLedgerChecks %}
         {{paymentRequestHeader(data.ledgerPaymentRequest)}}
@@ -51,8 +48,6 @@
           {{paymentRequestInvoiceLines(data.ledgerPaymentRequest.invoiceLines)}}
         </div>
       </details>
-
-        
       {% endfor %}
       {% if model.errorMessage %}
           {{ govukErrorSummary({
