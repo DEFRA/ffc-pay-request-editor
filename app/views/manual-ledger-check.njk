@@ -128,9 +128,6 @@
   const apValue = document.getElementById(apValueId)
   const arValue = document.getElementById(arValueId)
 
-  const checkArInputSign = Math.sign(arValue.value)
-  const checkApInputSign = Math.sign(apValue.value)
-
   if (ledgerWrapper) {
     const convertToPence = (valueInPounds) => {
       const currencyArray = valueInPounds.toString().split('.')
@@ -148,13 +145,6 @@
       component.classList[action](classType)
     }
 
-    const checkInputSigns = (currentInput, originalInput) => {
-      if (Math.sign(currentInput) === (Math.sign(originalInput)) || Math.sign(currentInput) === 0) {
-        console.log(`checkInputSigns is true`)
-        return true
-      }
-    }
-
     
 
     const validateValues = () => {
@@ -162,11 +152,9 @@
       const inputErrorClass = 'govuk-input--error'
       const formErrorClass = 'govuk-form-group--error'
       const checkIfValueString = valuesToCheck.every(value => isNaN(value.value))
-      const errorMessageText = document.querySelector('.error-text')
 
 
-      if (checkIfValueString || !checkInputSigns(arValue.value, checkArInputSign)) {
-        errorMessageText.innerHTML = checkIfValueString ? 'The entered values must equal {{ model.manualLedgerData.valueInPoundsText }}' : 'This is a ledger split error'
+      if (checkIfValueString) {
         valuesToCheck.forEach(value => {
           raiseError(value, 'add', inputErrorClass)
         })

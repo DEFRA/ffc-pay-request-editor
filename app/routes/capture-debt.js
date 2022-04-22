@@ -16,7 +16,7 @@ module.exports = [{
   path: '/capture-debt',
   options: {
     auth: { scope: [enrichment] },
-    handler: async (request, h) => {
+    handler: async (_request, h) => {
       const schemes = (await getSchemes()).map(x => x.name)
       return h.view('capture-debt', new ViewModel(schemes))
     }

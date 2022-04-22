@@ -161,5 +161,24 @@ describe('Manual-ledger-check tests', () => {
       expect(response.statusCode).toBe(200)
       expect(response.request.response.source.template).toBe('manual-ledger-check')
     })
+
+    test('GET /manual-ledger-check/calculate with valid query string returns 500 error when manualLedgerData is invalid ', async () => {
+      calculateManualLedger.mockResolvedValue({})
+
+      getManualLedger.mockResolvedValue(paymentRequest)
+
+      const paymentRequestId = 1
+      const arValue = 1
+      const apValue = 1
+
+      const options = {
+        method,
+        auth,
+        url: `${manualLedgerCalculateUrl}?paymentRequestId=${paymentRequestId}&ar-value=${arValue}&ap-value=${apValue}`
+      }
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(500)
+      expect(response.request.response.source.template).toBe('500')
+    })
   })
 })

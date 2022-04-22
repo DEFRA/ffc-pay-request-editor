@@ -1751,4 +1751,23 @@ describe('capture-debt route', () => {
     expect(debtData.schemeId).toBe(1)
     expect(debtData.frn).toBe(VALID_PAYLOAD.frn)
   })
+  test('POST /capture-debt with future date returns 400 ', async () => {
+    const debtDate = new Date()
+    debtDate.setDate(debtDate.getDate() + 1)
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: {
+        ...VALID_PAYLOAD,
+        'debt-discovered-day': debtDate.getDate(),
+        'debt-discovered-month': debtDate.getMonth() + 1,
+        'debt-discovered-year': debtDate.getFullYear()
+      },
+      auth
+    }
+
+    const result = await server.inject(options)
+    expect(result.statusCode).toBe(400)
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Debt cannot be discovered in the future')
+  })
 })
