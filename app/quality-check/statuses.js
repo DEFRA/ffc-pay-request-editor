@@ -2,5 +2,7 @@ module.exports = {
   PENDING: 'Pending',
   FAILED: 'Failed',
   NOT_READY: 'Not Ready',
-  PASSED: 'Passed'
+  PASSED: 'Passed',
+  AWAITING_ENRICHMENT: 'Awaiting Enrichment',
+  PROCESSED: 'Processed'
 }

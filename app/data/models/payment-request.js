@@ -35,6 +35,13 @@ module.exports = (sequelize, DataTypes) => {
         return (Math.round((Date.now() - this.received) / (1000 * 60 * 60 * 24)))
       }
     },
+    netValue: DataTypes.INTEGER,
+    netValueText: {
+      type: DataTypes.VIRTUAL,
+      get () {
+        return this.netValue ? convertValueToStringFormat(this.netValue) : convertValueToStringFormat(this.value)
+      }
+    },
     received: DataTypes.DATE,
     receivedFormatted: {
       type: DataTypes.VIRTUAL,

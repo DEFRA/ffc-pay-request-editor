@@ -1,4 +1,4 @@
-const { getPaymentRequestByInvoiceNumber } = require('../payment-request')
+const { getArPaymentRequestByInvoiceNumber, updatePaymentRequestCategory } = require('../payment-request')
 const { saveDebt } = require('../debt')
 const { updateQualityChecksStatus } = require('../quality-check')
 const format = require('../utils/date-formatter')
@@ -7,9 +7,10 @@ const enrichRequestSchema = require('./schemas/enrich-request')
 const dateSchema = require('./schemas/date')
 const { enrichment } = require('../auth/permissions')
 const { getUser } = require('../auth')
-const { PENDING } = require('../quality-check/statuses')
+const { PENDING, PASSED } = require('../quality-check/statuses')
+const { LEDGER_CHECK } = require('../payment-request/categories')
 const { sendEnrichRequestEvent } = require('../event')
-
+const { checkAwaitingManualLedgerDebtData } = require('../manual-ledger')
 module.exports = [{
   method: 'GET',
   path: '/enrich-request',
@@ -21,9 +22,9 @@ module.exports = [{
         return h.view('404')
       }
 
-      const paymentRequest = await getPaymentRequestByInvoiceNumber(invoiceNumber)
+      const paymentRequest = await getArPaymentRequestByInvoiceNumber(invoiceNumber)
       if (!paymentRequest) {
-        console.log(`No records with invoiceNumber: ${invoiceNumber} are present in the database`)
+        console.log(`No AR records with invoiceNumber: ${invoiceNumber} are present in the database`)
         return h.view('404')
       }
 
@@ -45,7 +46,7 @@ module.exports = [{
       const payload = request.payload
 
       const invoiceNumber = payload['invoice-number']
-      const paymentRequest = await getPaymentRequestByInvoiceNumber(invoiceNumber)
+      const paymentRequest = await getArPaymentRequestByInvoiceNumber(invoiceNumber)
 
       const enrichRequestValidation = enrichRequestSchema.validate(payload, { abortEarly: false })
       if (enrichRequestValidation.error) {
@@ -84,11 +85,11 @@ module.exports = [{
       }
 
       const user = getUser(request)
-
+      const { paymentRequestId, schemeId, frn } = paymentRequest
       await saveDebt({
-        paymentRequestId: paymentRequest.paymentRequestId,
-        schemeId: paymentRequest.schemeId,
-        frn: paymentRequest.frn,
+        paymentRequestId: paymentRequestId,
+        schemeId: schemeId,
+        frn: frn,
         debtType: payload['debt-type'],
         recoveryDate: `${day}/${month}/${year}`,
         createdDate: new Date(),
@@ -96,9 +97,14 @@ module.exports = [{
         createdById: user.userId
       })
 
-      await updateQualityChecksStatus(paymentRequest.paymentRequestId, PENDING)
-      await sendEnrichRequestEvent(paymentRequest, user)
-
+      const isAwaitingManualLedgerDebtData = await checkAwaitingManualLedgerDebtData(paymentRequestId)
+      if (isAwaitingManualLedgerDebtData) {
+        await updatePaymentRequestCategory(paymentRequestId, LEDGER_CHECK)
+        await updateQualityChecksStatus(paymentRequestId, PASSED)
+      } else {
+        await updateQualityChecksStatus(paymentRequestId, PENDING)
+        await sendEnrichRequestEvent(paymentRequest, user)
+      }
       return h.redirect('/enrich')
     }
   }

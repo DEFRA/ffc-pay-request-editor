@@ -1,5 +1,5 @@
 const db = require('../data')
-const { getManualLedgerRequests } = require('../manual-ledger')
+const getManualLedgerRequestCheck = require('../manual-ledger/get-manual-ledger-requests')
 const { PASSED } = require('./statuses')
 
 const getQualityCheckedPaymentRequests = async () => {
@@ -25,7 +25,7 @@ const getQualityCheckedPaymentRequests = async () => {
   if (qualityChecks.length > 0) {
     for (const qualityCheck of qualityChecks) {
       const paymentRequest = qualityCheck.paymentRequest
-      const manualLedgerRequests = await getManualLedgerRequests(paymentRequest.paymentRequestId)
+      const manualLedgerRequests = await getManualLedgerRequestCheck(paymentRequest.paymentRequestId)
       const transformManualLedgerRequest = manualLedgerRequests.map(x => x.ledgerPaymentRequest)
       qualityCheckedPaymentRequests.push({ paymentRequest: paymentRequest, paymentRequests: transformManualLedgerRequest })
     }

@@ -29,7 +29,8 @@ describe('Get manual ledger test', () => {
         invoiceLines: [{
           description: 'G00',
           value: 90000
-        }]
+        }],
+        netValue: 4000
       },
       paymentRequests: [{
         paymentRequestId: 2,
@@ -64,6 +65,15 @@ describe('Get manual ledger test', () => {
   test('should return a duplicate payment request received found message', async () => {
     await processManualLedgerRequest(paymentRequest)
     expect(consoleSpy).toHaveBeenCalledWith(`Duplicate payment request received, skipping ${paymentRequest.paymentRequest.invoiceNumber}`)
+  })
+
+  test('confirm payload with paymentRequest.netValue is added to database and can be retrieved ', async () => {
+    const paymentRequestId = 1
+    await processManualLedgerRequest(paymentRequest)
+    const paymentRequestWithManualLedger = await getManualLedger(paymentRequestId)
+    expect(paymentRequestWithManualLedger.netValue).not.toBe(null)
+    expect(paymentRequestWithManualLedger.netValue).not.toBe(40.00)
+    expect(paymentRequestWithManualLedger.netValue).toBe(4000)
   })
 
   test('should throw an error due to no invoiceNumber', async () => {
