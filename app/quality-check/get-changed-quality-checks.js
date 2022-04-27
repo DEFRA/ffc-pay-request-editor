@@ -1,8 +1,7 @@
 const db = require('../data')
 
 const getChangedQualityChecks = async (qualityChecks) => {
-  const changedQualityChecks = qualityChecks.map(x => x.get({ plain: true }))
-  for (const qualityCheck of changedQualityChecks) {
+  for (const qualityCheck of qualityChecks) {
     const dismissedLedgerAssignments = await db.manualLedgerPaymentRequest.findAll({
       where: {
         paymentRequestId: qualityCheck.paymentRequest.paymentRequestId,
@@ -11,7 +10,7 @@ const getChangedQualityChecks = async (qualityChecks) => {
     })
     qualityCheck.hasDismissed = dismissedLedgerAssignments.length > 0 ? 'Yes' : 'No'
   }
-  return changedQualityChecks
+  return qualityChecks
 }
 
 module.exports = getChangedQualityChecks

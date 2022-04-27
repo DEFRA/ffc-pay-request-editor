@@ -6,7 +6,7 @@ describe('Quality check test', () => {
   jest.mock('../../../../app/auth')
   const mockAuth = require('../../../../app/auth')
   jest.mock('../../../../app/quality-check')
-  const { getQualityChecks } = require('../../../../app/quality-check')
+  const { getQualityChecks, getChangedQualityChecks } = require('../../../../app/quality-check')
 
   const createServer = require('../../../../app/server')
 
@@ -25,6 +25,7 @@ describe('Quality check test', () => {
     await server.initialize()
     mockAuth.getUser.mockResolvedValue(user)
     getQualityChecks.mockResolvedValue([{ frn: '1234567890' }])
+    getChangedQualityChecks.mockResolvedValue([{ frn: '1234567890' }])
   })
 
   afterEach(async () => {

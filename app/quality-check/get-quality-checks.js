@@ -1,5 +1,4 @@
 const db = require('../data')
-const getChangedQualityChecks = require('./get-changed-quality-checks')
 const { PENDING } = require('./statuses')
 
 const getQualityChecks = async () => {
@@ -38,7 +37,7 @@ const getQualityChecks = async () => {
       status: PENDING
     }
   })
-  return getChangedQualityChecks(qualityChecks)
+  return qualityChecks.map(x => x.get({ plain: true }))
 }
 
 module.exports = getQualityChecks

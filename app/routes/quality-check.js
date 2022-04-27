@@ -1,5 +1,5 @@
 const ViewModel = require('./models/search')
-const { getQualityChecks } = require('../quality-check')
+const { getQualityChecks, getChangedQualityChecks } = require('../quality-check')
 const schema = require('./schemas/quality-check')
 const { ledger } = require('../auth/permissions')
 const { getUser } = require('../auth')
@@ -12,8 +12,9 @@ module.exports = [{
     auth: { scope: [ledger] },
     handler: async (request, h) => {
       const qualityCheckData = await getQualityChecks()
+      const changedQualityChecks = await getChangedQualityChecks(qualityCheckData)
       const { userId } = getUser(request)
-      return h.view('quality-check', { qualityCheckData, userId, ...new ViewModel(searchLabelText) })
+      return h.view('quality-check', { qualityCheckData: changedQualityChecks, userId, ...new ViewModel(searchLabelText) })
     }
   }
 },
@@ -26,14 +27,16 @@ module.exports = [{
       payload: schema,
       failAction: async (request, h, error) => {
         const qualityCheckData = await getQualityChecks()
+        const changedQualityChecks = await getChangedQualityChecks(qualityCheckData)
         const { userId } = getUser(request)
-        return h.view('quality-check', { qualityCheckData, userId, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
+        return h.view('quality-check', { qualityCheckData: changedQualityChecks, userId, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
       const frn = request.payload.frn
       const qualityCheckData = await getQualityChecks()
-      const filteredQualityCheckData = qualityCheckData.filter(x => x.frn === String(frn))
+      const changedQualityChecks = await getChangedQualityChecks(qualityCheckData)
+      const filteredQualityCheckData = changedQualityChecks.filter(x => x.frn === String(frn))
       const { userId } = getUser(request)
 
       if (filteredQualityCheckData.length) {

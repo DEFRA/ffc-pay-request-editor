@@ -57,4 +57,23 @@ describe('Get payment request test', () => {
     expect(paymentRequests[0].receivedFormatted).not.toBe(null)
     expect(paymentRequests[0].receivedFormatted).toBe(paymentRequests[0].received.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' }))
   })
+
+  test('daysWaiting virtual type should return the number of days since the "recieved" date', async () => {
+    paymentRequest.received = '01-01-2022'
+    await resetData()
+    await db.paymentRequest.create(paymentRequest)
+    const daysWaiting = (Math.round((Date.now() - new Date(paymentRequest.received)) / (1000 * 60 * 60 * 24)))
+    const paymentRequests = await getPaymentRequest()
+    expect(paymentRequests[0].daysWaiting).toBe(daysWaiting)
+    expect(paymentRequests[0].daysWaiting).not.toBe(null)
+    expect(typeof paymentRequests[0].daysWaiting).toBe('number')
+  })
+
+  test('daysWaiting virtual type should return "" when paymentRequest has no "recieved" value', async () => {
+    paymentRequest.received = undefined
+    await resetData()
+    await db.paymentRequest.create(paymentRequest)
+    const paymentRequests = await getPaymentRequest()
+    expect(paymentRequests[0].daysWaiting).toBe('')
+  })
 })
