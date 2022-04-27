@@ -269,8 +269,8 @@ describe('Enrich request test', () => {
       })
       expect(qualityChecksRow[0].status).toBe(PENDING)
 
-      expect(debtDataRow[0].paymentRequestId).toBe(SCHEME_ID_SFI)
-      expect(debtDataRow[0].schemeId).toBe(1)
+      expect(debtDataRow[0].paymentRequestId).toBe(1)
+      expect(debtDataRow[0].schemeId).toBe(SCHEME_ID_SFI)
       expect(parseInt(debtDataRow[0].frn)).toBe(1234567890)
       expect(debtDataRow[0].debtType).toBe(ADMINISTRATIVE)
       expect(debtDataRow[0].recoveryDate).toBe('01/09/2021')
