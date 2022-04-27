@@ -56,7 +56,6 @@ describe('Get debts test', () => {
     }]
     await db.debtData.bulkCreate(debtData)
     const debtDataRows = await getDebts()
-    console.log(debtDataRows[0])
     expect(debtDataRows[1].createdDate).toStrictEqual(new Date('2022-01-01T00:00:00.000Z'))
     expect(debtDataRows[0].createdDate).toStrictEqual(new Date('2022-02-01T00:00:00.000Z'))
   })

@@ -76,4 +76,30 @@ describe('Get payment request test', () => {
     const paymentRequests = await getPaymentRequest()
     expect(paymentRequests[0].daysWaiting).toBe('')
   })
+
+  test('records should be returned ordered by "received" in ascending order', async () => {
+    await db.paymentRequest.truncate({ cascade: true })
+    const paymentRequests = [{
+      invoiceNumber: 'S00000001SFIP000001V001',
+      frn: 1234567891,
+      paymentRequestNumber: 1,
+      agreementNumber: 'SIP00000000000001',
+      value: 15000,
+      categoryId: 1,
+      received: '2022-04-01'
+    },
+    {
+      invoiceNumber: 'S00000001SFIP000001V002',
+      frn: 1234567890,
+      paymentRequestNumber: 1,
+      agreementNumber: 'SIP00000000000002',
+      value: 12000,
+      categoryId: 1,
+      received: '2022-01-01'
+    }]
+    await db.paymentRequest.bulkCreate(paymentRequests)
+    const paymentRequestRows = await getPaymentRequest()
+    expect(paymentRequestRows[0].received).toStrictEqual(new Date('2022-01-01T00:00:00.000Z'))
+    expect(paymentRequestRows[1].received).toStrictEqual(new Date('2022-04-01T00:00:00.000Z'))
+  })
 })
