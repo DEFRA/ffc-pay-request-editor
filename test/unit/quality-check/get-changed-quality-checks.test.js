@@ -18,7 +18,7 @@ describe('Get changed quality check tests', () => {
       paymentRequestId: 1,
       schemeId: SCHEME_ID_SFI,
       frn: 1234567890,
-      categoryId: 2
+      categoryId: SCHEME_ID_SFI
     }
 
     await db.scheme.create(scheme)
@@ -46,9 +46,9 @@ describe('Get changed quality check tests', () => {
         }
       }]
     const changedQualityCheck = await getChangedQualityChecks(qualityChecks)
-    console.log(changedQualityCheck)
     expect(changedQualityCheck[0].hasDismissed).toBe('Yes')
   })
+
   test('should return hasDismissed as no with paymentRequestId of 5', async () => {
     const qualityChecks = [
       {
@@ -58,9 +58,9 @@ describe('Get changed quality check tests', () => {
         }
       }]
     const changedQualityCheck = await getChangedQualityChecks(qualityChecks)
-    console.log(changedQualityCheck)
     expect(changedQualityCheck[0].hasDismissed).toBe('No')
   })
+
   test('should return hasDismissed as no with paymentRequestId of 4 and "active" is true', async () => {
     const qualityChecks = [
       {
@@ -70,7 +70,6 @@ describe('Get changed quality check tests', () => {
         }
       }]
     const changedQualityCheck = await getChangedQualityChecks(qualityChecks)
-    console.log(changedQualityCheck)
     expect(changedQualityCheck[0].hasDismissed).toBe('No')
   })
 })

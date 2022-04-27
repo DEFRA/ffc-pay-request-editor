@@ -70,6 +70,7 @@ describe('Capture test', () => {
       expect(response.request.response.source.template).toBe('capture')
     })
   })
+
   describe('POST requests', () => {
     const method = 'POST'
 

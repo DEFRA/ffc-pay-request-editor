@@ -1,5 +1,6 @@
 const { getPaymentRequest, getPaymentRequestCount } = require('../../../../app/payment-request')
 const db = require('../../../../app/data')
+const jestConfig = require('../../../../jest.config')
 
 const resetData = async () => {
   await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
