@@ -1751,7 +1751,8 @@ describe('capture-debt route', () => {
     expect(debtData.schemeId).toBe(1)
     expect(debtData.frn).toBe(VALID_PAYLOAD.frn)
   })
-  test('POST /capture-debt with future date returns 400 ', async () => {
+
+  test('POST /capture-debt returns 400 when the date payload is after the date that the debt was discovered', async () => {
     const debtDate = new Date()
     debtDate.setDate(debtDate.getDate() + 1)
     const options = {
@@ -1762,6 +1763,26 @@ describe('capture-debt route', () => {
         'debt-discovered-day': debtDate.getDate(),
         'debt-discovered-month': debtDate.getMonth() + 1,
         'debt-discovered-year': debtDate.getFullYear()
+      },
+      auth
+    }
+
+    const result = await server.inject(options)
+    expect(result.statusCode).toBe(400)
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Debt cannot be discovered in the future')
+  })
+
+  test('POST /capture-debt returns 400 when the date payload is in the future', async () => {
+    const currentDate = new Date('2022-01-01')
+    Date.now = jest.fn().mockReturnValue(currentDate)
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: {
+        ...VALID_PAYLOAD,
+        'debt-discovered-day': 1,
+        'debt-discovered-month': 2,
+        'debt-discovered-year': 2022
       },
       auth
     }
