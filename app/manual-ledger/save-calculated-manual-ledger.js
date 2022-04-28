@@ -18,7 +18,8 @@ const saveCalculatedManualLedger = async (calculatedManualLedgers) => {
           as: 'ledgerPaymentRequest',
           where: {
             value: ledgerPaymentRequest.value,
-            ledger: ledgerPaymentRequest.value
+            ledger: ledgerPaymentRequest.ledger,
+            categoryId: 3
           }
         }],
         where: { paymentRequestId },
