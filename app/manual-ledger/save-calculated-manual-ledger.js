@@ -22,7 +22,7 @@ const saveCalculatedManualLedger = async (calculatedManualLedgers) => {
             categoryId: 3
           }
         }],
-        where: { paymentRequestId },
+        where: { paymentRequestId, original: true },
         transaction
       })
       if (matchingPaymentRequest) {
