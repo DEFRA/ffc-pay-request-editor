@@ -37,7 +37,7 @@ describe('Get changed quality check tests', () => {
     await db.sequelize.close()
   })
 
-  test('should return hasDismissed as yes with paymentRequestId of 1', async () => {
+  test('should return hasDismissed as "Yes" when paymentRequest exists and matching manualLedgerPaymentRequest exists with active set to false', async () => {
     const qualityChecks = [
       {
         frn: 1234567890,
@@ -49,7 +49,7 @@ describe('Get changed quality check tests', () => {
     expect(changedQualityCheck[0].hasDismissed).toBe('Yes')
   })
 
-  test('should return hasDismissed as no with paymentRequestId of 5', async () => {
+  test('should return hasDismissed as "No" when paymentRequest exists and no matching manualLedgerPaymentRequest exists', async () => {
     const qualityChecks = [
       {
         frn: 1234567890,
@@ -61,7 +61,7 @@ describe('Get changed quality check tests', () => {
     expect(changedQualityCheck[0].hasDismissed).toBe('No')
   })
 
-  test('should return hasDismissed as no with paymentRequestId of 4 and "active" is true', async () => {
+  test('should return hasDismissed as "No" when paymentRequest and matching manualLedgerPaymentRequest exist, with active set to true', async () => {
     const qualityChecks = [
       {
         frn: 1234567890,
