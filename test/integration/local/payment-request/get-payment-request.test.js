@@ -59,10 +59,12 @@ describe('Get payment request test', () => {
   })
 
   test('daysWaiting virtual type should return the number of days since the "recieved" date', async () => {
-    paymentRequest.received = '01-01-2022'
+    const mockDateNow = new Date('2022-02-01')
+    Date.now = jest.fn().mockReturnValue(mockDateNow)
+    paymentRequest.received = '2022-01-01'
     await resetData()
     await db.paymentRequest.create(paymentRequest)
-    const daysWaiting = (Math.round((Date.now() - new Date(paymentRequest.received)) / (1000 * 60 * 60 * 24)))
+    const daysWaiting = (Math.round((mockDateNow - new Date(paymentRequest.received)) / (1000 * 60 * 60 * 24)))
     const paymentRequests = await getPaymentRequest()
     expect(paymentRequests[0].daysWaiting).toBe(daysWaiting)
     expect(paymentRequests[0].daysWaiting).not.toBe(null)
