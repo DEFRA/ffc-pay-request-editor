@@ -103,23 +103,11 @@ describe('Enrich request test', () => {
       expect(response.request.response.source.template).toBe('404')
     })
 
-    test('GET /enrich-request route returns 404 view when invoiceNumber does not exist in the database', async () => {
-      const options = {
-        method,
-        auth,
-        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V002'
-      }
-
-      const response = await server.inject(options)
-      expect(response.request.response.variety).toBe('view')
-      expect(response.request.response.source.template).toBe('404')
-    })
-
     test('GET /enrich-request route returns 404 view when request has been enriched already', async () => {
       const options = {
         method,
         auth,
-        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001'
+        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001&paymentRequestId=1'
       }
 
       paymentRequest.released = new Date()
@@ -132,7 +120,7 @@ describe('Enrich request test', () => {
       expect(response.request.response.source.template).toBe('404')
     })
 
-    test('GET /enrich-request route returns 200 when query string contains invoiceNumber and paymentRequestId', async () => {
+    test('GET /enrich-request route returns 200 when query string contains invoiceNumber and paymentRequestId and matching yet to be enriched record in database', async () => {
       const options = {
         method,
         auth,
@@ -147,6 +135,40 @@ describe('Enrich request test', () => {
       const response = await server.inject(options)
       expect(response.request.response.variety).toBe('view')
       expect(response.request.response.source.template).toBe('enrich-request')
+    })
+
+    test('GET /enrich-request route returns 400 when query string contains invoiceNumber and paymentRequestId with matching invoiceNumber but no matching paymentRequestId in database', async () => {
+      const options = {
+        method,
+        auth,
+        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001&paymentRequestId=3'
+      }
+
+      paymentRequest.released = undefined
+      paymentRequest.ledger = AR
+      await db.scheme.create(scheme)
+      await db.paymentRequest.create(paymentRequest)
+
+      const response = await server.inject(options)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('404')
+    })
+
+    test('GET /enrich-request route returns 400 when query string contains invoiceNumber and paymentRequestId with matching paymentRequestId but no matching invoiceNumber in database', async () => {
+      const options = {
+        method,
+        auth,
+        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V002&paymentRequestId=1'
+      }
+
+      paymentRequest.released = undefined
+      paymentRequest.ledger = AR
+      await db.scheme.create(scheme)
+      await db.paymentRequest.create(paymentRequest)
+
+      const response = await server.inject(options)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('404')
     })
 
     test('GET /enrich-request route returns 200 when Ledger is AP', async () => {
