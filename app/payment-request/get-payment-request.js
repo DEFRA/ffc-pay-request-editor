@@ -1,5 +1,4 @@
 const db = require('../data')
-const { AR } = require('../processing/ledger/ledgers')
 
 const getPaymentRequest = async (categoryId = 1) => {
   return db.paymentRequest.findAll({
@@ -30,11 +29,11 @@ const getPaymentRequest = async (categoryId = 1) => {
   })
 }
 
-const getArPaymentRequestByInvoiceNumber = async (invoiceNumber) => {
+const getPaymentRequestByInvoiceNumberAndRequestId = async (invoiceNumber, paymentRequestId) => {
   return db.paymentRequest.findOne({
     where: {
       invoiceNumber,
-      ledger: AR
+      paymentRequestId
     }
   })
 }
@@ -66,7 +65,7 @@ const getPaymentRequestByRequestId = async (paymentRequestId) => {
 
 module.exports = {
   getPaymentRequest,
-  getArPaymentRequestByInvoiceNumber,
+  getPaymentRequestByInvoiceNumberAndRequestId,
   getPaymentRequestAwaitingEnrichment,
   getPaymentRequestByRequestId
 }

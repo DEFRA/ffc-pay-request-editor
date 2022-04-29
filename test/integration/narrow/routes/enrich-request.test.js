@@ -3,7 +3,7 @@ const db = require('../../../../app/data')
 
 const { ADMINISTRATIVE } = require('../../../../app/debt-types')
 const { PENDING, NOT_READY } = require('../../../../app/quality-check/statuses')
-const { AR } = require('../../../../app/processing/ledger/ledgers')
+const { AR, AP } = require('../../../../app/processing/ledger/ledgers')
 const resetData = async () => {
   await db.qualityCheck.truncate({ cascade: true })
   await db.scheme.truncate({ cascade: true })
@@ -132,11 +132,11 @@ describe('Enrich request test', () => {
       expect(response.request.response.source.template).toBe('404')
     })
 
-    test('GET /enrich-request route returns 200', async () => {
+    test('GET /enrich-request route returns 200 when query string contains invoiceNumber and paymentRequestId', async () => {
       const options = {
         method,
         auth,
-        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001'
+        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001&paymentRequestId=1'
       }
 
       paymentRequest.released = undefined
@@ -147,6 +147,48 @@ describe('Enrich request test', () => {
       const response = await server.inject(options)
       expect(response.request.response.variety).toBe('view')
       expect(response.request.response.source.template).toBe('enrich-request')
+    })
+
+    test('GET /enrich-request route returns 200 when Ledger is AP', async () => {
+      const options = {
+        method,
+        auth,
+        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001&paymentRequestId=1'
+      }
+
+      paymentRequest.released = undefined
+      paymentRequest.ledger = AP
+      await db.scheme.create(scheme)
+      await db.paymentRequest.create(paymentRequest)
+
+      const response = await server.inject(options)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('enrich-request')
+      expect(response.request.response.statusCode).toBe(200)
+    })
+
+    test('GET /enrich-request route returns 404 view when no invoiceNumber in query parameter provided', async () => {
+      const options = {
+        method,
+        auth,
+        url: '/enrich-request?paymentRequestId=1'
+      }
+
+      const response = await server.inject(options)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('404')
+    })
+
+    test('GET /enrich-request route returns 404 view when no paymentRequestId in query parameter provided', async () => {
+      const options = {
+        method,
+        auth,
+        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001'
+      }
+
+      const response = await server.inject(options)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('404')
     })
   })
 
@@ -163,14 +205,14 @@ describe('Enrich request test', () => {
           month: 2,
           year: 2022,
           'debt-type': ADMINISTRATIVE,
-          'invoice-number': 'S00000001SFIP000001V001'
+          'invoice-number': 'S00000001SFIP000001V001',
+          'payment-request-id': 1
         }
       }
 
       paymentRequest.released = new Date()
 
       await db.scheme.create(scheme)
-      paymentRequest.ledger = AR
       await db.paymentRequest.create(paymentRequest)
 
       const response = await server.inject(options)
@@ -184,7 +226,8 @@ describe('Enrich request test', () => {
         auth,
         url: '/enrich-request',
         payload: {
-          'invoice-number': 'S00000001SFIP000001V001'
+          'invoice-number': 'S00000001SFIP000001V001',
+          'payment-request-id': 1
         }
       }
 
@@ -216,7 +259,8 @@ describe('Enrich request test', () => {
           month: 3,
           year: 4000,
           'debt-type': ADMINISTRATIVE,
-          'invoice-number': 'S00000001SFIP000001V001'
+          'invoice-number': 'S00000001SFIP000001V001',
+          'payment-request-id': 1
         }
       }
 
@@ -243,7 +287,8 @@ describe('Enrich request test', () => {
           month: 3,
           year: 2021,
           'debt-type': ADMINISTRATIVE,
-          'invoice-number': 'S00000001SFIP000001V001'
+          'invoice-number': 'S00000001SFIP000001V001',
+          'payment-request-id': 1
         }
       }
 
@@ -287,7 +332,8 @@ describe('Enrich request test', () => {
           month: 10,
           year: 2021,
           'debt-type': ADMINISTRATIVE,
-          'invoice-number': 'S00000001SFIP000001V001'
+          'invoice-number': 'S00000001SFIP000001V001',
+          'payment-request-id': 1
         }
       }
 
