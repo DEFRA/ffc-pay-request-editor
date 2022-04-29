@@ -1,6 +1,7 @@
 const { enrichment } = require('../../../../app/auth/permissions')
 const db = require('../../../../app/data')
 
+const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
 const { ADMINISTRATIVE } = require('../../../../app/debt-types')
 const { PENDING, NOT_READY } = require('../../../../app/quality-check/statuses')
 const { AR } = require('../../../../app/processing/ledger/ledgers')
@@ -269,7 +270,7 @@ describe('Enrich request test', () => {
       expect(qualityChecksRow[0].status).toBe(PENDING)
 
       expect(debtDataRow[0].paymentRequestId).toBe(1)
-      expect(debtDataRow[0].schemeId).toBe(1)
+      expect(debtDataRow[0].schemeId).toBe(SCHEME_ID_SFI)
       expect(parseInt(debtDataRow[0].frn)).toBe(1234567890)
       expect(debtDataRow[0].debtType).toBe(ADMINISTRATIVE)
       expect(debtDataRow[0].recoveryDate).toBe('01/09/2021')

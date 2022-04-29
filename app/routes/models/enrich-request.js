@@ -80,12 +80,12 @@ function ViewModel (payload, error) {
         {
           text: IRREGULAR_TEXT,
           value: IRREGULAR,
-          checked: getObjectKeyEquals(payload, 'debtType', IRREGULAR)
+          checked: getObjectKeyEquals(payload, 'debt-type', IRREGULAR)
         },
         {
           text: ADMINISTRATIVE_TEXT,
           value: ADMINISTRATIVE,
-          checked: getObjectKeyEquals(payload, 'debtType', ADMINISTRATIVE)
+          checked: getObjectKeyEquals(payload, 'debt-type', ADMINISTRATIVE)
         }
       ],
       errorMessage: errorMessage['radio-error']

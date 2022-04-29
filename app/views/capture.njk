@@ -81,8 +81,18 @@
                 <tr class="govuk-table__row capture-datasets">
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{% if data.reference %}{{ data.reference }}{%else%}Manual enrichment{%endif%}</td>
-                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{% if data.netValueText %}{{ data.netValueText }}{%endif%}</td>
+                  <td scope="col" class="govuk-table__cell govuk-body-s">
+                    {% if data.reference %}
+                      {{ data.reference }}
+                    {%else%}
+                      Manual enrichment
+                    {%endif%}
+                  </td>
+                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">
+                    {% if data.netValueText %}
+                      {{ data.netValueText }}
+                    {%endif%}
+                  </td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}</td>
                   <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}</td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}</td>
@@ -118,25 +128,22 @@
   </div>
 
   <script>
-  const toggleUnattachedForm = document.querySelectorAll(".govuk-radios__input")
-
-  const toggleUnattachedData = () => {
-    const yesToggle = document.getElementById('unattached-data-yes')
-    const noToggle = document.getElementById('unattached-data-no')
-    const tableRows = document.querySelectorAll('.govuk-table__row.capture-datasets')
+    const toggleUnattachedForm = document.querySelectorAll(".govuk-radios__input")
     
-    if (noToggle.checked) {
-      for (let i = 0; i < tableRows.length; i++) {
-        if (tableRows[i].querySelector('.capture-status').innerHTML === 'Attached') {
-          tableRows[i].style.display = 'none'
+    const toggleUnattachedData = () => {
+      const noToggle = document.getElementById('unattached-data-no')
+      const tableRows = document.querySelectorAll('.govuk-table__row.capture-datasets')
+      if (noToggle.checked) {
+        for (let i = 0; i < tableRows.length; i++) {
+          if (tableRows[i].querySelector('.capture-status').innerHTML === 'Attached') {
+            tableRows[i].style.display = 'none'
+          }
         }
+      } else {
+        tableRows.forEach(x => x.removeAttribute('style'))
       }
-    } else {
-      tableRows.forEach(x => x.removeAttribute('style'))
     }
-  }
 
-  toggleUnattachedForm.forEach(x => x.addEventListener('change', toggleUnattachedData))
- 
+    toggleUnattachedForm.forEach(x => x.addEventListener('change', toggleUnattachedData))
   </script>
 {% endblock %}

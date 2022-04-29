@@ -32,7 +32,10 @@ module.exports = (sequelize, DataTypes) => {
     daysWaiting: {
       type: DataTypes.VIRTUAL,
       get () {
-        return (Math.round((Date.now() - this.received) / (1000 * 60 * 60 * 24)))
+        if (this.received) {
+          return (Math.round((Date.now() - this.received) / (1000 * 60 * 60 * 24)))
+        }
+        return ''
       }
     },
     netValue: DataTypes.INTEGER,
