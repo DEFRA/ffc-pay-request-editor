@@ -53,7 +53,7 @@
                   <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.netValueText }}</td>
                   <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.receivedFormatted }}</td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">
-                      <a href="enrich-request?invoiceNumber={{ data.invoiceNumber }}">Enrich</a>
+                      <a href="enrich-request?invoiceNumber={{ data.invoiceNumber }}&paymentRequestId={{ data.paymentRequestId }}">Enrich</a>
                   </td>
                 </tr>
               {% endfor %}

@@ -1,4 +1,4 @@
-const { getArPaymentRequestByInvoiceNumber, updatePaymentRequestCategory } = require('../payment-request')
+const { getPaymentRequestByInvoiceNumberAndRequestId, updatePaymentRequestCategory } = require('../payment-request')
 const { saveDebt } = require('../debt')
 const { updateQualityChecksStatus } = require('../quality-check')
 const format = require('../utils/date-formatter')
@@ -18,13 +18,15 @@ module.exports = [{
     auth: { scope: [enrichment] },
     handler: async (request, h) => {
       const invoiceNumber = request.query.invoiceNumber
-      if (!invoiceNumber) {
+      const paymentRequestId = parseInt(request.query.paymentRequestId)
+
+      if (!invoiceNumber || !paymentRequestId) {
         return h.view('404')
       }
 
-      const paymentRequest = await getArPaymentRequestByInvoiceNumber(invoiceNumber)
+      const paymentRequest = await getPaymentRequestByInvoiceNumberAndRequestId(invoiceNumber, paymentRequestId)
       if (!paymentRequest) {
-        console.log(`No AR records with invoiceNumber: ${invoiceNumber} are present in the database`)
+        console.log(`No  records with invoiceNumber: ${invoiceNumber} are present in the database`)
         return h.view('404')
       }
 
@@ -46,7 +48,9 @@ module.exports = [{
       const payload = request.payload
 
       const invoiceNumber = payload['invoice-number']
-      const paymentRequest = await getArPaymentRequestByInvoiceNumber(invoiceNumber)
+      const paymentRequestId = parseInt(payload['payment-request-id'])
+
+      const paymentRequest = await getPaymentRequestByInvoiceNumberAndRequestId(invoiceNumber, paymentRequestId)
 
       const enrichRequestValidation = enrichRequestSchema.validate(payload, { abortEarly: false })
       if (enrichRequestValidation.error) {
@@ -85,7 +89,7 @@ module.exports = [{
       }
 
       const user = getUser(request)
-      const { paymentRequestId, schemeId, frn } = paymentRequest
+      const { schemeId, frn } = paymentRequest
       await saveDebt({
         paymentRequestId: paymentRequestId,
         schemeId: schemeId,
