@@ -293,7 +293,6 @@ describe('Enrich request test', () => {
       }
 
       paymentRequest.released = undefined
-      paymentRequest.ledger = AR
       await db.scheme.create(scheme)
       await db.paymentRequest.create(paymentRequest)
       await db.qualityCheck.create(qualityCheck)
