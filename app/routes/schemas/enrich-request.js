@@ -10,5 +10,6 @@ module.exports = Joi.object({
   month: Joi.number().integer().min(1).max(12).required(),
   year: Joi.number().integer().min(2021).max(9999).required(),
   'debt-type': Joi.string().valid(ADMINISTRATIVE, IRREGULAR).required(),
-  'invoice-number': Joi.string().required()
+  'invoice-number': Joi.string().required(),
+  'payment-request-id': Joi.number().integer().required()
 })

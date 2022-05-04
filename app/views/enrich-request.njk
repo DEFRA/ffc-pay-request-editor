@@ -25,6 +25,7 @@
       <form action="/enrich-request" method="POST" novalidate>
         <input type="hidden" name="crumb" value="{{crumb}}"/>
         <input type="hidden" name="invoice-number" value="{{ paymentRequest.invoiceNumber }}"/>
+        <input type="hidden" name="payment-request-id" value="{{ paymentRequest.paymentRequestId }}"/>
         {% if model.errorMessage %}
          {{ govukErrorSummary(model.errorMessage) }}
         {% endif %}
