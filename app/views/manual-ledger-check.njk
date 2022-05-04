@@ -148,8 +148,9 @@
       const inputErrorClass = 'govuk-input--error'
       const formErrorClass = 'govuk-form-group--error'
       const checkIfValueString = valuesToCheck.every(value => isNaN(value.value))
+      const checkIfValidValues = valuesToCheck.every(value => !isValidValue(value.value))
       
-      if (checkIfValueString) {
+      if (checkIfValueString || checkIfValidValues) {
         valuesToCheck.forEach(value => {
           raiseError(value, 'add', inputErrorClass)
         })
@@ -164,6 +165,23 @@
         ledgerError.style.display = 'none'
         calculateAction.disabled = false
       }
+    }
+
+    const isValidValue = (value) => {
+      const valueInPence = convertToPence(value)
+      if(totalValueInPence < 0 && (valueInPence > 0 || valueInPence < totalValueInPence)) {
+        return false
+      }
+
+      if(totalValueInPence > 0 && (valueInPence < 0 || valueInPence > totalValueInPence)) {
+        return false
+      }
+
+      if(totalValueInPence === 0 && valueInPence !== totalValueInPence) {
+        return false
+      }
+      
+      return true
     }
 
     validateValues()

@@ -58,7 +58,7 @@ describe('Manual-ledger-check tests', () => {
       expect(response.request.response.source.template).toBe('manual-ledger-check')
     })
 
-    test('GET /manual-ledger-check with no manua Ledger data returns 404 view', async () => {
+    test('GET /manual-ledger-check with no manual Ledger data returns 404 view', async () => {
       getManualLedger.mockResolvedValue(null)
       const options = {
         method,
