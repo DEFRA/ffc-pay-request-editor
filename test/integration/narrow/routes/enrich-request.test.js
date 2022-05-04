@@ -1,6 +1,7 @@
 const { enrichment } = require('../../../../app/auth/permissions')
 const db = require('../../../../app/data')
 
+const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
 const { ADMINISTRATIVE } = require('../../../../app/debt-types')
 const { PENDING, NOT_READY } = require('../../../../app/quality-check/statuses')
 const { AR, AP } = require('../../../../app/processing/ledger/ledgers')
@@ -37,8 +38,9 @@ describe('Enrich request test', () => {
     marketingYear: 2022,
     currency: 'GBP',
     schedule: 'M12',
-    dueDate: '2021-08-15',
+    dueDate: '2021-10-25',
     value: 15000,
+    received: '2021-10-25',
     invoiceLines: [
       {
         schemeCode: '80001',
@@ -223,9 +225,9 @@ describe('Enrich request test', () => {
         auth,
         url: '/enrich-request',
         payload: {
-          day: 2,
-          month: 2,
-          year: 2022,
+          day: 16,
+          month: 10,
+          year: 2021,
           'debt-type': ADMINISTRATIVE,
           'invoice-number': 'S00000001SFIP000001V001',
           'payment-request-id': 1
@@ -296,7 +298,7 @@ describe('Enrich request test', () => {
       expect(response.request.response.statusCode).toBe(400)
       expect(response.request.response.source.template).toBe('enrich-request')
       expect(response.request.response.source.context.model.errorMessage.titleText).toBe('There is a problem')
-      expect(response.request.response.source.context.model.date.errorMessage.text).toBe('Recovery date must be today or in the past')
+      expect(response.request.response.source.context.model.date.errorMessage.text).toBe('Debt cannot be discovered in the future')
     })
 
     test('POST /enrich-request route saves debt data when day and month are 1 digit then redirects to /enrich', async () => {
@@ -305,8 +307,8 @@ describe('Enrich request test', () => {
         auth,
         url: '/enrich-request',
         payload: {
-          day: 2,
-          month: 3,
+          day: 1,
+          month: 9,
           year: 2021,
           'debt-type': ADMINISTRATIVE,
           'invoice-number': 'S00000001SFIP000001V001',
@@ -334,10 +336,10 @@ describe('Enrich request test', () => {
       expect(qualityChecksRow[0].status).toBe(PENDING)
 
       expect(debtDataRow[0].paymentRequestId).toBe(1)
-      expect(debtDataRow[0].schemeId).toBe(1)
+      expect(debtDataRow[0].schemeId).toBe(SCHEME_ID_SFI)
       expect(parseInt(debtDataRow[0].frn)).toBe(1234567890)
       expect(debtDataRow[0].debtType).toBe(ADMINISTRATIVE)
-      expect(debtDataRow[0].recoveryDate).toBe('02/03/2021')
+      expect(debtDataRow[0].recoveryDate).toBe('01/09/2021')
 
       expect(response.request.response.statusCode).toBe(302)
       expect(response.headers.location).toBe('/enrich')
