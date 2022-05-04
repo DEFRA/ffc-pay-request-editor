@@ -7,6 +7,8 @@ const ViewModel = require('./models/manual-ledger-review')
 const { sendManualLedgerReviewEvent } = require('../event')
 const { getUser } = require('../auth')
 
+const manualLedgerDebtChecks = require('./manual-ledger-debt-check')
+
 module.exports = [{
   method: 'GET',
   path: '/manual-ledger-review',
@@ -56,7 +58,7 @@ module.exports = [{
         if (manualLedgerData && manualLedgerData.manualLedgerChecks[0].createdById !== user.userId) {
           switch (status) {
             case PASSED:
-              await updateManualLedgerWithDebtData(paymentRequestId, status)
+              await manualLedgerDebtChecks(paymentRequestId, status)
               break
             case FAILED:
               await updateQualityChecksStatus(paymentRequestId, status)
