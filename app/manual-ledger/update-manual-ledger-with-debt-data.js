@@ -1,6 +1,6 @@
 const { updateQualityChecksStatus } = require('../quality-check')
 const { updatePaymentRequestCategory, getPaymentRequestByRequestId } = require('../payment-request')
-const { checkDebts, attachDebtInformation, getDebtData } = require('../debt')
+const { checkDebts, attachDebtInformation, getDebtData, checkDebtsByEnrichment } = require('../debt')
 const { PASSED, AWAITING_ENRICHMENT } = require('../quality-check/statuses')
 const getManualLedgerRequestsDebt = require('../manual-ledger/get-manual-ledger-requests')
 const { AR } = require('../processing/ledger/ledgers')
@@ -28,10 +28,19 @@ const updateManualLedgerWithDebtData = async (paymentRequestId) => {
   const paymentRequest = await getPaymentRequestByRequestId(paymentRequestId)
 
   const { frn, agreementNumber, netValue } = paymentRequest
+
   const foundDebtData = await checkDebts(frn, agreementNumber, netValue)
+
   if (foundDebtData) {
     paymentRequest.value = paymentRequest.netValue
     await attachDebtInformation(paymentRequestId, paymentRequest)
+    await updateQualityChecksStatus(paymentRequestId, PASSED)
+    return
+  }
+
+  const foundEnrichedDebtData = await checkDebtsByEnrichment(frn, agreementNumber, netValue)
+
+  if (foundEnrichedDebtData) {
     await updateQualityChecksStatus(paymentRequestId, PASSED)
     return
   }

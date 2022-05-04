@@ -1,6 +1,7 @@
 const getDebts = require('./get-debts')
 const getDebtsCount = require('./get-debts-count')
 const checkDebts = require('./check-debts')
+const checkDebtsByEnrichment = require('./check-debts-by-enrichment')
 const attachDebtInformation = require('./attach-debt-information')
 const saveDebtData = require('./save-debt-data')
 const saveDebt = require('./save-debt')
@@ -14,5 +15,6 @@ module.exports = {
   saveDebtData,
   saveDebt,
   deleteDebt,
-  getDebtData
+  getDebtData,
+  checkDebtsByEnrichment
 }

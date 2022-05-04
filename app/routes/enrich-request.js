@@ -94,6 +94,8 @@ module.exports = [{
         paymentRequestId: paymentRequestId,
         schemeId: schemeId,
         frn: frn,
+        reference: paymentRequest.agreementNumber,
+        netValue: paymentRequest.value,
         debtType: payload['debt-type'],
         recoveryDate: `${day}/${month}/${year}`,
         createdDate: new Date(),
