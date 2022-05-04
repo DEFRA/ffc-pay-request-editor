@@ -1,4 +1,5 @@
 const db = require('../data')
+const { ENRICHMENT } = require('./categories')
 
 const getDebtPaymentRequests = async () => {
   const debtDatas = await db.debtData.findAll({
@@ -15,7 +16,8 @@ const getDebtPaymentRequests = async () => {
   return db.paymentRequest.findAll({
     where: {
       released: { [db.Sequelize.Op.eq]: null },
-      paymentRequestId: { [db.Sequelize.Op.in]: debtDataIds }
+      paymentRequestId: { [db.Sequelize.Op.in]: debtDataIds },
+      categoryId: ENRICHMENT
     },
     include: [
       {

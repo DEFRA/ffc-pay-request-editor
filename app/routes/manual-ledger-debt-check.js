@@ -1,31 +1,43 @@
-const getManualLedgerRequestsDebt = require('../manual-ledger/get-manual-ledger-requests')
+const { getManualLedgerRequests } = require('../manual-ledger')
 const { checkDebtsByEnrichment } = require('../debt')
-const { AR, AP } = require('../processing/ledger/ledgers')
+const { updateQualityChecksStatus } = require('../quality-check')
+const { updatePaymentRequestCategory } = require('../payment-request')
+const { AR } = require('../processing/ledger/ledgers')
+const { AWAITING_ENRICHMENT } = require('../quality-check/statuses')
+const { LEDGER_ENRICHMENT } = require('../payment-request/categories')
 
 const manualLedgerDebtChecks = async (paymentRequestId, status) => {
-  const manualLedgerRequest = await getManualLedgerRequestsDebt(paymentRequestId)
-  await checkAccountLedger(manualLedgerRequest, AR)
-  await checkAccountLedger(manualLedgerRequest, AP)
-  console.log(`Updating manual ledger debt checks for paymentRequestId: ${paymentRequestId}`)
+  const manualLedgerRequest = await getManualLedgerRequests(paymentRequestId)
+  status = await checkForARLedger(manualLedgerRequest, status)
+
+  await updateStatus(paymentRequestId, status)
 }
 
-const checkAccountLedger = async (manualLedgerRequest, ledgerType) => {
-  const ledger = manualLedgerRequest.find(x => x.ledgerPaymentRequest.ledger === ledgerType && x.ledgerPaymentRequest.value !== 0)
+const checkForARLedger = async (manualLedgerRequest, status) => {
+  const arLedger = manualLedgerRequest
+    .find(x => x.ledgerPaymentRequest.ledger === AR && x.ledgerPaymentRequest.value !== 0)
 
-  if (ledger) {
-    const debtData = getDebtData(ledger)
-    if (debtData) {
-      await attachDebtInformation(ledger, debtData)
+  if (arLedger) {
+    const debtData = await checkForDebtData(arLedger)
+    if (!debtData) {
+      status = AWAITING_ENRICHMENT
     }
   }
+
+  return status
 }
 
-const getDebtData = async (manualLedgerRequest) => {
-  const { frn, agreementNumber, netValue, ledger } = manualLedgerRequest.ledgerPaymentRequest
+const checkForDebtData = async (manualLedger) => {
+  const { frn, agreementNumber, netValue } = manualLedger.ledgerPaymentRequest
   return checkDebtsByEnrichment(frn, agreementNumber, netValue)
 }
 
-const attachDebtInformation = async (manualLedgerRequest, debtData) => {
+const updateStatus = async (paymentRequestId, status) => {
+  if (status === AWAITING_ENRICHMENT) {
+    await updatePaymentRequestCategory(paymentRequestId, LEDGER_ENRICHMENT)
+  }
+
+  await updateQualityChecksStatus(paymentRequestId, status)
 }
 
 module.exports = manualLedgerDebtChecks

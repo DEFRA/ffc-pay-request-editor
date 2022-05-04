@@ -1,6 +1,7 @@
 const db = require('../data')
+const { ENRICHMENT, LEDGER_ENRICHMENT } = require('./categories')
 
-const getPaymentRequest = async (categoryId = 1) => {
+const getPaymentRequest = async (categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
   return db.paymentRequest.findAll({
     include: [{
       model: db.scheme,
