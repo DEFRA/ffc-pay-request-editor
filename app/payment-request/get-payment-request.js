@@ -24,8 +24,11 @@ const getPaymentRequest = async (categoryId = 1) => {
       'received',
       'receivedFormatted',
       'ledger',
+      'marketingYear',
+      'daysWaiting',
       'netValue'
-    ]
+    ],
+    order: [['received']]
   })
 }
 

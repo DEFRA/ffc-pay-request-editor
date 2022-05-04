@@ -39,4 +39,24 @@ describe('Get debts test', () => {
     const debtCount = await getDebtsCount()
     expect(debtCount).toEqual(0)
   })
+
+  test('records should be in descending order by createdDate', async () => {
+    await db.debtData.truncate({ cascade: true })
+    const debtData = [{
+      frn: 1234567891,
+      reference: 'SIP00000000000001',
+      netValue: 15000,
+      createdDate: '2022-01-01'
+    },
+    {
+      frn: 1234567890,
+      reference: 'SIP00000000000001',
+      netValue: 15000,
+      createdDate: '2022-02-01'
+    }]
+    await db.debtData.bulkCreate(debtData)
+    const debtDataRows = await getDebts()
+    expect(debtDataRows[1].createdDate).toStrictEqual(new Date('2022-01-01T00:00:00.000Z'))
+    expect(debtDataRows[0].createdDate).toStrictEqual(new Date('2022-02-01T00:00:00.000Z'))
+  })
 })

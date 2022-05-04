@@ -29,6 +29,15 @@ module.exports = (sequelize, DataTypes) => {
         return convertValueToStringFormat(this.value)
       }
     },
+    daysWaiting: {
+      type: DataTypes.VIRTUAL,
+      get () {
+        if (this.received) {
+          return (Math.round((Date.now() - this.received) / (1000 * 60 * 60 * 24)))
+        }
+        return ''
+      }
+    },
     netValue: DataTypes.INTEGER,
     netValueText: {
       type: DataTypes.VIRTUAL,
@@ -41,11 +50,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.VIRTUAL,
       get () {
         if (this.received) {
-          const formattedDate = this.received.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })
-          const formattedTime = this.received.toLocaleTimeString('en-GB')
-          return `${formattedDate} ${formattedTime}`
+          return this.received.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })
         }
-
         return ''
       }
     },

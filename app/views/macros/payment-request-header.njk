@@ -4,23 +4,29 @@
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
+            <th scope="col" class="govuk-table__header govuk-body-s">Scheme year</th>
             <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">FRN</th>
             <th scope="col" class="govuk-table__header govuk-body-s">Agreement number</th>
             <th scope="col" class="govuk-table__header govuk-body-s">Invoice</th>
             <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Request</th>
             <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount</th>
-            <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Ledger</th>
+            {% if not paymentRequestData.manualLedgerChecks%}
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Ledger</th>
+            {% endif %}
           </tr>
         </thead>
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
             <td class="govuk-table__cell govuk-body-s">{{paymentRequestData.schemes.name}}</td>
+            <td class="govuk-table__cell govuk-body-s">{{paymentRequestData.marketingYear}}</td>
             <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{paymentRequestData.frn}}</td>
             <td class="govuk-table__cell govuk-body-s">{{paymentRequestData.agreementNumber}}</td>
             <td class="govuk-table__cell govuk-body-s">{{paymentRequestData.invoiceNumber}}</td>
             <td class="govuk-table__cell govuk-table__header--numeric govuk-body-s">{{paymentRequestData.paymentRequestNumber}}</td>
             <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{paymentRequestData.valueText}}</td>
-            <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{paymentRequestData.ledger}}</td>
+            {% if not paymentRequestData.manualLedgerChecks%}
+              <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{paymentRequestData.ledger}}</td>
+            {% endif %}  
           </tr>
         </tbody>
       </table>
