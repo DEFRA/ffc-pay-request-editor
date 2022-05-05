@@ -33,12 +33,11 @@
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Scheme Year</th>
                 <th scope="col" class="govuk-table__header govuk-body-s">FRN</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Application ID</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Invoice</th>
-                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Request</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Agreement number</th>
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount</th>
-                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Arrived</th>
+                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Days waiting</th>
                 <th scope="col" class="govuk-table__header"></th>
               </tr>
             </thead>
@@ -46,12 +45,11 @@
               {% for data in enrichData %}
                 <tr class="govuk-table__row">
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
+                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.marketingYear }}</td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.agreementNumber }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.invoiceNumber }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequestNumber }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.netValueText }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.receivedFormatted }}</td>
+                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.valueText }}</td>
+                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.daysWaiting }}</td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">
                       <a href="enrich-request?invoiceNumber={{ data.invoiceNumber }}&paymentRequestId={{ data.paymentRequestId }}">Enrich</a>
                   </td>

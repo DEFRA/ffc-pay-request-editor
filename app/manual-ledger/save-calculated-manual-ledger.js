@@ -12,8 +12,25 @@ const saveCalculatedManualLedger = async (calculatedManualLedgers) => {
 
     for (const paymentRequest of provisionalLedgerData) {
       const ledgerPaymentRequest = paymentRequest.ledgerPaymentRequest
-      const paymentRequestLedgerId = await savePaymentAndInvoiceLines(ledgerPaymentRequest, 3, transaction)
-      await saveManualLedger(paymentRequestId, paymentRequestLedgerId, false, transaction)
+      const matchingPaymentRequest = await db.manualLedgerPaymentRequest.findOne({
+        include: [{
+          model: db.paymentRequest,
+          as: 'ledgerPaymentRequest',
+          where: {
+            value: ledgerPaymentRequest.value,
+            ledger: ledgerPaymentRequest.ledger,
+            categoryId: 3
+          }
+        }],
+        where: { paymentRequestId, original: true },
+        transaction
+      })
+      if (matchingPaymentRequest) {
+        await db.manualLedgerPaymentRequest.update({ active: true }, { where: { manualLedgerPaymentRequestId: matchingPaymentRequest.manualLedgerPaymentRequestId } }, { transaction })
+      } else {
+        const paymentRequestLedgerId = await savePaymentAndInvoiceLines(ledgerPaymentRequest, 3, transaction)
+        await saveManualLedger(paymentRequestId, paymentRequestLedgerId, false, transaction)
+      }
     }
 
     await transaction.commit()

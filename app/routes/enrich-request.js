@@ -61,12 +61,12 @@ module.exports = [{
       const month = format(payload.month)
       const year = payload.year
 
-      const dateValidation = dateSchema.validate({
+      const validDate = dateSchema({
         date: `${year}-${month}-${day}`
-      })
+      }, paymentRequest.received)
 
-      if (dateValidation.error) {
-        return h.view('enrich-request', { paymentRequest, ...new ViewModel(payload, dateValidation.error) }).code(400).takeover()
+      if (validDate.error) {
+        return h.view('enrich-request', { paymentRequest, ...new ViewModel(payload, validDate.error) }).code(400).takeover()
       }
 
       if (payload?.day === '29' && payload?.month === '02') {

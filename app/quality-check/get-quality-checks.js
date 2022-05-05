@@ -26,7 +26,8 @@ const getQualityChecks = async () => {
         'invoiceNumber',
         'paymentRequestNumber',
         'value',
-        'valueText'
+        'valueText',
+        'marketingYear'
       ]
     }],
     attributes: [

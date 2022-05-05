@@ -25,13 +25,25 @@
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m">Original</h2>
       {{paymentRequestHeader(model.manualLedgerData)}}
-      {{paymentRequestInvoiceLines(model.manualLedgerData.invoiceLines)}}
+      
+      <details class="govuk-details" data-module="govuk-details">
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">
+            Invoice Lines
+          </span>
+        </summary>
+        <div class="govuk-details__text">
+          {{paymentRequestInvoiceLines(model.manualLedgerData.invoiceLines)}}
+        </div>
+      </details>
+
+      
       {% if showLedgerSplit %}
         <h2 class="govuk-heading-m">Change ledger allocation</h2>
         <form method="GET" action="/manual-ledger-check/calculate?paymentrequestid={{ model.manualLedgerData.paymentRequestId }}" novalidate>
           <div id="ledger-wrapper" class="govuk-form-group">
-            <p id="ledger-value-error" class="govuk-error-message">
-              <span class="govuk-visually-hidden">Error:</span> The entered values must equal {{ model.manualLedgerData.valueInPoundsText }}
+            <p id="ledger-value-error" class="govuk-error-message ">
+              <span class="govuk-visually-hidden ">Error:</span> The entered values must equal {{ model.manualLedgerData.valueInPoundsText }}
             </p>
             <input type="hidden" name="paymentRequestId" value="{{ model.manualLedgerData.paymentRequestId }}"/>
             {{ledgerCheck('ap', model.manualLedgerData.apAutoValue)}}
@@ -51,7 +63,19 @@
         <h2 class="govuk-heading-m">Provisional</h2>
         {% for data in model.manualLedgerData.manualLedgerChecks %}
           {{paymentRequestHeader(data.ledgerPaymentRequest)}}
+
+          <details class="govuk-details" data-module="govuk-details">
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">
+            Invoice Lines
+          </span>
+        </summary>
+        <div class="govuk-details__text">
           {{paymentRequestInvoiceLines(data.ledgerPaymentRequest.invoiceLines)}}
+        </div>
+      </details>
+
+
         {% endfor %}
         {{ model.errorMessage.text }}
         {% if model.errorMessage %}
@@ -95,17 +119,13 @@
 
   const apValueId = 'ap-value'
   const arValueId = 'ar-value'
-  const apPercentageId = 'ap-percentage'
-  const arPercentageId = 'ar-percentage'
 
   const ledgerWrapper = document.getElementById('ledger-wrapper')
   const ledgerError = document.getElementById('ledger-value-error')
   const calculateAction = document.getElementById('calculate-ledger')
 
   const apValue = document.getElementById(apValueId)
-  const apPercentage = document.getElementById(apPercentageId)
   const arValue = document.getElementById(arValueId)
-  const arPercentage = document.getElementById(arPercentageId)
 
   if (ledgerWrapper) {
     const convertToPence = (valueInPounds) => {
@@ -119,26 +139,18 @@
       return valueInPence / 100
     }
 
-    const calculatePercentage = (partialValue, totalValue) => {
-      return ((100 * partialValue) / totalValue).toFixed(2)
-    }
-
-    const calculatePercentValue = (percentValue, partialValue) => {
-      return ((percentValue * partialValue) / 100).toFixed(2)
-    }
-
     const raiseError = (component, action, classType) => {
       component.classList[action](classType)
     }
 
     const validateValues = () => {
-      const valuesToCheck = [apValue, arValue, arPercentage, apPercentage]
+      const valuesToCheck = [apValue, arValue]
       const inputErrorClass = 'govuk-input--error'
       const formErrorClass = 'govuk-form-group--error'
-
       const checkIfValueString = valuesToCheck.every(value => isNaN(value.value))
-
-      if (checkIfValueString || apPercentageId.value > 100 || arPercentage.value > 100) {
+      const checkIfValidValues = valuesToCheck.every(value => !isValidValue(value.value))
+      
+      if (checkIfValueString || checkIfValidValues) {
         valuesToCheck.forEach(value => {
           raiseError(value, 'add', inputErrorClass)
         })
@@ -155,13 +167,24 @@
       }
     }
 
-    const setDefaultPercentage = () => {
-      apPercentage.value = calculatePercentage(apValue.value, totalValueInPounds)
-      arPercentage.value = calculatePercentage(arValue.value, totalValueInPounds)
-      validateValues()
+    const isValidValue = (value) => {
+      const valueInPence = convertToPence(value)
+      if(totalValueInPence < 0 && (valueInPence > 0 || valueInPence < totalValueInPence)) {
+        return false
+      }
+
+      if(totalValueInPence > 0 && (valueInPence < 0 || valueInPence > totalValueInPence)) {
+        return false
+      }
+
+      if(totalValueInPence === 0 && valueInPence !== totalValueInPence) {
+        return false
+      }
+      
+      return true
     }
 
-    setDefaultPercentage()
+    validateValues()
 
     const setValue = (changedValue, valueToChange) => {
       const value = document.getElementById(changedValue).value
@@ -169,17 +192,6 @@
       const calculate = totalValueInPence - valueInPence
       const valueInPounds = convertToPounds(calculate)
       document.getElementById(valueToChange).value = valueInPounds
-      validateValues()
-      setDefaultPercentage()
-    }
-
-    const setPercentage = (percentageChangeValue, valueToChange, percentageToCalculate, valueToCalculate) => {
-      const value = document.getElementById(percentageChangeValue).value
-      const percentValue = calculatePercentValue(value, totalValueInPounds)
-      document.getElementById(valueToChange).value = percentValue
-      const calculate = 100 - value
-      document.getElementById(percentageToCalculate).value = calculate
-      document.getElementById(valueToCalculate).value = calculatePercentValue(calculate, totalValueInPounds)
       validateValues()
     }
 
@@ -189,14 +201,6 @@
 
     apValue.addEventListener('input', (event) => {
       setValue(apValueId, arValueId)
-    })
-
-    arPercentage.addEventListener('input', (event) => {
-      setPercentage(arPercentageId, arValueId, apPercentageId, apValueId)
-    })
-
-    apPercentage.addEventListener('input', (event) => {
-      setPercentage(apPercentageId, apValueId, arPercentageId, arValueId)
     })
   }
 </script>

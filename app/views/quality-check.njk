@@ -32,13 +32,14 @@
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Scheme year</th>
                 <th scope="col" class="govuk-table__header govuk-body-s">FRN</th>
                 <th scope="col" class="govuk-table__header govuk-body-s">Agreement</th>
                 <th scope="col" class="govuk-table__header govuk-body-s">Invoice</th>
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Request</th>
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount</th>
                 <th scope="col" class="govuk-table__header govuk-body-s">Reviewed by</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Status</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Ledger changed</th>
                 <th scope="col" class="govuk-table__header"></th>
               </tr>
             </thead>
@@ -46,13 +47,14 @@
             {% for qualityCheck in qualityCheckData %}
               <tr class="govuk-table__row">
                 <td scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.schemes.name }}</td>
+                <td scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.marketingYear }}</td>
                 <td scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.frn }}</td>
                 <td scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.agreementNumber }}</td>
                 <td scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.invoiceNumber }}</td>
                 <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ qualityCheck.paymentRequest.paymentRequestNumber }}</td>
                 <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ qualityCheck.paymentRequest.valueText }}</td>
                 <td scope="col" class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.manualLedgerChecks[0].createdBy }}</td>
-                <td scope="col" class="govuk-table__cell govuk-body-s"><strong class="govuk-tag">{{ qualityCheck.status }}</strong></td>
+                <td scope="col" class="govuk-table__cell govuk-body-s"> {{ qualityCheck.hasDismissed }}</td>
                 <td scope="col" class="govuk-table__cell govuk-body-s">
                   {% if qualityCheck.status === 'Pending' and qualityCheck.paymentRequest.manualLedgerChecks[0].createdById != user.userId %}
                     <a href="/manual-ledger-review?paymentrequestid={{qualityCheck.paymentRequest.paymentRequestId}}">Review</a>

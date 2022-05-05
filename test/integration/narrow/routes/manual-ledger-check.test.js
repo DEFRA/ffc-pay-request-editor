@@ -6,7 +6,7 @@ describe('Manual-ledger-check tests', () => {
   jest.mock('../../../../app/manual-ledger')
   jest.mock('../../../../app/auth')
   const mockAuth = require('../../../../app/auth')
-  const { getManualLedgers, getManualLedger } = require('../../../../app/manual-ledger')
+  const { getManualLedgers, getManualLedger, calculateManualLedger } = require('../../../../app/manual-ledger')
   const createServer = require('../../../../app/server')
 
   const auth = { strategy: 'session-auth', credentials: { scope: [ledger] } }
@@ -40,6 +40,7 @@ describe('Manual-ledger-check tests', () => {
 
   afterEach(async () => {
     await server.stop()
+    jest.clearAllMocks()
   })
 
   describe('GET /manual-ledger-check requests', () => {
@@ -57,7 +58,7 @@ describe('Manual-ledger-check tests', () => {
       expect(response.request.response.source.template).toBe('manual-ledger-check')
     })
 
-    test('GET /manual-ledger-check with no manua Ledger data returns 404 view', async () => {
+    test('GET /manual-ledger-check with no manual Ledger data returns 404 view', async () => {
       getManualLedger.mockResolvedValue(null)
       const options = {
         method,
@@ -95,26 +96,65 @@ describe('Manual-ledger-check tests', () => {
     })
 
     test.each([
-      { paymentRequestId: null, arValue: null, apValue: null, arPercentage: null, apPercentage: null },
-      { paymentRequestId: 1, arValue: null, apValue: null, arPercentage: null, apPercentage: null },
-      { paymentRequestId: 1, arValue: 2, apValue: null, arPercentage: null, apPercentage: null },
-      { paymentRequestId: 1, arValue: 2, apValue: 3, arPercentage: null, apPercentage: null },
-      { paymentRequestId: 1, arValue: 2, apValue: 3, arPercentage: 4, apPercentage: null },
-      { paymentRequestId: 'a', arValue: 2, apValue: 3, arPercentage: 4, apPercentage: 5 },
-      { paymentRequestId: 1, arValue: 'b', apValue: 3, arPercentage: 4, apPercentage: 5 },
-      { paymentRequestId: 1, arValue: 2, apValue: 'c', arPercentage: 4, apPercentage: 5 },
-      { paymentRequestId: 1, arValue: 2, apValue: 3, arPercentage: 'd', apPercentage: 5 },
-      { paymentRequestId: 1, arValue: 2, apValue: 3, arPercentage: 4, apPercentage: 'e' }
-    ])('GET /manual-ledger-check/calculate with invalid querystring values %p returns manual-ledger-check view', async ({ paymentRequestId, arValue, apValue, arPercentage, apPercentage }) => {
+      { paymentRequestId: null, arValue: null, apValue: null },
+      { paymentRequestId: 1, arValue: null, apValue: null },
+      { paymentRequestId: 1, arValue: 2, apValue: null },
+      { paymentRequestId: 1, arValue: null, apValue: 3 },
+      { paymentRequestId: 'a', arValue: 2, apValue: 3 },
+      { paymentRequestId: 1, arValue: 'b', apValue: 3 },
+      { paymentRequestId: 1, arValue: 2, apValue: 'c' }
+    ])('GET /manual-ledger-check/calculate with invalid querystring values %p returns manual-ledger-check view', async ({ paymentRequestId, arValue, apValue }) => {
       getManualLedger.mockResolvedValue(paymentRequest)
       const options = {
         method,
         auth,
-        url: `${manualLedgerCalculateUrl}?paymentRequestId=${paymentRequestId}&ar-value=${arValue}&ap-value=${apValue}&ar-percentage=${arPercentage}&ap-percentage=${apPercentage}`
+        url: `${manualLedgerCalculateUrl}?paymentRequestId=${paymentRequestId}&ar-value=${arValue}&ap-value=${apValue}`
       }
       const response = await server.inject(options)
       expect(response.request.response.source.template).toBe('manual-ledger-check')
       expect(response.statusCode).toBe(400)
+    })
+
+    test('GET /manual-ledger-check/calculate with valid query string returns/manual-ledger-check', async () => {
+      calculateManualLedger.mockResolvedValue({
+        valueInPounds: 1,
+        valueinPoundsText: '1',
+        manualLedgerChecks: []
+      })
+
+      getManualLedger.mockResolvedValue(paymentRequest)
+
+      const paymentRequestId = 1
+      const arValue = 1
+      const apValue = 1
+
+      const options = {
+        method,
+        auth,
+        url: `${manualLedgerCalculateUrl}?paymentRequestId=${paymentRequestId}&ar-value=${arValue}&ap-value=${apValue}`
+      }
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(200)
+      expect(response.request.response.source.template).toBe('manual-ledger-check')
+    })
+
+    test('GET /manual-ledger-check/calculate with valid query string returns 500 error when manualLedgerData is invalid ', async () => {
+      calculateManualLedger.mockResolvedValue({})
+
+      getManualLedger.mockResolvedValue(paymentRequest)
+
+      const paymentRequestId = 1
+      const arValue = 1
+      const apValue = 1
+
+      const options = {
+        method,
+        auth,
+        url: `${manualLedgerCalculateUrl}?paymentRequestId=${paymentRequestId}&ar-value=${arValue}&ap-value=${apValue}`
+      }
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(500)
+      expect(response.request.response.source.template).toBe('500')
     })
   })
 })
