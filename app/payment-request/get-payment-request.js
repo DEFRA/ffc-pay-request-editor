@@ -42,7 +42,7 @@ const getPaymentRequestByInvoiceNumberAndRequestId = async (invoiceNumber, payme
   })
 }
 
-const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, agreementNumber, netValue, categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
+const getPaymentRequestAwaitingEnrichmentWithNetValue = async (schemeId, frn, agreementNumber, netValue, categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
   return db.paymentRequest.findOne({
     include: [{
       model: db.debtData,
@@ -60,6 +60,24 @@ const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, agreementNumbe
   })
 }
 
+const getPaymentRequestAwaitingEnrichmentWithValue = async (schemeId, frn, agreementNumber, value, categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
+  return db.paymentRequest.findOne({
+    include: [{
+      model: db.debtData,
+      as: 'debtData'
+    }],
+    where: {
+      $debtData$: null,
+      released: null,
+      schemeId,
+      frn,
+      agreementNumber,
+      value,
+      categoryId
+    }
+  })
+}
+
 const getPaymentRequestByRequestId = async (paymentRequestId) => {
   return db.paymentRequest.findOne({
     where: {
@@ -71,6 +89,7 @@ const getPaymentRequestByRequestId = async (paymentRequestId) => {
 module.exports = {
   getPaymentRequest,
   getPaymentRequestByInvoiceNumberAndRequestId,
-  getPaymentRequestAwaitingEnrichment,
+  getPaymentRequestAwaitingEnrichmentWithNetValue,
+  getPaymentRequestAwaitingEnrichmentWithValue,
   getPaymentRequestByRequestId
 }
