@@ -1,5 +1,5 @@
 const { getManualLedgerRequests } = require('../manual-ledger')
-const { checkDebtsByEnrichment } = require('../debt')
+const { checkDebtsByEnrichment, saveDebtData } = require('../debt')
 const { updateQualityChecksStatus } = require('../quality-check')
 const { updatePaymentRequestCategory } = require('../payment-request')
 const { AR } = require('../processing/ledger/ledgers')
@@ -22,9 +22,23 @@ const checkForARLedger = async (manualLedgerRequest, status) => {
     if (!debtData) {
       status = AWAITING_ENRICHMENT
     }
+
+    await attachDebtInformation(debtData, arLedger)
   }
 
   return status
+}
+
+const attachDebtInformation = async (debtData, arLedger) => {
+  if (debtData) {
+    checkIfCapture(debtData, arLedger)
+    debtData.attachedDate = new Date().toISOString()
+    await saveDebtData(debtData)
+  }
+}
+
+const checkIfCapture = (debtData, arLedger) => {
+  if (!debtData.paymentRequestId) debtData.paymentRequestId = arLedger.paymentRequestId
 }
 
 const checkForDebtData = async (manualLedger) => {

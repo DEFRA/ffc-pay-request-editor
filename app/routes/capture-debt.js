@@ -47,7 +47,7 @@ module.exports = [{
         return h.view('capture-debt', new ViewModel(schemes, request.payload, validDate.error)).code(400).takeover()
       }
 
-      const netValue = convertToPounds(convertToPence(String(net)))
+      const netValue = convertToPence(String(net))
       const schemeId = await getSchemeId(scheme)
       const recoveryDate = convertDateToDDMMYYYY(...['debt-discovered-day', 'debt-discovered-month', 'debt-discovered-year'].map(key => request.payload[key]))
       const { userId, username } = getUser(request)

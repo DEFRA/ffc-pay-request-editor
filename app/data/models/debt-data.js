@@ -1,5 +1,6 @@
 const { convertDebtIdToText } = require('../../processing/conversion')
 const toCurrencyString = require('../../utils/to-currency-string')
+const { convertToPounds } = require('../../processing/conversion')
 
 module.exports = (sequelize, DataTypes) => {
   const debtData = sequelize.define('debtData', {
@@ -12,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     netValueText: {
       type: DataTypes.VIRTUAL,
       get () {
-        return toCurrencyString(this.netValue)
+        return toCurrencyString(convertToPounds(this.netValue))
       }
     },
     debtType: DataTypes.STRING,

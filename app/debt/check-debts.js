@@ -1,5 +1,4 @@
 const db = require('../data')
-const { convertToPounds } = require('../processing/conversion')
 
 const checkDebts = async (frn, reference, netValue, transaction) => {
   const parsedFrn = parseInt(frn)
@@ -7,13 +6,12 @@ const checkDebts = async (frn, reference, netValue, transaction) => {
   if (isNaN(parsedFrn)) {
     return {}
   } else {
-    const convertNetValue = convertToPounds(netValue)
     return db.debtData.findOne({
       transaction,
       where: {
         frn: parsedFrn,
         reference,
-        netValue: convertNetValue,
+        netValue,
         paymentRequestId: null
       }
     })
