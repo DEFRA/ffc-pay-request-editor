@@ -1,12 +1,10 @@
-const db = require('../data')
+const { checkDebtsByEnrichment } = require('../debt')
 
 const attachDebtToManualLedger = async (qualityCheckedPaymentRequest, addToAR = false) => {
   const paymentRequest = qualityCheckedPaymentRequest.paymentRequest
-  const debtData = await db.debtData.findOne({
-    where: {
-      paymentRequestId: paymentRequest.paymentRequestId
-    }
-  })
+
+  const { frn, agreementNumber, netValue } = paymentRequest
+  const debtData = await checkDebtsByEnrichment(frn, agreementNumber, netValue)
 
   addDebtData(debtData, paymentRequest)
 
