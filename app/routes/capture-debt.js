@@ -1,14 +1,17 @@
 const db = require('../data')
-
+const { LEDGER_CHECK, LEDGER_ENRICHMENT } = require('../payment-request/categories')
+const { PENDING } = require('../quality-check/statuses')
 const schema = require('./schemas/capture-debt')
 const ViewModel = require('./models/capture-debt')
 const dateSchema = require('./schemas/date')
 const { getSchemeId, getSchemes } = require('../processing/scheme')
-const { convertToPounds, convertToPence, convertDateToDDMMYYYY } = require('../processing/conversion')
+const { convertToPence, convertDateToDDMMYYYY } = require('../processing/conversion')
 const { saveDebtData } = require('../processing/debt')
 const { getPaymentRequestAwaitingEnrichment } = require('../payment-request/get-payment-request')
 const { enrichment } = require('../auth/permissions')
 const { getUser } = require('../auth')
+const { updateQualityChecksStatus } = require('../quality-check')
+const { updatePaymentRequestCategory } = require('../payment-request')
 const format = require('../utils/date-formatter')
 
 module.exports = [{
@@ -68,10 +71,17 @@ module.exports = [{
           createdById: userId
         }
 
-        const matchingPaymentRequest = await getPaymentRequestAwaitingEnrichment(schemeId, frn, applicationIdentifier, convertToPence(String(net)))
+        const matchingPaymentRequest = await getPaymentRequestAwaitingEnrichment(schemeId, frn, applicationIdentifier, netValue)
         if (matchingPaymentRequest) {
           debtData.paymentRequestId = matchingPaymentRequest.paymentRequestId
+
+          if (matchingPaymentRequest.categoryId === LEDGER_ENRICHMENT) {
+            const paymentRequestId = matchingPaymentRequest.paymentRequestId
+            await updatePaymentRequestCategory(paymentRequestId, LEDGER_CHECK)
+            await updateQualityChecksStatus(paymentRequestId, PENDING)
+          }
         }
+
         await saveDebtData(debtData, transaction)
         await transaction.commit()
       } catch (error) {

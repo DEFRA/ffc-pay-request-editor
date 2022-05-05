@@ -42,7 +42,7 @@ const getPaymentRequestByInvoiceNumberAndRequestId = async (invoiceNumber, payme
   })
 }
 
-const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, agreementNumber, value) => {
+const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, agreementNumber, netValue, categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
   return db.paymentRequest.findOne({
     include: [{
       model: db.debtData,
@@ -54,7 +54,8 @@ const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, agreementNumbe
       schemeId,
       frn,
       agreementNumber,
-      value
+      netValue,
+      categoryId
     }
   })
 }
