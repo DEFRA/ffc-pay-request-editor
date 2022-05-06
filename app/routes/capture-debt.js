@@ -9,7 +9,7 @@ const { convertToPence, convertDateToDDMMYYYY } = require('../processing/convers
 const { saveDebtData } = require('../processing/debt')
 const {
   getPaymentRequestAwaitingEnrichmentWithValue,
-  getPaymentRequestAwaitingEnrichmentWithNetValue 
+  getPaymentRequestAwaitingEnrichmentWithNetValue
 } = require('../payment-request/get-payment-request')
 const { enrichment } = require('../auth/permissions')
 const { getUser } = require('../auth')

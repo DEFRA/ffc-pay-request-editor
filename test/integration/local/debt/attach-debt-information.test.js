@@ -41,7 +41,7 @@ describe('Attach debt information tests', () => {
       schemeId: null,
       frn: 1234567890,
       reference: 'SIP00000000000001',
-      netValue: 150,
+      netValue: 15000,
       debtType: null,
       recoveryDate: null,
       attachedDate: null,

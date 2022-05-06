@@ -1,10 +1,11 @@
 const db = require('../../../../app/data')
 const { updateManualLedgerWithDebtData, attachDebtToManualLedger } = require('../../../../app/manual-ledger')
 const { AR, AP } = require('../../../../app/processing/ledger/ledgers')
-const { PENDING, PASSED } = require('../../../../app/quality-check/statuses')
+const { PENDING } = require('../../../../app/quality-check/statuses')
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
 const { SCHEME_NAME_SFI_PILOT } = require('../../../data/scheme')
 const { ADMINISTRATIVE } = require('../../../../app/debt-types')
+const { convertDateToDDMMYYYY } = require('../../../../app/processing/conversion')
 
 let scheme
 let paymentRequest
@@ -17,6 +18,11 @@ const resetData = async () => {
   await db.scheme.truncate({ cascade: true })
   await db.manualLedgerPaymentRequest.truncate({ cascade: true })
   await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
+}
+
+const recoveryDate = () => {
+  const date = new Date()
+  return convertDateToDDMMYYYY(date.getDate(), date.getMonth(), date.getYear())
 }
 
 describe('process payment requests', () => {
@@ -115,7 +121,7 @@ describe('process payment requests', () => {
     })
     await updateManualLedgerWithDebtData(paymentRequest.paymentRequestId)
     const paymentRequestAfterUpdate = await db.paymentRequest.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
-    expect(paymentRequestAfterUpdate.categoryId).toBe(1)
+    expect(paymentRequestAfterUpdate.categoryId).toBe(4)
   })
 
   test('confirm manual ledger is published to ffc-pay-quality-check if debt data is already attached', async () => {
@@ -130,7 +136,7 @@ describe('process payment requests', () => {
     })
     await updateManualLedgerWithDebtData(paymentRequest.paymentRequestId)
     const qualityCheckAfterUpdate = await db.qualityCheck.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
-    expect(qualityCheckAfterUpdate.status).toBe(PASSED)
+    expect(qualityCheckAfterUpdate.status).toBe(PENDING)
   })
 
   test('confirm manual ledger with no attached debt data searches for matching debt-data and attach found debt-data when there is ledger AR', async () => {
@@ -143,7 +149,9 @@ describe('process payment requests', () => {
       frn: 1234567890,
       reference: 'SIP00000000000001',
       paymentRequestId: null,
-      netValue: 30
+      netValue: 3000,
+      debtType: ADMINISTRATIVE,
+      recoveryDate: recoveryDate()
     })
     const debtDataBeforeUpdate = await db.debtData.findOne({ where: { debtDataId: 1 } })
     expect(debtDataBeforeUpdate.paymentRequestId).toBeNull()
@@ -162,7 +170,7 @@ describe('process payment requests', () => {
       frn: 1234567890,
       reference: 'SIP00000000000001',
       paymentRequestId: null,
-      netValue: 30
+      netValue: 3000
     })
     const debtDataBeforeUpdate = await db.debtData.findOne({ where: { debtDataId: 1 } })
     expect(debtDataBeforeUpdate.paymentRequestId).toBeNull()
@@ -182,11 +190,13 @@ describe('process payment requests', () => {
       frn: 1234567890,
       reference: 'SIP00000000000001',
       paymentRequestId: 1,
-      netValue: 30
+      netValue: 3000,
+      debtType: ADMINISTRATIVE,
+      recoveryDate: recoveryDate()
     })
     await updateManualLedgerWithDebtData(paymentRequest.paymentRequestId)
     const qualityCheckAfterUpdate = await db.qualityCheck.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
-    expect(qualityCheckAfterUpdate.status).toBe(PASSED)
+    expect(qualityCheckAfterUpdate.status).toBe(PENDING)
   })
 
   test('confirm manual ledger is published to ffc-pay-quality-check if no manualledgerPayRequest', async () => {
@@ -199,7 +209,7 @@ describe('process payment requests', () => {
       frn: 1234567890,
       reference: 'SIP00000000000001',
       paymentRequestId: null,
-      netValue: 30
+      netValue: 3000
     })
     await updateManualLedgerWithDebtData(2)
     const qualityCheckAfterUpdate = await db.qualityCheck.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
@@ -215,12 +225,14 @@ describe('process payment requests', () => {
       frn: 1234567890,
       reference: 'SIP00000000000001',
       paymentRequestId: 1,
-      debtType: ADMINISTRATIVE
+      netValue: 3000,
+      debtType: ADMINISTRATIVE,
+      recoveryDate: recoveryDate()
     })
 
     const paymentRequestBeforeDebtAttachment = await db.paymentRequest.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
     expect(paymentRequestBeforeDebtAttachment.debtType).toBe(undefined)
-    await attachDebtToManualLedger(paymentRequestBeforeDebtAttachment)
+    await attachDebtToManualLedger({ paymentRequest: paymentRequestBeforeDebtAttachment })
     expect(paymentRequestBeforeDebtAttachment.debtType).toBe(ADMINISTRATIVE)
   })
 })

@@ -9,16 +9,20 @@ const attachDebtToManualLedger = async (qualityCheckedPaymentRequest, addToAR = 
   addDebtData(debtData, paymentRequest)
 
   if (addToAR) {
-    attachDebtToAR(debtData, qualityCheckedPaymentRequest.paymentRequests)
+    attachDebtToAR(debtData, qualityCheckedPaymentRequest?.paymentRequests)
   }
 
   return qualityCheckedPaymentRequest
 }
 
 const attachDebtToAR = (debtData, paymentRequests) => {
-  const arLedger = paymentRequests.find(x => x.ledger === 'AR')
-  arLedger.debtType = debtData.debtType
-  arLedger.recoveryDate = debtData.recoveryDate
+  if (paymentRequests) {
+    const arLedger = paymentRequests.find(x => x.ledger === 'AR')
+    if (arLedger) {
+      arLedger.debtType = debtData.debtType
+      arLedger.recoveryDate = debtData.recoveryDate
+    }
+  }
 }
 
 const addDebtData = (debtData, paymentRequest) => {
