@@ -1,6 +1,6 @@
 const db = require('../data')
 
-const checkDebts = async (frn, reference, netValue, transaction) => {
+const checkDebtsByEnrichment = async (frn, reference, netValue, transaction) => {
   const parsedFrn = parseInt(frn)
 
   if (isNaN(parsedFrn)) {
@@ -12,10 +12,15 @@ const checkDebts = async (frn, reference, netValue, transaction) => {
         frn: parsedFrn,
         reference,
         netValue,
-        paymentRequestId: null
+        debtType: {
+          [db.Sequelize.Op.not]: null
+        },
+        recoveryDate: {
+          [db.Sequelize.Op.not]: null
+        }
       }
     })
   }
 }
 
-module.exports = checkDebts
+module.exports = checkDebtsByEnrichment

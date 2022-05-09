@@ -10,7 +10,7 @@ module.exports = [{
   path: '/capture',
   options: {
     auth: { scope: [enrichment] },
-    handler: async (request, h) => {
+    handler: async (_request, h) => {
       const captureData = await getDebts(true)
       return h.view('capture', { captureData, ...new ViewModel(searchLabelText) })
     }

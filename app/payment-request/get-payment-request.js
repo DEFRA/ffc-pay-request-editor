@@ -1,6 +1,7 @@
 const db = require('../data')
+const { ENRICHMENT, LEDGER_ENRICHMENT } = require('./categories')
 
-const getPaymentRequest = async (categoryId = 1) => {
+const getPaymentRequest = async (categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
   return db.paymentRequest.findAll({
     include: [{
       model: db.scheme,
@@ -41,7 +42,7 @@ const getPaymentRequestByInvoiceNumberAndRequestId = async (invoiceNumber, payme
   })
 }
 
-const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, agreementNumber, value) => {
+const getPaymentRequestAwaitingEnrichmentWithNetValue = async (schemeId, frn, agreementNumber, netValue, categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
   return db.paymentRequest.findOne({
     include: [{
       model: db.debtData,
@@ -53,7 +54,26 @@ const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, agreementNumbe
       schemeId,
       frn,
       agreementNumber,
-      value
+      netValue,
+      categoryId
+    }
+  })
+}
+
+const getPaymentRequestAwaitingEnrichmentWithValue = async (schemeId, frn, agreementNumber, value, categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
+  return db.paymentRequest.findOne({
+    include: [{
+      model: db.debtData,
+      as: 'debtData'
+    }],
+    where: {
+      $debtData$: null,
+      released: null,
+      schemeId,
+      frn,
+      agreementNumber,
+      value,
+      categoryId
     }
   })
 }
@@ -69,6 +89,7 @@ const getPaymentRequestByRequestId = async (paymentRequestId) => {
 module.exports = {
   getPaymentRequest,
   getPaymentRequestByInvoiceNumberAndRequestId,
-  getPaymentRequestAwaitingEnrichment,
+  getPaymentRequestAwaitingEnrichmentWithNetValue,
+  getPaymentRequestAwaitingEnrichmentWithValue,
   getPaymentRequestByRequestId
 }

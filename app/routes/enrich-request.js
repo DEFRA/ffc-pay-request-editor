@@ -8,7 +8,7 @@ const dateSchema = require('./schemas/date')
 const { enrichment } = require('../auth/permissions')
 const { getUser } = require('../auth')
 const { PENDING, PASSED } = require('../quality-check/statuses')
-const { LEDGER_CHECK } = require('../payment-request/categories')
+const { LEDGER_CHECK, LEDGER_ENRICHMENT } = require('../payment-request/categories')
 const { sendEnrichRequestEvent } = require('../event')
 const { checkAwaitingManualLedgerDebtData } = require('../manual-ledger')
 module.exports = [{
@@ -88,12 +88,19 @@ module.exports = [{
         return h.redirect('/enrich')
       }
 
+      if (paymentRequest.categoryId === LEDGER_ENRICHMENT) {
+        await updatePaymentRequestCategory(paymentRequestId, LEDGER_CHECK)
+        await updateQualityChecksStatus(paymentRequestId, PENDING)
+      }
+
       const user = getUser(request)
       const { schemeId, frn } = paymentRequest
       await saveDebt({
         paymentRequestId: paymentRequestId,
         schemeId: schemeId,
         frn: frn,
+        reference: paymentRequest.agreementNumber,
+        netValue: paymentRequest.netValue ?? paymentRequest.value,
         debtType: payload['debt-type'],
         recoveryDate: `${day}/${month}/${year}`,
         createdDate: new Date(),
