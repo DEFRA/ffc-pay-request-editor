@@ -24,7 +24,7 @@
     </div>
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m">Original</h2>
-      {{paymentRequestHeader(model.manualLedgerData)}}
+      {{paymentRequestHeader(model.manualLedgerData, false)}}
       
       <details class="govuk-details" data-module="govuk-details">
         <summary class="govuk-details__summary">
@@ -167,6 +167,11 @@
       }
     }
 
+    const validateDecimals = (changedValue) => {
+      let value = document.getElementById(changedValue).value
+      document.getElementById(changedValue).value = (value.indexOf(".") >= 0) ? (value.substr(0, value.indexOf(".")) + value.substr(value.indexOf("."), 3)) : value
+    }
+
     const isValidValue = (value) => {
       const valueInPence = convertToPence(value)
       if(totalValueInPence < 0 && (valueInPence > 0 || valueInPence < totalValueInPence)) {
@@ -180,7 +185,7 @@
       if(totalValueInPence === 0 && valueInPence !== totalValueInPence) {
         return false
       }
-      
+
       return true
     }
 
@@ -192,6 +197,7 @@
       const calculate = totalValueInPence - valueInPence
       const valueInPounds = convertToPounds(calculate)
       document.getElementById(valueToChange).value = valueInPounds
+      validateDecimals(changedValue)
       validateValues()
     }
 

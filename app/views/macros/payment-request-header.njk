@@ -1,4 +1,4 @@
-{% macro paymentRequestHeader(paymentRequestData) %}
+{% macro paymentRequestHeader(paymentRequestData, showLedger = true) %}
   <table class="govuk-table">
         <caption class="govuk-table__caption govuk-table__caption--s">Header</caption>
         <thead class="govuk-table__head">
@@ -10,7 +10,7 @@
             <th scope="col" class="govuk-table__header govuk-body-s">Invoice</th>
             <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Request</th>
             <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount</th>
-            {% if not paymentRequestData.manualLedgerChecks%}
+            {% if showLedger %}
               <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Ledger</th>
             {% endif %}
           </tr>
@@ -23,10 +23,10 @@
             <td class="govuk-table__cell govuk-body-s">{{paymentRequestData.agreementNumber}}</td>
             <td class="govuk-table__cell govuk-body-s">{{paymentRequestData.invoiceNumber}}</td>
             <td class="govuk-table__cell govuk-table__header--numeric govuk-body-s">{{paymentRequestData.paymentRequestNumber}}</td>
-            <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{paymentRequestData.valueText}}</td>
-            {% if not paymentRequestData.manualLedgerChecks%}
+            <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s noWrap">{{paymentRequestData.valueText}}</td>
+            {% if showLedger %}
               <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{paymentRequestData.ledger}}</td>
-            {% endif %}  
+            {% endif %}
           </tr>
         </tbody>
       </table>

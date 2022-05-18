@@ -88,7 +88,7 @@ function ViewModel (schemes, payload, error) {
       text: 'Net value',
       classes: 'govuk-label--s'
     },
-    classes: 'govuk-input--width-5',
+    classes: 'govuk-input--width-10',
     id: 'net',
     name: 'net',
     value: getObjectKey(payload, 'net')
