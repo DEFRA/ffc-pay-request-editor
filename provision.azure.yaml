@@ -1,4 +1,7 @@
 resources:
   topics:
     - name: debt
+    - name: debtResponse
+    - name: manualLedger
     - name: qc
+    - name: event
