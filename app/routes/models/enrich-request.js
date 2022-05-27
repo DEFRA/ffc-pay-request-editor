@@ -31,14 +31,14 @@ function ViewModel (payload, error) {
           text: 'The date submitted is not valid'
         }
       } else if (detail.context.label === 'date') {
-        const text = 'Recovery date must be today or in the past'
+        const text = 'Debt cannot be discovered in the future'
         detail.href = '#debt-discovered-date-day'
         detail.text = text
         errorMessage['date-error'] = {
           text
         }
       } else if (detail.context.label === 'date-not-leap-year') {
-        const text = 'Recovery date entered is not a leap year'
+        const text = 'Debt date entered is not a leap year'
         detail.href = '#debt-discovered-date-day'
         detail.text = text
         errorMessage['date-error'] = {
@@ -80,12 +80,12 @@ function ViewModel (payload, error) {
         {
           text: IRREGULAR_TEXT,
           value: IRREGULAR,
-          checked: getObjectKeyEquals(payload, 'debtType', IRREGULAR)
+          checked: getObjectKeyEquals(payload, 'debt-type', IRREGULAR)
         },
         {
           text: ADMINISTRATIVE_TEXT,
           value: ADMINISTRATIVE,
-          checked: getObjectKeyEquals(payload, 'debtType', ADMINISTRATIVE)
+          checked: getObjectKeyEquals(payload, 'debt-type', ADMINISTRATIVE)
         }
       ],
       errorMessage: errorMessage['radio-error']
@@ -99,7 +99,7 @@ function ViewModel (payload, error) {
         }
       },
       hint: {
-        text: 'For example, 27 3 2022. The debt must be from 2015 onwards'
+        text: 'For example, 27 3 2022. The debt must be from 2021 onwards'
       },
       errorMessage: errorMessage['date-error'],
       items: [

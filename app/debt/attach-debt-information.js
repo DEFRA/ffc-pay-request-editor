@@ -16,7 +16,7 @@ const attachDebtInformation = async (paymentRequestId, paymentRequest, transacti
   } else {
     console.log('no debt data found')
     if (config.isAlerting) {
-      await sendEnrichRequestBlockedEvent(paymentRequest)
+      await sendEnrichRequestBlockedEvent({ ...paymentRequest, paymentRequestId })
     }
   }
 }

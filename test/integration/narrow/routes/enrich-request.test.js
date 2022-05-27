@@ -1,9 +1,10 @@
 const { enrichment } = require('../../../../app/auth/permissions')
 const db = require('../../../../app/data')
 
+const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
 const { ADMINISTRATIVE } = require('../../../../app/debt-types')
 const { PENDING, NOT_READY } = require('../../../../app/quality-check/statuses')
-const { AR } = require('../../../../app/processing/ledger/ledgers')
+const { AR, AP } = require('../../../../app/processing/ledger/ledgers')
 const resetData = async () => {
   await db.qualityCheck.truncate({ cascade: true })
   await db.scheme.truncate({ cascade: true })
@@ -37,8 +38,9 @@ describe('Enrich request test', () => {
     marketingYear: 2022,
     currency: 'GBP',
     schedule: 'M12',
-    dueDate: '2021-08-15',
+    dueDate: '2021-10-25',
     value: 15000,
+    received: '2021-10-25',
     invoiceLines: [
       {
         schemeCode: '80001',
@@ -103,23 +105,11 @@ describe('Enrich request test', () => {
       expect(response.request.response.source.template).toBe('404')
     })
 
-    test('GET /enrich-request route returns 404 view when invoiceNumber does not exist in the database', async () => {
-      const options = {
-        method,
-        auth,
-        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V002'
-      }
-
-      const response = await server.inject(options)
-      expect(response.request.response.variety).toBe('view')
-      expect(response.request.response.source.template).toBe('404')
-    })
-
     test('GET /enrich-request route returns 404 view when request has been enriched already', async () => {
       const options = {
         method,
         auth,
-        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001'
+        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001&paymentRequestId=1'
       }
 
       paymentRequest.released = new Date()
@@ -132,11 +122,11 @@ describe('Enrich request test', () => {
       expect(response.request.response.source.template).toBe('404')
     })
 
-    test('GET /enrich-request route returns 200', async () => {
+    test('GET /enrich-request route returns 200 when query string contains invoiceNumber and paymentRequestId and matching yet to be enriched record in database', async () => {
       const options = {
         method,
         auth,
-        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001'
+        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001&paymentRequestId=1'
       }
 
       paymentRequest.released = undefined
@@ -147,6 +137,82 @@ describe('Enrich request test', () => {
       const response = await server.inject(options)
       expect(response.request.response.variety).toBe('view')
       expect(response.request.response.source.template).toBe('enrich-request')
+    })
+
+    test('GET /enrich-request route returns 400 when query string contains invoiceNumber and paymentRequestId with matching invoiceNumber but no matching paymentRequestId in database', async () => {
+      const options = {
+        method,
+        auth,
+        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001&paymentRequestId=3'
+      }
+
+      paymentRequest.released = undefined
+      paymentRequest.ledger = AR
+      await db.scheme.create(scheme)
+      await db.paymentRequest.create(paymentRequest)
+
+      const response = await server.inject(options)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('404')
+    })
+
+    test('GET /enrich-request route returns 400 when query string contains invoiceNumber and paymentRequestId with matching paymentRequestId but no matching invoiceNumber in database', async () => {
+      const options = {
+        method,
+        auth,
+        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V002&paymentRequestId=1'
+      }
+
+      paymentRequest.released = undefined
+      paymentRequest.ledger = AR
+      await db.scheme.create(scheme)
+      await db.paymentRequest.create(paymentRequest)
+
+      const response = await server.inject(options)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('404')
+    })
+
+    test('GET /enrich-request route returns 200 when Ledger is AP', async () => {
+      const options = {
+        method,
+        auth,
+        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001&paymentRequestId=1'
+      }
+
+      paymentRequest.released = undefined
+      paymentRequest.ledger = AP
+      await db.scheme.create(scheme)
+      await db.paymentRequest.create(paymentRequest)
+
+      const response = await server.inject(options)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('enrich-request')
+      expect(response.request.response.statusCode).toBe(200)
+    })
+
+    test('GET /enrich-request route returns 404 view when no invoiceNumber in query parameter provided', async () => {
+      const options = {
+        method,
+        auth,
+        url: '/enrich-request?paymentRequestId=1'
+      }
+
+      const response = await server.inject(options)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('404')
+    })
+
+    test('GET /enrich-request route returns 404 view when no paymentRequestId in query parameter provided', async () => {
+      const options = {
+        method,
+        auth,
+        url: '/enrich-request?invoiceNumber=S00000001SFIP000001V001'
+      }
+
+      const response = await server.inject(options)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('404')
     })
   })
 
@@ -159,18 +225,18 @@ describe('Enrich request test', () => {
         auth,
         url: '/enrich-request',
         payload: {
-          day: 2,
-          month: 2,
-          year: 2022,
+          day: 16,
+          month: 10,
+          year: 2021,
           'debt-type': ADMINISTRATIVE,
-          'invoice-number': 'S00000001SFIP000001V001'
+          'invoice-number': 'S00000001SFIP000001V001',
+          'payment-request-id': 1
         }
       }
 
       paymentRequest.released = new Date()
 
       await db.scheme.create(scheme)
-      paymentRequest.ledger = AR
       await db.paymentRequest.create(paymentRequest)
 
       const response = await server.inject(options)
@@ -184,7 +250,8 @@ describe('Enrich request test', () => {
         auth,
         url: '/enrich-request',
         payload: {
-          'invoice-number': 'S00000001SFIP000001V001'
+          'invoice-number': 'S00000001SFIP000001V001',
+          'payment-request-id': 1
         }
       }
 
@@ -216,7 +283,8 @@ describe('Enrich request test', () => {
           month: 3,
           year: 4000,
           'debt-type': ADMINISTRATIVE,
-          'invoice-number': 'S00000001SFIP000001V001'
+          'invoice-number': 'S00000001SFIP000001V001',
+          'payment-request-id': 1
         }
       }
 
@@ -230,7 +298,7 @@ describe('Enrich request test', () => {
       expect(response.request.response.statusCode).toBe(400)
       expect(response.request.response.source.template).toBe('enrich-request')
       expect(response.request.response.source.context.model.errorMessage.titleText).toBe('There is a problem')
-      expect(response.request.response.source.context.model.date.errorMessage.text).toBe('Recovery date must be today or in the past')
+      expect(response.request.response.source.context.model.date.errorMessage.text).toBe('Debt cannot be discovered in the future')
     })
 
     test('POST /enrich-request route saves debt data when day and month are 1 digit then redirects to /enrich', async () => {
@@ -239,16 +307,16 @@ describe('Enrich request test', () => {
         auth,
         url: '/enrich-request',
         payload: {
-          day: 2,
-          month: 3,
+          day: 1,
+          month: 9,
           year: 2021,
           'debt-type': ADMINISTRATIVE,
-          'invoice-number': 'S00000001SFIP000001V001'
+          'invoice-number': 'S00000001SFIP000001V001',
+          'payment-request-id': 1
         }
       }
 
       paymentRequest.released = undefined
-      paymentRequest.ledger = AR
       await db.scheme.create(scheme)
       await db.paymentRequest.create(paymentRequest)
       await db.qualityCheck.create(qualityCheck)
@@ -268,10 +336,10 @@ describe('Enrich request test', () => {
       expect(qualityChecksRow[0].status).toBe(PENDING)
 
       expect(debtDataRow[0].paymentRequestId).toBe(1)
-      expect(debtDataRow[0].schemeId).toBe(1)
+      expect(debtDataRow[0].schemeId).toBe(SCHEME_ID_SFI)
       expect(parseInt(debtDataRow[0].frn)).toBe(1234567890)
       expect(debtDataRow[0].debtType).toBe(ADMINISTRATIVE)
-      expect(debtDataRow[0].recoveryDate).toBe('02/03/2021')
+      expect(debtDataRow[0].recoveryDate).toBe('01/09/2021')
 
       expect(response.request.response.statusCode).toBe(302)
       expect(response.headers.location).toBe('/enrich')
@@ -287,7 +355,8 @@ describe('Enrich request test', () => {
           month: 10,
           year: 2021,
           'debt-type': ADMINISTRATIVE,
-          'invoice-number': 'S00000001SFIP000001V001'
+          'invoice-number': 'S00000001SFIP000001V001',
+          'payment-request-id': 1
         }
       }
 

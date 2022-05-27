@@ -41,7 +41,7 @@ describe('Attach debt information tests', () => {
       schemeId: null,
       frn: 1234567890,
       reference: 'SIP00000000000001',
-      netValue: 150,
+      netValue: 15000,
       debtType: null,
       recoveryDate: null,
       attachedDate: null,
@@ -128,10 +128,10 @@ describe('Attach debt information tests', () => {
     expect(sendEnrichRequestBlockedEvent).toHaveBeenCalled()
   })
 
-  test('should call sendEnrichRequestBlockedEvent with paymentRequestData when no debt data found and isAlerting is true', async () => {
+  test('should call sendEnrichRequestBlockedEvent with paymentRequestData with paymentRequestId key when no debt data found and isAlerting is true', async () => {
     await db.debtData.truncate({ cascade: true })
     await attachDebtInformation(paymentRequestId, paymentRequestData)
-    expect(sendEnrichRequestBlockedEvent).toHaveBeenCalledWith(paymentRequestData)
+    expect(sendEnrichRequestBlockedEvent).toHaveBeenCalledWith({ ...paymentRequestData, paymentRequestId })
   })
 
   test('should not call sendEnrichRequestBlockedEvent when no debt data found and isAlerting is false', async () => {

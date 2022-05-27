@@ -1,4 +1,4 @@
-const { getArPaymentRequestByInvoiceNumber, updatePaymentRequestCategory } = require('../payment-request')
+const { getPaymentRequestByInvoiceNumberAndRequestId, updatePaymentRequestCategory } = require('../payment-request')
 const { saveDebt } = require('../debt')
 const { updateQualityChecksStatus } = require('../quality-check')
 const format = require('../utils/date-formatter')
@@ -8,7 +8,7 @@ const dateSchema = require('./schemas/date')
 const { enrichment } = require('../auth/permissions')
 const { getUser } = require('../auth')
 const { PENDING, PASSED } = require('../quality-check/statuses')
-const { LEDGER_CHECK } = require('../payment-request/categories')
+const { LEDGER_CHECK, LEDGER_ENRICHMENT } = require('../payment-request/categories')
 const { sendEnrichRequestEvent } = require('../event')
 const { checkAwaitingManualLedgerDebtData } = require('../manual-ledger')
 module.exports = [{
@@ -18,13 +18,15 @@ module.exports = [{
     auth: { scope: [enrichment] },
     handler: async (request, h) => {
       const invoiceNumber = request.query.invoiceNumber
-      if (!invoiceNumber) {
+      const paymentRequestId = parseInt(request.query.paymentRequestId)
+
+      if (!invoiceNumber || !paymentRequestId) {
         return h.view('404')
       }
 
-      const paymentRequest = await getArPaymentRequestByInvoiceNumber(invoiceNumber)
+      const paymentRequest = await getPaymentRequestByInvoiceNumberAndRequestId(invoiceNumber, paymentRequestId)
       if (!paymentRequest) {
-        console.log(`No AR records with invoiceNumber: ${invoiceNumber} are present in the database`)
+        console.log(`No  records with invoiceNumber: ${invoiceNumber} are present in the database`)
         return h.view('404')
       }
 
@@ -46,7 +48,9 @@ module.exports = [{
       const payload = request.payload
 
       const invoiceNumber = payload['invoice-number']
-      const paymentRequest = await getArPaymentRequestByInvoiceNumber(invoiceNumber)
+      const paymentRequestId = parseInt(payload['payment-request-id'])
+
+      const paymentRequest = await getPaymentRequestByInvoiceNumberAndRequestId(invoiceNumber, paymentRequestId)
 
       const enrichRequestValidation = enrichRequestSchema.validate(payload, { abortEarly: false })
       if (enrichRequestValidation.error) {
@@ -57,12 +61,12 @@ module.exports = [{
       const month = format(payload.month)
       const year = payload.year
 
-      const dateValidation = dateSchema.validate({
+      const validDate = dateSchema({
         date: `${year}-${month}-${day}`
-      })
+      }, paymentRequest.received)
 
-      if (dateValidation.error) {
-        return h.view('enrich-request', { paymentRequest, ...new ViewModel(payload, dateValidation.error) }).code(400).takeover()
+      if (validDate.error) {
+        return h.view('enrich-request', { paymentRequest, ...new ViewModel(payload, validDate.error) }).code(400).takeover()
       }
 
       if (payload?.day === '29' && payload?.month === '02') {
@@ -84,12 +88,19 @@ module.exports = [{
         return h.redirect('/enrich')
       }
 
+      if (paymentRequest.categoryId === LEDGER_ENRICHMENT) {
+        await updatePaymentRequestCategory(paymentRequestId, LEDGER_CHECK)
+        await updateQualityChecksStatus(paymentRequestId, PENDING)
+      }
+
       const user = getUser(request)
-      const { paymentRequestId, schemeId, frn } = paymentRequest
+      const { schemeId, frn } = paymentRequest
       await saveDebt({
         paymentRequestId: paymentRequestId,
         schemeId: schemeId,
         frn: frn,
+        reference: paymentRequest.agreementNumber,
+        netValue: paymentRequest.netValue ?? paymentRequest.value,
         debtType: payload['debt-type'],
         recoveryDate: `${day}/${month}/${year}`,
         createdDate: new Date(),

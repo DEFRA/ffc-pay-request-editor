@@ -1,7 +1,7 @@
 const db = require('../data')
-const { AR } = require('../processing/ledger/ledgers')
+const { ENRICHMENT, LEDGER_ENRICHMENT } = require('./categories')
 
-const getPaymentRequest = async (categoryId = 1) => {
+const getPaymentRequest = async (categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
   return db.paymentRequest.findAll({
     include: [{
       model: db.scheme,
@@ -25,21 +25,24 @@ const getPaymentRequest = async (categoryId = 1) => {
       'received',
       'receivedFormatted',
       'ledger',
+      'marketingYear',
+      'daysWaiting',
       'netValue'
-    ]
+    ],
+    order: [['received']]
   })
 }
 
-const getArPaymentRequestByInvoiceNumber = async (invoiceNumber) => {
+const getPaymentRequestByInvoiceNumberAndRequestId = async (invoiceNumber, paymentRequestId) => {
   return db.paymentRequest.findOne({
     where: {
       invoiceNumber,
-      ledger: AR
+      paymentRequestId
     }
   })
 }
 
-const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, agreementNumber, value) => {
+const getPaymentRequestAwaitingEnrichmentWithNetValue = async (schemeId, frn, agreementNumber, netValue, categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
   return db.paymentRequest.findOne({
     include: [{
       model: db.debtData,
@@ -51,7 +54,26 @@ const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, agreementNumbe
       schemeId,
       frn,
       agreementNumber,
-      value
+      netValue,
+      categoryId
+    }
+  })
+}
+
+const getPaymentRequestAwaitingEnrichmentWithValue = async (schemeId, frn, agreementNumber, value, categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
+  return db.paymentRequest.findOne({
+    include: [{
+      model: db.debtData,
+      as: 'debtData'
+    }],
+    where: {
+      $debtData$: null,
+      released: null,
+      schemeId,
+      frn,
+      agreementNumber,
+      value,
+      categoryId
     }
   })
 }
@@ -66,7 +88,8 @@ const getPaymentRequestByRequestId = async (paymentRequestId) => {
 
 module.exports = {
   getPaymentRequest,
-  getArPaymentRequestByInvoiceNumber,
-  getPaymentRequestAwaitingEnrichment,
+  getPaymentRequestByInvoiceNumberAndRequestId,
+  getPaymentRequestAwaitingEnrichmentWithNetValue,
+  getPaymentRequestAwaitingEnrichmentWithValue,
   getPaymentRequestByRequestId
 }

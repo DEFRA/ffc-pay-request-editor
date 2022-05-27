@@ -1,7 +1,7 @@
 const db = require('../data')
 
 const getDebts = async (includeAttached = false) => {
-  const where = includeAttached ? {} : { paymentRequestId: null }
+  const where = includeAttached ? { reference: { [db.Sequelize.Op.notLike]: 'Manual enrichment' } } : { paymentRequestId: null, reference: { [db.Sequelize.Op.notLike]: 'Manual enrichment' } }
   return db.debtData.findAll({
     where,
     include: [
@@ -22,8 +22,10 @@ const getDebts = async (includeAttached = false) => {
       'recoveryDate',
       'createdBy',
       'attachedDate',
-      'paymentRequestId'
-    ]
+      'paymentRequestId',
+      'createdDate'
+    ],
+    order: [['createdDate', 'DESC']]
   })
 }
 

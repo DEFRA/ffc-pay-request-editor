@@ -8,7 +8,7 @@ const publishQualityCheckedPaymentRequests = async (qualityCheckSender) => {
   try {
     const qualityCheckedPaymentRequests = await getQualityCheckedPaymentRequests()
     for (const qualityCheckedPaymentRequest of qualityCheckedPaymentRequests) {
-      await attachDebtToManualLedger(qualityCheckedPaymentRequest.paymentRequest)
+      await attachDebtToManualLedger(qualityCheckedPaymentRequest, true)
       const paymentRequestId = qualityCheckedPaymentRequest.paymentRequest.paymentRequestId
       await publishPaymentRequest(qualityCheckedPaymentRequest, qualityCheckSender)
       await updatePaymentRequestReleased(paymentRequestId)

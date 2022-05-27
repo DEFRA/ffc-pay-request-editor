@@ -40,9 +40,7 @@ module.exports = [{
       query: Joi.object({
         paymentRequestId: Joi.number().required(),
         'ar-value': Joi.number().required(),
-        'ap-value': Joi.number().required(),
-        'ap-percentage': Joi.number().required(),
-        'ar-percentage': Joi.number().required()
+        'ap-value': Joi.number().required()
       }).options({ allowUnknown: true }),
       failAction: async (request, h, error) => {
         const paymentRequestId = request.query.paymentRequestId

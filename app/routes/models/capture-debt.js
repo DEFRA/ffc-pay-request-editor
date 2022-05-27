@@ -70,7 +70,7 @@ function ViewModel (schemes, payload, error) {
       classes: 'govuk-label--s'
     },
     hint: {
-      text: 'Enter the 15-digit agreement number'
+      text: 'Enter the 15-digit agreement number, for example SIP000000000001'
     },
     classes: 'govuk-input--width-10',
     id: 'applicationIdentifier',
@@ -88,7 +88,7 @@ function ViewModel (schemes, payload, error) {
       text: 'Net value',
       classes: 'govuk-label--s'
     },
-    classes: 'govuk-input--width-5',
+    classes: 'govuk-input--width-10',
     id: 'net',
     name: 'net',
     value: getObjectKey(payload, 'net')
@@ -131,7 +131,7 @@ function ViewModel (schemes, payload, error) {
       }
     },
     hint: {
-      text: 'For example, 27 3 2022. The debt must be from 2015 onwards'
+      text: 'For example, 27 3 2022. The debt must be from 2021 onwards'
     },
     items: [
       {

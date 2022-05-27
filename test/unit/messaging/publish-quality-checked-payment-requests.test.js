@@ -22,7 +22,10 @@ describe('Publish quality checked payment requests', () => {
       paymentRequestId: 1,
       schemeId: SCHEME_ID_SFI,
       frn: 1234567890,
-      released: undefined
+      agreementNumber: 'SIP00000000000001',
+      released: undefined,
+      categoryId: 2,
+      netValue: 15000
     }
 
     qualityCheckedPaymentRequests = [{

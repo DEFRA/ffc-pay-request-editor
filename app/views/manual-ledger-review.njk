@@ -22,12 +22,32 @@
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m">Original</h2>
       {{paymentRequestHeader(model.manualLedgerData)}}
-      {{paymentRequestInvoiceLines(model.manualLedgerData.invoiceLines)}}
+
+        <details class="govuk-details" data-module="govuk-details">
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">
+            Invoice Lines
+          </span>
+        </summary>
+        <div class="govuk-details__text">
+          {{paymentRequestInvoiceLines(model.manualLedgerData.invoiceLines)}}
+        </div>
+      </details>
 
       <h2 class="govuk-heading-m">Provisional</h2>
       {% for data in model.manualLedgerData.manualLedgerChecks %}
         {{paymentRequestHeader(data.ledgerPaymentRequest)}}
-        {{paymentRequestInvoiceLines(data.ledgerPaymentRequest.invoiceLines)}}
+
+        <details class="govuk-details" data-module="govuk-details">
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">
+            Invoice Lines
+          </span>
+        </summary>
+        <div class="govuk-details__text">
+          {{paymentRequestInvoiceLines(data.ledgerPaymentRequest.invoiceLines)}}
+        </div>
+      </details>
       {% endfor %}
       {% if model.errorMessage %}
           {{ govukErrorSummary({

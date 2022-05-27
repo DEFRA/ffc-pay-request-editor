@@ -1,5 +1,6 @@
 {% extends '_layout.njk' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "macros/search-box.njk" import searchBox %}
 
 {% block content %}
@@ -34,6 +35,32 @@
           <div class="govuk-inset-text">
             Datasets that are attached to payment requests are shown for reference only and cannot be deleted
           </div>
+
+          <div class="govuk-form-group">
+            <fieldset class="govuk-fieldset" aria-describedby="changed-name-hint">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h2 class="govuk-fieldset__heading govuk-body govuk-!-font-size-19">
+                  Show attached datasets
+                </h2>
+              </legend>
+              <div class="govuk-radios govuk-radios--inline govuk-radios--small" data-module="govuk-radios">
+                <div class="govuk-radios__item">
+                  <input class="govuk-radios__input" id="unattached-data-yes" name="unattached-data" type="radio" value="yes" autocomplete="off" checked>
+                  <label class="govuk-label govuk-radios__label" for="unattached-data-yes">
+                    Yes
+                  </label>
+                </div>
+                <div class="govuk-radios__item">
+                  <input class="govuk-radios__input" id="unattached-data-no" name="unattached-data" type="radio" value="no" autocomplete="off" >
+                  <label class="govuk-label govuk-radios__label" for="unattached-data-no">
+                    No
+                  </label>
+                </div>
+              </div>
+
+            </fieldset>
+          </div>
+
           <table class="govuk-table">
             <caption class="govuk-table__caption govuk-table__caption--s">Existing reporting datasets</caption>
             <thead class="govuk-table__head">
@@ -45,25 +72,35 @@
                 <th scope="col" class="govuk-table__header govuk-body-s">Debt type</th>
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Date of Discovery</th>
                 <th scope="col" class="govuk-table__header govuk-body-s">Created by</th>
-                <th scope="col" class="govuk-table__header">Status</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Status</th>
                 <th scope="col" class="govuk-table__header"></th>
               </tr>
             </thead>
             <tbody class="govuk-table__body">
               {% for data in captureData %}
-                <tr class="govuk-table__row">
+                <tr class="govuk-table__row capture-datasets">
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{% if data.reference %}{{ data.reference }}{%else%}Manual enrichment{%endif%}</td>
-                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{% if data.netValueText %}{{ data.netValueText }}{%endif%}</td>
+                  <td scope="col" class="govuk-table__cell govuk-body-s">
+                    {% if data.reference %}
+                      {{ data.reference }}
+                    {%else%}
+                      Manual enrichment
+                    {%endif%}
+                  </td>
+                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">
+                    {% if data.netValueText %}
+                      {{ data.netValueText }}
+                    {%endif%}
+                  </td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}</td>
                   <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}</td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}</td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">
                     {% if data.paymentRequestId %}
-                      <strong class="govuk-tag govuk-tag--green">Attached</strong>
+                      <strong class="govuk-tag govuk-tag--green capture-status">Attached</strong>
                     {% else %}
-                     <strong class="govuk-tag">Pending</strong>
+                     <strong class="govuk-tag capture-status">Pending</strong>
                     {% endif %}
                   </td>
                   <td scope="col" class="govuk-table__cell govuk-body-s">
@@ -89,4 +126,24 @@
     {% endif %}
     </div>
   </div>
+
+  <script>
+    const toggleUnattachedForm = document.querySelectorAll(".govuk-radios__input")
+    
+    const toggleUnattachedData = () => {
+      const noToggle = document.getElementById('unattached-data-no')
+      const tableRows = document.querySelectorAll('.govuk-table__row.capture-datasets')
+      if (noToggle.checked) {
+        for (let i = 0; i < tableRows.length; i++) {
+          if (tableRows[i].querySelector('.capture-status').innerHTML === 'Attached') {
+            tableRows[i].style.display = 'none'
+          }
+        }
+      } else {
+        tableRows.forEach(x => x.removeAttribute('style'))
+      }
+    }
+
+    toggleUnattachedForm.forEach(x => x.addEventListener('change', toggleUnattachedData))
+  </script>
 {% endblock %}
