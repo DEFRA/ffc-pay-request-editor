@@ -1,3 +1,5 @@
+const config = require('../config')
+const { sendEnrichRequestBlockedEvent } = require('../event')
 const getManualLedgerRequests = require('./get-manual-ledger-requests')
 const { checkDebtsByEnrichment, saveDebtData } = require('../debt')
 const { updateQualityChecksStatus } = require('../quality-check')
@@ -20,7 +22,11 @@ const checkForARLedger = async (manualLedgerRequest, status) => {
   if (arLedger) {
     const debtData = await checkForDebtData(arLedger)
     if (!debtData) {
+      console.log('no debt data found')
       status = AWAITING_ENRICHMENT
+      if (config.isAlerting) {
+        await sendEnrichRequestBlockedEvent(manualLedgerRequest)
+      }
     }
 
     await attachDebtInformation(debtData, arLedger)
