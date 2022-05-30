@@ -5,13 +5,21 @@ data:
   PORT: {{ quote .Values.container.port }}
   APPINSIGHTS_CLOUDROLE: {{ quote .Values.name }}
   MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
+  {{- if and (.Values.environmentCode) (not .Values.pr) }}
+  DEBT_TOPIC_ADDRESS: {{ .Values.container.debtTopicAddress }}-{{ .Values.environmentCode }}
+  DEBTRESPONSE_TOPIC_ADDRESS: {{ .Values.container.debtResponseTopicAddress }}-{{ .Values.environmentCode }}
+  MANUALLEDGER_TOPIC_ADDRESS: {{ .Values.container.manualLedgerTopicAddress }}-{{ .Values.environmentCode }}
+  QC_TOPIC_ADDRESS: {{ .Values.container.qcTopicAddress }}-{{ .Values.environmentCode }}
+  EVENT_TOPIC_ADDRESS: {{ .Values.container.eventTopicAddress }}-{{ .Values.environmentCode }}
+  {{ else }}
   DEBT_TOPIC_ADDRESS: {{ quote .Values.container.debtTopicAddress }}
-  DEBT_SUBSCRIPTION_ADDRESS: {{ quote .Values.container.debtSubscriptionAddress }}
-  MANUALLEDGER_TOPIC_ADDRESS: {{ quote .Values.container.manualLedgerTopicAddress }}
-  MANUALLEDGER_SUBSCRIPTION_ADDRESS: {{ quote .Values.container.manualLedgerSubscriptionAddress }}
-  QC_TOPIC_ADDRESS: {{ quote .Values.container.qcTopicAddress }}
   DEBTRESPONSE_TOPIC_ADDRESS: {{ quote .Values.container.debtResponseTopicAddress }}
+  MANUALLEDGER_TOPIC_ADDRESS: {{ quote .Values.container.manualLedgerTopicAddress }}
+  QC_TOPIC_ADDRESS: {{ quote .Values.container.qcTopicAddress }}
   EVENT_TOPIC_ADDRESS: {{ quote .Values.container.eventTopicAddress }}
+  {{- end }}
+  DEBT_SUBSCRIPTION_ADDRESS: {{ quote .Values.container.debtSubscriptionAddress }}
+  MANUALLEDGER_SUBSCRIPTION_ADDRESS: {{ quote .Values.container.manualLedgerSubscriptionAddress }}
   POSTGRES_DB: {{ quote .Values.postgresService.postgresDb }}
   POSTGRES_HOST: {{ quote .Values.postgresService.postgresHost }}
   POSTGRES_PORT: {{ quote .Values.postgresService.postgresPort }}
