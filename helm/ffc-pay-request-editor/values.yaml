@@ -1,4 +1,5 @@
 environment: development
+environmentCode:
 name: ffc-pay-request-editor
 namespace: ffc-pay
 workstream: ffc-pay
