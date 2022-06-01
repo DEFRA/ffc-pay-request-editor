@@ -9,6 +9,7 @@ console.log(`Running webpack in ${isDev ? 'development' : 'production'} mode`)
 
 module.exports = {
   entry: {
+    cookies: './app/frontend/js/ledger.js',
     core: [
       './app/frontend/css/index.js',
       './app/frontend/images/android-chrome-192x192.png',
@@ -48,7 +49,7 @@ module.exports = {
         ]
       },
       {
-        test: /\.(png|svg|jpg|gif|ico)$/,
+        test: /\.(png|svg|jpg|gif|ico|js)$/,
         use: {
           loader: 'file-loader',
           options: {
@@ -79,7 +80,7 @@ module.exports = {
       inject: false,
       filename: '../views/_layout.njk',
       template: 'app/views/_layout.template.njk',
-      chunks: ['core']
+      chunks: ['core', 'cookies']
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[fullhash].css'
