@@ -49,7 +49,7 @@ module.exports = {
         ]
       },
       {
-        test: /\.(png|svg|jpg|gif|ico|js)$/,
+        test: /\.(png|svg|jpg|gif|ico)$/,
         use: {
           loader: 'file-loader',
           options: {
@@ -80,7 +80,7 @@ module.exports = {
       inject: false,
       filename: '../views/_layout.njk',
       template: 'app/views/_layout.template.njk',
-      chunks: ['core', 'cookies']
+      chunks: ['core']
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[fullhash].css'
