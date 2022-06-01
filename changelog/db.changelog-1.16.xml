@@ -17,7 +17,7 @@
     </insert>
     <insert tableName="schemes">
       <column name="schemeId" value="5" />
-      <column name="name" value="Local Nature Recovery" />
+      <column name="name" value="LNR" />
     </insert>
   </changeSet>
 </databaseChangeLog>
