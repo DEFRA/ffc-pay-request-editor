@@ -6,7 +6,7 @@ ignore:
     - '@azure/identity > keytar > prebuild-install > npmlog > gauge > strip-ansi > ansi-regex':
         reason: No fix
         expires: '2022-06-26T08:02:38.663Z'
-    - '@azure/identity > keytar > prebuild-install > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex':
+     '@azure/identity > keytar > prebuild-install > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex':
         reason: No fix
         expires: '2022-06-26T08:05:00.776Z'
     - '@azure/identity > keytar > prebuild-install > npmlog > gauge > string-width > strip-ansi > ansi-regex':
