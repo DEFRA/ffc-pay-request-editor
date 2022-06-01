@@ -9,7 +9,6 @@ console.log(`Running webpack in ${isDev ? 'development' : 'production'} mode`)
 
 module.exports = {
   entry: {
-    cookies: './app/frontend/js/ledger.js',
     core: [
       './app/frontend/css/index.js',
       './app/frontend/images/android-chrome-192x192.png',
