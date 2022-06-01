@@ -1,0 +1,23 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.9.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+  <changeSet author="John Watson" id="1">
+    <tagDatabase tag="v1.16.0" />
+  </changeSet>
+  <changeSet author="John Watson" id="2">
+    <modifyDataType columnName="name" newDataType="VARCHAR(30)" tableName="schemes" />
+  </changeSet>
+  <changeSet author="John Watson" id="3">
+    <insert tableName="schemes">
+      <column name="schemeId" value="3" />
+      <column name="name" value="Lump Sums" />
+    </insert>
+    <insert tableName="schemes">
+      <column name="schemeId" value="4" />
+      <column name="name" value="Vets Visits" />
+    </insert>
+    <insert tableName="schemes">
+      <column name="schemeId" value="5" />
+      <column name="name" value="Local Nature Recovery" />
+    </insert>
+  </changeSet>
+</databaseChangeLog>
