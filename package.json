@@ -8,10 +8,10 @@
     "build": "webpack",
     "build:watch": "webpack --watch",
     "pretest": "npm run test:lint",
-    "test": "jest --runInBand --forceExit",
+    "test": "jest test/unit/manual-ledger/update-manual-ledger-with-debt-data.test.js",
     "test:watch": "jest --coverage=false --onlyChanged --watch --runInBand",
     "test:lint": "standard",
-    "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/jest/bin/jest.js --coverage=false --onlyChanged --watch --runInBand --no-cache",
+    "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/jest/bin/jest.js --coverage=false --onlyChanged --watch --runInBand --no-cache test/unit/manual-ledger/update-manual-ledger-with-debt-data.test.js",
     "start:watch": "npm-run-all --parallel build:watch start:nodemon",
     "start:debug": "nodemon --inspect-brk=0.0.0.0 --ext css,js,njk --legacy-watch app/index.js",
     "start:nodemon": "nodemon --inspect=0.0.0.0 --ext css,js,njk --legacy-watch app/index.js"
