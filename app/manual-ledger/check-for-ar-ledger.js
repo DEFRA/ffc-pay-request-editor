@@ -10,7 +10,7 @@ const attachDebtInformation = require('./attach-debt-information')
 
 const checkForARLedger = async (manualLedgerRequest, status) => {
   const arLedger = manualLedgerRequest
-    .find(x => x?.ledgerPaymentRequest?.ledger === AR && x.ledgerPaymentRequest.value !== 0)
+    .find(x => x.ledgerPaymentRequest?.ledger === AR && x.ledgerPaymentRequest?.value !== 0)
 
   if (arLedger) {
     const debtData = await checkForDebtData(arLedger)
