@@ -1791,4 +1791,44 @@ describe('capture-debt route', () => {
     expect(result.statusCode).toBe(400)
     expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Debt cannot be discovered in the future')
   })
+
+  test('POST /capture-debt returns 400 when the date payload is an invalid leap year', async () => {
+    const currentDate = new Date('2023-01-01')
+    Date.now = jest.fn().mockReturnValue(currentDate)
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: {
+        ...VALID_PAYLOAD,
+        'debt-discovered-day': 29,
+        'debt-discovered-month': 2,
+        'debt-discovered-year': 2022
+      },
+      auth
+    }
+
+    const result = await server.inject(options)
+    expect(result.statusCode).toBe(400)
+    // expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Debt cannot be discovered in the future')
+  })
+
+  test('POST /capture-debt returns 400 when the date payload is an invalid date', async () => {
+    const currentDate = new Date('2023-01-01')
+    Date.now = jest.fn().mockReturnValue(currentDate)
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: {
+        ...VALID_PAYLOAD,
+        'debt-discovered-day': 31,
+        'debt-discovered-month': 9,
+        'debt-discovered-year': 2022
+      },
+      auth
+    }
+
+    const result = await server.inject(options)
+    expect(result.statusCode).toBe(400)
+    // expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Debt cannot be discovered in the future')
+  })
 })
