@@ -31,7 +31,7 @@ function ViewModel (payload, error) {
           text: 'The date submitted is not valid'
         }
       } else if (detail.context.label === 'date') {
-        const text = 'Debt cannot be discovered in the future'
+        const text = 'Date must be valid and cannot be in the future'
         detail.href = '#debt-discovered-date-day'
         detail.text = text
         errorMessage['date-error'] = {
