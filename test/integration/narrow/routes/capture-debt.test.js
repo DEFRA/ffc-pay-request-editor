@@ -1769,7 +1769,7 @@ describe('capture-debt route', () => {
 
     const result = await server.inject(options)
     expect(result.statusCode).toBe(400)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Debt cannot be discovered in the future')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Date must be valid and cannot be in the future')
   })
 
   test('POST /capture-debt returns 400 when the date payload is in the future', async () => {
@@ -1789,7 +1789,7 @@ describe('capture-debt route', () => {
 
     const result = await server.inject(options)
     expect(result.statusCode).toBe(400)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Debt cannot be discovered in the future')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Date must be valid and cannot be in the future')
   })
 
   test('POST /capture-debt returns 400 when the date payload is an invalid leap year', async () => {
@@ -1809,7 +1809,7 @@ describe('capture-debt route', () => {
 
     const result = await server.inject(options)
     expect(result.statusCode).toBe(400)
-    // expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Debt cannot be discovered in the future')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Date must be valid and cannot be in the future')
   })
 
   test('POST /capture-debt returns 400 when the date payload is an invalid date', async () => {
@@ -1829,6 +1829,6 @@ describe('capture-debt route', () => {
 
     const result = await server.inject(options)
     expect(result.statusCode).toBe(400)
-    // expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Debt cannot be discovered in the future')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Date must be valid and cannot be in the future')
   })
 })

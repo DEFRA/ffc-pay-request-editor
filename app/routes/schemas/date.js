@@ -1,21 +1,9 @@
-const Joi = require('joi')
-const moment = require('moment')
+const Joi = require('joi').extend(require('@joi/date'))
 
 const dateValidation = (inputDate, arrivalDate = 'now') => {
   return Joi.object({
-    date: Joi.date().custom(isValidDate).less(arrivalDate).iso().raw().required().messages({
-      '*': 'Debt cannot be discovered in the future',
-      'any.custom': 'Date must be valid'
-    })
+    date: Joi.date().format('YYYY-MM-DD').less(arrivalDate).required().messages({ '*': 'Date must be valid and cannot be in the future' })
   }).validate(inputDate)
-}
-
-const isValidDate = (value, _helpers) => {
-  const date = moment(value)
-  if (!date.isValid()) {
-    throw new Error('Invalid date')
-  }
-  return value
 }
 
 module.exports = dateValidation
