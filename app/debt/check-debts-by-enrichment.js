@@ -4,7 +4,7 @@ const checkDebtsByEnrichment = async (frn, reference, netValue, transaction) => 
   const parsedFrn = parseInt(frn)
 
   if (isNaN(parsedFrn)) {
-    return {}
+    return null
   } else {
     return db.debtData.findOne({
       transaction,
