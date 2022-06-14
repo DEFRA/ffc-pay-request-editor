@@ -25,7 +25,6 @@ describe('Get schemes test', () => {
 
   test('return name attribute from scheme db', async () => {
     const result = await getSchemes()
-    console.log(result)
     expect(result[0].name).toBe('A Name')
   })
 
@@ -34,7 +33,6 @@ describe('Get schemes test', () => {
     scheme.name = null
     await db.scheme.create(scheme)
     const result = await getSchemes()
-    console.log(result)
     expect(result[0].name).toBe(null)
   })
 })
