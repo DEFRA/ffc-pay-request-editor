@@ -77,7 +77,6 @@ describe('Get released payment request test', () => {
 
   test('should return 1 payment request record when status is passed', async () => {
     const paymentRequests = await getQualityCheckedPaymentRequests()
-    console.log(paymentRequests)
     expect(paymentRequests).toHaveLength(1)
   })
 
