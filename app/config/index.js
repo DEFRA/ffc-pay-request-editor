@@ -57,6 +57,9 @@ const config = {
   database: {
     database: process.env.POSTGRES_DB,
     dialect: 'postgres',
+    dialectOptions: {
+      ssl: process.env.NODE_ENV === 'production'
+    },
     hooks: {
       beforeConnect: async (cfg) => {
         if (process.env.NODE_ENV === 'production') {
