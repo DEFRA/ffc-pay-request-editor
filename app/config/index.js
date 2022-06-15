@@ -20,6 +20,9 @@ const schema = Joi.object({
   database: Joi.object({
     database: Joi.string(),
     dialect: Joi.string().default('postgres'),
+    dialectOptions: Joi.object({
+      ssl: Joi.boolean().default(false)
+    }),
     hooks: Joi.object({
       beforeConnect: Joi.function()
     }),
