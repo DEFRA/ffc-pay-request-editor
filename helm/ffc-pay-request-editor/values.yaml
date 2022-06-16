@@ -56,7 +56,7 @@ readinessProbe:
 
 postgresService:
   postgresDb: ffc_pay_request_editor
-  postgresHost: ffc-pay-request-editor-postgres
+  postgresqlHost: ffc-pay-request-editor-postgres
   postgresPort: 5432
   postgresSchema: public
   postgresUser: postgres
