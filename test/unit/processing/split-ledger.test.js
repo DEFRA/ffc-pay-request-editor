@@ -97,7 +97,7 @@ describe('split ledger test', () => {
     expect(splitLedger.filter(x => x.invoiceNumber.startsWith('S1234567B')).length).toBe(1)
   })
 
-  test('should update invoice numbers for Vets Visits', () => {
+  test('should update invoice numbers for Vet Visits', () => {
     const paymentRequest = {
       ledger: AP,
       value: 1000,
