@@ -20,6 +20,9 @@ const schema = Joi.object({
   database: Joi.object({
     database: Joi.string(),
     dialect: Joi.string().default('postgres'),
+    dialectOptions: Joi.object({
+      ssl: Joi.boolean().default(false)
+    }),
     hooks: Joi.object({
       beforeConnect: Joi.function()
     }),
@@ -57,6 +60,9 @@ const config = {
   database: {
     database: process.env.POSTGRES_DB,
     dialect: 'postgres',
+    dialectOptions: {
+      ssl: process.env.NODE_ENV === 'production'
+    },
     hooks: {
       beforeConnect: async (cfg) => {
         if (process.env.NODE_ENV === 'production') {
