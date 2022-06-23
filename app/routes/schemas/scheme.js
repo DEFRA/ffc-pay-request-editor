@@ -1,6 +1,6 @@
 const Joi = require('joi')
 
-const typeOfSchemes = ['SFI', 'SFI Pilot', 'LNR', 'Vet Visits', 'Lump Sumps']
+const typeOfSchemes = ['SFI', 'SFI Pilot', 'LNR', 'Vet Visits', 'Lump Sums']
 const typeOfSchemesRegex = new RegExp(typeOfSchemes.reduce((x, y) => x + '|' + y))
 
 module.exports = {
