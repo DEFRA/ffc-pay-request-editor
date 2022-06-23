@@ -1,3 +1,5 @@
+const { SFI, SFI_PILOT, LUMP_SUMS, VET_VISITS, LNR } = require('../../../app/schemes')
+
 describe('split ledger test', () => {
   const splitToLedger = require('../../../app/processing/ledger/split-to-ledger')
   const { AP, AR } = require('../../../app/processing/ledger/ledgers')
@@ -44,7 +46,7 @@ describe('split ledger test', () => {
     const paymentRequest = {
       ledger: AP,
       value: 1000,
-      schemeId: 1,
+      schemeId: SFI,
       agreementNumber: '12345678',
       invoiceNumber: 'S12345678SFI123456V002',
       paymentRequestNumber: 2,
@@ -63,7 +65,7 @@ describe('split ledger test', () => {
     const paymentRequest = {
       ledger: AP,
       value: 1000,
-      schemeId: 2,
+      schemeId: SFI_PILOT,
       agreementNumber: '12345678',
       invoiceNumber: 'S12345678SFI123456V002',
       paymentRequestNumber: 2,
@@ -82,7 +84,7 @@ describe('split ledger test', () => {
     const paymentRequest = {
       ledger: AP,
       value: 1000,
-      schemeId: 3,
+      schemeId: LUMP_SUMS,
       agreementNumber: '12345678',
       invoiceNumber: 'S12345678SFI123456V002',
       paymentRequestNumber: 2,
@@ -101,7 +103,7 @@ describe('split ledger test', () => {
     const paymentRequest = {
       ledger: AP,
       value: 1000,
-      schemeId: 4,
+      schemeId: VET_VISITS,
       agreementNumber: '12345678',
       invoiceNumber: 'AHWR1234567890V002',
       paymentRequestNumber: 2,
@@ -120,7 +122,7 @@ describe('split ledger test', () => {
     const paymentRequest = {
       ledger: AP,
       value: 1000,
-      schemeId: 5,
+      schemeId: LNR,
       agreementNumber: '12345678',
       invoiceNumber: 'LNR1234567890V002',
       paymentRequestNumber: 2,
