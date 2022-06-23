@@ -427,7 +427,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no agreement number returns "The agreement number cannot be empty." error message', async () => {
+  test('POST /capture-debt with no agreement number returns "The agreement number is invalid" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -436,105 +436,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number cannot be empty.')
-  })
-
-  test('POST /capture-debt with a nine character agreement number returns 400', async () => {
-    const options = {
-      method: 'POST',
-      url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' },
-      auth
-    }
-
-    const result = await server.inject(options)
-    expect(result.statusCode).toBe(400)
-  })
-
-  test('POST /capture-debt with a nine character agreement number returns capture-debt view', async () => {
-    const options = {
-      method: 'POST',
-      url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' },
-      auth
-    }
-
-    const result = await server.inject(options)
-    expect(result.request.response.variety).toBe('view')
-    expect(result.request.response.source.template).toBe('capture-debt')
-  })
-
-  test('POST /capture-debt with a nine character agreement number returns all scheme names', async () => {
-    const options = {
-      method: 'POST',
-      url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' },
-      auth
-    }
-
-    const result = await server.inject(options)
-    expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
-  })
-
-  test('POST /capture-debt with a nine character agreement number returns "The agreement number is too short. This must be 15 characters." error message', async () => {
-    const options = {
-      method: 'POST',
-      url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123R6789A' },
-      auth
-    }
-
-    const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number is too short. This must be 15 characters.')
-  })
-
-  test('POST /capture-debt with a 16 character agreement number returns 400', async () => {
-    const options = {
-      method: 'POST',
-      url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' },
-      auth
-    }
-
-    const result = await server.inject(options)
-    expect(result.statusCode).toBe(400)
-  })
-
-  test('POST /capture-debt with a 16 agreement number returns capture-debt view', async () => {
-    const options = {
-      method: 'POST',
-      url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' },
-      auth
-    }
-
-    const result = await server.inject(options)
-    expect(result.request.response.variety).toBe('view')
-    expect(result.request.response.source.template).toBe('capture-debt')
-  })
-
-  test('POST /capture-debt with a 16 character agreement number returns all scheme names', async () => {
-    const options = {
-      method: 'POST',
-      url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' },
-      auth
-    }
-
-    const result = await server.inject(options)
-    expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
-  })
-
-  test('POST /capture-debt with a 16 character agreement number returns "The agreement number is too long. This must be 15 characters." error message', async () => {
-    const options = {
-      method: 'POST',
-      url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, applicationIdentifier: '12345678R6789A5B' },
-      auth
-    }
-
-    const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number is too long. This must be 15 characters.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number is invalid')
   })
 
   test('POST /capture-debt with non alphanumeric characters in the agreement number returns 400', async () => {
@@ -574,7 +476,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with non alphanumeric characters in the agreement number returns "The agreement number can only have alphanumeric characters." error message', async () => {
+  test('POST /capture-debt with non alphanumeric characters in the agreement number returns "The agreement number is invalid" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -583,7 +485,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number can only have alphanumeric characters.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number is invalid')
   })
 
   test('POST /capture-debt with no net returns 400', async () => {
