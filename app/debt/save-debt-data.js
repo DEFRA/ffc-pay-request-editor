@@ -1,7 +1,8 @@
 const db = require('../data')
 
 const saveDebtData = (updatedDebtData, transaction) => {
-  const { paymentRequestId, attachedDate, debtDataId } = updatedDebtData
+  const { paymentRequestId, debtDataId } = updatedDebtData
+  const attachedDate = new Date()
   return db.debtData.update({
     paymentRequestId,
     attachedDate

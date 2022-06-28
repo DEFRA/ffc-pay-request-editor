@@ -3,7 +3,6 @@ const { saveDebtData } = require('../debt')
 const attachDebtInformation = async (debtData, arLedger) => {
   if (debtData) {
     checkIfCapture(debtData, arLedger)
-    debtData.attachedDate = new Date().toISOString()
     await saveDebtData(debtData)
   }
 }
