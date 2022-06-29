@@ -9,7 +9,7 @@ let mockManualLedgerRequests
 let config
 let checkForARLedger
 let checkForDebtData
-let attachDebtInformation
+let copyDebtInformationFromArLedger
 let sendEnrichRequestBlockedEvent
 
 describe('check for ar ledger', () => {
@@ -23,8 +23,8 @@ describe('check for ar ledger', () => {
     checkForDebtData = require('../../../app/manual-ledger/check-for-debt-data')
     checkForDebtData.mockReturnValue(null)
 
-    jest.mock('../../../app/manual-ledger/attach-debt-information')
-    attachDebtInformation = require('../../../app/manual-ledger/attach-debt-information')
+    jest.mock('../../../app/manual-ledger/copy-debt-information-from-ar-ledger')
+    copyDebtInformationFromArLedger = require('../../../app/manual-ledger/copy-debt-information-from-ar-ledger')
 
     jest.mock('../../../app/event')
     sendEnrichRequestBlockedEvent = require('../../../app/event').sendEnrichRequestBlockedEvent
@@ -131,38 +131,38 @@ describe('check for ar ledger', () => {
     expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
   })
 
-  test('should not call attachDebtInformation when only 0 value mockManualLedgerRequests and PENDING status are received', async () => {
+  test('should not call copyDebtInformationFromArLedger when only 0 value mockManualLedgerRequests and PENDING status are received', async () => {
     mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.value = 0; return x })
     await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(attachDebtInformation).not.toHaveBeenCalled()
+    expect(copyDebtInformationFromArLedger).not.toHaveBeenCalled()
   })
 
-  test('should not call attachDebtInformation when only AP mockManualLedgerRequests and PENDING status are received', async () => {
+  test('should not call copyDebtInformationFromArLedger when only AP mockManualLedgerRequests and PENDING status are received', async () => {
     mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.ledger = AP; return x })
     await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(attachDebtInformation).not.toHaveBeenCalled()
+    expect(copyDebtInformationFromArLedger).not.toHaveBeenCalled()
   })
 
-  test('should not call attachDebtInformation when an empty manualLedgerRequest and PENDING status are received', async () => {
+  test('should not call copyDebtInformationFromArLedger when an empty manualLedgerRequest and PENDING status are received', async () => {
     await checkForARLedger([{}], PENDING)
-    expect(attachDebtInformation).not.toHaveBeenCalled()
+    expect(copyDebtInformationFromArLedger).not.toHaveBeenCalled()
   })
 
-  test('should not call attachDebtInformation when only 0 value mockManualLedgerRequests and PENDING status are received', async () => {
+  test('should not call copyDebtInformationFromArLedger when only 0 value mockManualLedgerRequests and PENDING status are received', async () => {
     mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.value = 0; return x })
     await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(attachDebtInformation).not.toHaveBeenCalled()
+    expect(copyDebtInformationFromArLedger).not.toHaveBeenCalled()
   })
 
-  test('should not call attachDebtInformation when only AP mockManualLedgerRequests and PENDING status are received', async () => {
+  test('should not call copyDebtInformationFromArLedger when only AP mockManualLedgerRequests and PENDING status are received', async () => {
     mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.ledger = AP; return x })
     await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(attachDebtInformation).not.toHaveBeenCalled()
+    expect(copyDebtInformationFromArLedger).not.toHaveBeenCalled()
   })
 
-  test('should not call attachDebtInformation when an empty manualLedgerRequest and PENDING status are received', async () => {
+  test('should not call copyDebtInformationFromArLedger when an empty manualLedgerRequest and PENDING status are received', async () => {
     await checkForARLedger([{}], PENDING)
-    expect(attachDebtInformation).not.toHaveBeenCalled()
+    expect(copyDebtInformationFromArLedger).not.toHaveBeenCalled()
   })
 
   test('should call sendEnrichRequestBlockedEvent when mockManualLedgerRequests and PENDING status are received, checkForDebtData returns null and config.isAlerting is true', async () => {
@@ -186,37 +186,37 @@ describe('check for ar ledger', () => {
     expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
   })
 
-  test('should call attachDebtInformation when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns null', async () => {
+  test('should call copyDebtInformationFromArLedger when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns null', async () => {
     await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(attachDebtInformation).toHaveBeenCalled()
+    expect(copyDebtInformationFromArLedger).toHaveBeenCalled()
   })
 
-  test('should call attachDebtInformation once when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns null', async () => {
+  test('should call copyDebtInformationFromArLedger once when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns null', async () => {
     await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(attachDebtInformation).toHaveBeenCalledTimes(1)
+    expect(copyDebtInformationFromArLedger).toHaveBeenCalledTimes(1)
   })
 
-  test('should call attachDebtInformation with null and mockManualLedgerRequest when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns null', async () => {
+  test('should call copyDebtInformationFromArLedger with null and mockManualLedgerRequest when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns null', async () => {
     await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(attachDebtInformation).toHaveBeenCalledWith(null, mockManualLedgerRequests[0])
+    expect(copyDebtInformationFromArLedger).toHaveBeenCalledWith(null, mockManualLedgerRequests[0])
   })
 
-  test('should call attachDebtInformation when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns an object', async () => {
+  test('should call copyDebtInformationFromArLedger when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns an object', async () => {
     checkForDebtData.mockReturnValue({ test: 'value does not matter, just that it exists' })
     await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(attachDebtInformation).toHaveBeenCalled()
+    expect(copyDebtInformationFromArLedger).toHaveBeenCalled()
   })
 
-  test('should call attachDebtInformation once when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns an object', async () => {
+  test('should call copyDebtInformationFromArLedger once when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns an object', async () => {
     checkForDebtData.mockReturnValue({ test: 'value does not matter, just that it exists' })
     await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(attachDebtInformation).toHaveBeenCalledTimes(1)
+    expect(copyDebtInformationFromArLedger).toHaveBeenCalledTimes(1)
   })
 
-  test('should call attachDebtInformation with empty object and mockManualLedgerRequest when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns an object', async () => {
+  test('should call copyDebtInformationFromArLedger with empty object and mockManualLedgerRequest when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns an object', async () => {
     checkForDebtData.mockReturnValue({ test: 'value does not matter, just that it exists' })
     await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(attachDebtInformation).toHaveBeenCalledWith({ test: 'value does not matter, just that it exists' }, mockManualLedgerRequests[0])
+    expect(copyDebtInformationFromArLedger).toHaveBeenCalledWith({ test: 'value does not matter, just that it exists' }, mockManualLedgerRequests[0])
   })
 
   test('should return PENDING status when only 0 value mockManualLedgerRequests and PENDING status are received', async () => {

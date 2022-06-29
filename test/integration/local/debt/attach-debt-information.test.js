@@ -2,7 +2,7 @@ jest.mock('../../../../app/config')
 const config = require('../../../../app/config')
 
 const db = require('../../../../app/data')
-const { attachDebtInformation, checkDebts } = require('../../../../app/debt')
+const { attachDebtInformationIfExists, checkDebts } = require('../../../../app/debt')
 const { NOT_READY } = require('../../../../app/quality-check/statuses')
 
 jest.mock('../../../../app/event')
@@ -96,7 +96,7 @@ describe('Attach debt information tests', () => {
   })
 
   test('Update the debtData table with data from the payment request', async () => {
-    await attachDebtInformation(paymentRequestId, paymentRequestData)
+    await attachDebtInformationIfExists(paymentRequestId, paymentRequestData)
     const debtDataRow = await db.debtData.findAll()
     const logSpy = jest.spyOn(console, 'log')
     expect(logSpy).toHaveBeenCalledWith('debt data updated')
@@ -106,7 +106,7 @@ describe('Attach debt information tests', () => {
   })
 
   test('attachedDate should be a date type', async () => {
-    await attachDebtInformation(paymentRequestId, paymentRequestData)
+    await attachDebtInformationIfExists(paymentRequestId, paymentRequestData)
     const debtDataRow = await db.debtData.findAll()
     expect(debtDataRow[0].attachedDate).toBeInstanceOf(Date)
   })
@@ -117,20 +117,20 @@ describe('Attach debt information tests', () => {
         debtDataId: 1
       }
     })
-    await attachDebtInformation(paymentRequestId, paymentRequestData)
+    await attachDebtInformationIfExists(paymentRequestId, paymentRequestData)
     const logSpy = jest.spyOn(console, 'log')
     expect(logSpy).toHaveBeenCalledWith('no debt data found')
   })
 
   test('should call sendEnrichRequestBlockedEvent when no debt data found and isAlerting is true', async () => {
     await db.debtData.truncate({ cascade: true })
-    await attachDebtInformation(paymentRequestId, paymentRequestData)
+    await attachDebtInformationIfExists(paymentRequestId, paymentRequestData)
     expect(sendEnrichRequestBlockedEvent).toHaveBeenCalled()
   })
 
   test('should call sendEnrichRequestBlockedEvent with paymentRequestData with paymentRequestId key when no debt data found and isAlerting is true', async () => {
     await db.debtData.truncate({ cascade: true })
-    await attachDebtInformation(paymentRequestId, paymentRequestData)
+    await attachDebtInformationIfExists(paymentRequestId, paymentRequestData)
     expect(sendEnrichRequestBlockedEvent).toHaveBeenCalledWith({ ...paymentRequestData, paymentRequestId })
   })
 
@@ -138,18 +138,18 @@ describe('Attach debt information tests', () => {
     config.isAlerting = false
     await db.debtData.truncate({ cascade: true })
 
-    await attachDebtInformation(paymentRequestId, paymentRequestData)
+    await attachDebtInformationIfExists(paymentRequestId, paymentRequestData)
     expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
   })
 
   test('should not call sendEnrichRequestBlockedEvent when debt data found and isAlerting is true', async () => {
-    await attachDebtInformation(paymentRequestId, paymentRequestData)
+    await attachDebtInformationIfExists(paymentRequestId, paymentRequestData)
     expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
   })
 
   test('should not call sendEnrichRequestBlockedEvent when debt data found and isAlerting is false', async () => {
     config.isAlerting = false
-    await attachDebtInformation(paymentRequestId, paymentRequestData)
+    await attachDebtInformationIfExists(paymentRequestId, paymentRequestData)
     expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
   })
 

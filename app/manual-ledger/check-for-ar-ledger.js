@@ -6,7 +6,7 @@ const { AWAITING_ENRICHMENT } = require('../quality-check/statuses')
 const { sendEnrichRequestBlockedEvent } = require('../event')
 
 const checkForDebtData = require('./check-for-debt-data')
-const attachDebtInformation = require('./attach-debt-information')
+const copyDebtInformationFromArLedger = require('./copy-debt-information-from-ar-ledger')
 
 const checkForARLedger = async (manualLedgerRequest, status) => {
   const arLedger = manualLedgerRequest
@@ -22,7 +22,7 @@ const checkForARLedger = async (manualLedgerRequest, status) => {
       }
     }
 
-    await attachDebtInformation(debtData, arLedger)
+    await copyDebtInformationFromArLedger(debtData, arLedger)
   }
 
   return status
