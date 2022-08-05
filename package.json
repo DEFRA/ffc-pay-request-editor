@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-request-editor",
-  "version": "1.13.13",
+  "version": "1.13.14",
   "description": "Edit payment requests",
   "homepage": "https://github.com/DEFRA/ffc-pay-request-editor",
   "main": "app/index.js",
@@ -42,13 +42,13 @@
     "ffc-messaging": "^2.4.2",
     "ffc-pay-event-publisher": "^1.0.1",
     "govuk-frontend": "^3.14.0",
-    "hapi-pino": "^8.3.0",
+    "hapi-pino": "10.1.0",
     "joi": "^17.4.0",
     "log-timestamp": "^0.3.0",
     "nunjucks": "^3.2.3",
     "pg": "^8.6.0",
     "pg-hstore": "^2.3.3",
-    "sequelize": "^6.16.1",
+    "sequelize": "6.21.2",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
