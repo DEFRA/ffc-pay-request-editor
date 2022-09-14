@@ -1,16 +1,23 @@
 # FFC Pay Request Editor
 
-## Prerequisites
+## Description
+FFC web front-end microservice which performs debt enrichment and ledger assignment overrides. 
 
-- Access to an instance of an
-[Azure Service Bus](https://docs.microsoft.com/en-us/azure/service-bus-messaging/)(ASB).
-- Docker
-- Docker Compose
+For how the repo fits into the architecture and what components or dependencies it interacts with please refer to the following diagram: [ffc-pay.drawio](https://github.com/DEFRA/ffc-diagrams/blob/main/Payments/ffc-pay.drawio)
+
+# Prerequisites
+
+## Software required
+- Access to an instance of
+[Azure Service Bus](https://docs.microsoft.com/en-us/azure/service-bus-messaging/)
+- [Docker](https://docs.docker.com)
+- [Docker Compose](https://docs.docker.com/compose/)
 
 Optional:
-- Kubernetes
-- Helm
+- [Kubernetes](https://kubernetes.io/docs/home/)
+- [Helm](https://helm.sh/docs/)
 
+## Configuration
 ### Azure Service Bus
 
 This service depends on a valid Azure Service Bus connection string for
@@ -20,7 +27,11 @@ container is started or tests are run.
 
 When deployed into an appropriately configured AKS
 cluster (where [AAD Pod Identity](https://github.com/Azure/aad-pod-identity) is
-configured) the microservice will use AAD Pod Identity.
+configured) the microservice will use AAD Pod Identity through the manifests
+for
+[azure-identity](./helm/ffc-pay-batch-processor/templates/azure-identity.yaml)
+and
+[azure-identity-binding](./helm/ffc-pay-batch-processor/templates/azure-identity-binding.yaml).
 
 | Name                                   | Description                                                            |
 | ----                                   | -----------                                                            |
@@ -29,41 +40,8 @@ configured) the microservice will use AAD Pod Identity.
 | MESSAGE_QUEUE_USER                     | Azure Service Bus SAS policy name, e.g. `RootManageSharedAccessKey`    |
 | MESSAGE_QUEUE_SUFFIX                   | Developer initials                                                     |
 
-Example inbound payment request
 
-```
-{
-   "sourceSystem":"SFIP",
-   "frn":1234567890,
-   "marketingYear":2022,
-   "paymentRequestNumber": 2,
-   "correlationId":"9e016c50-046b-4597-b79a-ebe4f0bf8505",
-   "invoiceNumber":"S123456789A123456V001",
-   "agreementNumber":"SIP000001234567",
-   "contractNumber":"SFI12345",
-   "currency":"GBP",
-   "schedule":"Q4",
-   "dueDate":"09/11/2022",
-   "value":100000,
-   "schemeId":2,
-   "ledger":"AR",
-   "deliveryBody":"RP00",
-   "schemeId":2,
-   "invoiceLines":[
-      {
-        "description":"G00 - Gross value of claim",
-        "value":100000,
-        "schemeCode":"80001",
-        "fundCode":"DOM00",
-        "accountCode": "SOS970"
-      }
-   ]
-}
-```
-
-Note that duplicate message detection is based on a `referenceId` property which must be a `UUID`.  If this property is not provided then the `invoiceNumber` property is used instead.
-
-## Azure App Registration
+### Azure App Registration
 
 This service has been integrated into Azure App Registration using the msal-node [npm package](https://www.npmjs.com/package/@azure/msal-node)
 
@@ -73,12 +51,15 @@ If authentication is enabled, this service needs to be registered with [Azure Ap
 
 The following environment variables need to be set:
 
-- AZUREID_CLIENT_ID
-- AZUREID_TENANT_ID
-- AZUREID_CLIENT_SECRET
+| Name                  | Description |
+|-----------------------|-------------|
+| AZUREID_CLIENT_ID     | The client (application) ID of an App Registration in the tenant. |
+| AZUREID_TENANT_ID     | The Azure Active Directory tenant (directory) ID. |
+| AZUREID_CLIENT_SECRET | A client secret that was generated for the App Registration. |
 
 These can be retrieved from the App Registration overview blade.
 
+### Azure App Registry roles
 The following roles need [setting up](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps)
 
 - Payments.Enrichment.Admin
@@ -87,21 +68,14 @@ The following roles need [setting up](https://docs.microsoft.com/en-us/azure/act
 
 For users to access this service, the users need to be assigned to the relevant roles above through Azure Enterprise Applications.
 
-When authentication is disabled, then the user will automatically be given all roles within the service and assigned a unique user Id.  For testing scenarios where multiple users are required, for example quality checks, then sign in again and a new Id will be assigned.
-
-## Running the application
+# Setup
 
 The application is designed to run in containerised environments, using Docker Compose in development and Kubernetes in production.
 
-- A Helm chart is provided for production deployments to Kubernetes.
+- A Helm chart is provided for deployments to Kubernetes.
 
+## Configuration
 ### Build container image
-
-Container images are built using Docker Compose, with the same images used to run the service with either Docker Compose or Kubernetes.
-
-When using the Docker Compose files in development the local `app` folder will
-be mounted on top of the `app` folder within the Docker container, hiding the CSS files that were generated during the Docker build.  For the site to render correctly locally `npm run build` must be run on the host system.
-
 
 By default, the start script will build (or rebuild) images so there will
 rarely be a need to build images manually. However, this can be achieved
@@ -109,64 +83,99 @@ through the Docker Compose
 [build](https://docs.docker.com/compose/reference/build/) command:
 
 ```
-# Build container images
 docker-compose build
 ```
 
-### Start
+# How to start the Request Editor
 
-Use Docker Compose to run service locally.
+The service can be run using the convenience script:
+```
+./scripts/start
+```
 
-The service uses [Liquibase](https://www.liquibase.org/) to manage database migrations. To ensure the appropriate migrations have been run the utility script `scripts/start` may be run to execute the migrations, then the application.
+# How to get an output
 
-Alternatively the steps can be run manually:
-* run migrations
-  * `docker-compose -f docker-compose.migrate.yaml run --rm database-up`
-* start
-  * `docker-compose up`
-* stop
-  * `docker-compose down` or CTRL-C
+There are several different possible outputs:
+
+1. **To access the web front-end for the service**  
+**Input:** Start the service (as described [above](#how-to-start-the-request-editor)).  
+**Output:** If you then go to `localhost:3001` (may be subject to change) you should see the home screen for the Request Editor's web front-end.  
+
+2. **To get a request awaiting debt data** (i.e. payment request for an amount less than the previously settled amount).  
+**Pre-requisite:** The customer in question already has a settled payment.  
+**Input:** Submit a [payment request](./docs/asyncapi.yaml) for the customer that is less than the customer's already settled balance.  
+**Output:** The request should now be awaiting debt data enrichment on the web front-end.  
+
+3. **To create a new debt dataset.**  
+**Input:** On the web front-end click on the Capture New Dataset button and fill in the details.  
+**Output:** The new dataset should now be added and viewable on the web front-end.  
+
+4. **To get a request awaiting ledger assignment or correction.**  
+**Pre-requisite:** Receive the output of 2. above.  
+**Input:** Using the web front-end, add debt enrichment data to the request.  
+**Output:** The request should now be awaiting ledger assignment or correction on the web front-end.  
+
+5. **To get a request awaiting ledger assignment quality check.**  
+**Pre-requisite:** Receive the output of 4. above.  
+**Input:** Using the web front-end sign off on the ledger assignment.  
+**Output:** The request should now be awaiting ledger quality check on the web front-end.  
+
+6. **To sign off a request after quality check**
+**Pre-requisite:** Receive the output of 5. above.  
+**Input:** Using the web front-end sign off on the quality check.  
+**Output:** The [payment request](./docs/asyncapi.yaml) is sent to the Topic `QC_TOPIC_ADDRESS`.  
+
+> Note: 3, 4 and 5 are provisional measures requested by the RPA that may be removed at a future stage.
+
+>Note that duplicate message detection is based on a `referenceId` property which must be a `UUID`.  If this property is not provided then the `invoiceNumber` property is used instead.
+
+>When authentication is disabled, then the user will automatically be given all roles within the service and assigned a unique user Id.  For testing scenarios where multiple users are required, for example quality checks, then sign in again and a new Id will be assigned.
 
 
-## Test structure
+# How to stop the Request Editor
 
-The tests have been structured into subfolders of `./test` as per the
-[Microservice test approach and repository structure](https://eaflood.atlassian.net/wiki/spaces/FPS/pages/1845396477/Microservice+test+approach+and+repository+structure)
+The service can be stopped in different ways:
+- [Bring the service down](#bring-the-service-down)
+- [Bring the service down and clear its data](#bring-the-service-down-and-clear-its-data)
 
-### Running tests
+### Bring the service down  
+```
+docker-compose down
+```
 
-A convenience script is provided to run automated tests in a containerised
-environment. This will rebuild images before running tests via docker-compose,
-using a combination of `docker-compose.yaml` and `docker-compose.test.yaml`.
-The command given to `docker-compose run` may be customised by passing
-arguments to the test script.
+### Bring the service down and clear its data  
+```
+docker-compose down -v
+```
 
-Examples:
+# How to test the Request Editor
 
+## Running tests
+Tests can be run in several modes
+- [Run tests and exit](#run-tests-and-exit)
+- [Run tests with file watch](#run-tests-with-file-watch)
+- [Run tests with debugger attachable](#run-tests-with-debugger-attachable)
 
-### Run all tests
+## Run tests and exit
 ```
 scripts/test
 ```
 
-### Run Acceptance tests
-```shell
-scripts/acceptance arg
+## Run tests with file watch
 ```
-- `debug` -- Build docker image and run acceptance test against Browserstack
-- `local` -- Start the service locally, run test on your local machine. Note: You should have chrome browser installed
+scripts/test -w
+```
 
-# Run tests with file watch
-`scripts/test -w`
-
-# Run tests with debugger attachable
-`scripts/test -d`
+## Run tests with debugger attachable
+```
+scripts/test -d
+```
 
 ## CI pipeline
 
 This service uses the [FFC CI pipeline](https://github.com/DEFRA/ffc-jenkins-pipeline-library)
 
-## Licence
+# Licence
 
 THIS INFORMATION IS LICENSED UNDER THE CONDITIONS OF THE OPEN GOVERNMENT LICENCE found at:
 
@@ -181,4 +190,3 @@ The following attribution statement MUST be cited in your products and applicati
 The Open Government Licence (OGL) was developed by the Controller of Her Majesty's Stationery Office (HMSO) to enable information providers in the public sector to license the use and re-use of their information under a common open licence.
 
 It is designed to encourage use and re-use of information freely and flexibly, with only a few conditions.
-
