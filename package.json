@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-request-editor",
-  "version": "1.13.14",
+  "version": "1.13.15",
   "description": "Edit payment requests",
   "homepage": "https://github.com/DEFRA/ffc-pay-request-editor",
   "main": "app/index.js",
@@ -23,7 +23,8 @@
     "Paul Popa paulp@kainos.com",
     "Steve Dickinson steve.dickinson@defra.gov.uk",
     "Abidemi Adio abidemi.adio@defra.gov.uk",
-    "Simon Dunn simon.dunn1@defra.gov.uk"
+    "Simon Dunn simon.dunn1@defra.gov.uk",
+    "Callum Leighton callum.leighton@kainos.com"
   ],
   "license": "OGL-UK-3.0",
   "dependencies": {
