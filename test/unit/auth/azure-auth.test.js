@@ -17,13 +17,20 @@ const mockAcquireTokenSilent = jest.fn().mockImplementation(() => {
     account: mockAccount
   }
 })
+const mockRemoveAccount = jest.fn()
+const mockGetTokenCache = jest.fn().mockImplementation(() => {
+  return {
+    removeAccount: mockRemoveAccount
+  }
+})
 jest.mock('@azure/msal-node', () => {
   return {
     ConfidentialClientApplication: jest.fn().mockImplementation(() => {
       return {
         getAuthCodeUrl: mockGetAuthCodeUrl,
         acquireTokenByCode: mockAcquireTokenByCode,
-        acquireTokenSilent: mockAcquireTokenSilent
+        acquireTokenSilent: mockAcquireTokenSilent,
+        getTokenCache: mockGetTokenCache
       }
     }),
     LogLevel: {
@@ -113,7 +120,7 @@ describe('azure authentication', () => {
     expect(mockAcquireTokenSilent.mock.calls[0][0].forceRefresh).not.toBeTruthy()
   })
 
-  test('refresh call cookieAuth.set once', async () => {
+  test('refresh should call cookieAuth.set once', async () => {
     await azureAuth.refresh(mockAccount, mockCookieAuth)
     expect(mockCookieAuth.set).toHaveBeenCalledTimes(1)
   })
@@ -131,5 +138,15 @@ describe('azure authentication', () => {
   test('authenticate should return roles', async () => {
     const result = await azureAuth.refresh(mockAccount, mockCookieAuth)
     expect(result).toBe(mockRoles)
+  })
+
+  test('logout should call removeAccount once', async () => {
+    await azureAuth.logout(mockAccount)
+    expect(mockRemoveAccount).toHaveBeenCalledTimes(1)
+  })
+
+  test('logout should call removeAccount with account', async () => {
+    await azureAuth.logout(mockAccount)
+    expect(mockRemoveAccount).toHaveBeenCalledWith(mockAccount)
   })
 })
