@@ -21,9 +21,14 @@ describe('send message', () => {
     jest.clearAllMocks()
   })
 
-  test('calls send message once', async () => {
+  test('calls sendMessage once', async () => {
     await sendMessage(MOCK_MESSAGE_BODY, MOCK_TYPE, MOCK_CONFIG, MOCK_OPTIONS)
     expect(mockSendMessage).toHaveBeenCalledTimes(1)
+  })
+
+  test('calls closeConnection once', async () => {
+    await sendMessage(MOCK_MESSAGE_BODY, MOCK_TYPE, MOCK_CONFIG, MOCK_OPTIONS)
+    expect(mockCloseConnection).toHaveBeenCalledTimes(1)
   })
 
   test('calls send message with body', async () => {
