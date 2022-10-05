@@ -14,6 +14,7 @@ module.exports = {
     '<rootDir>/test-output/',
     '<rootDir>/test/',
     '<rootDir>/jest.config.js',
+    '<rootDir>/jest.setup.js',
     '<rootDir>/webpack.config.js',
     '<rootDir>/app/dist/',
     '<rootDir>/app/frontend/css/',
