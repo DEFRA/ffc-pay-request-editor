@@ -130,12 +130,12 @@ describe('azure authentication', () => {
     expect(mockCookieAuth.set.mock.calls[0][0].scope).toBe(mockRoles)
   })
 
-  test('authenticate should set account in cookieAuth', async () => {
+  test('refresh should set account in cookieAuth', async () => {
     await azureAuth.refresh(mockAccount, mockCookieAuth)
     expect(mockCookieAuth.set.mock.calls[0][0].account).toBe(mockAccount)
   })
 
-  test('authenticate should return roles', async () => {
+  test('refresh should return roles', async () => {
     const result = await azureAuth.refresh(mockAccount, mockCookieAuth)
     expect(result).toBe(mockRoles)
   })
