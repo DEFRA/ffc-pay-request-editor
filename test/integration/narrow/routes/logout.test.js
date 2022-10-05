@@ -1,5 +1,4 @@
 jest.mock('../../../../app/auth')
-const mockAuth = require('../../../../app/auth')
 const createServer = require('../../../../app/server')
 
 describe('logout test', () => {
