@@ -63,7 +63,7 @@ describe('Manual-ledger-check tests', () => {
       const options = {
         method,
         auth,
-        url: manualLedgerCheckUrl
+        url: `${manualLedgerCheckUrl}?paymentrequestid=${paymentRequest.paymentRequestId}`
       }
       const response = await server.inject(options)
       expect(response.request.response.source.template).toBe('404')
