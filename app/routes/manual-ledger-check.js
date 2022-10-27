@@ -99,7 +99,6 @@ module.exports = [{
         await saveCalculatedManualLedger(provisionalLedgerData)
         sessionHandler.clear(request, sessionKey)
       }
-
       const user = getUser(request)
       await updateManualLedgerUser(paymentRequestId, user)
       await updateQualityChecksStatus(paymentRequestId, PENDING)
