@@ -132,7 +132,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no scheme selected returns "Select a scheme" error message', async () => {
+  test('POST /capture-debt with no scheme selected returns "A scheme must be selected." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -141,7 +141,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Select a scheme')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('A scheme must be selected.')
   })
 
   test('POST /capture-debt with invalid scheme returns 400', async () => {
@@ -181,7 +181,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with invalid scheme returns "Select a scheme" error message', async () => {
+  test('POST /capture-debt with invalid scheme returns "The scheme must be one of the following: SFI, SFI Pilot, LNR, Vet Visits, Lump Sums." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -191,7 +191,7 @@ describe('capture-debt route', () => {
 
     const result = await server.inject(options)
     // TODO: add errorSummary length = 1
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Select a scheme')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The scheme must be one of the following: SFI, SFI Pilot, LNR, Vet Visits, Lump Sums.')
   })
 
   test('POST /capture-debt with no FRN returns 400', async () => {
@@ -231,7 +231,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no FRN returns "The FRN must be 10 digits" error message', async () => {
+  test('POST /capture-debt with no FRN returns "An FRN consisting of 10 numeric digits must be provided." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -240,7 +240,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('An FRN consisting of 10 numeric digits must be provided.')
   })
 
   test('POST /capture-debt with a nine digit FRN returns 400', async () => {
@@ -280,7 +280,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with a nine digit FRN returns "The FRN must be 10 digits" error message', async () => {
+  test('POST /capture-debt with a nine digit FRN returns "The FRN must consist of 10 numeric digits." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -289,7 +289,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must consist of 10 numeric digits.')
   })
 
   test('POST /capture-debt with an eleven digit FRN returns 400', async () => {
@@ -329,7 +329,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with an eleven digit FRN returns "The FRN must be 10 digits" error message', async () => {
+  test('POST /capture-debt with an eleven digit FRN returns "The FRN must consist of 10 numeric digits." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -338,7 +338,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must consist of 10 numeric digits.')
   })
 
   test('POST /capture-debt with alphanumeric characters in the FRN returns 400', async () => {
@@ -378,7 +378,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with alphanumeric characters in the FRN returns "The FRN must be 10 digits" error message', async () => {
+  test('POST /capture-debt with alphanumeric characters in the FRN returns "The FRN must consist of 10 numeric digits.s" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -387,7 +387,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must consist of 10 numeric digits.')
   })
 
   test('POST /capture-debt with no agreement number returns 400', async () => {
@@ -427,7 +427,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no agreement number returns "The agreement number is invalid" error message', async () => {
+  test('POST /capture-debt with no agreement number returns "The agreement number is invalid." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -436,7 +436,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number is invalid')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number is invalid.')
   })
 
   test('POST /capture-debt with non alphanumeric characters in the agreement number returns 400', async () => {
@@ -476,7 +476,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with non alphanumeric characters in the agreement number returns "The agreement number is invalid" error message', async () => {
+  test('POST /capture-debt with non alphanumeric characters in the agreement number returns "The agreement number must be a string consisting of alphanumeric characters and underscores." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -485,7 +485,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number is invalid')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number must be a string consisting of alphanumeric characters and underscores.')
   })
 
   test('POST /capture-debt with no net returns 400', async () => {
@@ -525,7 +525,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no net returns "The net value cannot be empty" error message', async () => {
+  test('POST /capture-debt with no net returns "The net value must be a number without commas" error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -534,7 +534,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The net value cannot be empty.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The net value must be a number without commas')
   })
 
   test('POST /capture-debt with a negative net returns 400', async () => {
@@ -770,7 +770,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no debt type selected returns "The type of debt cannot be empty." error message', async () => {
+  test('POST /capture-debt with no debt type selected returns "The type of debt must be either administrative or irregular." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -779,7 +779,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Select a type of debt')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The type of debt must be either administrative or irregular.')
   })
 
   test('POST /capture-debt with invalid debt type returns 400', async () => {
@@ -819,7 +819,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with invalid debt type returns "The type of debt can only be adm,irr." error message', async () => {
+  test('POST /capture-debt with invalid debt type returns "The type of debt must be either administrative or irregular." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -828,7 +828,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Select a type of debt')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The type of debt must be either administrative or irregular.')
   })
 
   test('POST /capture-debt with no debt day returns 400', async () => {
@@ -868,7 +868,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no debt day returns "The debt day cannot be empty." error message', async () => {
+  test('POST /capture-debt with no debt day returns "The debt day must be a number." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -877,7 +877,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt day cannot be empty.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt day must be a number')
   })
 
   test('POST /capture-debt with a negative debt day returns 400', async () => {
@@ -1113,7 +1113,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no debt month returns "The debt month cannot be empty." error message', async () => {
+  test('POST /capture-debt with no debt month returns "The debt month must be a number." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -1122,7 +1122,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt month cannot be empty.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt month must be a number.')
   })
 
   test('POST /capture-debt with a negative debt month returns 400', async () => {
@@ -1358,7 +1358,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no debt year returns "The debt year cannot be empty." error message', async () => {
+  test('POST /capture-debt with no debt year returns "The debt year must be a number." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -1367,7 +1367,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt year cannot be empty.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt year must be a number.')
   })
 
   test('POST /capture-debt with a negative debt year returns 400', async () => {
@@ -1671,7 +1671,7 @@ describe('capture-debt route', () => {
 
     const result = await server.inject(options)
     expect(result.statusCode).toBe(400)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Date must be valid and cannot be in the future')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Date must not be in the future.')
   })
 
   test('POST /capture-debt returns 400 when the date payload is in the future', async () => {
@@ -1691,7 +1691,7 @@ describe('capture-debt route', () => {
 
     const result = await server.inject(options)
     expect(result.statusCode).toBe(400)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Date must be valid and cannot be in the future')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Date must not be in the future.')
   })
 
   test('POST /capture-debt returns 400 when the date payload is an invalid leap year', async () => {
@@ -1711,7 +1711,7 @@ describe('capture-debt route', () => {
 
     const result = await server.inject(options)
     expect(result.statusCode).toBe(400)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Date must be valid and cannot be in the future')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Date must be in the format YYYY-MM-DD.')
   })
 
   test('POST /capture-debt returns 400 when the date payload is an invalid date', async () => {
@@ -1731,6 +1731,6 @@ describe('capture-debt route', () => {
 
     const result = await server.inject(options)
     expect(result.statusCode).toBe(400)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Date must be valid and cannot be in the future')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('Date must be in the format YYYY-MM-DD.')
   })
 })
