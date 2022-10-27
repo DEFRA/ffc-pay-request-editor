@@ -231,7 +231,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no FRN returns "An FRN consisting of 10 numeric digits must be provided." error message', async () => {
+  test('POST /capture-debt with no FRN returns "AThe FRN must be a number." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -240,7 +240,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('An FRN consisting of 10 numeric digits must be provided.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be a number.')
   })
 
   test('POST /capture-debt with a nine digit FRN returns 400', async () => {
@@ -280,7 +280,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with a nine digit FRN returns "The FRN must consist of 10 numeric digits." error message', async () => {
+  test('POST /capture-debt with a nine digit FRN returns "The FRN must be 10 digits." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -289,7 +289,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must consist of 10 numeric digits.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits.')
   })
 
   test('POST /capture-debt with an eleven digit FRN returns 400', async () => {
@@ -329,7 +329,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with an eleven digit FRN returns "The FRN must consist of 10 numeric digits." error message', async () => {
+  test('POST /capture-debt with an eleven digit FRN returns "The FRN must be 10 digits." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -338,7 +338,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must consist of 10 numeric digits.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be 10 digits.')
   })
 
   test('POST /capture-debt with alphanumeric characters in the FRN returns 400', async () => {
@@ -378,7 +378,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with alphanumeric characters in the FRN returns "The FRN must consist of 10 numeric digits.s" error message', async () => {
+  test('POST /capture-debt with alphanumeric characters in the FRN returns "The FRN must be a number." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -387,7 +387,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must consist of 10 numeric digits.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The FRN must be a number.')
   })
 
   test('POST /capture-debt with no agreement number returns 400', async () => {
