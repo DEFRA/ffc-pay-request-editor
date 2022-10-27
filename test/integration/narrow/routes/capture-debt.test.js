@@ -132,7 +132,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no scheme selected returns "A scheme must be selected." error message', async () => {
+  test('POST /capture-debt with no scheme selected returns "The scheme must be one of the following: SFI, SFI Pilot, LNR, Vet Visits, Lump Sums." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -141,7 +141,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('A scheme must be selected.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The scheme must be one of the following: SFI, SFI Pilot, LNR, Vet Visits, Lump Sums.')
   })
 
   test('POST /capture-debt with invalid scheme returns 400', async () => {
@@ -525,7 +525,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no net returns "The net value must be a number without commas" error message', async () => {
+  test('POST /capture-debt with no net returns "The net value must be a number without commas." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -534,7 +534,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The net value must be a number without commas')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The net value must be a number without commas.')
   })
 
   test('POST /capture-debt with a negative net returns 400', async () => {
@@ -877,7 +877,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt day must be a number')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The debt day must be a number.')
   })
 
   test('POST /capture-debt with a negative debt day returns 400', async () => {
