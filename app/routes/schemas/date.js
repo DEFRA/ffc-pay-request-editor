@@ -13,5 +13,3 @@ const dateValidation = (inputDate, arrivalDate = 'now') => {
 }
 
 module.exports = dateValidation
-
-// specific error messages, i.e. 'date must be in the format YYY-MM-DD' or 'date cannot be in the future'

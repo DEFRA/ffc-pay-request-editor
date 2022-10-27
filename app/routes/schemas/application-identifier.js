@@ -8,4 +8,3 @@ module.exports = {
       '*': 'The agreement number is invalid.'
     })
 }
-// more explicit error messages
