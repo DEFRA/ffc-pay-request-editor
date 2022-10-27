@@ -190,7 +190,6 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    // TODO: add errorSummary length = 1
     expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The scheme must be one of the following: SFI, SFI Pilot, LNR, Vet Visits, Lump Sums.')
   })
 
@@ -231,7 +230,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no FRN returns "AThe FRN must be a number." error message', async () => {
+  test('POST /capture-debt with no FRN returns "The FRN must be a number." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
