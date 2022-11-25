@@ -49,21 +49,16 @@ module.exports = {
       },
       {
         test: /\.(png|svg|jpg|gif|ico)$/,
-        use: {
-          loader: 'file-loader',
-          options: {
-            outputPath: 'images/',
-            name: '[name].[ext]'
-          }
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][ext]'
         }
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
-        use: {
-          loader: 'file-loader',
-          options: {
-            outputPath: 'fonts/'
-          }
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name].[fullhash].[ext]'
         }
       }
     ]
