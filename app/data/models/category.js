@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     freezeTableName: true,
     timestamps: false
   })
-  schedule.associate = function (models) {
+  schedule.associate = (models) => {
     schedule.belongsTo(models.paymentRequest, {
       foreignKey: 'categoryId',
       as: 'category'
