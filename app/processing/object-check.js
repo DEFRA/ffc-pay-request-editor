@@ -1,8 +1,8 @@
-function getObjectKey (obj, key, defaultResponse = '') {
+const getObjectKey = (obj, key, defaultResponse = '') => {
   return obj?.[String(key)] ?? defaultResponse
 }
 
-function getObjectKeyEquals (obj, key, value, defaultResponse = false) {
+const getObjectKeyEquals = (obj, key, value, defaultResponse = false) => {
   return obj?.[String(key)] === value ?? defaultResponse
 }
 

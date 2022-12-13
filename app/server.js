@@ -3,7 +3,7 @@ const config = require('./config')
 const messageService = require('./messaging')
 const catbox = config.useRedis ? require('@hapi/catbox-redis') : require('@hapi/catbox-memory')
 
-async function createServer () {
+const createServer = async () => {
   // Create the hapi server
   const server = hapi.server({
     port: config.port,

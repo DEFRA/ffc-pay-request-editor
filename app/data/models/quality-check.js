@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     freezeTableName: true,
     timestamps: false
   })
-  qualityCheck.associate = function (models) {
+  qualityCheck.associate = (models) => {
     qualityCheck.belongsTo(models.paymentRequest, {
       foreignKey: 'paymentRequestId',
       as: 'paymentRequest'
