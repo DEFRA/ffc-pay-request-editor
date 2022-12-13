@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     freezeTableName: true,
     timestamps: false
   })
-  manualLedgerPaymentRequest.associate = function (models) {
+  manualLedgerPaymentRequest.associate = (models) => {
     manualLedgerPaymentRequest.hasOne(models.paymentRequest, {
       foreignKey: 'paymentRequestId',
       sourceKey: 'ledgerPaymentRequestId',

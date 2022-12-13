@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     freezeTableName: true,
     timestamps: false
   })
-  scheme.associate = function (models) {
+  scheme.associate = (models) => {
     scheme.hasMany(models.paymentRequest, {
       foreignKey: 'schemeId',
       as: 'paymentRequests'
