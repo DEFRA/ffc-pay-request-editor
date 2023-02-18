@@ -32,8 +32,11 @@ container:
   manualLedgerSubscriptionAddress: ffc-pay-request-editor
   qcTopicAddress: ffc-pay-quality-check
   eventTopicAddress: ffc-pay-event
+  eventsTopicAddress: ffc-pay-events
   debtResponseTopicAddress: ffc-pay-debt-data-response
   cookiePassword: cookiecookiecookiecookiecookiecookie
+  useV1Events: true
+  useV2Events: true
 
 livenessProbe:
   path: /healthz

@@ -11,12 +11,14 @@ data:
   MANUALLEDGER_TOPIC_ADDRESS: {{ .Values.container.manualLedgerTopicAddress }}-{{ .Values.environmentCode }}
   QC_TOPIC_ADDRESS: {{ .Values.container.qcTopicAddress }}-{{ .Values.environmentCode }}
   EVENT_TOPIC_ADDRESS: {{ .Values.container.eventTopicAddress }}-{{ .Values.environmentCode }}
+  EVENTS_TOPIC_ADDRESS: {{ .Values.container.eventsTopicAddress }}-{{ .Values.environmentCode }}
   {{ else }}
   DEBT_TOPIC_ADDRESS: {{ quote .Values.container.debtTopicAddress }}
   DEBTRESPONSE_TOPIC_ADDRESS: {{ quote .Values.container.debtResponseTopicAddress }}
   MANUALLEDGER_TOPIC_ADDRESS: {{ quote .Values.container.manualLedgerTopicAddress }}
   QC_TOPIC_ADDRESS: {{ quote .Values.container.qcTopicAddress }}
   EVENT_TOPIC_ADDRESS: {{ quote .Values.container.eventTopicAddress }}
+  EVENTS_TOPIC_ADDRESS: {{ .Values.container.eventsTopicAddress }}
   {{- end }}
   DEBT_SUBSCRIPTION_ADDRESS: {{ quote .Values.container.debtSubscriptionAddress }}
   MANUALLEDGER_SUBSCRIPTION_ADDRESS: {{ quote .Values.container.manualLedgerSubscriptionAddress }}
@@ -31,4 +33,6 @@ data:
   {{- end }}
   AUTHENTICATION_ENABLED: {{ quote .Values.azureAppRegistration.enabled }}
   COOKIE_PASSWORD: {{ quote .Values.container.cookiePassword }}
+  USE_V1_EVENTS: {{ quote .Values.container.useV1Events }}
+  USE_V2_EVENTS: {{ quote .Values.container.useV2Events }}
 {{- end -}}
