@@ -1,7 +1,7 @@
 const raiseEvent = require('./raise-event')
 const getCorrelationId = require('../payment-request/get-correlation-id')
 const config = require('../config')
-const { getPaymentRequestByRequestId } = require('../payment-request')
+const { getPaymentRequestByRequestId } = require('../payment-request/get-payment-request')
 const { EventPublisher } = require('ffc-pay-event-publisher')
 
 const sendManualLedgerReviewEvent = async (paymentRequestId, user, status) => {
@@ -29,7 +29,7 @@ const sendV2ManualLedgerReviewEvent = async (paymentRequestId, user, status) => 
   const paymentRequest = await getPaymentRequestByRequestId(paymentRequestId)
   const event = {
     source: 'ffc-pay-request-editor',
-    type: `uk.gov.defra.ffc.pay.payment.ledger.quality-check.${status}`,
+    type: `uk.gov.defra.ffc.pay.payment.ledger.quality-check.${status.toLowerCase()}`,
     data: {
       qualityCheckedBy: user,
       status,

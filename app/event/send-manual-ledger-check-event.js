@@ -2,7 +2,7 @@ const raiseEvent = require('./raise-event')
 const getCorrelationId = require('../payment-request/get-correlation-id')
 const config = require('../config')
 const { EventPublisher } = require('ffc-pay-event-publisher')
-const { getPaymentRequestByRequestId } = require('../payment-request')
+const { getPaymentRequestByRequestId } = require('../payment-request/get-payment-request')
 
 const sendManualLedgerCheckEvent = async (paymentRequestId, user, provisionalLedgerData) => {
   if (config.useV1Events) {
