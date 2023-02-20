@@ -1,9 +1,9 @@
 const Joi = require('joi')
 
 module.exports = {
-  net: Joi.number().precision(2).greater(-1).less(1000000000).required()
+  net: Joi.number().positive().allow(0).less(1000000000).required()
     .messages({
-      'number.greater': 'The net value must be positive.',
+      'number.positive': 'The net value must be positive.',
       'number.less': 'The net value must be less than £1,000,000,000.',
       'number.unsafe': 'The net value must be less than £1,000,000,000.',
       'number.base': 'The net value must be a number without commas.',
