@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.22.1
+version: v1.25.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   SNYK-JS-ANSIREGEX-1583908:
@@ -12,4 +12,19 @@ ignore:
     - '@azure/identity > keytar > prebuild-install > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex':
         reason: No fix
         expires: '2022-06-26T08:05:00.776Z'
+  SNYK-JS-SEQUELIZE-3324090:
+    - '*':
+        reason: None Given
+        expires: 2023-03-22T12:57:44.127Z
+        created: 2023-02-20T12:57:44.131Z
+  SNYK-JS-SEQUELIZE-3324088:
+    - '*':
+        reason: None Given
+        expires: 2023-03-22T12:58:05.425Z
+        created: 2023-02-20T12:58:05.434Z
+  SNYK-JS-SEQUELIZE-3324089:
+    - '*':
+        reason: None Given
+        expires: 2023-03-22T12:58:10.048Z
+        created: 2023-02-20T12:58:10.055Z
 patch: {}
