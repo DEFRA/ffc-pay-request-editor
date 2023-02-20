@@ -582,14 +582,14 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The net value must be greater than £0.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The net value must be positive.')
   })
 
-  test('POST /capture-debt with net 0 returns 400', async () => {
+  test('POST /capture-debt with net negative returns 400', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: 0 },
+      payload: { ...VALID_PAYLOAD, net: -1 },
       auth
     }
 
@@ -597,11 +597,11 @@ describe('capture-debt route', () => {
     expect(result.statusCode).toBe(400)
   })
 
-  test('POST /capture-debt with net 0 returns capture-debt view', async () => {
+  test('POST /capture-debt with net negative returns capture-debt view', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: 0 },
+      payload: { ...VALID_PAYLOAD, net: -1 },
       auth
     }
 
@@ -610,11 +610,11 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.template).toBe('capture-debt')
   })
 
-  test('POST /capture-debt with net 0 returns all scheme names', async () => {
+  test('POST /capture-debt with net negative returns all scheme names', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: 0 },
+      payload: { ...VALID_PAYLOAD, net: -1 },
       auth
     }
 
@@ -622,16 +622,16 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with net 0 returns "The net value must be greater than £0." error message', async () => {
+  test('POST /capture-debt with net negative returns "The net value must be positive." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
-      payload: { ...VALID_PAYLOAD, net: 0 },
+      payload: { ...VALID_PAYLOAD, net: -1 },
       auth
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The net value must be greater than £0.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The net value must be positive.')
   })
 
   test('POST /capture-debt with net 1200000000 returns 400', async () => {
