@@ -13,8 +13,8 @@ describe('create message', () => {
     const paymentRequest = {
       frn: 1234567890
     }
-    const message = createMessage(paymentRequest, 'uk.gov.pay.processed')
-    expect(message.type).toEqual('uk.gov.pay.processed')
+    const message = createMessage(paymentRequest, 'uk.gov.defra.ffc.pay.processed')
+    expect(message.type).toEqual('uk.gov.defra.ffc.pay.processed')
   })
 
   test('sets source', () => {

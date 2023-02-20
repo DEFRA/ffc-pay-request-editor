@@ -34,7 +34,7 @@ const publishDebtPaymentRequests = async (debtSender) => {
 }
 
 const publishPaymentRequest = async (paymentRequest, debtSender) => {
-  const message = createMessage(paymentRequest, 'uk.gov.pay.debt.check')
+  const message = createMessage(paymentRequest, 'uk.gov.defra.ffc.pay.debt.check')
   await debtSender.sendMessage(message)
 
   console.log('Completed request sent:', util.inspect(message, false, null, true))

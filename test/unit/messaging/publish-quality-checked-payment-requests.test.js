@@ -38,7 +38,7 @@ describe('Publish quality checked payment requests', () => {
 
     message = {
       body: paymentRequest,
-      type: 'uk.gov.pay.quality.check',
+      type: 'uk.gov.defra.ffc.pay.quality.check',
       source: 'ffc-pay-request-editor'
     }
   })
