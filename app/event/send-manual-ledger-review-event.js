@@ -1,8 +1,11 @@
 const raiseEvent = require('./raise-event')
 const getCorrelationId = require('../payment-request/get-correlation-id')
 const config = require('../config')
+const messageConfig = require('../config/mq-config')
 const { getPaymentRequestByRequestId } = require('../payment-request/get-payment-request')
 const { EventPublisher } = require('ffc-pay-event-publisher')
+const { SOURCE } = require('../constants/source')
+const { LEDGER_ASSIGNMENT_QUALITY_CHECK } = require('../constants/events')
 
 const sendManualLedgerReviewEvent = async (paymentRequestId, user, status) => {
   if (config.useV1Events) {
@@ -28,15 +31,15 @@ const sendV1ManualLedgerReviewEvent = async (paymentRequestId, user, status) => 
 const sendV2ManualLedgerReviewEvent = async (paymentRequestId, user, status) => {
   const paymentRequest = await getPaymentRequestByRequestId(paymentRequestId)
   const event = {
-    source: 'ffc-pay-request-editor',
-    type: `uk.gov.defra.ffc.pay.payment.ledger.quality-check.${status.toLowerCase()}`,
+    source: SOURCE,
+    type: `${LEDGER_ASSIGNMENT_QUALITY_CHECK}${status.toLowerCase()}`,
     data: {
       qualityCheckedBy: user,
       status,
       ...paymentRequest
     }
   }
-  const eventPublisher = new EventPublisher(config.eventsTopic)
+  const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
   await eventPublisher.publishEvent(event)
 }
 

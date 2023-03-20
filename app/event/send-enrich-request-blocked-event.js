@@ -3,6 +3,8 @@ const getCorrelationId = require('../payment-request/get-correlation-id')
 const config = require('../config')
 const messageConfig = require('../config/mq-config')
 const { EventPublisher } = require('ffc-pay-event-publisher')
+const { SOURCE } = require('../constants/source')
+const { PAYMENT_REQUEST_BLOCKED } = require('../constants/events')
 
 const sendEnrichRequestBlockedEvent = async (paymentRequest) => {
   if (config.useV1Events) {
@@ -30,8 +32,8 @@ const sendV1EnrichRequestBlockedEvent = async (paymentRequest) => {
 
 const sendV2EnrichRequestBlockedEvent = async (paymentRequest) => {
   const event = {
-    source: 'ffc-pay-request-editor',
-    type: 'uk.gov.defra.ffc.pay.warning.payment.debt.missing',
+    source: SOURCE,
+    type: PAYMENT_REQUEST_BLOCKED,
     data: {
       message: 'Payment request does not have debt data to attach',
       ...paymentRequest

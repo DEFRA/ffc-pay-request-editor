@@ -1,8 +1,11 @@
 const raiseEvent = require('./raise-event')
 const getCorrelationId = require('../payment-request/get-correlation-id')
 const config = require('../config')
+const messageConfig = require('../config/mq-config')
 const { EventPublisher } = require('ffc-pay-event-publisher')
 const { getPaymentRequestByRequestId } = require('../payment-request/get-payment-request')
+const { SOURCE } = require('../constants/source')
+const { LEDGER_ASSIGNMENT_REVIEWED } = require('../constants/events')
 
 const sendManualLedgerCheckEvent = async (paymentRequestId, user, provisionalLedgerData) => {
   if (config.useV1Events) {
@@ -28,15 +31,15 @@ const sendV1ManualLedgerCheckEvent = async (paymentRequestId, user, provisionalL
 const sendV2ManualLedgerCheckEvent = async (paymentRequestId, user, provisionalLedgerData) => {
   const paymentRequest = await getPaymentRequestByRequestId(paymentRequestId)
   const event = {
-    source: 'ffc-pay-request-editor',
-    type: 'uk.gov.defra.ffc.pay.payment.ledger.assigned',
+    source: SOURCE,
+    type: LEDGER_ASSIGNMENT_REVIEWED,
     data: {
       assignedBy: user,
       ...provisionalLedgerData,
       ...paymentRequest
     }
   }
-  const eventPublisher = new EventPublisher(config.eventsTopic)
+  const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
   await eventPublisher.publishEvent(event)
 }
 

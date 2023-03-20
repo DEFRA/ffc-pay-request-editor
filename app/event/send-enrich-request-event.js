@@ -1,7 +1,10 @@
 const raiseEvent = require('./raise-event')
 const getCorrelationId = require('../payment-request/get-correlation-id')
 const config = require('../config')
+const messageConfig = require('../config/mq-config')
 const { EventPublisher } = require('ffc-pay-event-publisher')
+const { SOURCE } = require('../constants/source')
+const { PAYMENT_REQUEST_ENRICHED } = require('../constants/events')
 
 const sendEnrichRequestEvent = async (paymentRequest, user) => {
   if (config.useV1Events) {
@@ -27,14 +30,14 @@ const sendV1EnrichRequestEvent = async (paymentRequest, user) => {
 
 const sendV2EnrichRequestEvent = async (paymentRequest, user) => {
   const event = {
-    source: 'ffc-pay-request-editor',
-    type: 'uk.gov.defra.ffc.pay.payment.debt.attached',
+    source: SOURCE,
+    type: PAYMENT_REQUEST_ENRICHED,
     data: {
       attachedBy: user,
       ...paymentRequest
     }
   }
-  const eventPublisher = new EventPublisher(config.eventsTopic)
+  const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
   await eventPublisher.publishEvent(event)
 }
 
