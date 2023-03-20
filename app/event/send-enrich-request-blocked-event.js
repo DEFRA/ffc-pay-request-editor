@@ -1,6 +1,7 @@
 const raiseEvent = require('./raise-event')
 const getCorrelationId = require('../payment-request/get-correlation-id')
 const config = require('../config')
+const messageConfig = require('../config/mq-config')
 const { EventPublisher } = require('ffc-pay-event-publisher')
 
 const sendEnrichRequestBlockedEvent = async (paymentRequest) => {
@@ -36,7 +37,7 @@ const sendV2EnrichRequestBlockedEvent = async (paymentRequest) => {
       ...paymentRequest
     }
   }
-  const eventPublisher = new EventPublisher(config.eventsTopic)
+  const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
   await eventPublisher.publishEvent(event)
 }
 

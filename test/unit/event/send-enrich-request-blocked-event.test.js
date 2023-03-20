@@ -1,16 +1,58 @@
-jest.mock('../../../app/event/raise-event')
-const raiseEvent = require('../../../app/event/raise-event')
+
+const mockSendEvent = jest.fn()
+const mockPublishEvent = jest.fn()
+
+const MockPublishEvent = jest.fn().mockImplementation(() => {
+  return {
+    sendEvent: mockSendEvent
+  }
+})
+
+const MockEventPublisher = jest.fn().mockImplementation(() => {
+  return {
+    publishEvent: mockPublishEvent
+  }
+})
+
+jest.mock('ffc-pay-event-publisher', () => {
+  return {
+    PublishEvent: MockPublishEvent,
+    EventPublisher: MockEventPublisher
+  }
+})
+jest.mock('../../../app/config')
+const config = require('../../../app/config')
+
+jest.mock('../../../app/config/mq-config')
+const messageConfig = require('../../../app/config/mq-config')
 
 jest.mock('../../../app/payment-request/get-correlation-id')
 const getCorrelationId = require('../../../app/payment-request/get-correlation-id')
 
+jest.mock('uuid')
+const { v4: uuidv4 } = require('uuid')
+
+const { SOURCE } = require('../../../app/constants/source')
+const { PAYMENT_REQUEST_BLOCKED } = require('../../../app/constants/events')
+
 const sendEnrichRequestBlockedEvent = require('../../../app/event/send-enrich-request-blocked-event')
+
+const error = {
+  message: 'Payment request does not have debt data to attach'
+}
 
 let paymentRequest
 let event
 
-describe('Payment requests requiring debt data with none to attach', () => {
+describe('V1 send enrich request blocked event for payment request requiring debt data', () => {
   beforeEach(async () => {
+    uuidv4.mockImplementation(() => { '70cb0f07-e0cf-449c-86e8-0344f2c6cc6c' })
+
+    config.useV1Events = true
+    config.useV2Events = true
+    messageConfig.eventTopic = 'v1-events'
+    messageConfig.eventsTopic = 'v2-events'
+
     paymentRequest = {
       paymentRequestId: 1
     }
@@ -23,10 +65,27 @@ describe('Payment requests requiring debt data with none to attach', () => {
   })
 
   afterEach(async () => {
-    jest.resetAllMocks()
+    jest.clearAllMocks()
   })
 
-  test('should call getCorrelationId when a paymentRequest with a valid paymentRequestId is received', async () => {
+  test('when V1 events enabled should call mockSendEvent when a paymentRequestis received', async () => {
+    config.useV1Events = true
+    await sendEnrichRequestBlockedEvent(paymentRequest)
+    expect(mockSendEvent).toHaveBeenCalled()
+  })
+
+  test('when V1 events disabled should call mockSendEvent when a paymentRequestis received', async () => {
+    config.useV1Events = false
+    await sendEnrichRequestBlockedEvent(paymentRequest)
+    expect(mockSendEvent).not.toHaveBeenCalled()
+  })
+
+  test('should send event to V1 topic', async () => {
+    await sendEnrichRequestBlockedEvent(paymentRequest)
+    expect(MockPublishEvent.mock.calls[0][0]).toBe(messageConfig.eventTopic)
+  })
+
+  test('should call uuidv4 when a paymentRequest is received', async () => {
     await sendEnrichRequestBlockedEvent(paymentRequest)
     expect(getCorrelationId).toHaveBeenCalled()
   })
@@ -42,57 +101,66 @@ describe('Payment requests requiring debt data with none to attach', () => {
     expect(getCorrelationId).not.toHaveBeenCalled()
   })
 
-  test('should call raiseEvent when a valid paymentRequest is received', async () => {
+  test('should raise event with batch-processing-error event name', async () => {
     await sendEnrichRequestBlockedEvent(paymentRequest)
-    expect(raiseEvent).toHaveBeenCalled()
+    expect(mockSendEvent.mock.calls[0][0].name).toBe(event.name)
   })
 
-  test('should call raiseEvent with event including correlationId when a paymentRequest with a valid paymentRequestId is received and when getCorrelationId returns a GUID', async () => {
-    getCorrelationId.mockImplementation(() => '9e016c50-046b-4597-b79a-ebe4f0bf8505')
-    const correlationId = getCorrelationId()
-    event = {
-      ...event,
-      id: correlationId,
-      data: { paymentRequest }
-    }
-
+  test('should raise event with error status', async () => {
     await sendEnrichRequestBlockedEvent(paymentRequest)
-    expect(raiseEvent).toHaveBeenCalledWith(event)
+    expect(mockSendEvent.mock.calls[0][0].properties.status).toBe('error')
   })
 
-  test('should call raiseEvent with event including paymentRequestId when a paymentRequest with a valid paymentRequestId is received and when getCorrelationId returns an empty string', async () => {
-    getCorrelationId.mockImplementation(() => '')
-    event = {
-      ...event,
-      id: paymentRequest.paymentRequestId,
-      data: { paymentRequest }
-    }
-
+  test('should raise error event type', async () => {
     await sendEnrichRequestBlockedEvent(paymentRequest)
-    expect(raiseEvent).toHaveBeenCalledWith(event)
+    expect(mockSendEvent.mock.calls[0][0].properties.action.type).toBe(event.type)
   })
 
-  test('should call raiseEvent with event including paymentRequestId when a paymentRequest with a valid paymentRequestId is received and when getCorrelationId returns undefined', async () => {
-    getCorrelationId.mockImplementation(() => undefined)
-    event = {
-      ...event,
-      id: paymentRequest.paymentRequestId,
-      data: { paymentRequest }
-    }
-
+  test('should include error message in event', async () => {
     await sendEnrichRequestBlockedEvent(paymentRequest)
-    expect(raiseEvent).toHaveBeenCalledWith(event)
+    expect(mockSendEvent.mock.calls[0][0].properties.action.message).toBe(event.message)
   })
 
-  test('should not call raiseEvent when a paymentRequest with an undefined paymentRequestId is received', async () => {
-    paymentRequest.paymentRequestId = undefined
+  test('should throw error if no error provided', async () => {
+    await expect(() => sendEnrichRequestBlockedEvent(paymentRequest)).rejects.toThrow()
+  })
+})
+
+describe('V2 send enrich request blocked event for payment request requiring debt data', () => {
+  test('send V2 events when v2 events enabled ', async () => {
+    config.useV2Events = true
     await sendEnrichRequestBlockedEvent(paymentRequest)
-    expect(raiseEvent).not.toHaveBeenCalled()
+    expect(mockPublishEvent).toHaveBeenCalled()
   })
 
-  test('should not call raiseEvent when a paymentRequest with an empty string paymentRequestId is received', async () => {
-    paymentRequest.paymentRequestId = ''
+  test('should not send V2 events when v2 events disabled ', async () => {
+    config.useV2Events = false
     await sendEnrichRequestBlockedEvent(paymentRequest)
-    expect(raiseEvent).not.toHaveBeenCalled()
+    expect(mockPublishEvent).not.toHaveBeenCalled()
+  })
+
+  test('should send event to V2 topic', async () => {
+    await sendEnrichRequestBlockedEvent(paymentRequest)
+    expect(MockEventPublisher.mock.calls[0][0]).toBe(messageConfig.eventsTopic)
+  })
+
+  test('should raise an event with batch-processor source', async () => {
+    await sendEnrichRequestBlockedEvent(paymentRequest)
+    expect(mockPublishEvent.mock.calls[0][0].source).toBe(SOURCE)
+  })
+
+  test('should raise an event with batch rejected event', async () => {
+    await sendEnrichRequestBlockedEvent(paymentRequest)
+    expect(mockPublishEvent.mock.calls[0][0].type).toBe(PAYMENT_REQUEST_BLOCKED)
+  })
+
+  test('should include error message in the event data', async () => {
+    await sendEnrichRequestBlockedEvent(paymentRequest)
+    expect(mockPublishEvent.mock.calls[0][0].data.message).toBe(error.message)
+  })
+
+  test('should include payment request in the event data', async () => {
+    await sendEnrichRequestBlockedEvent(paymentRequest)
+    expect(mockPublishEvent.mock.calls[0][0].data.paymentRequestId).toBe(paymentRequest.paymentRequestId)
   })
 })
