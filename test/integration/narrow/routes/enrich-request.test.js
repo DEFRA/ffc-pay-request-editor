@@ -1,6 +1,25 @@
 const { enrichment } = require('../../../../app/auth/permissions')
 const db = require('../../../../app/data')
 
+const mockSendEvent = jest.fn()
+const mockPublishEvent = jest.fn()
+const MockPublishEvent = jest.fn().mockImplementation(() => {
+  return {
+    sendEvent: mockSendEvent
+  }
+})
+const MockEventPublisher = jest.fn().mockImplementation(() => {
+  return {
+    publishEvent: mockPublishEvent
+  }
+})
+jest.mock('ffc-pay-event-publisher', () => {
+  return {
+    PublishEvent: MockPublishEvent,
+    EventPublisher: MockEventPublisher
+  }
+})
+
 const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
 const { ADMINISTRATIVE } = require('../../../../app/debt-types')
 const { PENDING, NOT_READY } = require('../../../../app/quality-check/statuses')

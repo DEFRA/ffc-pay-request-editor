@@ -1,6 +1,25 @@
 const { ledger } = require('../../../../app/auth/permissions')
 const { PENDING, FAILED, NOT_READY } = require('../../../../app/quality-check/statuses')
 
+const mockSendEvent = jest.fn()
+const mockPublishEvent = jest.fn()
+const MockPublishEvent = jest.fn().mockImplementation(() => {
+  return {
+    sendEvent: mockSendEvent
+  }
+})
+const MockEventPublisher = jest.fn().mockImplementation(() => {
+  return {
+    publishEvent: mockPublishEvent
+  }
+})
+jest.mock('ffc-pay-event-publisher', () => {
+  return {
+    PublishEvent: MockPublishEvent,
+    EventPublisher: MockEventPublisher
+  }
+})
+
 describe('Manual-ledger-review tests', () => {
   jest.mock('ffc-messaging')
   jest.mock('../../../../app/plugins/crumb')

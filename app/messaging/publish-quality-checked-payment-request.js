@@ -20,7 +20,7 @@ const publishQualityCheckedPaymentRequests = async (qualityCheckSender) => {
 }
 
 const publishPaymentRequest = async (paymentRequest, qualityCheckSender) => {
-  const message = createMessage(paymentRequest, 'uk.gov.pay.quality.check')
+  const message = createMessage(paymentRequest, 'uk.gov.defra.ffc.pay.quality.check')
   await qualityCheckSender.sendMessage(message)
 
   console.log('Completed request sent:', util.inspect(message, false, null, true))

@@ -38,7 +38,8 @@ const getPaymentRequestByInvoiceNumberAndRequestId = async (invoiceNumber, payme
     where: {
       invoiceNumber,
       paymentRequestId
-    }
+    },
+    raw: true
   })
 }
 
@@ -56,7 +57,8 @@ const getPaymentRequestAwaitingEnrichmentWithNetValue = async (schemeId, frn, ag
       agreementNumber,
       netValue,
       categoryId
-    }
+    },
+    raw: true
   })
 }
 
@@ -74,7 +76,8 @@ const getPaymentRequestAwaitingEnrichmentWithValue = async (schemeId, frn, agree
       agreementNumber,
       value,
       categoryId
-    }
+    },
+    raw: true
   })
 }
 
@@ -82,7 +85,8 @@ const getPaymentRequestByRequestId = async (paymentRequestId) => {
   return db.paymentRequest.findOne({
     where: {
       paymentRequestId
-    }
+    },
+    raw: true
   })
 }
 

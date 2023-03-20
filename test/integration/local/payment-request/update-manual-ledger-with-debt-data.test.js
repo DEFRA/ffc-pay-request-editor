@@ -1,3 +1,26 @@
+
+const mockSendEvent = jest.fn()
+const mockPublishEvent = jest.fn()
+
+const MockPublishEvent = jest.fn().mockImplementation(() => {
+  return {
+    sendEvent: mockSendEvent
+  }
+})
+
+const MockEventPublisher = jest.fn().mockImplementation(() => {
+  return {
+    publishEvent: mockPublishEvent
+  }
+})
+
+jest.mock('ffc-pay-event-publisher', () => {
+  return {
+    PublishEvent: MockPublishEvent,
+    EventPublisher: MockEventPublisher
+  }
+})
+
 const db = require('../../../../app/data')
 const { updateManualLedgerWithDebtData, attachDebtToManualLedger } = require('../../../../app/manual-ledger')
 const { AR, AP } = require('../../../../app/processing/ledger/ledgers')
