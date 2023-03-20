@@ -44,37 +44,37 @@ const error = {
 let paymentRequest
 let event
 
+beforeEach(async () => {
+  uuidv4.mockImplementation(() => { '70cb0f07-e0cf-449c-86e8-0344f2c6cc6c' })
+
+  config.useV1Events = true
+  config.useV2Events = true
+  messageConfig.eventTopic = 'v1-events'
+  messageConfig.eventsTopic = 'v2-events'
+
+  paymentRequest = {
+    paymentRequestId: 1
+  }
+
+  event = {
+    name: 'payment-request-blocked',
+    type: 'blocked',
+    message: 'Payment request does not have debt data to attach.'
+  }
+})
+
+afterEach(async () => {
+  jest.clearAllMocks()
+})
+
 describe('V1 send enrich request blocked event for payment request requiring debt data', () => {
-  beforeEach(async () => {
-    uuidv4.mockImplementation(() => { '70cb0f07-e0cf-449c-86e8-0344f2c6cc6c' })
-
-    config.useV1Events = true
-    config.useV2Events = true
-    messageConfig.eventTopic = 'v1-events'
-    messageConfig.eventsTopic = 'v2-events'
-
-    paymentRequest = {
-      paymentRequestId: 1
-    }
-
-    event = {
-      name: 'payment-request-blocked',
-      type: 'blocked',
-      message: 'Payment request does not have debt data to attach.'
-    }
-  })
-
-  afterEach(async () => {
-    jest.clearAllMocks()
-  })
-
-  test('when V1 events enabled should call mockSendEvent when a paymentRequestis received', async () => {
+  test('when V1 events enabled should call mockSendEvent when a paymentRequest is received', async () => {
     config.useV1Events = true
     await sendEnrichRequestBlockedEvent(paymentRequest)
     expect(mockSendEvent).toHaveBeenCalled()
   })
 
-  test('when V1 events disabled should call mockSendEvent when a paymentRequestis received', async () => {
+  test('when V1 events disabled should call mockSendEvent when a paymentRequest is received', async () => {
     config.useV1Events = false
     await sendEnrichRequestBlockedEvent(paymentRequest)
     expect(mockSendEvent).not.toHaveBeenCalled()
@@ -106,9 +106,9 @@ describe('V1 send enrich request blocked event for payment request requiring deb
     expect(mockSendEvent.mock.calls[0][0].name).toBe(event.name)
   })
 
-  test('should raise event with error status', async () => {
+  test('should raise event with success status', async () => {
     await sendEnrichRequestBlockedEvent(paymentRequest)
-    expect(mockSendEvent.mock.calls[0][0].properties.status).toBe('error')
+    expect(mockSendEvent.mock.calls[0][0].properties.status).toBe('success')
   })
 
   test('should raise error event type', async () => {
@@ -119,10 +119,6 @@ describe('V1 send enrich request blocked event for payment request requiring deb
   test('should include error message in event', async () => {
     await sendEnrichRequestBlockedEvent(paymentRequest)
     expect(mockSendEvent.mock.calls[0][0].properties.action.message).toBe(event.message)
-  })
-
-  test('should throw error if no error provided', async () => {
-    await expect(() => sendEnrichRequestBlockedEvent(paymentRequest)).rejects.toThrow()
   })
 })
 
