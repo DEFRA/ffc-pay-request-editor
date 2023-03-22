@@ -12,7 +12,7 @@ describe('Capture test', () => {
   let server
   const url = '/capture'
 
-  const { ADMINISTRATIVE, IRREGULAR } = require('../../../../app/debt-types')
+  const { ADMINISTRATIVE, IRREGULAR } = require('../../../../app/constants/debt-types')
 
   const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
 

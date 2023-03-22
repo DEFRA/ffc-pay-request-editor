@@ -42,7 +42,7 @@ describe('Get quality checks test', () => {
 
     qualityCheck = {
       paymentRequestId: 1,
-      checkedDate: '2021-08-15',
+      checkedDate: '2015-08-15',
       checkedBy: 'Mr T',
       status: PENDING
     }

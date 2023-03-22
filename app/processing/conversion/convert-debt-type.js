@@ -3,7 +3,7 @@ const {
   ADMINISTRATIVE,
   ADMINISTRATIVE_TEXT,
   IRREGULAR_TEXT
-} = require('../../debt-types')
+} = require('../../constants/debt-types')
 
 const convertDebtIdToText = (debtId) => {
   if (DEBT_IDS.some(x => x === debtId)) {

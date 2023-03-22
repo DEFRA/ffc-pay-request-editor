@@ -24,7 +24,7 @@ describe(' save-payment-and-invoice-lines test', () => {
       marketingYear: 2022,
       currency: 'GBP',
       schedule: 'M12',
-      dueDate: '2021-08-15',
+      dueDate: '2015-08-15',
       value: 15000,
       invoiceLines: [
         {

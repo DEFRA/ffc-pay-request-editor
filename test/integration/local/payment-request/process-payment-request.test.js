@@ -39,7 +39,7 @@ describe('process payment requests', () => {
       marketingYear: 2022,
       currency: 'GBP',
       schedule: 'M12',
-      dueDate: '2021-08-15',
+      dueDate: '2015-08-15',
       value: 15000,
       invoiceLines: [
         {
@@ -79,7 +79,7 @@ describe('process payment requests', () => {
     expect(parseInt(paymentRequestRow[0].frn)).toBe(1234567890)
     expect(parseInt(paymentRequestRow[0].sbi)).toBe(123456789)
     expect(paymentRequestRow[0].currency).toBe('GBP')
-    expect(paymentRequestRow[0].dueDate).toBe('2021-08-15')
+    expect(paymentRequestRow[0].dueDate).toBe('2015-08-15')
     expect(parseFloat(paymentRequestRow[0].value)).toBe(15000)
   })
 

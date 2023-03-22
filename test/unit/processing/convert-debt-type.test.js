@@ -3,7 +3,7 @@ const {
   ADMINISTRATIVE_TEXT,
   IRREGULAR,
   IRREGULAR_TEXT
-} = require('../../../app/debt-types')
+} = require('../../../app/constants/debt-types')
 const { convertDebtIdToText } = require('../../../app/processing/conversion')
 
 describe('Debt type convertor', () => {

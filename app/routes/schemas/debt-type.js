@@ -2,7 +2,7 @@ const Joi = require('joi')
 const {
   ADMINISTRATIVE,
   IRREGULAR
-} = require('../../debt-types')
+} = require('../../constants/debt-types')
 
 module.exports = {
   debtType: Joi.string().valid(ADMINISTRATIVE, IRREGULAR).required()

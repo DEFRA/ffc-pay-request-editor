@@ -27,7 +27,7 @@ const { AR, AP } = require('../../../../app/processing/ledger/ledgers')
 const { PENDING } = require('../../../../app/quality-check/statuses')
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
 const { SCHEME_NAME_SFI_PILOT } = require('../../../data/scheme')
-const { ADMINISTRATIVE } = require('../../../../app/debt-types')
+const { ADMINISTRATIVE } = require('../../../../app/constants/debt-types')
 const { convertDateToDDMMYYYY } = require('../../../../app/processing/conversion')
 
 let scheme
@@ -70,7 +70,7 @@ describe('process payment requests', () => {
       marketingYear: 2022,
       currency: 'GBP',
       schedule: 'M12',
-      dueDate: '2021-08-15',
+      dueDate: '2015-08-15',
       value: 2000,
       netValue: 3000,
       categoryId: 2,
