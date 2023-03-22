@@ -160,7 +160,7 @@ describe('split ledger test', () => {
     const paymentRequest = {
       ledger: AP,
       value: 1000,
-      schemeId: CS,
+      schemeId: FDMR,
       agreementNumber: '12345678',
       invoiceNumber: 'F12345678C123456V002',
       paymentRequestNumber: 2,
