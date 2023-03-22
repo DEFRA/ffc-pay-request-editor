@@ -1,10 +1,13 @@
-const { SFI, SFI_PILOT, LUMP_SUMS } = require('../../constants/schemes')
+const { SFI, SFI_PILOT, LUMP_SUMS, CS, BPS, FDMR } = require('../../constants/schemes')
 
 const createSplitInvoiceNumber = (invoiceNumber, splitId, schemeId) => {
   switch (schemeId) {
     case SFI:
     case SFI_PILOT:
     case LUMP_SUMS:
+    case CS:
+    case BPS:
+    case FDMR:
       return createSitiAgriInvoiceNumber(invoiceNumber, splitId)
     default:
       return createDefaultInvoiceNumber(invoiceNumber, splitId)
