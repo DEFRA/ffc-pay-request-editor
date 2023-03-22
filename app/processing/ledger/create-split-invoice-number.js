@@ -1,4 +1,4 @@
-const { SFI, SFI_PILOT, LUMP_SUMS } = require('../../schemes')
+const { SFI, SFI_PILOT, LUMP_SUMS } = require('../../constants/schemes')
 
 const createSplitInvoiceNumber = (invoiceNumber, splitId, schemeId) => {
   switch (schemeId) {

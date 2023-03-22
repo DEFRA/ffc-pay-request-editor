@@ -21,7 +21,7 @@ jest.mock('ffc-pay-event-publisher', () => {
 })
 
 const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
-const { ADMINISTRATIVE } = require('../../../../app/debt-types')
+const { ADMINISTRATIVE } = require('../../../../app/constants/debt-types')
 const { PENDING, NOT_READY } = require('../../../../app/quality-check/statuses')
 const { AR, AP } = require('../../../../app/processing/ledger/ledgers')
 const resetData = async () => {
@@ -57,9 +57,9 @@ describe('Enrich request test', () => {
     marketingYear: 2022,
     currency: 'GBP',
     schedule: 'M12',
-    dueDate: '2021-10-25',
+    dueDate: '2015-10-25',
     value: 15000,
-    received: '2021-10-25',
+    received: '2015-10-25',
     invoiceLines: [
       {
         schemeCode: '80001',
@@ -246,7 +246,7 @@ describe('Enrich request test', () => {
         payload: {
           day: 16,
           month: 10,
-          year: 2021,
+          year: 2015,
           'debt-type': ADMINISTRATIVE,
           'invoice-number': 'S00000001SFIP000001V001',
           'payment-request-id': 1
@@ -328,7 +328,7 @@ describe('Enrich request test', () => {
         payload: {
           day: 1,
           month: 9,
-          year: 2021,
+          year: 2015,
           'debt-type': ADMINISTRATIVE,
           'invoice-number': 'S00000001SFIP000001V001',
           'payment-request-id': 1
@@ -358,7 +358,7 @@ describe('Enrich request test', () => {
       expect(debtDataRow[0].schemeId).toBe(SCHEME_ID_SFI)
       expect(parseInt(debtDataRow[0].frn)).toBe(1234567890)
       expect(debtDataRow[0].debtType).toBe(ADMINISTRATIVE)
-      expect(debtDataRow[0].recoveryDate).toBe('01/09/2021')
+      expect(debtDataRow[0].recoveryDate).toBe('01/09/2015')
 
       expect(response.request.response.statusCode).toBe(302)
       expect(response.headers.location).toBe('/enrich')
@@ -372,7 +372,7 @@ describe('Enrich request test', () => {
         payload: {
           day: 12,
           month: 10,
-          year: 2021,
+          year: 2015,
           'debt-type': ADMINISTRATIVE,
           'invoice-number': 'S00000001SFIP000001V001',
           'payment-request-id': 1
@@ -403,7 +403,7 @@ describe('Enrich request test', () => {
       expect(debtDataRow[0].schemeId).toBe(1)
       expect(parseInt(debtDataRow[0].frn)).toBe(1234567890)
       expect(debtDataRow[0].debtType).toBe(ADMINISTRATIVE)
-      expect(debtDataRow[0].recoveryDate).toBe('12/10/2021')
+      expect(debtDataRow[0].recoveryDate).toBe('12/10/2015')
 
       expect(response.request.response.statusCode).toBe(302)
       expect(response.headers.location).toBe('/enrich')

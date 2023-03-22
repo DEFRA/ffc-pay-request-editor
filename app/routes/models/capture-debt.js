@@ -8,7 +8,7 @@ const {
   ADMINISTRATIVE_TEXT,
   IRREGULAR,
   IRREGULAR_TEXT
-} = require('../../debt-types')
+} = require('../../constants/debt-types')
 
 function ViewModel (schemes, payload, error) {
   const errorMessages = {}
@@ -131,7 +131,7 @@ function ViewModel (schemes, payload, error) {
       }
     },
     hint: {
-      text: 'For example, 27 3 2022. The debt must be from 2021 onwards'
+      text: 'For example, 27 3 2022. The debt must be from 2015 onwards'
     },
     items: [
       {

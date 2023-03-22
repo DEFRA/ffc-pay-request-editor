@@ -3,5 +3,7 @@ module.exports = {
   SFI_PILOT: 2,
   LUMP_SUMS: 3,
   VET_VISITS: 4,
-  LNR: 5
+  CS: 5,
+  BPS: 6,
+  FDMR: 7
 }

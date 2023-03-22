@@ -1,4 +1,4 @@
-const { SFI, SFI_PILOT, LUMP_SUMS, VET_VISITS, LNR } = require('../../../app/schemes')
+const { SFI, SFI_PILOT, LUMP_SUMS, VET_VISITS, LNR } = require('../../../app/constants/schemes')
 
 describe('split ledger test', () => {
   const splitToLedger = require('../../../app/processing/ledger/split-to-ledger')

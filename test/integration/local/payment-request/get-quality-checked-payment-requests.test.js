@@ -3,7 +3,7 @@ const { getQualityCheckedPaymentRequests } = require('../../../../app/quality-ch
 
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
 const { SCHEME_NAME_SFI_PILOT } = require('../../../data/scheme')
-const { IRREGULAR } = require('../../../../app/debt-types')
+const { IRREGULAR } = require('../../../../app/constants/debt-types')
 const { PASSED } = require('../../../../app/quality-check/statuses')
 
 const resetData = async () => {
@@ -62,7 +62,7 @@ describe('Get released payment request test', () => {
     debtData = {
       paymentRequestId: 1,
       debtType: IRREGULAR,
-      recoveryDate: '10/11/2021'
+      recoveryDate: '10/11/2015'
     }
 
     await resetData()
