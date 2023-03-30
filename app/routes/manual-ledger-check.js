@@ -9,6 +9,7 @@ const getUser = require('../auth/get-user')
 const { PENDING } = require('../quality-check/statuses')
 const sessionKey = 'provisionalLedgerData'
 const { sendManualLedgerCheckEvent } = require('../event')
+const calculationSchema = require('./schemas/manual-ledger-calculation')
 
 module.exports = [{
   method: 'GET',
@@ -37,11 +38,7 @@ module.exports = [{
   options: {
     auth: { scope: [ledger] },
     validate: {
-      query: Joi.object({
-        paymentRequestId: Joi.number().required(),
-        'ar-value': Joi.number().required(),
-        'ap-value': Joi.number().required()
-      }).options({ allowUnknown: true }),
+      query: calculationSchema,
       failAction: async (request, h, error) => {
         const paymentRequestId = request.query.paymentRequestId
 
