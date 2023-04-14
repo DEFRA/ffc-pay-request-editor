@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     accountCode: DataTypes.STRING,
     fundCode: DataTypes.STRING,
     description: DataTypes.STRING,
+    deliveryBody: DataTypes.STRING,
     value: DataTypes.INTEGER,
     valueText: {
       type: DataTypes.VIRTUAL,
