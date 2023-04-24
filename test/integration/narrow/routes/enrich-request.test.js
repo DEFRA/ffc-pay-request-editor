@@ -1,3 +1,5 @@
+jest.mock('ffc-messaging')
+
 const { enrichment } = require('../../../../app/auth/permissions')
 const db = require('../../../../app/data')
 
