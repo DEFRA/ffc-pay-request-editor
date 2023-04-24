@@ -7,10 +7,7 @@ const dateSchema = require('./schemas/date')
 const { getSchemeId, getSchemes } = require('../processing/scheme')
 const { convertToPence, convertDateToDDMMYYYY } = require('../processing/conversion')
 const { saveDebtData } = require('../processing/debt')
-const {
-  getPaymentRequestAwaitingEnrichmentWithValue,
-  getPaymentRequestAwaitingEnrichmentWithNetValue
-} = require('../payment-request/get-payment-request')
+const { getPaymentRequestAwaitingEnrichment } = require('../payment-request/get-payment-request')
 const { enrichment } = require('../auth/permissions')
 const { getUser } = require('../auth')
 const { updateQualityChecksStatus } = require('../quality-check')
@@ -74,8 +71,7 @@ module.exports = [{
           createdById: userId
         }
 
-        let matchingPaymentRequest = await getPaymentRequestAwaitingEnrichmentWithValue(schemeId, frn, applicationIdentifier, netValue)
-        matchingPaymentRequest ??= await getPaymentRequestAwaitingEnrichmentWithNetValue(schemeId, frn, applicationIdentifier, netValue)
+        const matchingPaymentRequest = await getPaymentRequestAwaitingEnrichment(schemeId, frn, applicationIdentifier, netValue)
 
         if (matchingPaymentRequest) {
           debtData.paymentRequestId = matchingPaymentRequest.paymentRequestId

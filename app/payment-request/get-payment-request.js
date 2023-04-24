@@ -1,5 +1,6 @@
 const db = require('../data')
 const { ENRICHMENT, LEDGER_ENRICHMENT } = require('./categories')
+const { getPaymentRequestMatchingReference } = require('./get-payment-request-matching-reference')
 
 const getPaymentRequest = async (categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
   return db.paymentRequest.findAll({
@@ -43,7 +44,8 @@ const getPaymentRequestByInvoiceNumberAndRequestId = async (invoiceNumber, payme
   })
 }
 
-const getPaymentRequestAwaitingEnrichmentWithNetValue = async (schemeId, frn, agreementNumber, netValue, categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
+const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, applicationIdentifier, netValue, categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
+  const reference = getPaymentRequestMatchingReference(schemeId, applicationIdentifier)
   return db.paymentRequest.findOne({
     include: [{
       model: db.debtData,
@@ -54,27 +56,11 @@ const getPaymentRequestAwaitingEnrichmentWithNetValue = async (schemeId, frn, ag
       released: null,
       schemeId,
       frn,
-      agreementNumber,
-      netValue,
-      categoryId
-    },
-    raw: true
-  })
-}
-
-const getPaymentRequestAwaitingEnrichmentWithValue = async (schemeId, frn, agreementNumber, value, categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
-  return db.paymentRequest.findOne({
-    include: [{
-      model: db.debtData,
-      as: 'debtData'
-    }],
-    where: {
-      $debtData$: null,
-      released: null,
-      schemeId,
-      frn,
-      agreementNumber,
-      value,
+      ...reference,
+      [db.Sequelize.Op.or]: [
+        { value: netValue },
+        { netValue }
+      ],
       categoryId
     },
     raw: true
@@ -93,7 +79,6 @@ const getPaymentRequestByRequestId = async (paymentRequestId) => {
 module.exports = {
   getPaymentRequest,
   getPaymentRequestByInvoiceNumberAndRequestId,
-  getPaymentRequestAwaitingEnrichmentWithNetValue,
-  getPaymentRequestAwaitingEnrichmentWithValue,
+  getPaymentRequestAwaitingEnrichment,
   getPaymentRequestByRequestId
 }
