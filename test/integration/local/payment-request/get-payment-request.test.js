@@ -1,4 +1,4 @@
-const { SFI } = require('../../../../app/constants/schemes')
+const { SFI, CS } = require('../../../../app/constants/schemes')
 const db = require('../../../../app/data')
 
 const { getPaymentRequest, getPaymentRequestCount, getPaymentRequestAwaitingEnrichment } = require('../../../../app/payment-request')
@@ -26,7 +26,7 @@ describe('Get payment request test', () => {
       frn: 1234567890,
       paymentRequestNumber: 1,
       agreementNumber: 'SIP00000000000001',
-      contractNumber: 'A00000001',
+      contractNumber: 'A1234567',
       value: 15000,
       categoryId: 1,
       received: new Date()
@@ -75,6 +75,7 @@ describe('Get payment request test', () => {
     Date.now = jest.fn().mockReturnValue(mockDateNow)
     paymentRequest.received = '2022-01-01'
     await resetData()
+    await db.scheme.create(scheme)
     await db.paymentRequest.create(paymentRequest)
     const daysWaiting = (Math.round((mockDateNow - new Date(paymentRequest.received)) / (1000 * 60 * 60 * 24)))
     const paymentRequests = await getPaymentRequest()
@@ -86,6 +87,7 @@ describe('Get payment request test', () => {
   test('daysWaiting virtual type should return "" when paymentRequest has no "received" value', async () => {
     paymentRequest.received = undefined
     await resetData()
+    await db.scheme.create(scheme)
     await db.paymentRequest.create(paymentRequest)
     const paymentRequests = await getPaymentRequest()
     expect(paymentRequests[0].daysWaiting).toBe('')
@@ -118,7 +120,40 @@ describe('Get payment request test', () => {
   })
 
   test('get payment request for enrichment should match by agreement number if not CS', async () => {
-    const paymentRequests = await getPaymentRequestAwaitingEnrichment(paymentRequest.schemeId, paymentRequest.frn, paymentRequest.agreementNumber, paymentRequest.value, paymentRequest.categoryId)
-    expect(paymentRequests).toHaveLength(1)
+    const matchedPaymentRequest = await getPaymentRequestAwaitingEnrichment(paymentRequest.schemeId, paymentRequest.frn, paymentRequest.agreementNumber, paymentRequest.value, paymentRequest.categoryId)
+    expect(matchedPaymentRequest.agreementNumber).toBe(paymentRequest.agreementNumber)
+  })
+
+  test('get payment request for enrichment should match by contract number if CS', async () => {
+    scheme.schemeId = CS
+    paymentRequest.schemeId = CS
+    await resetData()
+    await db.scheme.create(scheme)
+    await db.paymentRequest.create(paymentRequest)
+    const matchedPaymentRequest = await getPaymentRequestAwaitingEnrichment(paymentRequest.schemeId, paymentRequest.frn, paymentRequest.contractNumber, paymentRequest.value, paymentRequest.categoryId)
+    expect(matchedPaymentRequest.contractNumber).toBe(paymentRequest.contractNumber)
+  })
+
+  test('get payment request for enrichment should match by contract number if CS and current contract has leading 0 prefix', async () => {
+    scheme.schemeId = CS
+    paymentRequest.schemeId = CS
+    await resetData()
+    await db.scheme.create(scheme)
+    await db.paymentRequest.create(paymentRequest)
+    paymentRequest.contractNumber = 'A01234567'
+    const matchedPaymentRequest = await getPaymentRequestAwaitingEnrichment(paymentRequest.schemeId, paymentRequest.frn, paymentRequest.contractNumber, paymentRequest.value, paymentRequest.categoryId)
+    expect(matchedPaymentRequest.contractNumber).toBe('A1234567')
+  })
+
+  test('get payment request for enrichment should match by contract number if CS and previous contract has leading 0 prefix', async () => {
+    scheme.schemeId = CS
+    paymentRequest.schemeId = CS
+    paymentRequest.contractNumber = 'A01234567'
+    await resetData()
+    await db.scheme.create(scheme)
+    await db.paymentRequest.create(paymentRequest)
+    paymentRequest.contractNumber = 'A1234567'
+    const matchedPaymentRequest = await getPaymentRequestAwaitingEnrichment(paymentRequest.schemeId, paymentRequest.frn, paymentRequest.contractNumber, paymentRequest.value, paymentRequest.categoryId)
+    expect(matchedPaymentRequest.contractNumber).toBe('A01234567')
   })
 })

@@ -8,7 +8,6 @@ const getPaymentRequestMatchingReference = (schemeId, applicationIdentifier) => 
         { contractNumber: applicationIdentifier },
         { contractNumber: applicationIdentifier?.replace('A0', 'A') }
       ]
-
     }
   }
   return {
