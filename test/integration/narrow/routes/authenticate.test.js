@@ -1,3 +1,5 @@
+jest.mock('ffc-messaging')
+
 describe('authenticate test', () => {
   jest.mock('../../../../app/auth')
   const mockAuth = require('../../../../app/auth')
