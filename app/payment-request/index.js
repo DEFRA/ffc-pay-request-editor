@@ -1,6 +1,6 @@
 const getExistingPaymentRequest = require('./get-existing-payment-request')
 const getPaymentRequestCount = require('./get-payment-request-count')
-const { getPaymentRequest, getPaymentRequestByInvoiceNumberAndRequestId, getPaymentRequestByRequestId, getPaymentRequestAwaitingEnrichment } = require('./get-payment-request')
+const { getPaymentRequest, getPaymentRequestAwaitingEnrichment, getPaymentRequestByInvoiceNumberAndRequestId, getPaymentRequestByRequestId } = require('./get-payment-request')
 const savePaymentRequest = require('./save-payment-request')
 const processPaymentRequest = require('./process-payment-request')
 const savePaymentAndInvoiceLines = require('./save-payment-and-invoice-lines')
