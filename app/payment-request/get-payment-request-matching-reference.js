@@ -1,5 +1,5 @@
-const { CS } = require('../constants/schemes')
 const db = require('../data')
+const { CS } = require('../constants/schemes')
 
 const getPaymentRequestMatchingReference = (schemeId, applicationIdentifier) => {
   if (schemeId === CS) {
