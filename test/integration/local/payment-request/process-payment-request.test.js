@@ -95,7 +95,6 @@ describe('process payment requests', () => {
         required: true
       }]
     })
-    console.log('BOOp', invoiceLinesRows)
 
     expect(invoiceLinesRows[1].schemeCode).toBe('80001')
     expect(invoiceLinesRows[1].accountCode).toBe('SOS273')
