@@ -113,7 +113,7 @@ describe(' save-payment-and-invoice-lines test', () => {
 
   test('Expect invoice line to save without agreement number if not present', async () => {
     delete paymentRequest.invoiceLines[0].agreementNumber
-    const paymentRequestId = await savePaymentAndInvoiceLines(paymentRequest, categoryId)
+    await savePaymentAndInvoiceLines(paymentRequest, categoryId)
     const invoiceLine = await db.invoiceLine.findOne({
       where: {
         schemeCode: '80001'
