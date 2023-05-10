@@ -1,5 +1,6 @@
 const db = require('../../../../app/data')
 const { savePaymentAndInvoiceLines } = require('../../../../app/payment-request')
+
 let paymentRequest
 let categoryId
 
@@ -31,6 +32,7 @@ describe(' save-payment-and-invoice-lines test', () => {
           schemeCode: '80001',
           accountCode: 'SOS273',
           fundCode: 'DRD10',
+          agreementNumber: 'SIP00000000000001',
           description: 'G00 - Gross value of claim',
           value: 25000
         }
@@ -66,5 +68,57 @@ describe(' save-payment-and-invoice-lines test', () => {
     const paymentRequestId = await savePaymentAndInvoiceLines(paymentRequest, categoryId)
     const invoiceLinesResult = await db.invoiceLine.findOne({ where: { paymentRequestId } })
     expect(invoiceLinesResult.paymentRequestId).toBe(paymentRequestId)
+  })
+
+  test('Expect invoice line to save scheme code', async () => {
+    await savePaymentAndInvoiceLines(paymentRequest, categoryId)
+    const invoiceLine = await db.invoiceLine.findOne({
+      where: {
+        schemeCode: '80001'
+      }
+    })
+    expect(invoiceLine.schemeCode).toBeDefined()
+  })
+
+  test('Expect invoice line to save with payment request Id', async () => {
+    const paymentRequestId = await savePaymentAndInvoiceLines(paymentRequest, categoryId)
+    const invoiceLine = await db.invoiceLine.findOne({
+      where: {
+        schemeCode: '80001'
+      }
+    })
+    expect(invoiceLine.paymentRequestId).toBe(paymentRequestId)
+  })
+
+  test('Expect invoice line to save with payment request Id even if invoice line has payment Request Id', async () => {
+    paymentRequest.invoiceLines[0].paymentRequestId = 2
+    const paymentRequestId = await savePaymentAndInvoiceLines(paymentRequest, categoryId)
+    const invoiceLine = await db.invoiceLine.findOne({
+      where: {
+        schemeCode: '80001'
+      }
+    })
+    expect(invoiceLine.paymentRequestId).toBe(paymentRequestId)
+  })
+
+  test('Expect invoice line to save with agreement number if present', async () => {
+    await savePaymentAndInvoiceLines(paymentRequest, categoryId)
+    const invoiceLine = await db.invoiceLine.findOne({
+      where: {
+        schemeCode: '80001'
+      }
+    })
+    expect(invoiceLine.agreementNumber).toBe('SIP00000000000001')
+  })
+
+  test('Expect invoice line to save without agreement number if not present', async () => {
+    delete paymentRequest.invoiceLines[0].agreementNumber
+    await savePaymentAndInvoiceLines(paymentRequest, categoryId)
+    const invoiceLine = await db.invoiceLine.findOne({
+      where: {
+        schemeCode: '80001'
+      }
+    })
+    expect(invoiceLine.agreementNumber).toBeNull()
   })
 })
