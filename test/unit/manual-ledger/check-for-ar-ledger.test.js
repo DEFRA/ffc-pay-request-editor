@@ -177,7 +177,7 @@ describe('check for ar ledger', () => {
 
   test('should call sendEnrichRequestBlockedEvent with mockManualLedgerRequest when mockManualLedgerRequests and PENDING status are received, checkForDebtData returns null and config.isAlerting is true', async () => {
     await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(sendEnrichRequestBlockedEvent).toHaveBeenCalledWith(mockManualLedgerRequests[0])
+    expect(sendEnrichRequestBlockedEvent).toHaveBeenCalledWith(mockManualLedgerRequests[0].ledgerPaymentRequest)
   })
 
   test('should not call sendEnrichRequestBlockedEvent when mockManualLedgerRequests and PENDING status are received, checkForDebtData returns null and config.isAlerting is false', async () => {
