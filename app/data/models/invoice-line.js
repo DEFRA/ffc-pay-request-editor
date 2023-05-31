@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     agreementNumber: DataTypes.STRING,
     description: DataTypes.STRING,
     deliveryBody: DataTypes.STRING,
+    marketingYear: DataTypes.INTEGER,
     value: DataTypes.INTEGER,
     valueText: {
       type: DataTypes.VIRTUAL,

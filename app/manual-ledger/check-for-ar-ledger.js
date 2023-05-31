@@ -18,7 +18,7 @@ const checkForARLedger = async (manualLedgerRequest, status) => {
       console.log('no debt data found')
       status = AWAITING_ENRICHMENT
       if (config.isAlerting) {
-        await sendEnrichRequestBlockedEvent(arLedger)
+        await sendEnrichRequestBlockedEvent(arLedger.ledgerPaymentRequest)
       }
     }
 

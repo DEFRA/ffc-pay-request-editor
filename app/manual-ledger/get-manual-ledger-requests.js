@@ -1,7 +1,7 @@
 const db = require('../data')
 
 const getManualLedgerRequests = async (paymentRequestId) => {
-  return db.manualLedgerPaymentRequest.findAll({
+  const manualLedgerRequest = await db.manualLedgerPaymentRequest.findAll({
     include: [{
       model: db.paymentRequest,
       as: 'ledgerPaymentRequest',
@@ -19,6 +19,7 @@ const getManualLedgerRequests = async (paymentRequestId) => {
       active: true
     }
   })
+  return manualLedgerRequest.map(x => x.get({ plain: true }))
 }
 
 module.exports = getManualLedgerRequests
