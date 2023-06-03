@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.STRING,
     deliveryBody: DataTypes.STRING,
     marketingYear: DataTypes.INTEGER,
+    convergence: DataTypes.BOOLEAN,
+    stateAid: DataTypes.BOOLEAN,
     value: DataTypes.INTEGER,
     valueText: {
       type: DataTypes.VIRTUAL,
