@@ -1,7 +1,7 @@
 asyncapi: 2.2.0
 info:
   title: Payment Hub Request Editor
-  version: 1.1.0
+  version: 1.2.0
 channels:
   payment/debt:
     subscribe:
@@ -108,3 +108,9 @@ components:
                 deliveryBody:
                   type: string
                   description: Delivery body responsible for payment
+                convergence:
+                  type: boolean
+                  description: Whether line is convergence or not
+                stateAid:
+                  type: boolean
+                  description: Whether line is state aid or not
