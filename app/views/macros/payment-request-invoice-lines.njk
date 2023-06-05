@@ -6,6 +6,9 @@
         <th scope="col" class="govuk-table__header govuk-body-s">Description</th>
         <th scope="col" class="govuk-table__header govuk-body-s">Fund</th>
         <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
+        <th scope="col" class="govuk-table__header govuk-body-s">Marketing Year</th>
+        <th scope="col" class="govuk-table__header govuk-body-s">Delivery Body</th>
+        <th scope="col" class="govuk-table__header govuk-body-s">Agreement Number</th>
         <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Amount</th>
       </tr>
     </thead>
@@ -15,6 +18,9 @@
           <td class="govuk-table__cell govuk-body-s">{{ data.description }}</td>
           <td class="govuk-table__cell govuk-body-s">{{ data.fundCode }}</td>
           <td class="govuk-table__cell govuk-body-s">{{ data.schemeCode }}</td>
+          <td class="govuk-table__cell govuk-body-s">{{ data.marketingYear }}</td>
+          <td class="govuk-table__cell govuk-body-s">{{ data.deliveryBody }}</td>
+          <td class="govuk-table__cell govuk-body-s">{{ data.agreementNumber }}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s noWrap">{{ data.valueText }}</td>
         </tr>
       {% endfor %}
