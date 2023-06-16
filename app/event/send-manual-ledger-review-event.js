@@ -1,7 +1,7 @@
 const config = require('../config')
 const messageConfig = require('../config/mq-config')
-const { getPaymentRequestByRequestId } = require('../payment-request/get-payment-request')
 const { EventPublisher } = require('ffc-pay-event-publisher')
+const { getPaymentRequestByRequestId } = require('../payment-request/get-payment-request')
 const { SOURCE } = require('../constants/source')
 const { LEDGER_ASSIGNMENT_QUALITY_CHECK } = require('../constants/events')
 
