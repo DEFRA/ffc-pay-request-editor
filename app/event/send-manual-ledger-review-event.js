@@ -4,7 +4,6 @@ const { getPaymentRequestByRequestId } = require('../payment-request/get-payment
 const { EventPublisher } = require('ffc-pay-event-publisher')
 const { SOURCE } = require('../constants/source')
 const { LEDGER_ASSIGNMENT_QUALITY_CHECK } = require('../constants/events')
-
 const sendManualLedgerReviewEvent = async (paymentRequestId, user, status) => {
   if (config.useV2Events) {
     await sendV2ManualLedgerReviewEvent(paymentRequestId, user, status)
