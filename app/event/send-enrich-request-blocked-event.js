@@ -1,5 +1,3 @@
-const raiseEvent = require('./raise-event')
-const getCorrelationId = require('../payment-request/get-correlation-id')
 const config = require('../config')
 const messageConfig = require('../config/mq-config')
 const { EventPublisher } = require('ffc-pay-event-publisher')
@@ -7,26 +5,8 @@ const { SOURCE } = require('../constants/source')
 const { PAYMENT_REQUEST_BLOCKED } = require('../constants/events')
 
 const sendEnrichRequestBlockedEvent = async (paymentRequest) => {
-  if (config.useV1Events) {
-    await sendV1EnrichRequestBlockedEvent(paymentRequest)
-  }
   if (config.useV2Events) {
     await sendV2EnrichRequestBlockedEvent(paymentRequest)
-  }
-}
-
-const sendV1EnrichRequestBlockedEvent = async (paymentRequest) => {
-  const { paymentRequestId } = paymentRequest
-  if (paymentRequestId) {
-    const correlationId = await getCorrelationId(paymentRequestId) ?? ''
-    const event = {
-      id: correlationId || paymentRequestId,
-      name: 'payment-request-blocked',
-      type: 'blocked',
-      message: 'Payment request does not have debt data to attach.',
-      data: { paymentRequest }
-    }
-    await raiseEvent(event)
   }
 }
 
