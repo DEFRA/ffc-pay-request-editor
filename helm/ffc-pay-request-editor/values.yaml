@@ -35,7 +35,6 @@ container:
   eventsTopicAddress: ffc-pay-events
   debtResponseTopicAddress: ffc-pay-debt-data-response
   cookiePassword: cookiecookiecookiecookiecookiecookie
-  useV1Events: true
   useV2Events: true
 
 livenessProbe:

@@ -41,7 +41,6 @@ const schema = Joi.object({
     schema: Joi.string().default('public'),
     username: Joi.string()
   }),
-  useV1Events: Joi.boolean().default(true),
   useV2Events: Joi.boolean().default(true)
 })
 
@@ -89,7 +88,6 @@ const config = {
     schema: process.env.POSTGRES_SCHEMA_NAME || 'public',
     username: process.env.POSTGRES_USERNAME
   },
-  useV1Events: process.env.USE_V1_EVENTS,
   useV2Events: process.env.USE_V2_EVENTS
 }
 
