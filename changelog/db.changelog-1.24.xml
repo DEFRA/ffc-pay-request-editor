@@ -10,9 +10,6 @@
     </update>
   </changeSet>
   <changeSet author="John Watson" id="3">
-    <addColumn tableName="invoiceLines">
-      <column name="convergence" type="BOOLEAN" defaultValueBoolean="false" />
-    </addColumn>
     <update tableName="invoiceLines">
       <column name="convergence" value="false" />
       <where>"convergence" is null</where>
