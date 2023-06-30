@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     originalInvoiceNumber: DataTypes.STRING,
     invoiceCorrectionReference: DataTypes.STRING,
     exchangeRate: DataTypes.FLOAT,
+    eventDate: DataTypes.DATE,
     value: DataTypes.INTEGER,
     valueText: {
       type: DataTypes.VIRTUAL,
