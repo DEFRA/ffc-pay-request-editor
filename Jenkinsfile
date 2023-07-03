@@ -1,3 +1,3 @@
 @Library('defra-library@v-9') _
 
-buildNodeJs npmFailOnIssues: false
+buildNodeJs npmAuditFailOnIssues: false
