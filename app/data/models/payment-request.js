@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     originalSettlementDate: DataTypes.STRING,
     originalInvoiceNumber: DataTypes.STRING,
     invoiceCorrectionReference: DataTypes.STRING,
-    exchangeRate: DataTypes.FLOAT,
+    exchangeRate: DataTypes.STRING,
     eventDate: DataTypes.STRING,
     value: DataTypes.INTEGER,
     valueText: {
