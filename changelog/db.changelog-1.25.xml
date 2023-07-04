@@ -7,7 +7,6 @@
     <addColumn tableName="paymentRequests">
       <column name="exchangeRate" type="VARCHAR(10)" />
       <column name="eventDate" type="VARCHAR(10)" />
-      <column name="sbi" type="INTEGER" />
       <column name="vendor" type="VARCHAR(10)" />
       <column name="trader" type="VARCHAR(10)" />
     </addColumn>
