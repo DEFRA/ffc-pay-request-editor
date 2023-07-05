@@ -97,16 +97,18 @@ describe('process payment requests', () => {
     })
 
     const grossInvoiceLine = invoiceLinesRows.find(x => x.description === 'G00 - Gross value of claim' &&
-      x.value === 25000 &&
       x.schemeCode === '80001' &&
       x.accountCode === 'SOS273' &&
-      x.fundCode === 'DRD10')
+      x.fundCode === 'DRD10' &&
+      x.agreementNumber === 'SIP00000000000001' &&
+      x.value === 25000)
 
     const penaltyInvoiceLine = invoiceLinesRows.find(x => x.description === 'P02 - Over declaration penalty' &&
-      x.value === -10000 &&
-      x.schemeCode === '80001' &&
       x.accountCode === 'SOS273' &&
-      x.fundCode === 'DRD10')
+      x.schemeCode === '80001' &&
+      x.fundCode === 'DRD10' &&
+      x.agreementNumber === 'SIP00000000000001' &&
+      x.value === -10000)
 
     expect(grossInvoiceLine).toBeDefined()
     expect(penaltyInvoiceLine).toBeDefined()
