@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     invoiceCorrectionReference: DataTypes.STRING,
     exchangeRate: DataTypes.STRING,
     eventDate: DataTypes.STRING,
+    claimDate: DataTypes.STRING,
     value: DataTypes.INTEGER,
     valueText: {
       type: DataTypes.VIRTUAL,
