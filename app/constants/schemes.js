@@ -6,5 +6,5 @@ module.exports = {
   CS: 5,
   BPS: 6,
   FDMR: 7,
-  SFI23: 8
+  SFI23: 12
 }
