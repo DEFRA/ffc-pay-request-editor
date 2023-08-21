@@ -5,5 +5,6 @@ module.exports = {
   VET_VISITS: 4,
   CS: 5,
   BPS: 6,
-  FDMR: 7
+  FDMR: 7,
+  SFI23: 8
 }
