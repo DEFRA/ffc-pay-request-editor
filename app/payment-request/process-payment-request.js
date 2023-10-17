@@ -15,11 +15,11 @@ const processPaymentRequest = async (paymentRequest) => {
     } else {
       delete paymentRequest.paymentRequestId
       paymentRequest.categoryId = 1
-      const savedPaymentRequest = await savePaymentRequest(paymentRequest)
-      const paymentRequestId = savedPaymentRequest.paymentRequestId
-      await saveInvoiceLines(paymentRequest.invoiceLines, paymentRequestId)
-      await updateQualityCheck(paymentRequestId)
-      await attachDebtInformationIfExists(paymentRequestId, paymentRequest, transaction)
+      const { paymentRequestId } = await savePaymentRequest(paymentRequest)
+      paymentRequest.paymentRequestId = paymentRequestId
+      await saveInvoiceLines(paymentRequest.invoiceLines, paymentRequest.paymentRequestId)
+      await updateQualityCheck(paymentRequest.paymentRequestId)
+      await attachDebtInformationIfExists(paymentRequest, transaction)
       await transaction.commit()
     }
   } catch (error) {
