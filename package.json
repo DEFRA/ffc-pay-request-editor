@@ -42,7 +42,7 @@
     "@hapi/yar": "10.1.1",
     "@joi/date": "2.1.0",
     "applicationinsights": "1.8.10",
-    "ffc-messaging": "^2.6.4",
+    "ffc-messaging": "2.6.4",
     "ffc-pay-event-publisher": "1.2.0",
     "govuk-frontend": "4.7.0",
     "hapi-pino": "10.1.0",
