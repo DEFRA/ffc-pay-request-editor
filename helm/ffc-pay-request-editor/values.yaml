@@ -22,8 +22,8 @@ deployment: {}
 container:
   requestMemory: 120Mi
   requestCpu: 40m
-  limitMemory: 500Mi
-  limitCpu: 400m
+  limitMemory: 1000Mi
+  limitCpu: 500m
   port: 3001
   messageQueueHost: namespace.servicebus.windows.net
   debtTopicAddress: ffc-pay-debt-data
