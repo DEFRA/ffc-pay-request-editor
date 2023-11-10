@@ -22,7 +22,7 @@ deployment: {}
 container:
   requestMemory: 120Mi
   requestCpu: 40m
-  limitMemory: 200Mi
+  limitMemory: 500Mi
   limitCpu: 400m
   port: 3001
   messageQueueHost: namespace.servicebus.windows.net
@@ -43,6 +43,7 @@ livenessProbe:
   initialDelaySeconds: 10
   periodSeconds: 10
   failureThreshold: 3
+  timeoutSeconds: 5
 
 readinessProbe:
   path: /healthy
@@ -50,6 +51,7 @@ readinessProbe:
   initialDelaySeconds: 10
   periodSeconds: 10
   failureThreshold: 3
+  timeoutSeconds: 5
 
 postgresService:
   postgresDb: ffc_pay_request_editor
