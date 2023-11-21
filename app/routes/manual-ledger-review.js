@@ -1,11 +1,9 @@
 const Joi = require('joi')
 const { ledger } = require('../auth/permissions')
-const { getManualLedger, resetManualLedger, updateManualLedgerWithDebtData } = require('../manual-ledger')
-const { updateQualityChecksStatus } = require('../quality-check')
-const { PASSED, FAILED, PENDING } = require('../quality-check/statuses')
+const { getManualLedger } = require('../manual-ledger')
 const ViewModel = require('./models/manual-ledger-review')
-const { sendManualLedgerReviewEvent } = require('../event')
 const { getUser } = require('../auth')
+const { ledgerReview } = require('../manual-ledger/ledger-review')
 
 module.exports = [{
   method: 'GET',
@@ -46,29 +44,7 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      const status = request.payload.status ? request.payload.status : PENDING
-      const paymentRequestId = request.payload.paymentRequestId
-
-      if (paymentRequestId) {
-        const manualLedgerData = await getManualLedger(paymentRequestId)
-        const user = getUser(request)
-
-        if (manualLedgerData && manualLedgerData.manualLedgerChecks[0].createdById !== user.userId) {
-          switch (status) {
-            case PASSED:
-              await updateManualLedgerWithDebtData(paymentRequestId, status)
-              break
-            case FAILED:
-              await updateQualityChecksStatus(paymentRequestId, status)
-              await resetManualLedger(paymentRequestId)
-              break
-            default:
-              await updateQualityChecksStatus(paymentRequestId, status)
-              break
-          }
-        }
-        await sendManualLedgerReviewEvent(paymentRequestId, user, status)
-      }
+      await ledgerReview(request)
 
       return h.redirect('/quality-check').code(301)
     }
