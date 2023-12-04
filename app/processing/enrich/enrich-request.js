@@ -17,9 +17,9 @@ const enrichRequest = async (user, payload, paymentRequest) => {
 
   const { schemeId, frn } = paymentRequest
   await saveDebt({
-    paymentRequestId: paymentRequestId,
-    schemeId: schemeId,
-    frn: frn,
+    paymentRequestId,
+    schemeId,
+    frn,
     reference: paymentRequest.agreementNumber,
     netValue: paymentRequest.netValue ?? paymentRequest.value,
     debtType: payload['debt-type'],

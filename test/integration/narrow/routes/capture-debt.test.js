@@ -10,7 +10,7 @@ describe('capture-debt route', () => {
   const { getSchemeId, getSchemes } = require('../../../../app/processing/scheme')
 
   const db = require('../../../../app/data')
-  const { SCHEMES, SCHEME_NAME_SFI } = require('../../../data/scheme')
+  const { SCHEMES } = require('../../../data/scheme')
   const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
   const { ADMINISTRATIVE } = require('../../../../app/constants/debt-types')
 
@@ -25,7 +25,7 @@ describe('capture-debt route', () => {
   let server
 
   const VALID_PAYLOAD = {
-    scheme: SCHEME_NAME_SFI,
+    scheme: 'SFI22',
     frn: '1234567890',
     applicationIdentifier: '43210987654321A',
     net: 312.2,
@@ -132,7 +132,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no scheme selected returns "The scheme must be one of the following: SFI, SFI Pilot, Lump Sums, Vet Visits, CS, BPS, FDMR, SFI23." error message', async () => {
+  test('POST /capture-debt with no scheme selected returns "The scheme must be one of the following: SFI22, SFI Pilot, Lump Sums, Vet Visits, CS, BPS, FDMR, SFI23." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -141,7 +141,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The scheme must be one of the following: SFI, SFI Pilot, Lump Sums, Vet Visits, CS, BPS, FDMR, SFI23.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The scheme must be one of the following: SFI22, SFI Pilot, Lump Sums, Vet Visits, CS, BPS, FDMR, SFI23.')
   })
 
   test('POST /capture-debt with invalid scheme returns 400', async () => {
@@ -181,7 +181,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with invalid scheme returns "The scheme must be one of the following: SFI, SFI Pilot, Lump Sums, Vet Visits, CS, BPS, FDMR, SFI23." error message', async () => {
+  test('POST /capture-debt with invalid scheme returns "The scheme must be one of the following: SFI22, SFI Pilot, Lump Sums, Vet Visits, CS, BPS, FDMR, SFI23." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -190,7 +190,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The scheme must be one of the following: SFI, SFI Pilot, Lump Sums, Vet Visits, CS, BPS, FDMR, SFI23.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The scheme must be one of the following: SFI22, SFI Pilot, Lump Sums, Vet Visits, CS, BPS, FDMR, SFI23.')
   })
 
   test('POST /capture-debt with no FRN returns 400', async () => {

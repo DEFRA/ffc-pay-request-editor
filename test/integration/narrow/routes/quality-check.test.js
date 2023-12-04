@@ -54,7 +54,7 @@ describe('Quality check test', () => {
 
     test('POST /quality-check with no records returns "No debts match the FRN provided.', async () => {
       const options = {
-        method: method,
+        method,
         auth,
         url,
         payload: { frn: '1234567893' }

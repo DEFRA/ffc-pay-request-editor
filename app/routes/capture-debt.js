@@ -30,10 +30,12 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
+      if (request.payload.scheme === 'SFI22') {
+        request.payload.scheme = 'SFI'
+      }
       const day = format(request.payload['debt-discovered-day'])
       const month = format(request.payload['debt-discovered-month'])
       const year = request.payload['debt-discovered-year']
-
       const validDate = dateSchema({ date: `${year}-${month}-${day}` })
 
       if (validDate.error) {

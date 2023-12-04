@@ -27,7 +27,7 @@ const getQualityCheckedPaymentRequests = async () => {
       const paymentRequest = qualityCheck.paymentRequest
       const manualLedgerRequests = await getManualLedgerRequestCheck(paymentRequest.paymentRequestId)
       const transformManualLedgerRequest = manualLedgerRequests.map(x => x.ledgerPaymentRequest)
-      qualityCheckedPaymentRequests.push({ paymentRequest: paymentRequest, paymentRequests: transformManualLedgerRequest })
+      qualityCheckedPaymentRequests.push({ paymentRequest, paymentRequests: transformManualLedgerRequest })
     }
   }
 

@@ -25,6 +25,9 @@ const getManualLedger = async (paymentRequestId) => {
   )
 
   if (paymentRequest) {
+    if (paymentRequest.schemes?.name === 'SFI') {
+      paymentRequest.schemes.name = 'SFI22'
+    }
     paymentRequest.manualLedgerChecks = []
     paymentRequest.manualLedgerChecks = await getManualLedgerRequests(paymentRequestId)
     return paymentRequest

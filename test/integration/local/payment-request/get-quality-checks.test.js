@@ -65,6 +65,11 @@ describe('Get quality checks test', () => {
     expect(qualityChecks).toHaveLength(1)
   })
 
+  test('should return SFI22 as scheme name if scheme name is SFI', async () => {
+    const qualityChecks = await getQualityChecks()
+    expect(qualityChecks[0].paymentRequest.schemes.name).toBe('SFI22')
+  })
+
   test('should return count of 1 for quality check', async () => {
     const qualityCheckCount = await getQualityChecksCount()
     expect(qualityCheckCount).toEqual(1)

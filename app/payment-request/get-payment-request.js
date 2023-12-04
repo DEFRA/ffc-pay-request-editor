@@ -3,7 +3,7 @@ const { ENRICHMENT, LEDGER_ENRICHMENT } = require('./categories')
 const { getPaymentRequestMatchingReference } = require('./get-payment-request-matching-reference')
 
 const getPaymentRequest = async (categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
-  return db.paymentRequest.findAll({
+  const paymentRequest = await db.paymentRequest.findAll({
     include: [{
       model: db.scheme,
       as: 'schemes',
@@ -32,6 +32,12 @@ const getPaymentRequest = async (categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) =
     ],
     order: [['received']]
   })
+  for (let i = 0; i < paymentRequest.length; i++) {
+    if (paymentRequest[i].schemes?.name === 'SFI') {
+      paymentRequest[i].schemes.name = 'SFI22'
+    }
+  }
+  return paymentRequest
 }
 
 const getPaymentRequestByInvoiceNumberAndRequestId = async (invoiceNumber, paymentRequestId) => {

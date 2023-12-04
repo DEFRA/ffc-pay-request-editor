@@ -61,7 +61,7 @@ describe('Enrich test', () => {
 
     test('POST /enrich with no records returns "No debts match the FRN provided.', async () => {
       const options = {
-        method: method,
+        method,
         url,
         auth,
         payload: { frn: '1234567893' }
