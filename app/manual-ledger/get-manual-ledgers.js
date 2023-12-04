@@ -19,7 +19,7 @@ const getManualLedgers = async (statuses) => {
     }
   )
   for (let i = 0; i < manualLedgers.length; i++) {
-    if (manualLedgers[i].schemes.name === 'SFI') {
+    if (manualLedgers[i].schemes?.name === 'SFI') {
       manualLedgers[i].schemes.name = 'SFI22'
     }
   }

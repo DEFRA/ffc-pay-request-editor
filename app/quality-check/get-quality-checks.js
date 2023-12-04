@@ -38,7 +38,7 @@ const getQualityChecks = async () => {
     }
   })
   for (let i = 0; i < qualityChecks.length; i++) {
-    if (qualityChecks[i].paymentRequest?.schemes.name === 'SFI') {
+    if (qualityChecks[i].paymentRequest?.schemes?.name === 'SFI') {
       qualityChecks[i].paymentRequest.schemes.name = 'SFI22'
     }
   }
