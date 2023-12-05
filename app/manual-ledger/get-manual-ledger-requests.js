@@ -1,5 +1,4 @@
 const db = require('../data')
-const { replaceSFI22 } = require('../processing/replace-sfi22')
 
 const getManualLedgerRequests = async (paymentRequestId) => {
   const manualLedgerRequest = await db.manualLedgerPaymentRequest.findAll({
@@ -20,8 +19,12 @@ const getManualLedgerRequests = async (paymentRequestId) => {
       active: true
     }
   })
-  const modifiedLedgerData = replaceSFI22(manualLedgerRequest)
-  return modifiedLedgerData.map(x => x.get({ plain: true }))
+  for (let i = 0; i < manualLedgerRequest.length; i++) {
+    if (manualLedgerRequest[i].ledgerPaymentRequest?.schemes?.name === 'SFI') {
+      manualLedgerRequest[i].ledgerPaymentRequest.schemes.name = 'SFI22'
+    }
+  }
+  return manualLedgerRequest.map(x => x.get({ plain: true }))
 }
 
 module.exports = getManualLedgerRequests
