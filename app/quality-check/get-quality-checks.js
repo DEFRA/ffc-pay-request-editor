@@ -1,4 +1,5 @@
 const db = require('../data')
+const { replaceSFI22 } = require('../processing/replace-sfi22')
 const { PENDING } = require('./statuses')
 
 const getQualityChecks = async () => {
@@ -37,12 +38,8 @@ const getQualityChecks = async () => {
       status: PENDING
     }
   })
-  for (let i = 0; i < qualityChecks.length; i++) {
-    if (qualityChecks[i].paymentRequest?.schemes?.name === 'SFI') {
-      qualityChecks[i].paymentRequest.schemes.name = 'SFI22'
-    }
-  }
-  return qualityChecks.map(x => x.get({ plain: true }))
+  const modifiedQualityChecks = replaceSFI22(qualityChecks)
+  return modifiedQualityChecks.map(x => x.get({ plain: true }))
 }
 
 module.exports = getQualityChecks

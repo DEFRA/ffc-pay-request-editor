@@ -1,4 +1,5 @@
 const db = require('../data')
+const { replaceSFI22 } = require('../processing/replace-sfi22')
 const { ENRICHMENT, LEDGER_ENRICHMENT } = require('./categories')
 const { getPaymentRequestMatchingReference } = require('./get-payment-request-matching-reference')
 
@@ -32,12 +33,8 @@ const getPaymentRequest = async (categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) =
     ],
     order: [['received']]
   })
-  for (let i = 0; i < paymentRequest.length; i++) {
-    if (paymentRequest[i].schemes?.name === 'SFI') {
-      paymentRequest[i].schemes.name = 'SFI22'
-    }
-  }
-  return paymentRequest
+  const modifiedPaymentRequest = replaceSFI22(paymentRequest)
+  return modifiedPaymentRequest
 }
 
 const getPaymentRequestByInvoiceNumberAndRequestId = async (invoiceNumber, paymentRequestId) => {

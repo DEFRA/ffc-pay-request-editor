@@ -1,4 +1,5 @@
 const db = require('../data')
+const { replaceSFI22 } = require('../processing/replace-sfi22')
 
 const getDebts = async (includeAttached = false) => {
   const where = includeAttached ? { reference: { [db.Sequelize.Op.notLike]: 'Manual enrichment' } } : { paymentRequestId: null, reference: { [db.Sequelize.Op.notLike]: 'Manual enrichment' } }
@@ -27,12 +28,8 @@ const getDebts = async (includeAttached = false) => {
     ],
     order: [['createdDate', 'DESC']]
   })
-  for (let i = 0; i < debtData.length; i++) {
-    if (debtData[i].schemes?.name === 'SFI') {
-      debtData[i].schemes.name = 'SFI22'
-    }
-  }
-  return debtData
+  const modifiedDebtData = replaceSFI22(debtData)
+  return modifiedDebtData
 }
 
 module.exports = getDebts
