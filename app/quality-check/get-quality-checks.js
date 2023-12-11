@@ -37,6 +37,11 @@ const getQualityChecks = async () => {
       status: PENDING
     }
   })
+  for (let i = 0; i < qualityChecks.length; i++) {
+    if (qualityChecks[i].paymentRequest?.schemes?.name === 'SFI') {
+      qualityChecks[i].paymentRequest.schemes.name = 'SFI22'
+    }
+  }
   return qualityChecks.map(x => x.get({ plain: true }))
 }
 

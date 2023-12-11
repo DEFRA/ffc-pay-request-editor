@@ -1,4 +1,3 @@
-
 const mockSendEvent = jest.fn()
 const mockPublishEvent = jest.fn()
 

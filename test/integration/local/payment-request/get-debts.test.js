@@ -1,20 +1,36 @@
 const { getDebts, getDebtsCount } = require('../../../../app/debt')
 const db = require('../../../../app/data')
+const { SFI } = require('../../../../app/constants/schemes')
+
+let scheme
+
+const resetData = async () => {
+  await db.scheme.truncate({ cascade: true })
+  await db.debtData.truncate({ cascade: true })
+}
 
 describe('Get debts test', () => {
   const debts = {
     frn: 1234567890,
     reference: 'SIP00000000000001',
-    netValue: 15000
+    netValue: 15000,
+    schemeId: SFI
   }
 
   beforeEach(async () => {
-    await db.debtData.truncate({ cascade: true })
+    await resetData()
+
+    scheme = {
+      schemeId: SFI,
+      name: 'SFI'
+    }
+
+    await db.scheme.create(scheme)
     await db.debtData.create(debts)
   })
 
   afterAll(async () => {
-    await db.debtData.truncate({ cascade: true })
+    await resetData()
     await db.sequelize.close()
   })
 
@@ -58,5 +74,10 @@ describe('Get debts test', () => {
     const debtDataRows = await getDebts()
     expect(debtDataRows[1].createdDate).toStrictEqual(new Date('2022-01-01T00:00:00.000Z'))
     expect(debtDataRows[0].createdDate).toStrictEqual(new Date('2022-02-01T00:00:00.000Z'))
+  })
+
+  test('if data with scheme SFI, name should be replaced with SFI22', async () => {
+    const debt = await getDebts()
+    expect(debt[0].schemes.name).toBe('SFI22')
   })
 })

@@ -47,6 +47,11 @@ describe('Get payment request test', () => {
     expect(paymentRequests).toHaveLength(1)
   })
 
+  test('should return payment request record with scheme name SFI22 if name is SFI', async () => {
+    const paymentRequests = await getPaymentRequest()
+    expect(paymentRequests[0].schemes.name).toBe('SFI22')
+  })
+
   test('should return a count of 1 for payment request', async () => {
     const paymentRequestCount = await getPaymentRequestCount()
     expect(paymentRequestCount).toEqual(1)

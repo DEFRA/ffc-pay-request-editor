@@ -56,6 +56,12 @@ describe('Get manual ledger test', () => {
     expect(paymentRequestWithManualLedger.paymentRequestId).toBe(paymentRequestId)
   })
 
+  test('should return 1 payment request record with scheme name SFI22 if scheme name is SFI', async () => {
+    const paymentRequestId = 1
+    const paymentRequestWithManualLedger = await getManualLedger(paymentRequestId)
+    expect(paymentRequestWithManualLedger.schemes.name).toBe('SFI22')
+  })
+
   test('should return 0 payment request record with a provisional paymaent request', async () => {
     const paymentRequestId = 3
     const paymentRequestWithManualLedger = await getManualLedger(paymentRequestId)

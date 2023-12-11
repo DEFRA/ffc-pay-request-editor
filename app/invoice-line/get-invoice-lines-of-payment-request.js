@@ -3,7 +3,7 @@ const db = require('../data')
 const getInvoiceLinesOfPaymentRequest = async (paymentRequestId) => {
   return db.invoiceLine.findAll(
     {
-      where: { paymentRequestId: paymentRequestId },
+      where: { paymentRequestId },
       include: [
         {
           model: db.paymentRequest,

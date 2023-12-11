@@ -76,7 +76,7 @@ describe('Capture test', () => {
 
     test('POST /capture with no records returns "No debts match the FRN provided.', async () => {
       const options = {
-        method: method,
+        method,
         url,
         payload: { frn: '1234567893' },
         auth

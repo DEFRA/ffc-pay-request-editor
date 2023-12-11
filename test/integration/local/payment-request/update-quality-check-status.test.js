@@ -86,7 +86,7 @@ describe('process payment requests', () => {
     await updateQualityChecksStatus(paymentRequestId, PASSED)
 
     const qualityChecksRowAfterUpdate = await db.qualityCheck.findAll({
-      where: { paymentRequestId: paymentRequestId },
+      where: { paymentRequestId },
       include: [{
         model: db.paymentRequest,
         as: 'paymentRequest',
