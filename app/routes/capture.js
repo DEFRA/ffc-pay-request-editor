@@ -1,9 +1,12 @@
 const ViewModel = require('./models/search')
 const { getDebts, deleteDebt } = require('../debt')
+const { mapExtract } = require('../extract')
 const schema = require('./schemas/capture')
 const Joi = require('joi')
 const { enrichment } = require('../auth/permissions')
 const searchLabelText = 'Search for data by FRN number'
+const convertToCSV = require('../convert-to-csv')
+const config = require('../config')
 
 module.exports = [{
   method: 'GET',
@@ -57,6 +60,32 @@ module.exports = [{
     handler: async (request, h) => {
       await deleteDebt(request.payload.debtDataId)
       return h.redirect('/capture')
+    }
+  }
+}, {
+  method: 'GET',
+  path: '/capture/extract',
+  options: {
+    auth: { scope: [enrichment] },
+    handler: async (_request, h) => {
+      try {
+        const debts = await getDebts(true)
+        if (debts) {
+          const extractData = mapExtract(debts)
+          const res = convertToCSV(extractData)
+          if (res) {
+            console.log(res)
+            return h.response(res)
+              .type('text/csv')
+              .header('Connection', 'keep-alive')
+              .header('Cache-Control', 'no-cache')
+              .header('Content-Disposition', `attachment;filename=${config.debtsReportName}`)
+          }
+        }
+        return h.view('debts-report-unavailable')
+      } catch (err) {
+        return h.view('debts-report-unavailable')
+      }
     }
   }
 }]

@@ -5,6 +5,10 @@ describe('Capture test', () => {
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/debt')
   const { getDebts } = require('../../../../app/debt')
+  jest.mock('../../../../app/extract')
+  const { mapExtract } = require('../../../../app/extract')
+  jest.mock('../../../../app/convert-to-csv')
+  const convertToCSV = require('../../../../app/convert-to-csv')
   jest.mock('../../../../app/auth')
   const mockAuth = require('../../../../app/auth')
 
@@ -126,5 +130,85 @@ describe('Capture test', () => {
       const response = await server.inject(options)
       expect(response.statusCode).toBe(statusCode)
     })
+  })
+
+  test('GET /capture/extract route returns stream if report available', async () => {
+    const options = {
+      method: 'GET',
+      url: '/capture/extract',
+      auth
+    }
+
+    const response = await server.inject(options)
+    expect(response.statusCode).toBe(200)
+  })
+
+  test('GET /capture/extract should call getdebts', async () => {
+    const options = {
+      method: 'GET',
+      url: '/capture/extract',
+      auth
+    }
+
+    await server.inject(options)
+    expect(getDebts).toBeCalled()
+  })
+
+  test('GET /capture/extract should call mapExtract', async () => {
+    const options = {
+      method: 'GET',
+      url: '/capture/extract',
+      auth
+    }
+
+    await server.inject(options)
+    expect(mapExtract).toBeCalled()
+  })
+
+  test('GET /capture/extract should call convertToCSV', async () => {
+    const options = {
+      method: 'GET',
+      url: '/capture/extract',
+      auth
+    }
+
+    await server.inject(options)
+    expect(convertToCSV).toBeCalled()
+  })
+
+  test('GET /capture/extract route returns unavailable page if getdebts returns undefined', async () => {
+    getDebts.mockReturnValue(undefined)
+    const options = {
+      method: 'GET',
+      url: '/capture/extract',
+      auth
+    }
+
+    const response = await server.inject(options)
+    expect(response.payload).toContain('Debts report unavailable')
+  })
+
+  test('GET /capture/extract route returns unavailable page if mapextract returns null', async () => {
+    mapExtract.mockReturnValue(undefined)
+    const options = {
+      method: 'GET',
+      url: '/capture/extract',
+      auth
+    }
+
+    const response = await server.inject(options)
+    expect(response.payload).toContain('Debts report unavailable')
+  })
+
+  test('GET /capture/extract route returns unavailable page if converttocsv returns null', async () => {
+    convertToCSV.mockReturnValue(undefined)
+    const options = {
+      method: 'GET',
+      url: '/capture/extract',
+      auth
+    }
+
+    const response = await server.inject(options)
+    expect(response.payload).toContain('Debts report unavailable')
   })
 })
