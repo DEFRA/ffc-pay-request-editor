@@ -9,11 +9,11 @@ describe('Map extract', () => {
       },
       frn: '1234567890',
       reference: 'SFIP1234567',
-      netValueText: '£1000.00',
+      netValueText: '£1,000.00',
       debtTypeText: IRREGULAR,
       recoveryDate: '19/01/2022',
       createdBy: 'Billie Joe Armstrong',
-      paymentRequestId: 'In transit'
+      paymentRequestId: 23
     },
     {
       schemes: {
@@ -34,7 +34,7 @@ describe('Map extract', () => {
       debtType: IRREGULAR,
       dateOfDiscovery: '19/01/2022',
       createdBy: 'Billie Joe Armstrong',
-      status: 'In transit'
+      status: 'Attached'
     }, {
       scheme: 'SFI',
       frn: '1234567891',
