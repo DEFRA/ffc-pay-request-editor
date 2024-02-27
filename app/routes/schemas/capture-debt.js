@@ -8,13 +8,19 @@ const debtDaySchema = require('./debt-day')
 const debtMonthSchema = require('./debt-month')
 const debtYearSchema = require('./debt-year')
 
-module.exports = Joi.object({
-  ...schemeSchema,
-  ...frnSchema,
-  ...applicationIdentifierSchema,
-  ...netSchema,
-  ...debtType,
-  ...debtDaySchema,
-  ...debtMonthSchema,
-  ...debtYearSchema
-})
+const getSchema = () => {
+  const yearNow = new Date().getFullYear()
+
+  return Joi.object({
+    ...schemeSchema,
+    ...frnSchema,
+    ...applicationIdentifierSchema,
+    ...netSchema,
+    ...debtType,
+    ...debtDaySchema,
+    ...debtMonthSchema,
+    ...debtYearSchema(yearNow)
+  })
+}
+
+module.exports = getSchema()
