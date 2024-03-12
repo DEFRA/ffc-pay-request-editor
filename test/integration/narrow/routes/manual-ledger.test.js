@@ -24,9 +24,7 @@ describe('Manual ledger test', () => {
     await server.initialize()
     mockAuth.getUser.mockResolvedValue(user)
     getManualLedgers.mockResolvedValue([{
-      paymentRequest: {
-        frn: '1234567890'
-      }
+      frn: '1234567890'
     }
     ])
   })
