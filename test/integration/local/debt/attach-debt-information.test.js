@@ -13,6 +13,7 @@ let paymentRequestData
 let paymentRequest
 let debtData
 let qualityData
+let schemeId
 let frn
 let reference
 let netValue
@@ -158,9 +159,10 @@ describe('Attach debt information tests', () => {
   })
 
   test('checkDebts returns an empty object if frn is NaN', async () => {
+    schemeId = 1
     frn = 'aaaaaaa'
     reference = paymentRequest.agreementNumber
     netValue = paymentRequest.netValue
-    expect(await checkDebts(frn, reference, netValue)).toStrictEqual({})
+    expect(await checkDebts(schemeId, frn, reference, netValue)).toStrictEqual({})
   })
 })
