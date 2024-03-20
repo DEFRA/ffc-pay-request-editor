@@ -26,6 +26,7 @@ describe('process payment requests', () => {
     }
 
     paymentRequest = {
+      schemeId: 1,
       sourceSystem: 'SFIP',
       deliveryBody: 'RP00',
       invoiceNumber: 'S00000001SFIP000001V001',

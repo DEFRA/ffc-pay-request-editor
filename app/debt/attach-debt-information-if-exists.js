@@ -4,8 +4,8 @@ const checkDebts = require('./check-debts')
 const saveDebtData = require('./save-debt-data')
 
 const attachDebtInformationIfExists = async (paymentRequest, transaction) => {
-  const { frn, agreementNumber, value } = paymentRequest
-  const foundDebtData = await checkDebts(frn, agreementNumber, value, transaction)
+  const { schemeId, frn, agreementNumber, value } = paymentRequest
+  const foundDebtData = await checkDebts(schemeId, frn, agreementNumber, value, transaction)
 
   if (foundDebtData) {
     foundDebtData.paymentRequestId = paymentRequest.paymentRequestId
