@@ -31,7 +31,7 @@ function ViewModel (payload, error) {
           text: 'The date submitted is not valid'
         }
       } else if (detail.context.label === 'date') {
-        const text = 'Date must be valid and cannot be in the future'
+        const text = getDateText(detail.message)
         detail.href = '#debt-discovered-date-day'
         detail.text = text
         errorMessage['date-error'] = {
@@ -121,6 +121,13 @@ function ViewModel (payload, error) {
       ]
     }
   }
+}
+
+const getDateText = (msg) => {
+  if (msg.includes('cannot be after')) {
+    return msg
+  }
+  return 'Date must be valid and cannot be in the future'
 }
 
 module.exports = ViewModel

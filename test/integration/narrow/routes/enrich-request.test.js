@@ -319,7 +319,7 @@ describe('Enrich request test', () => {
       expect(response.request.response.statusCode).toBe(400)
       expect(response.request.response.source.template).toBe('enrich-request')
       expect(response.request.response.source.context.model.errorMessage.titleText).toBe('There is a problem')
-      expect(response.request.response.source.context.model.date.errorMessage.text).toBe('Date must be valid and cannot be in the future')
+      expect(response.request.response.source.context.model.date.errorMessage.text).toBe('Date cannot be after 25 10 2015')
     })
 
     test('POST /enrich-request route saves debt data when day and month are 1 digit then redirects to /enrich', async () => {
