@@ -66,11 +66,11 @@ function ViewModel (schemes, payload, error) {
 
   const applicationIdentifier = {
     label: {
-      text: 'Agreement number',
+      text: 'Agreement/claim number',
       classes: 'govuk-label--s'
     },
     hint: {
-      text: 'Enter the agreement number, for example SIP000000000001'
+      text: 'Enter the agreement/claim number, for example SIP000000000001'
     },
     classes: 'govuk-input--width-10',
     id: 'applicationIdentifier',
