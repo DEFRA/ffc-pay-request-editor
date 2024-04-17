@@ -62,7 +62,7 @@
           </div>
 
           <p class="govuk-body">
-            <a href="/capture/extract" class="govuk-link">Download an extract</a>
+            <a href="/capture/extract?page={{ page }}" class="govuk-link">Download page {{ page }} extract</a>
           </p>
 
           <table class="govuk-table">
@@ -88,66 +88,74 @@
                   <td scope="col" class="govuk-table__cell govuk-body-s">
                     {% if data.reference %}
                       {{ data.reference }}
-                    {%else%}
+                      {%else%}
                       Manual enrichment
                     {%endif%}
-                  </td>
-                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">
-                    {% if data.netValueText %}
-                      {{ data.netValueText }}
-                    {%endif%}
-                  </td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">
-                    {% if data.paymentRequestId %}
-                      <strong class="govuk-tag govuk-tag--green capture-status">Attached</strong>
-                    {% else %}
-                     <strong class="govuk-tag capture-status">Pending</strong>
-                    {% endif %}
-                  </td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">
-                    {% if not data.paymentRequestId %}
-                      <form action="/capture/delete" method="POST">
-                        <input type="hidden" name="crumb" value="{{crumb}}"/>
-                        <input type="hidden" name="debtDataId" value="{{data.debtDataId}}"/>
-                        <button class="govuk-button-link" data-module="govuk-button">
+                    </td>
+                    <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">
+                      {% if data.netValueText %}
+                        {{ data.netValueText }}
+                        {%endif%}
+                      </td>
+                      <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}</td>
+                      <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}</td>
+                      <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}</td>
+                      <td scope="col" class="govuk-table__cell govuk-body-s">
+                        {% if data.paymentRequestId %}
+                          <strong class="govuk-tag govuk-tag--green capture-status">Attached</strong>
+                        {% else %}
+                          <strong class="govuk-tag capture-status">Pending</strong>
+                        {% endif %}
+                      </td>
+                      <td scope="col" class="govuk-table__cell govuk-body-s">
+                        {% if not data.paymentRequestId %}
+                          <form action="/capture/delete" method="POST">
+                            <input type="hidden" name="crumb" value="{{crumb}}"/>
+                            <input type="hidden" name="debtDataId" value="{{data.debtDataId}}"/>
+                            <button class="govuk-button-link" data-module="govuk-button">
                           Delete
                         </button>
-                      </form>
-                    {% endif %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        <div>
-      {% else %}
-      <div class="govuk-inset-text">
-        No reporting datasets
-      </div>
-    {% endif %}
+                          </form>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <div class="pagination">
+                {% if page > 1 %}
+                  <a href="?page={{ page - 1 }}" class="govuk-link">Previous</a>
+                {% endif %}
+                <span class="govuk-body">Page {{ page }}</span>
+                {% if captureData.length >= perPage %}
+                  <a href="?page={{ page + 1 }}" class="govuk-link">Next</a>
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="govuk-inset-text">
+      No reporting datasets
     </div>
-  </div>
+            {% endif %}
+          </div>
+        </div>
 
-  <script>
-    const toggleUnattachedForm = document.querySelectorAll(".govuk-radios__input")
-    
-    const toggleUnattachedData = () => {
-      const noToggle = document.getElementById('unattached-data-no')
-      const tableRows = document.querySelectorAll('.govuk-table__row.capture-datasets')
-      if (noToggle.checked) {
-        for (let i = 0; i < tableRows.length; i++) {
-          if (tableRows[i].querySelector('.capture-status').innerHTML === 'Attached') {
-            tableRows[i].style.display = 'none'
+        <script>
+          const toggleUnattachedForm = document.querySelectorAll(".govuk-radios__input")
+
+          const toggleUnattachedData = () => {
+            const noToggle = document.getElementById('unattached-data-no')
+            const tableRows = document.querySelectorAll('.govuk-table__row.capture-datasets')
+            if (noToggle.checked) {
+              for (let i = 0; i < tableRows.length; i++) {
+                if (tableRows[i].querySelector('.capture-status').innerHTML === 'Attached') {
+                  tableRows[i].style.display = 'none'
+                }
+              }
+            } else {
+              tableRows.forEach(x => x.removeAttribute('style'))
+            }
           }
-        }
-      } else {
-        tableRows.forEach(x => x.removeAttribute('style'))
-      }
-    }
 
-    toggleUnattachedForm.forEach(x => x.addEventListener('change', toggleUnattachedData))
-  </script>
-{% endblock %}
+          toggleUnattachedForm.forEach(x => x.addEventListener('change', toggleUnattachedData))
+        </script>
+      {% endblock %}
