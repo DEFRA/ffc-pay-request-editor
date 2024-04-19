@@ -15,7 +15,7 @@ module.exports = [{
     auth: { scope: [enrichment] },
     handler: async (request, h) => {
       const page = parseInt(request.query.page) || 1
-      const perPage = parseInt(request.query.perPage) || 2000
+      const perPage = parseInt(request.query.perPage) || 2500
       const captureData = await getDebts(true, page, perPage)
       return h.view('capture', {
         captureData,
@@ -77,7 +77,7 @@ module.exports = [{
     handler: async (request, h) => {
       try {
         const page = parseInt(request.query.page) || 1
-        const pageSize = parseInt(request.query.pageSize) || 2000
+        const pageSize = parseInt(request.query.pageSize) || 2500
         const debts = await getDebts(true, page, pageSize)
         if (debts) {
           const extractData = mapExtract(debts)

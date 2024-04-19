@@ -2,6 +2,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "macros/search-box.njk" import searchBox %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
 
 {% block content %}
   {{ govukBackLink({
@@ -122,15 +123,34 @@
                   {% endfor %}
                 </tbody>
               </table>
-              <div class="pagination">
-                {% if page > 1 %}
-                  <a href="?page={{ page - 1 }}" class="govuk-link">Previous</a>
-                {% endif %}
-                <span class="govuk-body">Page {{ page }}</span>
-                {% if captureData.length >= perPage %}
-                  <a href="?page={{ page + 1 }}" class="govuk-link">Next</a>
-                {% endif %}
-              </div>
+              <nav class="govuk-pagination" aria-label="Pagination">
+                <div class="govuk-pagination__prev">
+                  {% if page > 1 %}
+                    <a class="govuk-link govuk-pagination__link" href="?page={{ page - 1 }}" rel="prev">
+                      <span class="govuk-pagination__link-title">
+          Previous<span class="govuk-visually-hidden"> page</span>
+                      </span>
+                    </a>
+                  {% endif %}
+                </div>
+                <ul class="govuk-pagination__list">
+                  <li class="govuk-pagination__item govuk-pagination__item--current">
+                    <span class="govuk-pagination__link-title">
+                      {{ page }}
+                      <span class="govuk-visually-hidden"> page</span>
+                    </span>
+                  </li>
+                </ul>
+                <div class="govuk-pagination__next">
+                  {% if captureData.length >= perPage %}
+                    <a class="govuk-link govuk-pagination__link" href="?page={{ page + 1 }}" rel="next">
+                      <span class="govuk-pagination__link-title">
+          Next<span class="govuk-visually-hidden"> page</span>
+                      </span>
+                    </a>
+                  {% endif %}
+                </div>
+              </nav>
             {% else %}
               <div class="govuk-inset-text">
       No reporting datasets
