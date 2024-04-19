@@ -18,6 +18,11 @@ Optional:
 - [Helm](https://helm.sh/docs/)
 
 ## Configuration
+### Environment Variable
+This service is configured as default to 2500 records per page loaded to contain the performance issues on large datasets. In order to override this limitation you may set an environment variable using the format shown below with the example of 5000 records.
+
+REQUEST_EDITOR_PAGESIZE=5000
+
 ### Azure Service Bus
 
 This service depends on a valid Azure Service Bus connection string for
