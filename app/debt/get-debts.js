@@ -1,9 +1,9 @@
 const db = require('../data')
 
-const getDebts = async (includeAttached = false, page = 1, pageSize = 2500) => {
+const getDebts = async (includeAttached = false, page = 1, pageSize = 2500, usePagination = true) => {
   const offset = (page - 1) * pageSize
   const where = includeAttached ? { reference: { [db.Sequelize.Op.notLike]: 'Manual enrichment' } } : { paymentRequestId: null, reference: { [db.Sequelize.Op.notLike]: 'Manual enrichment' } }
-  const debtData = await db.debtData.findAll({
+  const options = {
     where,
     include: [
       {
@@ -26,10 +26,13 @@ const getDebts = async (includeAttached = false, page = 1, pageSize = 2500) => {
       'paymentRequestId',
       'createdDate'
     ],
-    order: [['createdDate', 'DESC']],
-    limit: pageSize,
-    offset
-  })
+    order: [['createdDate', 'DESC']]
+  }
+  if (usePagination) {
+    options.limit = pageSize
+    options.offset = offset
+  }
+  const debtData = await db.debtData.findAll(options)
   for (let i = 0; i < debtData.length; i++) {
     if (debtData[i].schemes?.name === 'SFI') {
       debtData[i].schemes.name = 'SFI22'

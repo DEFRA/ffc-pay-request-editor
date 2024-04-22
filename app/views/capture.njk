@@ -3,6 +3,7 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "macros/search-box.njk" import searchBox %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 
 {% block content %}
   {{ govukBackLink({
@@ -62,9 +63,43 @@
             </fieldset>
           </div>
 
-          <p class="govuk-body">
-            <a href="/capture/extract?page={{ page }}" class="govuk-link">Download page {{ page }} extract</a>
-          </p>
+          <div class="govuk-body">
+            <div style="float: left;">
+              <a href="/capture/extract" class="govuk-link">Download an extract </a>
+            </div>
+            <div style="float: right;">
+              <form action="/capture" method="get">
+                {{ govukSelect({
+        id: "records",
+        name: "perPage",
+        label: {
+          text: "Number of records per page"
+        },
+        attributes: {
+          onchange: "this.form.submit()"
+        },
+        items: [
+          {
+            value: 2500,
+            text: "2500",
+            selected: perPage == 2500
+          },
+          {
+            value: 5000,
+            text: "5000",
+            selected: perPage == 5000
+          },
+          {
+            value: 10000,
+            text: "10000",
+            selected: perPage == 10000
+          }
+        ]
+      }) }}
+              </form>
+            </div>
+            <div style="clear: both;"></div>
+          </div>
 
           <table class="govuk-table">
             <caption class="govuk-table__caption govuk-table__caption--s">Existing reporting datasets</caption>

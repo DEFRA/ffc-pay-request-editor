@@ -15,7 +15,7 @@ module.exports = [{
     auth: { scope: [enrichment] },
     handler: async (request, h) => {
       const page = parseInt(request.query.page) || 1
-      const perPage = parseInt(request.query.perPage) || parseInt(process.env.REQUEST_EDITOR_PAGESIZE) || 2500
+      const perPage = parseInt(request.query.perPage || 2500)
       const captureData = await getDebts(true, page, perPage)
       return h.view('capture', {
         captureData,
@@ -76,9 +76,7 @@ module.exports = [{
     auth: { scope: [enrichment] },
     handler: async (request, h) => {
       try {
-        const page = parseInt(request.query.page) || 1
-        const pageSize = parseInt(request.query.pageSize) || parseInt(process.env.REQUEST_EDITOR_PAGESIZE) || 2500
-        const debts = await getDebts(true, page, pageSize)
+        const debts = await getDebts(true, undefined, undefined, false)
         if (debts) {
           const extractData = mapExtract(debts)
           const res = convertToCSV(extractData)
@@ -99,4 +97,5 @@ module.exports = [{
       }
     }
   }
-}]
+}
+]
