@@ -2,6 +2,8 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "macros/search-box.njk" import searchBox %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 
 {% block content %}
   {{ govukBackLink({
@@ -61,9 +63,43 @@
             </fieldset>
           </div>
 
-          <p class="govuk-body">
-            <a href="/capture/extract" class="govuk-link">Download an extract</a>
-          </p>
+          <div class="govuk-body">
+            <div style="float: left;">
+              <a href="/capture/extract" class="govuk-link">Download an extract </a>
+            </div>
+            <div style="float: right;">
+              <form action="/capture" method="get">
+                {{ govukSelect({
+        id: "records",
+        name: "perPage",
+        label: {
+          text: "Number of records per page"
+        },
+        attributes: {
+          onchange: "this.form.submit()"
+        },
+        items: [
+          {
+            value: 2500,
+            text: "2500",
+            selected: perPage == 2500
+          },
+          {
+            value: 5000,
+            text: "5000",
+            selected: perPage == 5000
+          },
+          {
+            value: 10000,
+            text: "10000",
+            selected: perPage == 10000
+          }
+        ]
+      }) }}
+              </form>
+            </div>
+            <div style="clear: both;"></div>
+          </div>
 
           <table class="govuk-table">
             <caption class="govuk-table__caption govuk-table__caption--s">Existing reporting datasets</caption>
@@ -88,66 +124,99 @@
                   <td scope="col" class="govuk-table__cell govuk-body-s">
                     {% if data.reference %}
                       {{ data.reference }}
-                    {%else%}
+                      {%else%}
                       Manual enrichment
                     {%endif%}
-                  </td>
-                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">
-                    {% if data.netValueText %}
-                      {{ data.netValueText }}
-                    {%endif%}
-                  </td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">
-                    {% if data.paymentRequestId %}
-                      <strong class="govuk-tag govuk-tag--green capture-status">Attached</strong>
-                    {% else %}
-                     <strong class="govuk-tag capture-status">Pending</strong>
-                    {% endif %}
-                  </td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">
-                    {% if not data.paymentRequestId %}
-                      <form action="/capture/delete" method="POST">
-                        <input type="hidden" name="crumb" value="{{crumb}}"/>
-                        <input type="hidden" name="debtDataId" value="{{data.debtDataId}}"/>
-                        <button class="govuk-button-link" data-module="govuk-button">
+                    </td>
+                    <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">
+                      {% if data.netValueText %}
+                        {{ data.netValueText }}
+                        {%endif%}
+                      </td>
+                      <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}</td>
+                      <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}</td>
+                      <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}</td>
+                      <td scope="col" class="govuk-table__cell govuk-body-s">
+                        {% if data.paymentRequestId %}
+                          <strong class="govuk-tag govuk-tag--green capture-status">Attached</strong>
+                        {% else %}
+                          <strong class="govuk-tag capture-status">Pending</strong>
+                        {% endif %}
+                      </td>
+                      <td scope="col" class="govuk-table__cell govuk-body-s">
+                        {% if not data.paymentRequestId %}
+                          <form action="/capture/delete" method="POST">
+                            <input type="hidden" name="crumb" value="{{crumb}}"/>
+                            <input type="hidden" name="debtDataId" value="{{data.debtDataId}}"/>
+                            <button class="govuk-button-link" data-module="govuk-button">
                           Delete
                         </button>
-                      </form>
-                    {% endif %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        <div>
-      {% else %}
-      <div class="govuk-inset-text">
-        No reporting datasets
-      </div>
-    {% endif %}
+                          </form>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <nav class="govuk-pagination" aria-label="Pagination">
+                {% if page > 1 %}
+                  <div class="govuk-pagination__prev">
+                    <a class="govuk-link govuk-pagination__link" href="?page={{ page - 1 }}&perPage={{ perPage }}" rel="prev">
+                      <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                        <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
+                      </svg>
+                      <span class="govuk-pagination__link-title">
+          Previous<span class="govuk-visually-hidden"> page</span>
+                      </span>
+                    </a>
+                  {% endif %}
+                </div>
+                <ul class="govuk-pagination__list">
+                  <li class="govuk-pagination__item govuk-pagination__item--current">
+                    <span class="govuk-pagination__link-title">
+                      {{ page }}
+                      <span class="govuk-visually-hidden"> page</span>
+                    </span>
+                  </li>
+                </ul>
+                {% if captureData.length >= perPage %}
+                  <div class="govuk-pagination__next">
+                    <a class="govuk-link govuk-pagination__link" href="?page={{ page + 1 }}&perPage={{ perPage }}" rel="next">
+                      <span class="govuk-pagination__link-title">
+          Next<span class="govuk-visually-hidden"> page</span>
+                      </span>
+                      <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                        <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+                      </svg>
+                    </a>
+                  {% endif %}
+                </div>
+              </nav>
+            {% else %}
+              <div class="govuk-inset-text">
+      No reporting datasets
     </div>
-  </div>
+            {% endif %}
+          </div>
+        </div>
 
-  <script>
-    const toggleUnattachedForm = document.querySelectorAll(".govuk-radios__input")
-    
-    const toggleUnattachedData = () => {
-      const noToggle = document.getElementById('unattached-data-no')
-      const tableRows = document.querySelectorAll('.govuk-table__row.capture-datasets')
-      if (noToggle.checked) {
-        for (let i = 0; i < tableRows.length; i++) {
-          if (tableRows[i].querySelector('.capture-status').innerHTML === 'Attached') {
-            tableRows[i].style.display = 'none'
+        <script>
+          const toggleUnattachedForm = document.querySelectorAll(".govuk-radios__input")
+
+          const toggleUnattachedData = () => {
+            const noToggle = document.getElementById('unattached-data-no')
+            const tableRows = document.querySelectorAll('.govuk-table__row.capture-datasets')
+            if (noToggle.checked) {
+              for (let i = 0; i < tableRows.length; i++) {
+                if (tableRows[i].querySelector('.capture-status').innerHTML === 'Attached') {
+                  tableRows[i].style.display = 'none'
+                }
+              }
+            } else {
+              tableRows.forEach(x => x.removeAttribute('style'))
+            }
           }
-        }
-      } else {
-        tableRows.forEach(x => x.removeAttribute('style'))
-      }
-    }
 
-    toggleUnattachedForm.forEach(x => x.addEventListener('change', toggleUnattachedData))
-  </script>
-{% endblock %}
+          toggleUnattachedForm.forEach(x => x.addEventListener('change', toggleUnattachedData))
+        </script>
+      {% endblock %}

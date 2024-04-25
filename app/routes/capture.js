@@ -13,9 +13,16 @@ module.exports = [{
   path: '/capture',
   options: {
     auth: { scope: [enrichment] },
-    handler: async (_request, h) => {
-      const captureData = await getDebts(true)
-      return h.view('capture', { captureData, ...new ViewModel(searchLabelText) })
+    handler: async (request, h) => {
+      const page = parseInt(request.query.page) || 1
+      const perPage = parseInt(request.query.perPage || 2500)
+      const captureData = await getDebts(true, page, perPage)
+      return h.view('capture', {
+        captureData,
+        page,
+        perPage,
+        ...new ViewModel(searchLabelText)
+      })
     }
   }
 },
@@ -67,9 +74,9 @@ module.exports = [{
   path: '/capture/extract',
   options: {
     auth: { scope: [enrichment] },
-    handler: async (_request, h) => {
+    handler: async (request, h) => {
       try {
-        const debts = await getDebts(true)
+        const debts = await getDebts(true, undefined, undefined, false)
         if (debts) {
           const extractData = mapExtract(debts)
           const res = convertToCSV(extractData)
@@ -90,4 +97,5 @@ module.exports = [{
       }
     }
   }
-}]
+}
+]
