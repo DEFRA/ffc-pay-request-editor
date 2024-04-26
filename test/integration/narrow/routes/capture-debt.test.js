@@ -426,7 +426,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no agreement number returns "The agreement number is invalid." error message', async () => {
+  test('POST /capture-debt with no agreement number returns "The agreement/claim number is invalid." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -435,7 +435,31 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number is invalid.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement/claim number is invalid.')
+  })
+
+  test('POST /capture-debt with too short agreement number returns all scheme names', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123' },
+      auth
+    }
+
+    const result = await server.inject(options)
+    expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
+  })
+
+  test('POST /capture-debt with too short agreement number returns "The agreement/claim number must be at least 5 characters long." error message', async () => {
+    const options = {
+      method: 'POST',
+      url: '/capture-debt',
+      payload: { ...VALID_PAYLOAD, applicationIdentifier: '123' },
+      auth
+    }
+
+    const result = await server.inject(options)
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement/claim number must be at least 5 characters long.')
   })
 
   test('POST /capture-debt with non alphanumeric characters in the agreement number returns 400', async () => {
@@ -475,7 +499,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with non alphanumeric characters in the agreement number returns "The agreement number must be a string consisting of alphanumeric characters and underscores." error message', async () => {
+  test('POST /capture-debt with non alphanumeric characters in the agreement number returns "The agreement/claim number must be a string consisting of alphanumeric characters and underscores." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -484,7 +508,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement number must be a string consisting of alphanumeric characters and underscores.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement/claim number must be a string consisting of alphanumeric characters and underscores.')
   })
 
   test('POST /capture-debt with no net returns 400', async () => {
