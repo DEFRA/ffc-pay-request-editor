@@ -20,12 +20,12 @@ const checkDebts = async (schemeId, frn, reference, secondaryReference, netValue
           { reference: secondaryReference },
           {
             reference: {
-              [db.Sequelize.Op.like]: `%${Number(referenceNumeric).toString()}%`
+              [db.Sequelize.Op.like]: `%${Number(referenceNumeric).toString()}`
             }
           },
           {
             reference: {
-              [db.Sequelize.Op.like]: `%${Number(secondaryReferenceNumeric).toString()}%`
+              [db.Sequelize.Op.like]: `%${Number(secondaryReferenceNumeric).toString()}`
             }
           }
         ]
