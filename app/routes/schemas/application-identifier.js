@@ -1,10 +1,11 @@
 const Joi = require('joi')
 
 module.exports = {
-  applicationIdentifier: Joi.string().regex(/^\w*$/).required()
+  applicationIdentifier: Joi.string().regex(/^\w*$/).min(5).required()
     .messages({
-      'any.required': 'The agreement number is required.',
-      'string.pattern.base': 'The agreement number must be a string consisting of alphanumeric characters and underscores.',
-      '*': 'The agreement number is invalid.'
+      'any.required': 'The agreement/claim number is required.',
+      'string.pattern.base': 'The agreement/claim number must be a string consisting of alphanumeric characters and underscores.',
+      'string.min': 'The agreement/claim number must be at least 5 characters long.',
+      '*': 'The agreement/claim number is invalid.'
     })
 }
