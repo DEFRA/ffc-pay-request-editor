@@ -3,8 +3,8 @@ const { checkDebtsByEnrichment } = require('../debt')
 const attachDebtToManualLedger = async (qualityCheckedPaymentRequest, addToAR = false) => {
   const paymentRequest = qualityCheckedPaymentRequest.paymentRequest
 
-  const { frn, agreementNumber, netValue } = paymentRequest
-  const debtData = await checkDebtsByEnrichment(frn, agreementNumber, netValue)
+  const { frn, agreementNumber, contractNumber, netValue } = paymentRequest
+  const debtData = await checkDebtsByEnrichment(frn, agreementNumber, contractNumber, netValue)
 
   addDebtData(debtData, paymentRequest)
 

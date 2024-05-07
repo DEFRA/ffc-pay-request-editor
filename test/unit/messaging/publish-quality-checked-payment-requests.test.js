@@ -23,6 +23,7 @@ describe('Publish quality checked payment requests', () => {
       schemeId: SCHEME_ID_SFI,
       frn: 1234567890,
       agreementNumber: 'SIP00000000000001',
+      contractNumber: 'Z0000001',
       released: undefined,
       categoryId: 2,
       netValue: 15000
