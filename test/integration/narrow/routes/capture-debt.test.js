@@ -426,7 +426,7 @@ describe('capture-debt route', () => {
     expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(scheme => scheme.name))
   })
 
-  test('POST /capture-debt with no agreement number returns "The agreement/claim number is invalid." error message', async () => {
+  test('POST /capture-debt with no agreement number returns "The agreement/claim number is required." error message', async () => {
     const options = {
       method: 'POST',
       url: '/capture-debt',
@@ -435,7 +435,7 @@ describe('capture-debt route', () => {
     }
 
     const result = await server.inject(options)
-    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement/claim number is invalid.')
+    expect(result.request.response.source.context.model.errorSummary[0].text).toEqual('The agreement/claim number is required.')
   })
 
   test('POST /capture-debt with too short agreement number returns all scheme names', async () => {
