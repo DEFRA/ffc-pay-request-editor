@@ -25,7 +25,6 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        console.log(error)
         const schemes = (await getSchemes()).map(x => x.name)
         return h.view('capture-debt', new ViewModel(schemes, request.payload, error)).code(400).takeover()
       }
