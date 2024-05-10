@@ -70,7 +70,7 @@ function ViewModel (schemes, payload, error) {
       classes: 'govuk-label--s'
     },
     hint: {
-      text: 'Enter the agreement/claim number, for example SIP000000000001'
+      text: 'Enter the agreement/claim number, for example SIP000000000001 or 1234567'
     },
     classes: 'govuk-input--width-10',
     id: 'applicationIdentifier',
