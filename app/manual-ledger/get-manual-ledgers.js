@@ -18,9 +18,9 @@ const getManualLedgers = async (statuses) => {
       where: { categoryId: 2 }
     }
   )
-  for (let i = 0; i < manualLedgers.length; i++) {
-    if (manualLedgers[i].schemes?.name === 'SFI') {
-      manualLedgers[i].schemes.name = 'SFI22'
+  for (const ledgers of manualLedgers) {
+    if (ledgers.schemes?.name === 'SFI') {
+      ledgers.schemes.name = 'SFI22'
     }
   }
   return manualLedgers
