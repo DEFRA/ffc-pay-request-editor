@@ -32,9 +32,9 @@ const getPaymentRequest = async (categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) =
     ],
     order: [['received']]
   })
-  for (let i = 0; i < paymentRequest.length; i++) {
-    if (paymentRequest[i].schemes?.name === 'SFI') {
-      paymentRequest[i].schemes.name = 'SFI22'
+  for (const payment of paymentRequest) {
+    if (payment.schemes?.name === 'SFI') {
+      payment.schemes.name = 'SFI22'
     }
   }
   return paymentRequest
