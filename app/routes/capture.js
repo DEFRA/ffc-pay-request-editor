@@ -34,13 +34,13 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        const captureData = await getDebts(true)
+        const captureData = await getDebts(true, 1, 2500, false)
         return h.view('capture', { captureData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
       const frn = request.payload.frn
-      const captureData = await getDebts(true)
+      const captureData = await getDebts(true, 1, 2500, false)
       const filteredCaptureData = captureData.filter(x => x.frn === String(frn))
 
       if (filteredCaptureData.length) {

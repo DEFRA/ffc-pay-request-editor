@@ -32,13 +32,13 @@ const getDebts = async (includeAttached = false, page = 1, pageSize = 2500, useP
     options.limit = pageSize
     options.offset = offset
   }
+
   const debtData = await db.debtData.findAll(options)
-  for (let i = 0; i < debtData.length; i++) {
-    if (debtData[i].schemes?.name === 'SFI') {
-      debtData[i].schemes.name = 'SFI22'
+  for (const data of debtData) {
+    if (data.schemes?.name === 'SFI') {
+      data.schemes.name = 'SFI22'
     }
   }
   return debtData
 }
-
 module.exports = getDebts
