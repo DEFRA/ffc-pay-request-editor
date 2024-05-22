@@ -1,6 +1,6 @@
 const db = require('../data')
 
-const getDebts = async (includeAttached = false, page = 1, pageSize = 2500, usePagination = true) => {
+const getDebts = async ({ includeAttached = false, page = 1, pageSize = 2500, usePagination = true }) => {
   const offset = (page - 1) * pageSize
   const where = includeAttached ? { reference: { [db.Sequelize.Op.notLike]: 'Manual enrichment' } } : { paymentRequestId: null, reference: { [db.Sequelize.Op.notLike]: 'Manual enrichment' } }
   const options = {
