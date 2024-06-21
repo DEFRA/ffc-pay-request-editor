@@ -7,5 +7,6 @@ module.exports = {
   BPS: 6,
   FDMR: 7,
   SFI23: 12,
-  DELINKED: 13
+  DELINKED: 13,
+  SFI_EXPANDED: 14
 }
