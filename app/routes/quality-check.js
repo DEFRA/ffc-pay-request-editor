@@ -11,10 +11,18 @@ module.exports = [{
   options: {
     auth: { scope: [ledger] },
     handler: async (request, h) => {
-      const qualityCheckData = await getQualityChecks()
+      const page = parseInt(request.query.page) || 1
+      const perPage = parseInt(request.query.perPage || 100)
+      const qualityCheckData = await getQualityChecks(page, perPage)
       const changedQualityChecks = await getChangedQualityChecks(qualityCheckData)
       const { userId } = getUser(request)
-      return h.view('quality-check', { qualityCheckData: changedQualityChecks, userId, ...new ViewModel(searchLabelText) })
+      return h.view('quality-check', {
+        qualityCheckData: changedQualityChecks,
+        userId,
+        page,
+        perPage,
+        ...new ViewModel(searchLabelText)
+      })
     }
   }
 },
@@ -34,7 +42,7 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const frn = request.payload.frn
-      const qualityCheckData = await getQualityChecks()
+      const qualityCheckData = await getQualityChecks(undefined, undefined, false)
       const changedQualityChecks = await getChangedQualityChecks(qualityCheckData)
       const filteredQualityCheckData = changedQualityChecks.filter(x => x.frn === String(frn))
       const { userId } = getUser(request)
