@@ -44,7 +44,7 @@ module.exports = [{
       const frn = request.payload.frn
       const qualityCheckData = await getQualityChecks(undefined, undefined, false)
       const changedQualityChecks = await getChangedQualityChecks(qualityCheckData)
-      const filteredQualityCheckData = changedQualityChecks.filter(x => x.frn === String(frn))
+      const filteredQualityCheckData = changedQualityChecks.filter(x => x?.paymentRequest?.frn === String(frn))
       const { userId } = getUser(request)
 
       if (filteredQualityCheckData.length) {
