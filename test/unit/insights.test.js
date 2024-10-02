@@ -33,27 +33,17 @@ describe('App Insight', () => {
     process.env.APPINSIGHTS_INSTRUMENTATIONKEY = appInsightsKey
   })
 
-  test('is started when env var exists', () => {
-    const appName = 'test-app'
-    process.env.APPINSIGHTS_CLOUDROLE = appName
-    process.env.APPINSIGHTS_INSTRUMENTATIONKEY = 'something'
-    const insights = require('../../app/insights')
-
-    insights.setup()
-
-    expect(setupMock).toHaveBeenCalledTimes(1)
-    expect(startMock).toHaveBeenCalledTimes(1)
-    expect(tags[cloudRoleTag]).toEqual(appName)
-    expect(consoleLogSpy).toHaveBeenCalledTimes(1)
-    expect(consoleLogSpy).toHaveBeenCalledWith('App Insights Running')
+  test('does not setup application insights if no connection string present', () => {
+    const appInsights = require('../../app/insights')
+    process.env.APPINSIGHTS_CONNECTIONSTRING = undefined
+    appInsights.setup()
+    expect(applicationInsights.setup.mock.calls.length).toBe(0)
   })
 
-  test('logs not running when env var does not exist', () => {
-    const insights = require('../../app/insights')
-
-    insights.setup()
-
-    expect(consoleLogSpy).toHaveBeenCalledTimes(1)
-    expect(consoleLogSpy).toHaveBeenCalledWith('App Insights Not Running!')
+  test('does setup application insights if connection string present', () => {
+    const appInsights = require('../../app/insights')
+    process.env.APPINSIGHTS_CONNECTIONSTRING = 'test-key'
+    appInsights.setup()
+    expect(applicationInsights.setup.mock.calls.length).toBe(1)
   })
 })
