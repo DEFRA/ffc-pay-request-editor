@@ -8,7 +8,7 @@ image: ffc-pay-request-editor
 labels: {}
 
 appInsights:
-  key:
+  connectionString:
 
 containerConfigMap:
   name: ffc-pay-request-editor-config-map
