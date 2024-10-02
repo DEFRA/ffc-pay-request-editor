@@ -1,36 +1,29 @@
-describe('App Insight', () => {
-  const appInsights = require('applicationinsights')
-  jest.mock('applicationinsights')
-
-  const startMock = jest.fn()
-  const setupMock = jest.fn(() => {
-    return {
-      start: startMock
-    }
-  })
-  appInsights.setup = setupMock
-  const cloudRoleTag = 'cloudRoleTag'
-  const tags = {}
-  appInsights.defaultClient = {
-    context: {
-      keys: {
-        cloudRole: cloudRoleTag
-      },
-      tags
-    }
-  }
-
-  const consoleLogSpy = jest.spyOn(console, 'log')
-
-  const appInsightsKey = process.env.APPINSIGHTS_INSTRUMENTATIONKEY
+describe('Application Insights', () => {
+  const DEFAULT_ENV = process.env
+  let applicationInsights
 
   beforeEach(() => {
-    delete process.env.APPINSIGHTS_INSTRUMENTATIONKEY
-    jest.clearAllMocks()
+    // important to clear the cache when mocking environment variables
+    jest.resetModules()
+    jest.mock('applicationinsights', () => {
+      return {
+        setup: jest.fn().mockReturnThis(),
+        setAutoCollectDependencies: jest.fn().mockReturnThis(),
+        start: jest.fn(),
+        defaultClient: {
+          context: {
+            keys: [],
+            tags: []
+          }
+        }
+      }
+    })
+    applicationInsights = require('applicationinsights')
+    process.env = { ...DEFAULT_ENV }
   })
 
   afterAll(() => {
-    process.env.APPINSIGHTS_INSTRUMENTATIONKEY = appInsightsKey
+    process.env = DEFAULT_ENV
   })
 
   test('does not setup application insights if no connection string present', () => {
