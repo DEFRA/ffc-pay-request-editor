@@ -39,9 +39,9 @@ const getPaymentRequest = async (page = 1, pageSize = 100, usePagination = true)
     options.offset = offset
   }
   const paymentRequest = await db.paymentRequest.findAll(options)
-  for (let i = 0; i < paymentRequest.length; i++) {
-    if (paymentRequest[i].schemes?.name === 'SFI') {
-      paymentRequest[i].schemes.name = 'SFI22'
+  for (const payment of paymentRequest) {
+    if (payment.schemes?.name === 'SFI') {
+      payment.schemes.name = 'SFI22'
     }
   }
   return paymentRequest

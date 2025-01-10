@@ -19,9 +19,9 @@ const getManualLedgerRequests = async (paymentRequestId) => {
       active: true
     }
   })
-  for (let i = 0; i < manualLedgerRequest.length; i++) {
-    if (manualLedgerRequest[i].ledgerPaymentRequest?.schemes?.name === 'SFI') {
-      manualLedgerRequest[i].ledgerPaymentRequest.schemes.name = 'SFI22'
+  for (const request of manualLedgerRequest) {
+    if (request.ledgerPaymentRequest.schemes?.name === 'SFI') {
+      request.ledgerPaymentRequest.schemes.name = 'SFI22'
     }
   }
   return manualLedgerRequest.map(x => x.get({ plain: true }))
