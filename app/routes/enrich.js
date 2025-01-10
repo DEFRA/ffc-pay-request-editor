@@ -10,8 +10,15 @@ module.exports = [{
   options: {
     auth: { scope: [enrichment] },
     handler: async (request, h) => {
-      const paymentRequest = await getPaymentRequest()
-      return h.view('enrich', { enrichData: paymentRequest, ...new ViewModel(searchLabelText) })
+      const page = parseInt(request.query.page) || 1
+      const perPage = parseInt(request.query.perPage || 100)
+      const paymentRequest = await getPaymentRequest(page, perPage)
+      return h.view('enrich', {
+        enrichData: paymentRequest,
+        page,
+        perPage,
+        ...new ViewModel(searchLabelText)
+      })
     }
   }
 },
@@ -29,7 +36,7 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const frn = request.payload.frn
-      const paymentRequest = await getPaymentRequest()
+      const paymentRequest = await getPaymentRequest(undefined, undefined, false)
       const filteredEnrichData = paymentRequest.filter(x => x.frn === String(frn))
 
       if (filteredEnrichData.length) {

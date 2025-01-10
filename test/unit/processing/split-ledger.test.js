@@ -1,4 +1,4 @@
-const { SFI, SFI_PILOT, LUMP_SUMS, VET_VISITS, CS, BPS, FDMR, SFI23, DELINKED } = require('../../../app/constants/schemes')
+const { SFI, SFI_PILOT, LUMP_SUMS, VET_VISITS, CS, BPS, FDMR, SFI23, DELINKED, SFI_EXPANDED } = require('../../../app/constants/schemes')
 
 describe('split ledger test', () => {
   const splitToLedger = require('../../../app/processing/ledger/split-to-ledger')
@@ -200,7 +200,7 @@ describe('split ledger test', () => {
       value: 1000,
       schemeId: DELINKED,
       agreementNumber: '12345678',
-      invoiceNumber: 'S12345678SFI123456V002',
+      invoiceNumber: 'D12345678SFI123456V002',
       paymentRequestNumber: 2,
       invoiceLines: [{
         description: 'G00',
@@ -209,7 +209,26 @@ describe('split ledger test', () => {
     }
     const splitLedger = splitToLedger(paymentRequest, 800, AR)
     expect(splitLedger.length).toBe(2)
-    expect(splitLedger.filter(x => x.invoiceNumber.startsWith('S1234567A')).length).toBe(1)
-    expect(splitLedger.filter(x => x.invoiceNumber.startsWith('S1234567B')).length).toBe(1)
+    expect(splitLedger.filter(x => x.invoiceNumber.startsWith('D1234567A')).length).toBe(1)
+    expect(splitLedger.filter(x => x.invoiceNumber.startsWith('D1234567B')).length).toBe(1)
+  })
+
+  test('should update invoice numbers for SFI Expanded', () => {
+    const paymentRequest = {
+      ledger: AP,
+      value: 1000,
+      schemeId: SFI_EXPANDED,
+      agreementNumber: '12345678',
+      invoiceNumber: 'E12345678E123456V002',
+      paymentRequestNumber: 2,
+      invoiceLines: [{
+        description: 'G00',
+        value: 1000
+      }]
+    }
+    const splitLedger = splitToLedger(paymentRequest, 800, AR)
+    expect(splitLedger.length).toBe(2)
+    expect(splitLedger.filter(x => x.invoiceNumber.startsWith('E1234567A')).length).toBe(1)
+    expect(splitLedger.filter(x => x.invoiceNumber.startsWith('E1234567B')).length).toBe(1)
   })
 })

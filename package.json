@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-request-editor",
-  "version": "1.24.11",
+  "version": "1.24.19",
   "description": "Edit payment requests",
   "homepage": "https://github.com/DEFRA/ffc-pay-request-editor",
   "main": "app/index.js",
@@ -31,8 +31,8 @@
   ],
   "license": "OGL-UK-3.0",
   "dependencies": {
-    "@azure/identity": "2.0.5",
-    "@azure/msal-node": "1.14.6",
+    "@azure/identity": "4.3.0",
+    "@azure/msal-node": "2.9.2",
     "@hapi/catbox-redis": "6.0.2",
     "@hapi/cookie": "11.0.2",
     "@hapi/crumb": "8.0.1",
@@ -42,8 +42,8 @@
     "@hapi/vision": "6.1.0",
     "@hapi/yar": "10.1.1",
     "@joi/date": "2.1.0",
-    "applicationinsights": "1.8.10",
-    "ffc-messaging": "2.6.4",
+    "applicationinsights": "2.9.6",
+    "ffc-messaging": "2.9.1",
     "ffc-pay-event-publisher": "1.2.0",
     "govuk-frontend": "4.7.0",
     "hapi-pino": "10.1.0",
@@ -71,7 +71,7 @@
     "sass-loader": "11.1.1",
     "standard": "16.0.4",
     "style-loader": "2.0.0",
-    "webpack": "5.76.2",
+    "webpack": "5.94.0",
     "webpack-cli": "4.10.0"
   },
   "standard": {

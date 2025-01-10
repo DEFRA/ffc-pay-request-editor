@@ -40,7 +40,7 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const frn = request.payload.frn
-      const captureData = await getDebts(true)
+      const captureData = await getDebts(true, undefined, undefined, false)
       const filteredCaptureData = captureData.filter(x => x.frn === String(frn))
 
       if (filteredCaptureData.length) {

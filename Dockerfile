@@ -1,4 +1,4 @@
-ARG PARENT_VERSION=2.1.2-node18.11.0
+ARG PARENT_VERSION=2.3.0-node20.15.0
 ARG PORT=3001
 ARG PORT_DEBUG=9230
 
@@ -11,7 +11,10 @@ ARG PORT
 ARG PORT_DEBUG
 ENV PORT ${PORT}
 EXPOSE ${PORT} ${PORT_DEBUG}
+USER root
+RUN apk add --update --no-cache openjdk17-jre
 
+USER node
 COPY --chown=node:node package*.json ./
 RUN npm install
 COPY --chown=node:node . .
