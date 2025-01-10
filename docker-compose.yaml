@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   ffc-pay-request-editor:
     build:
@@ -11,7 +9,7 @@ services:
       - ffc-pay-request-editor-postgres
     environment:
       APPINSIGHTS_CLOUDROLE: ffc-pay-request-editor-local
-      APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
+      APPINSIGHTS_CONNECTIONSTRING: ${APPINSIGHTS_CONNECTIONSTRING}
       MESSAGE_QUEUE_HOST: ${MESSAGE_QUEUE_HOST}
       MESSAGE_QUEUE_PASSWORD: ${MESSAGE_QUEUE_PASSWORD}
       MESSAGE_QUEUE_USER: ${MESSAGE_QUEUE_USER}

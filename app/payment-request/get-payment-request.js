@@ -2,8 +2,10 @@ const db = require('../data')
 const { ENRICHMENT, LEDGER_ENRICHMENT } = require('./categories')
 const { getPaymentRequestMatchingReference } = require('./get-payment-request-matching-reference')
 
-const getPaymentRequest = async (categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
-  const paymentRequest = await db.paymentRequest.findAll({
+const getPaymentRequest = async (page = 1, pageSize = 100, usePagination = true) => {
+  const categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]
+  const offset = (page - 1) * pageSize
+  const options = {
     include: [{
       model: db.scheme,
       as: 'schemes',
@@ -31,7 +33,12 @@ const getPaymentRequest = async (categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) =
       'netValue'
     ],
     order: [['received']]
-  })
+  }
+  if (usePagination) {
+    options.limit = pageSize
+    options.offset = offset
+  }
+  const paymentRequest = await db.paymentRequest.findAll(options)
   for (let i = 0; i < paymentRequest.length; i++) {
     if (paymentRequest[i].schemes?.name === 'SFI') {
       paymentRequest[i].schemes.name = 'SFI22'

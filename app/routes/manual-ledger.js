@@ -13,8 +13,15 @@ module.exports = [{
     auth: { scope: [ledger] }
   },
   handler: async (request, h) => {
-    const ledgerData = await getManualLedgers(statuses)
-    return h.view('manual-ledger', { ledgerData, ...new ViewModel(searchLabelText) })
+    const page = parseInt(request.query.page) || 1
+    const perPage = parseInt(request.query.perPage || 100)
+    const ledgerData = await getManualLedgers(statuses, page, perPage)
+    return h.view('manual-ledger', {
+      ledgerData,
+      page,
+      perPage,
+      ...new ViewModel(searchLabelText)
+    })
   }
 },
 {
@@ -31,7 +38,7 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const frn = request.payload.frn
-      const ledgerData = await getManualLedgers(statuses)
+      const ledgerData = await getManualLedgers(statuses, undefined, undefined, false)
       const filteredManualLedger = ledgerData.filter(x => x?.frn === String(frn))
 
       if (filteredManualLedger.length) {

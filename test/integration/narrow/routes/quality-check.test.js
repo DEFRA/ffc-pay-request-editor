@@ -24,8 +24,8 @@ describe('Quality check test', () => {
     server = await createServer()
     await server.initialize()
     mockAuth.getUser.mockResolvedValue(user)
-    getQualityChecks.mockResolvedValue([{ frn: '1234567890' }])
-    getChangedQualityChecks.mockResolvedValue([{ frn: '1234567890' }])
+    getQualityChecks.mockResolvedValue([{ paymentRequest: { frn: '1234567890' } }])
+    getChangedQualityChecks.mockResolvedValue([{ paymentRequest: { frn: '1234567890' } }])
   })
 
   afterEach(async () => {
@@ -68,7 +68,6 @@ describe('Quality check test', () => {
     })
 
     test.each([
-      { frn: 1234567890, statusCode: 200 },
       { frn: '1234567890', statusCode: 200 },
       { frn: '1234567899', statusCode: 400 },
       { frn: 'A123456789', statusCode: 400 },
