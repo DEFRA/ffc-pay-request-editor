@@ -1,4 +1,5 @@
 const auth = require('../auth')
+const statusCodes = require('../constants/status-codes')
 
 module.exports = {
   method: 'GET',
@@ -6,13 +7,13 @@ module.exports = {
   options: {
     auth: false
   },
-  handler: async (request, h) => {
+  handler: async (_request, h) => {
     try {
       const authUrl = await auth.getAuthenticationUrl()
       return h.redirect(authUrl)
     } catch (err) {
       console.log('Error authenticating', err)
     }
-    return h.view('500').code(500)
+    return h.view('500').code(statusCodes.INTERNAL_SERVER_ERROR)
   }
 }

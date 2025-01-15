@@ -26,7 +26,9 @@ describe('Capture test', () => {
   }
 
   const debts = [{
-    scheme: 'SFI Pilot',
+    schemes: {
+      name: 'SFI Pilot'
+    },
     frn: '1234567890',
     reference: 'SFIP1234567',
     netValue: 1000.00,
@@ -36,7 +38,9 @@ describe('Capture test', () => {
     createdBy: 'John Watson'
   },
   {
-    scheme: 'SFI',
+    schemes: {
+      name: 'SFI'
+    },
     frn: '1234567891',
     reference: 'SFIP1234568',
     netValue: 570.00,
@@ -73,12 +77,25 @@ describe('Capture test', () => {
       expect(response.request.response.variety).toBe('view')
       expect(response.request.response.source.template).toBe('capture')
     })
+
+    test('GET /capture with query parameters returns 200', async () => {
+      const options = {
+        method,
+        url: `${url}?page=2&perPage=10`,
+        auth
+      }
+
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(200)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('capture')
+    })
   })
 
   describe('POST requests', () => {
     const method = 'POST'
 
-    test('POST /capture with no records returns "No debts match the FRN provided.', async () => {
+    test('POST /capture with no records returns "No debts match the FRN provided."', async () => {
       const options = {
         method,
         url,
@@ -90,7 +107,64 @@ describe('Capture test', () => {
       expect(response.statusCode).toBe(400)
       expect(response.request.response.variety).toBe('view')
       expect(response.request.response.source.template).toBe('capture')
-      expect(response.request.response.source.context.model.errorMessage.text).toEqual('No debts match the FRN provided.')
+      expect(response.request.response.source.context.model.input.errorMessage.text).toEqual('No records could be found for that FRN/scheme combination.')
+    })
+
+    test('POST /capture with both scheme and FRN provided returns 200', async () => {
+      const options = {
+        method,
+        url,
+        payload: { frn: '1234567890', scheme: 'SFI Pilot' },
+        auth
+      }
+
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(200)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('capture')
+    })
+
+    test('POST /capture with only scheme provided returns 200', async () => {
+      const options = {
+        method,
+        url,
+        payload: { scheme: 'SFI Pilot' },
+        auth
+      }
+
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(200)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('capture')
+    })
+
+    test('POST /capture with invalid scheme returns 400', async () => {
+      const options = {
+        method,
+        url,
+        payload: { scheme: 'Invalid Scheme' },
+        auth
+      }
+
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(400)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('capture')
+      expect(response.request.response.source.context.model.select.errorMessage.text).toEqual('The scheme chosen must be a valid scheme supported by the Payment Hub.')
+    })
+
+    test('POST /capture with missing scheme and FRN returns 200', async () => {
+      const options = {
+        method,
+        url,
+        payload: {},
+        auth
+      }
+
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(200)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('capture')
     })
 
     test.each([
