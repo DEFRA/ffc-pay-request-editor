@@ -12,6 +12,8 @@ const { sendManualLedgerCheckEvent } = require('../event')
 const calculationSchema = require('./schemas/manual-ledger-calculation')
 const statusCodes = require('../constants/status-codes')
 
+const view = 'manual-ledger-check'
+
 module.exports = [{
   method: 'GET',
   path: '/manual-ledger-check',
@@ -29,7 +31,7 @@ module.exports = [{
         return h.view('404')
       }
 
-      return h.view('manual-ledger-check', new ViewModel(manualLedgerData))
+      return h.view(view, new ViewModel(manualLedgerData))
     }
   }
 },
@@ -48,7 +50,7 @@ module.exports = [{
         }
 
         const manualLedgerData = await getManualLedger(paymentRequestId)
-        return h.view('manual-ledger-check', new ViewModel(manualLedgerData, error)).code(statusCodes.BAD_REQUEST).takeover()
+        return h.view(view, new ViewModel(manualLedgerData, error)).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
@@ -60,7 +62,7 @@ module.exports = [{
 
       if (Object.keys(manualLedgerData).length) {
         sessionHandler.set(request, sessionKey, { paymentRequestId, provisionalLedgerData: manualLedgerData.manualLedgerChecks })
-        return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData) })
+        return h.view(view, { ...new ViewModel(manualLedgerData) })
       }
 
       return h.view('500').code(statusCodes.INTERNAL_SERVER_ERROR).takeover()
@@ -80,7 +82,7 @@ module.exports = [{
       failAction: async (request, h, error) => {
         const { paymentRequestId } = request.payload
         const manualLedgerData = await getManualLedger(paymentRequestId)
-        return h.view('manual-ledger-check', new ViewModel(manualLedgerData, error)).code(statusCodes.BAD_REQUEST).takeover()
+        return h.view(view, new ViewModel(manualLedgerData, error)).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
@@ -88,7 +90,7 @@ module.exports = [{
 
       if (!agree) {
         const manualLedgerData = await getManualLedger(paymentRequestId)
-        return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData), showLedgerSplit: true, provisionalValue: 0 }).takeover()
+        return h.view(view, { ...new ViewModel(manualLedgerData), showLedgerSplit: true, provisionalValue: 0 }).takeover()
       }
 
       const provisionalLedgerData = sessionHandler.get(request, sessionKey)

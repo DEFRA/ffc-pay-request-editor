@@ -6,7 +6,7 @@ module.exports = {
   options: {
     auth: false
   },
-  handler: (request, h) => {
+  handler: (_request, h) => {
     return h.response('ok').code(statusCodes.OK)
   }
 }

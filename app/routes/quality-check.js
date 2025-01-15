@@ -8,6 +8,7 @@ const searchLabelText = 'Search for a request by FRN number'
 
 const defaultPage = 1
 const defaultPerPage = 100
+const view = 'quality-check'
 
 module.exports = [{
   method: 'GET',
@@ -20,7 +21,7 @@ module.exports = [{
       const qualityCheckData = await getQualityChecks(page, perPage)
       const changedQualityChecks = await getChangedQualityChecks(qualityCheckData)
       const { userId } = getUser(request)
-      return h.view('quality-check', {
+      return h.view(view, {
         qualityCheckData: changedQualityChecks,
         userId,
         page,
@@ -41,7 +42,7 @@ module.exports = [{
         const qualityCheckData = await getQualityChecks()
         const changedQualityChecks = await getChangedQualityChecks(qualityCheckData)
         const { userId } = getUser(request)
-        return h.view('quality-check', { qualityCheckData: changedQualityChecks, userId, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(statusCodes.BAD_REQUEST).takeover()
+        return h.view(view, { qualityCheckData: changedQualityChecks, userId, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
@@ -52,10 +53,10 @@ module.exports = [{
       const { userId } = getUser(request)
 
       if (filteredQualityCheckData.length) {
-        return h.view('quality-check', { qualityCheckData: filteredQualityCheckData, userId, ...new ViewModel(searchLabelText, frn) })
+        return h.view(view, { qualityCheckData: filteredQualityCheckData, userId, ...new ViewModel(searchLabelText, frn) })
       }
 
-      return h.view('quality-check', { userId, ...new ViewModel(searchLabelText, frn, { message: 'No quality checks match the FRN provided.' }) }).code(statusCodes.BAD_REQUEST)
+      return h.view(view, { userId, ...new ViewModel(searchLabelText, frn, { message: 'No quality checks match the FRN provided.' }) }).code(statusCodes.BAD_REQUEST)
     }
   }
 }]

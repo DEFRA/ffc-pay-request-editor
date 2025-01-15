@@ -6,6 +6,8 @@ const { getUser } = require('../auth')
 const { ledgerReview } = require('../manual-ledger/ledger-review')
 const statusCodes = require('../constants/status-codes')
 
+const qcView = '/quality-check'
+
 module.exports = [{
   method: 'GET',
   path: '/manual-ledger-review',
@@ -15,7 +17,7 @@ module.exports = [{
       const paymentRequestId = parseInt(request.query.paymentrequestid)
 
       if (!paymentRequestId) {
-        return h.redirect('/quality-check')
+        return h.redirect(qcView)
       }
 
       const manualLedgerData = await getManualLedger(paymentRequestId)
@@ -24,7 +26,7 @@ module.exports = [{
         return h.view('manual-ledger-review', new ViewModel(manualLedgerData))
       }
 
-      return h.redirect('/quality-check')
+      return h.redirect(qcView)
     }
   }
 },
@@ -47,7 +49,7 @@ module.exports = [{
     handler: async (request, h) => {
       await ledgerReview(request)
 
-      return h.redirect('/quality-check').code(statusCodes.MOVED_PERMANENTLY)
+      return h.redirect(qcView).code(statusCodes.MOVED_PERMANENTLY)
     }
   }
 }]

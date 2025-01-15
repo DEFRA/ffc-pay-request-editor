@@ -7,6 +7,8 @@ const { enrichRequest } = require('../processing/enrich')
 const { validateDate } = require('../processing/validate-date')
 const statusCodes = require('../constants/status-codes')
 
+const view = 'enrich-request'
+
 module.exports = [{
   method: 'GET',
   path: '/enrich-request',
@@ -22,7 +24,7 @@ module.exports = [{
 
       const paymentRequest = await getPaymentRequestByInvoiceNumberAndRequestId(invoiceNumber, paymentRequestId)
       if (!paymentRequest) {
-        console.log(`No  records with invoiceNumber: ${invoiceNumber} are present in the database`)
+        console.log(`No records with invoiceNumber: ${invoiceNumber} are present in the database`)
         return h.view('404')
       }
 
@@ -31,7 +33,7 @@ module.exports = [{
         return h.view('404')
       }
 
-      return h.view('enrich-request', { paymentRequest, ...new ViewModel() })
+      return h.view(view, { paymentRequest, ...new ViewModel() })
     }
   }
 },
@@ -50,12 +52,12 @@ module.exports = [{
 
       const enrichRequestValidation = enrichRequestSchema.validate(payload, { abortEarly: false })
       if (enrichRequestValidation.error) {
-        return h.view('enrich-request', { paymentRequest, ...new ViewModel(payload, enrichRequestValidation.error) }).code(statusCodes.BAD_REQUEST).takeover()
+        return h.view(view, { paymentRequest, ...new ViewModel(payload, enrichRequestValidation.error) }).code(statusCodes.BAD_REQUEST).takeover()
       }
 
       const dateError = await validateDate(payload, paymentRequest.received)
       if (dateError) {
-        return h.view('enrich-request', { paymentRequest, ...new ViewModel(payload, dateError) }).code(400).takeover()
+        return h.view(view, { paymentRequest, ...new ViewModel(payload, dateError) }).code(statusCodes.BAD_REQUEST).takeover()
       }
 
       if (paymentRequest.released) {
