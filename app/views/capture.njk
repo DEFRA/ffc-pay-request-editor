@@ -1,7 +1,7 @@
 {% extends '_layout.njk' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
-{% from "macros/search-box.njk" import searchBox %}
+{% from "macros/search-combined.njk" import searchCombined %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 
@@ -25,15 +25,15 @@
         Capture new dataset
       </a>
 
+      <div class="user-search-box govuk-!-width-one-third">
+        <form class="search-form" action="/capture" method="POST">
+          <input type="hidden" name="crumb" value="{{crumb}}"/>
+          {{searchCombined(model)}}
+        </form>
+      </div>
+
       {% if captureData.length %}
         <div class="govuk-!-padding-bottom-3">
-          <div class="user-search-box govuk-!-width-one-third">
-            <form class="search-form" action="/capture" method="POST">
-              <input type="hidden" name="crumb" value="{{crumb}}"/>
-              {{searchBox(model)}}
-            </form>
-          </div>
-
           <div class="govuk-inset-text">
             Datasets that are attached to payment requests are shown for reference only and cannot be deleted
           </div>

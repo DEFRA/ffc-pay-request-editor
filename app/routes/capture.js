@@ -1,12 +1,17 @@
-const ViewModel = require('./models/search')
+const ViewModel = require('./models/search-combined')
 const { getDebts, deleteDebt } = require('../debt')
 const { mapExtract } = require('../extract')
-const schema = require('./schemas/capture')
+const schema = require('./schemas/capture-by-frn-or-scheme')
 const Joi = require('joi')
 const { enrichment } = require('../auth/permissions')
-const searchLabelText = 'Search for data by FRN number'
+const frnSearchLabelText = 'Search for data by FRN number'
+const schemeSearchLabelText = 'Search for data by scheme'
 const convertToCSV = require('../convert-to-csv')
 const config = require('../config')
+const options = require('../constants/scheme-names')
+
+const defaultPage = 1
+const defaultPerPage = 2500
 
 module.exports = [{
   method: 'GET',
@@ -14,14 +19,22 @@ module.exports = [{
   options: {
     auth: { scope: [enrichment] },
     handler: async (request, h) => {
-      const page = parseInt(request.query.page) || 1
-      const perPage = parseInt(request.query.perPage || 2500)
+      const page = parseInt(request.query.page) || defaultPage
+      const perPage = parseInt(request.query.perPage) || defaultPerPage
       const captureData = await getDebts(true, page, perPage)
       return h.view('capture', {
         captureData,
         page,
         perPage,
-        ...new ViewModel(searchLabelText)
+        ...new ViewModel(
+          {
+            labelText: frnSearchLabelText
+          },
+          {
+            labelText: schemeSearchLabelText,
+            options
+          }
+        )
       })
     }
   }
@@ -35,19 +48,25 @@ module.exports = [{
       payload: schema,
       failAction: async (request, h, error) => {
         const captureData = await getDebts(true)
-        return h.view('capture', { captureData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
+        const frnError = error.details.find(e => e.context.key === 'frn')
+        const schemeError = error.details.find(e => e.context.key === 'scheme')
+        return h.view('capture', { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn, error: frnError }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme, error: schemeError }) }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
-      const frn = request.payload.frn
-      const captureData = await getDebts(true, undefined, undefined, false)
-      const filteredCaptureData = captureData.filter(x => x.frn === String(frn))
-
-      if (filteredCaptureData.length) {
-        return h.view('capture', { captureData: filteredCaptureData, ...new ViewModel(searchLabelText, frn) })
+      const { scheme, frn } = request.payload
+      let captureData = await getDebts(true, undefined, undefined, false)
+      if (scheme) {
+        captureData = captureData.filter(x => x.schemes?.name === scheme)
+      }
+      if (frn) {
+        captureData = captureData.filter(x => x.frn === String(frn))
+      }
+      if (captureData.length) {
+        return h.view('capture', { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }) })
       }
 
-      return h.view('capture', new ViewModel(searchLabelText, frn, { message: 'No debts match the FRN provided.' })).code(400)
+      return h.view('capture', new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }, { message: 'No records could be found for that FRN/scheme combination.' })).code(400)
     }
   }
 }, {
@@ -61,7 +80,7 @@ module.exports = [{
       }),
       failAction: async (request, h, error) => {
         const captureData = await getDebts(true)
-        return h.view('capture', { captureData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
+        return h.view('capture', { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }, { message: error }) }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
