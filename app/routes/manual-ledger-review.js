@@ -4,6 +4,7 @@ const { getManualLedger } = require('../manual-ledger')
 const ViewModel = require('./models/manual-ledger-review')
 const { getUser } = require('../auth')
 const { ledgerReview } = require('../manual-ledger/ledger-review')
+const statusCodes = require('../constants/status-codes')
 
 module.exports = [{
   method: 'GET',
@@ -40,13 +41,13 @@ module.exports = [{
       failAction: async (request, h, error) => {
         const { paymentRequestId } = request.payload
         const manualLedgerData = await getManualLedger(paymentRequestId)
-        return h.view('manual-ledger-review', new ViewModel(manualLedgerData, error)).code(400).takeover()
+        return h.view('manual-ledger-review', new ViewModel(manualLedgerData, error)).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
       await ledgerReview(request)
 
-      return h.redirect('/quality-check').code(301)
+      return h.redirect('/quality-check').code(statusCodes.MOVED_PERMANENTLY)
     }
   }
 }]

@@ -5,6 +5,7 @@ const { getSchemes } = require('../processing/scheme')
 const { captureDebtData } = require('../processing/debt')
 const { enrichment } = require('../auth/permissions')
 const format = require('../utils/date-formatter')
+const statusCodes = require('../constants/status-codes')
 
 module.exports = [{
   method: 'GET',
@@ -26,7 +27,7 @@ module.exports = [{
       payload: schema,
       failAction: async (request, h, error) => {
         const schemes = (await getSchemes()).map(x => x.name)
-        return h.view('capture-debt', new ViewModel(schemes, request.payload, error)).code(400).takeover()
+        return h.view('capture-debt', new ViewModel(schemes, request.payload, error)).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
@@ -40,7 +41,7 @@ module.exports = [{
 
       if (validDate.error) {
         const schemes = (await getSchemes()).map(x => x.name)
-        return h.view('capture-debt', new ViewModel(schemes, request.payload, validDate.error)).code(400).takeover()
+        return h.view('capture-debt', new ViewModel(schemes, request.payload, validDate.error)).code(statusCodes.BAD_REQUEST).takeover()
       }
 
       await captureDebtData(request)

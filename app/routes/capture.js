@@ -9,6 +9,7 @@ const schemeSearchLabelText = 'Search for data by scheme'
 const convertToCSV = require('../convert-to-csv')
 const config = require('../config')
 const options = require('../constants/scheme-names')
+const statusCodes = require('../constants/status-codes')
 
 const defaultPage = 1
 const defaultPerPage = 2500
@@ -50,7 +51,7 @@ module.exports = [{
         const captureData = await getDebts(true)
         const frnError = error.details.find(e => e.context.key === 'frn')
         const schemeError = error.details.find(e => e.context.key === 'scheme')
-        return h.view('capture', { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn, error: frnError }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme, error: schemeError }) }).code(400).takeover()
+        return h.view('capture', { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn, error: frnError }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme, error: schemeError }) }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
@@ -66,7 +67,7 @@ module.exports = [{
         return h.view('capture', { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }) })
       }
 
-      return h.view('capture', new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }, { message: 'No records could be found for that FRN/scheme combination.' })).code(400)
+      return h.view('capture', new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }, { message: 'No records could be found for that FRN/scheme combination.' })).code(statusCodes.BAD_REQUEST)
     }
   }
 }, {
@@ -80,7 +81,7 @@ module.exports = [{
       }),
       failAction: async (request, h, error) => {
         const captureData = await getDebts(true)
-        return h.view('capture', { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }, { message: error }) }).code(400).takeover()
+        return h.view('capture', { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }, { message: error }) }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
@@ -93,7 +94,7 @@ module.exports = [{
   path: '/capture/extract',
   options: {
     auth: { scope: [enrichment] },
-    handler: async (request, h) => {
+    handler: async (_request, h) => {
       try {
         const debts = await getDebts(true, undefined, undefined, false)
         if (debts) {

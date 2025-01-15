@@ -10,6 +10,7 @@ const { PENDING } = require('../quality-check/statuses')
 const sessionKey = 'provisionalLedgerData'
 const { sendManualLedgerCheckEvent } = require('../event')
 const calculationSchema = require('./schemas/manual-ledger-calculation')
+const statusCodes = require('../constants/status-codes')
 
 module.exports = [{
   method: 'GET',
@@ -43,11 +44,11 @@ module.exports = [{
         const paymentRequestId = request.query.paymentRequestId
 
         if (!paymentRequestId) {
-          return h.view('404').code(400).takeover()
+          return h.view('404').code(statusCodes.BAD_REQUEST).takeover()
         }
 
         const manualLedgerData = await getManualLedger(paymentRequestId)
-        return h.view('manual-ledger-check', new ViewModel(manualLedgerData, error)).code(400).takeover()
+        return h.view('manual-ledger-check', new ViewModel(manualLedgerData, error)).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
@@ -62,7 +63,7 @@ module.exports = [{
         return h.view('manual-ledger-check', { ...new ViewModel(manualLedgerData) })
       }
 
-      return h.view('500').code(500).takeover()
+      return h.view('500').code(statusCodes.INTERNAL_SERVER_ERROR).takeover()
     }
   }
 },
@@ -79,7 +80,7 @@ module.exports = [{
       failAction: async (request, h, error) => {
         const { paymentRequestId } = request.payload
         const manualLedgerData = await getManualLedger(paymentRequestId)
-        return h.view('manual-ledger-check', new ViewModel(manualLedgerData, error)).code(400).takeover()
+        return h.view('manual-ledger-check', new ViewModel(manualLedgerData, error)).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {

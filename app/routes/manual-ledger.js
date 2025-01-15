@@ -4,7 +4,11 @@ const schema = require('./schemas/manual-ledger')
 const { getManualLedgers } = require('../manual-ledger')
 const { ledger } = require('../auth/permissions')
 const { NOT_READY, FAILED } = require('../quality-check/statuses')
+const statusCodes = require('../constants/status-codes')
 const statuses = [NOT_READY, FAILED]
+
+const defaultPage = 1
+const defaultPerPage = 100
 
 module.exports = [{
   method: 'GET',
@@ -13,8 +17,8 @@ module.exports = [{
     auth: { scope: [ledger] }
   },
   handler: async (request, h) => {
-    const page = parseInt(request.query.page) || 1
-    const perPage = parseInt(request.query.perPage || 100)
+    const page = parseInt(request.query.page) || defaultPage
+    const perPage = parseInt(request.query.perPage) || defaultPerPage
     const ledgerData = await getManualLedgers(statuses, page, perPage)
     return h.view('manual-ledger', {
       ledgerData,
@@ -33,7 +37,7 @@ module.exports = [{
       payload: schema,
       failAction: async (request, h, error) => {
         const ledgerData = await getManualLedgers(statuses)
-        return h.view('manual-ledger', { ledgerData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
+        return h.view('manual-ledger', { ledgerData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
@@ -45,7 +49,7 @@ module.exports = [{
         return h.view('manual-ledger', { ledgerData: filteredManualLedger, ...new ViewModel(searchLabelText, frn) })
       }
 
-      return h.view('manual-ledger', new ViewModel(searchLabelText, frn, { message: 'No payments match the FRN provided.' })).code(400)
+      return h.view('manual-ledger', new ViewModel(searchLabelText, frn, { message: 'No payments match the FRN provided.' })).code(statusCodes.BAD_REQUEST)
     }
   }
 }]
