@@ -7,6 +7,8 @@ const { enrichment } = require('../auth/permissions')
 const searchLabelText = 'Search for data by FRN number'
 const convertToCSV = require('../convert-to-csv')
 const config = require('../config')
+const number1 = 1
+const number2500 = 2500
 
 module.exports = [{
   method: 'GET',
@@ -14,9 +16,15 @@ module.exports = [{
   options: {
     auth: { scope: [enrichment] },
     handler: async (request, h) => {
-      const page = parseInt(request.query.page) || 1
-      const perPage = parseInt(request.query.perPage || 2500)
-      const captureData = await getDebts(true, page, perPage)
+      const page = parseInt(request.query.page) || number1
+      const perPage = parseInt(request.query.perPage || number2500)
+      const getDebtsParams = {
+        includeAttached: true,
+        page,
+        pageSize: perPage,
+        usePagination: true
+      }
+      const captureData = await getDebts(getDebtsParams)
       return h.view('capture', {
         captureData,
         page,
@@ -34,7 +42,13 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        const captureData = await getDebts(true)
+        const getDebtsParams = {
+          includeAttached: true,
+          page: number1,
+          pageSize: number2500,
+          usePagination: false
+        }
+        const captureData = await getDebts(getDebtsParams)
         return h.view('capture', { captureData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
       }
     },
@@ -60,7 +74,13 @@ module.exports = [{
         debtDataId: Joi.number().integer().required()
       }),
       failAction: async (request, h, error) => {
-        const captureData = await getDebts(true)
+        const getDebtsParams = {
+          includeAttached: true,
+          page: number1,
+          pageSize: number2500,
+          usePagination: true
+        }
+        const captureData = await getDebts(getDebtsParams)
         return h.view('capture', { captureData, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(400).takeover()
       }
     },
@@ -76,7 +96,13 @@ module.exports = [{
     auth: { scope: [enrichment] },
     handler: async (request, h) => {
       try {
-        const debts = await getDebts(true, undefined, undefined, false)
+        const getDebtsParams = {
+          includeAttached: true,
+          page: number1,
+          pageSize: number2500,
+          usePagination: false
+        }
+        const debts = await getDebts(getDebtsParams)
         if (debts) {
           const extractData = mapExtract(debts)
           const res = convertToCSV(extractData)
