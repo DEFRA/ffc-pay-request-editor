@@ -34,9 +34,9 @@ const getDebts = async ({ includeAttached = false, page = 1, pageSize = 2500, us
   }
 
   const debtData = await db.debtData.findAll(options)
-  for (const data of debtData) {
-    if (data.schemes?.name === 'SFI') {
-      data.schemes.name = 'SFI22'
+  for (const debt of debtData) {
+    if (debt.schemes?.name === 'SFI') {
+      debt.schemes.name = 'SFI22'
     }
   }
   return debtData
