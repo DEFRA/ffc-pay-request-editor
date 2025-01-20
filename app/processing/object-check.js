@@ -3,7 +3,7 @@ const getObjectKey = (obj, key, defaultResponse = '') => {
 }
 
 const getObjectKeyEquals = (obj, key, value, defaultResponse = false) => {
-  return obj?.[String(key)] === value ?? defaultResponse
+  return (obj && Object.hasOwn(obj, String(key))) ? obj[String(key)] === value : defaultResponse
 }
 
 module.exports = {
