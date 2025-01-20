@@ -22,7 +22,13 @@ module.exports = [{
     handler: async (request, h) => {
       const page = parseInt(request.query.page) || defaultPage
       const perPage = parseInt(request.query.perPage) || defaultPerPage
-      const captureData = await getDebts(true, page, perPage)
+      const getDebtsParams = {
+        includeAttached: true,
+        page,
+        pageSize: perPage,
+        usePagination: true
+      }
+      const captureData = await getDebts(getDebtsParams)
       return h.view('capture', {
         captureData,
         page,
@@ -48,7 +54,13 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        const captureData = await getDebts(true)
+        const getDebtsParams = {
+          includeAttached: true,
+          page: defaultPage,
+          pageSize: defaultPerPage,
+          usePagination: false
+        }
+        const captureData = await getDebts(getDebtsParams)
         const frnError = error.details.find(e => e.context.key === 'frn')
         const schemeError = error.details.find(e => e.context.key === 'scheme')
         return h.view('capture', { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn, error: frnError }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme, error: schemeError }) }).code(statusCodes.BAD_REQUEST).takeover()
@@ -80,7 +92,13 @@ module.exports = [{
         debtDataId: Joi.number().integer().required()
       }),
       failAction: async (request, h, error) => {
-        const captureData = await getDebts(true)
+        const getDebtsParams = {
+          includeAttached: true,
+          page: defaultPage,
+          pageSize: defaultPerPage,
+          usePagination: true
+        }
+        const captureData = await getDebts(getDebtsParams)
         return h.view('capture', { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }, { message: error }) }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
@@ -96,7 +114,13 @@ module.exports = [{
     auth: { scope: [enrichment] },
     handler: async (_request, h) => {
       try {
-        const debts = await getDebts(true, undefined, undefined, false)
+        const getDebtsParams = {
+          includeAttached: true,
+          page: defaultPage,
+          pageSize: defaultPerPage,
+          usePagination: false
+        }
+        const debts = await getDebts(getDebtsParams)
         if (debts) {
           const extractData = mapExtract(debts)
           const res = convertToCSV(extractData)

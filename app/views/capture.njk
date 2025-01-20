@@ -171,15 +171,15 @@
                     </a>
                   {% endif %}
                 </div>
-                <ul class="govuk-pagination__list">
-                  <li class="govuk-pagination__item govuk-pagination__item--current">
-                    <span class="govuk-pagination__link-title">
-                      {{ page }}
-                      <span class="govuk-visually-hidden"> page</span>
-                    </span>
-                  </li>
-                </ul>
-                {% if captureData.length >= perPage %}
+                {% if page > 1 or captureData.length >= perPage %}
+                  <ul class="govuk-pagination__list">
+                    <li class="govuk-pagination__item govuk-pagination__item--current">
+                      <span class="govuk-pagination__link-title">
+                        {{ page }}
+                        <span class="govuk-visually-hidden"> page</span>
+                      </span>
+                    </li>
+                  </ul>
                   <div class="govuk-pagination__next">
                     <a class="govuk-link govuk-pagination__link" href="?page={{ page + 1 }}&perPage={{ perPage }}" rel="next">
                       <span class="govuk-pagination__link-title">
