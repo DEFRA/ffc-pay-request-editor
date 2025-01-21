@@ -13,6 +13,7 @@ const statusCodes = require('../constants/status-codes')
 
 const defaultPage = 1
 const defaultPerPage = 2500
+const view = 'capture'
 
 module.exports = [{
   method: 'GET',
@@ -29,7 +30,7 @@ module.exports = [{
         usePagination: true
       }
       const captureData = await getDebts(getDebtsParams)
-      return h.view('capture', {
+      return h.view(view, {
         captureData,
         page,
         perPage,
@@ -63,7 +64,7 @@ module.exports = [{
         const captureData = await getDebts(getDebtsParams)
         const frnError = error.details.find(e => e.context.key === 'frn')
         const schemeError = error.details.find(e => e.context.key === 'scheme')
-        return h.view('capture', { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn, error: frnError }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme, error: schemeError }) }).code(statusCodes.BAD_REQUEST).takeover()
+        return h.view(view, { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn, error: frnError }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme, error: schemeError }) }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
@@ -76,10 +77,10 @@ module.exports = [{
         captureData = captureData.filter(x => x.frn === String(frn))
       }
       if (captureData.length) {
-        return h.view('capture', { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }) })
+        return h.view(view, { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }) })
       }
 
-      return h.view('capture', new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }, { message: 'No records could be found for that FRN/scheme combination.' })).code(statusCodes.BAD_REQUEST)
+      return h.view(view, new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }, { message: 'No records could be found for that FRN/scheme combination.' })).code(statusCodes.BAD_REQUEST)
     }
   }
 }, {
@@ -99,7 +100,7 @@ module.exports = [{
           usePagination: true
         }
         const captureData = await getDebts(getDebtsParams)
-        return h.view('capture', { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }, { message: error }) }).code(statusCodes.BAD_REQUEST).takeover()
+        return h.view(view, { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }, { message: error }) }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
@@ -141,5 +142,4 @@ module.exports = [{
       }
     }
   }
-}
-]
+}]
