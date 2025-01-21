@@ -1,0 +1,28 @@
+{% macro searchCombined(model) %}
+    <div class="govuk-form-group {% if model.error %}govuk-form-group--error{% endif %}">
+        <label class="govuk-label {{model.input.label.classes}}" for="{{model.input.name}}">{{model.input.label.text}}</label>
+        {% if model.input.errorMessage %}
+            <span id="error-message" class="govuk-error-message">{{model.input.errorMessage.text}}</span>
+        {% endif %}
+        <input class="govuk-input {{model.input.classes}}"
+            id="{{model.input.id}}"
+            name="{{model.input.name}}"
+            inputmode="{{model.input.inputmode}}"
+            type="text"
+            value="{{model.input.value}}"/>
+        <button class="{{model.button.classes}}" data-module="govuk-button"></button>
+        <label class="govuk-label {{model.select.label.classes}}" for="{{model.select.name}}">{{model.select.label.text}}</label>
+        {% if model.select.errorMessage %}
+            <span id="error-message" class="govuk-error-message">{{model.select.errorMessage.text}}</span>
+        {% endif %}
+        <select class="govuk-select"
+                id="{{model.select.scheme}}"
+                name="{{model.select.name}}">
+            <option value="" {% if model.select.value is null %}selected{% endif %}></option>
+            {% for s in model.select.options %}
+                <option value="{{s}}" {% if model.select.value === s %}selected{% endif %}>{{s}}</option>
+            {% endfor %}
+        </select>
+        <button class="{{model.button.classes}}" data-module="govuk-button"></button>
+    </div>
+{% endmacro %}

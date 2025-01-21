@@ -1,4 +1,5 @@
 const auth = require('../auth')
+const statusCodes = require('../constants/status-codes')
 
 module.exports = {
   method: 'GET',
@@ -13,6 +14,6 @@ module.exports = {
     } catch (err) {
       console.error('Error authenticating', err)
     }
-    return h.view('500').code(500)
+    return h.view('500').code(statusCodes.INTERNAL_SERVER_ERROR)
   }
 }
