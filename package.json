@@ -41,7 +41,7 @@
     "@hapi/inert": "6.0.3",
     "@hapi/vision": "6.1.0",
     "@hapi/yar": "10.1.1",
-    "@joi/date": "2.1.0",
+    "@joi/date": "2.1.1",
     "applicationinsights": "2.9.6",
     "ffc-messaging": "2.9.1",
     "ffc-pay-event-publisher": "1.2.0",
