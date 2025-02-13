@@ -69,7 +69,11 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const { scheme, frn } = request.payload
-      let captureData = await getDebts(true, undefined, undefined, false)
+      const getDebtsParams = {
+        includeAttached: true,
+        usePagination: false
+      }
+      let captureData = await getDebts(getDebtsParams)
       if (scheme) {
         captureData = captureData.filter(x => x.schemes?.name === scheme)
       }
