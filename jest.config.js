@@ -18,7 +18,8 @@ module.exports = {
     '<rootDir>/webpack.config.js',
     '<rootDir>/app/dist/',
     '<rootDir>/app/frontend/',
-    '<rootDir>/app/data/models/'
+    '<rootDir>/app/data/models/',
+    '<rootDir>/app/config'
   ],
   modulePathIgnorePatterns: [
     'node_modules'

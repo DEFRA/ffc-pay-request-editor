@@ -1,7 +1,19 @@
 resources:
+  identity: pay-request-editor
+  postgreSql:
+    name: ffc-pay-request-editor
   topics:
-    - name: debt
-    - name: debtResponse
-    - name: manualLedger
-    - name: qc
-    - name: event
+    - name: ffc-pay-debt-data
+      role: receiver
+      subscriptions:
+        - name: ffc-pay-request-editor
+    - name: ffc-pay-manual-check-data
+      role: receiver
+      subscriptions:
+        - name: ffc-pay-request-editor
+    - name: ffc-pay-debt-data-response
+      role: sender
+    - name: ffc-pay-events
+      role: sender
+    - name: ffc-pay-quality-check
+      role: sender
