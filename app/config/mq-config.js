@@ -6,7 +6,8 @@ const mqSchema = Joi.object({
     username: Joi.string(),
     password: Joi.string(),
     useCredentialChain: Joi.bool().default(false),
-    appInsights: Joi.object()
+    appInsights: Joi.object(),
+    managedIdentityClientId: Joi.string().optional()
   },
   debtSubscription: Joi.object({
     topic: Joi.string(),
@@ -38,7 +39,8 @@ const mqConfig = {
     username: process.env.MESSAGE_QUEUE_USER,
     password: process.env.MESSAGE_QUEUE_PASSWORD,
     useCredentialChain: process.env.NODE_ENV === 'production',
-    appInsights: process.env.NODE_ENV === 'production' ? require('applicationinsights') : undefined
+    appInsights: process.env.NODE_ENV === 'production' ? require('applicationinsights') : undefined,
+    managedIdentityClientId: process.env.AZURE_CLIENT_ID
   },
   debtSubscription: {
     topic: process.env.DEBT_TOPIC_ADDRESS,

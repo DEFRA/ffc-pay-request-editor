@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { DefaultAzureCredential } = require('@azure/identity')
+const { DefaultAzureCredential, getBearerTokenProvider } = require('@azure/identity')
 const mqConfig = require('./mq-config')
 const authConfig = require('./auth')
 
@@ -68,9 +68,13 @@ const config = {
     hooks: {
       beforeConnect: async (cfg) => {
         if (process.env.NODE_ENV === 'production') {
-          const credential = new DefaultAzureCredential()
-          const accessToken = await credential.getToken('https://ossrdbms-aad.database.windows.net')
-          cfg.password = accessToken.token
+          const dbAuthEndpoint = 'https://ossrdbms-aad.database.windows.net/.default'
+          const credential = new DefaultAzureCredential({ managedIdentityClientId: process.env.AZURE_CLIENT_ID })
+          const tokenProvider = getBearerTokenProvider(
+            credential,
+            dbAuthEndpoint
+          )
+          cfg.password = tokenProvider
         }
       }
     },

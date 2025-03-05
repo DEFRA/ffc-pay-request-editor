@@ -1,0 +1,6 @@
+container.debtTopicAddress: queue:ffc-pay-debt-data
+container.manualLedgerTopicAddress: queue:ffc-pay-manual-check-data
+container.qcTopicAddress: queue:ffc-pay-quality-check
+container.eventTopicAddress: queue:ffc-pay-event
+container.eventsTopicAddress: queue:ffc-pay-events
+container.debtResponseTopicAddress: queue:ffc-pay-debt-data-response
