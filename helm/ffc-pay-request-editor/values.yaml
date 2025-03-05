@@ -77,7 +77,6 @@ service:
 
 azureAppRegistration:
   enabled: true
-  clientId:
   clientSecret:
   tenantId:
   redirectUrl: authenticate
