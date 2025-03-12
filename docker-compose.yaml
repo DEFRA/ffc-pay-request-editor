@@ -34,6 +34,7 @@ services:
       AZUREID_CLIENT_ID: ${AZUREID_CLIENT_ID}
       AZUREID_TENANT_ID: ${AZUREID_TENANT_ID}
       REDIRECT_URL: ${REDIRECT_URL}
+      PROCESSING_ACTIVE: ${PROCESSING_ACTIVE:-true}
 
   ffc-pay-request-editor-postgres:
     image: postgres:11.4-alpine
