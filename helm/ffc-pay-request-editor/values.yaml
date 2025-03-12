@@ -36,7 +36,8 @@ container:
   debtResponseTopicAddress: ffc-pay-debt-data-response
   cookiePassword: cookiecookiecookiecookiecookiecookie
   useV2Events: true
-
+  processingActive: true
+  
 livenessProbe:
   path: /healthz
   port: 3001

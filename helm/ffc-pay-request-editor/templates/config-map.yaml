@@ -5,6 +5,7 @@ data:
   PORT: {{ quote .Values.container.port }}
   APPINSIGHTS_CLOUDROLE: {{ quote .Values.name }}
   MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
+  PROCESSING_ACTIVE: {{ quote .Values.container.processingActive }}
   {{- if and (.Values.environmentCode) (not .Values.pr) }}
   DEBT_TOPIC_ADDRESS: {{ .Values.container.debtTopicAddress }}-{{ .Values.environmentCode }}
   DEBTRESPONSE_TOPIC_ADDRESS: {{ .Values.container.debtResponseTopicAddress }}-{{ .Values.environmentCode }}

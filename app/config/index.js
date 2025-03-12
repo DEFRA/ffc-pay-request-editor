@@ -5,6 +5,7 @@ const authConfig = require('./auth')
 
 // Define config schema
 const schema = Joi.object({
+  processingActive: Joi.boolean().default(true),
   serviceName: Joi.string().default('Request Editor'),
   port: Joi.number().default(3001),
   env: Joi.string().valid('development', 'test', 'production').default('development'),
@@ -47,6 +48,7 @@ const schema = Joi.object({
 
 // Build config
 const config = {
+  processingActive: process.env.PROCESSING_ACTIVE,
   serviceName: process.env.SERVICE_NAME,
   port: process.env.PORT,
   env: process.env.NODE_ENV,
