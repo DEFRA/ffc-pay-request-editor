@@ -26,7 +26,7 @@ const createServer = async () => {
   })
 
   // Register the plugins
-  if (config.processingActive){
+  if (config.processingActive) {
     await server.register(require('./plugins/auth'))
     await server.register(require('@hapi/inert'))
     await server.register(require('./plugins/views'))
@@ -36,8 +36,7 @@ const createServer = async () => {
     await server.register(require('./plugins/session-cache'))
     await server.register(require('./plugins/view-context'))
     await server.register(require('./plugins/logging'))
-  }
-  else {
+  } else {
     await server.register({
       name: 'router',
       register: (server, options) => {
@@ -45,11 +44,10 @@ const createServer = async () => {
       }
     })
   }
-  
+
   if (config.isDev) {
     await server.register(require('blipp'))
   }
-
 
   return server
 }
