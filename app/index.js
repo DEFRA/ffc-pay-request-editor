@@ -13,7 +13,6 @@ const startApp = async () => {
       console.log(err)
       process.exit(1)
     })
-
   if (config.processingActive) {
     await messaging.start()
   } else {
