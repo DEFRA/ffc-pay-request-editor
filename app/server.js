@@ -1,6 +1,5 @@
 const hapi = require('@hapi/hapi')
 const config = require('./config')
-const messageService = require('./messaging')
 const catbox = config.useRedis ? require('@hapi/catbox-redis') : require('@hapi/catbox-memory')
 
 const createServer = async () => {
@@ -40,8 +39,6 @@ const createServer = async () => {
   if (config.isDev) {
     await server.register(require('blipp'))
   }
-
-  await messageService.start()
 
   return server
 }
