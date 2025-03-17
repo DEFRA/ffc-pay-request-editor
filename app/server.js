@@ -39,8 +39,8 @@ const createServer = async () => {
   } else {
     await server.register({
       name: 'router',
-      register: (server, options) => {
-        server.route([require('./routes/healthy'), require('./routes/healthz')])
+      register: (svr, _opts) => {
+        svr.route([require('./routes/healthy'), require('./routes/healthz')])
       }
     })
   }
