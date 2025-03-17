@@ -5,8 +5,10 @@ jest.mock('../../app/server', () =>
     start: jest.fn()
   })
 )
-
 const createServer = require('../../app/server')
+
+jest.mock('../../app/messaging')
+const { start: mockMessagingStart } = require('../../app/messaging')
 
 const startApp = require('../../app')
 
@@ -15,16 +17,28 @@ describe('app start', () => {
     jest.clearAllMocks()
   })
 
-  test('starts processing when active is true', async () => {
+  test('starts server when active is true', async () => {
     config.processingActive = true
     await startApp()
     expect(createServer).toHaveBeenCalledTimes(1)
   })
 
-  test('does not start processing if active is false', async () => {
+  test('starts server if active is false', async () => {
     config.processingActive = false
     await startApp()
-    expect(createServer).toHaveBeenCalledTimes(0)
+    expect(createServer).toHaveBeenCalledTimes(1)
+  })
+
+  test('starts messaging when active is true', async () => {
+    config.processingActive = true
+    await startApp()
+    expect(mockMessagingStart).toHaveBeenCalledTimes(1)
+  })
+
+  test('does not start messaging when active is false', async () => {
+    config.processingActive = false
+    await startApp()
+    expect(mockMessagingStart).toHaveBeenCalledTimes(0)
   })
 
   test('does not log console.info when active is true', async () => {
