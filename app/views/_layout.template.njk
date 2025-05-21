@@ -1,4 +1,5 @@
 {% extends "govuk/template.njk" %}
+{% set govukRebrand = true %}
 
 {% block head %}
   <% htmlWebpackPlugin.files.css.forEach(file => { %> <link href="<%= file.replace('../dist/', '/static/') %>" rel="stylesheet"><% }) %>
