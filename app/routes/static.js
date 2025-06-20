@@ -19,23 +19,6 @@ module.exports = [{
   }
 }, {
   method: 'GET',
-  path: '/govuk-frontend/dist/govuk/{path*}',
-  options: {
-    auth: false,
-    handler: {
-      directory: {
-        path: [
-          'node_modules/govuk-frontend/dist/govuk'
-        ]
-      }
-    },
-    cache: {
-      expiresIn: config.staticCacheTimeoutMillis,
-      privacy: 'private'
-    }
-  }
-}, {
-  method: 'GET',
   path: '/static/{path*}',
   options: {
     auth: false,
