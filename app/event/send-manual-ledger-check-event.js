@@ -1,4 +1,3 @@
-const config = require('../config')
 const messageConfig = require('../config/mq-config')
 const { EventPublisher } = require('ffc-pay-event-publisher')
 const { getPaymentRequestByRequestId } = require('../payment-request/get-payment-request')
@@ -6,12 +5,6 @@ const { SOURCE } = require('../constants/source')
 const { LEDGER_ASSIGNMENT_REVIEWED } = require('../constants/events')
 
 const sendManualLedgerCheckEvent = async (paymentRequestId, user, provisionalLedgerData) => {
-  if (config.useV2Events) {
-    await sendV2ManualLedgerCheckEvent(paymentRequestId, user, provisionalLedgerData)
-  }
-}
-
-const sendV2ManualLedgerCheckEvent = async (paymentRequestId, user, provisionalLedgerData) => {
   const paymentRequest = await getPaymentRequestByRequestId(paymentRequestId)
   const event = {
     source: SOURCE,
