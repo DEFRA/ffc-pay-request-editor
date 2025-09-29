@@ -44,6 +44,7 @@
     "@hapi/yar": "10.1.1",
     "@joi/date": "2.1.0",
     "applicationinsights": "2.9.6",
+    "ffc-database": "^1.0.1",
     "ffc-messaging": "2.10.1",
     "ffc-pay-event-publisher": "1.2.0",
     "govuk-frontend": "5.10.0",
