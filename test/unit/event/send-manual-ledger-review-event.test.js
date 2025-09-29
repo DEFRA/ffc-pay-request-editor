@@ -12,7 +12,6 @@ jest.mock('ffc-pay-event-publisher', () => {
   }
 })
 
-
 jest.mock('../../../app/config/mq-config')
 const messageConfig = require('../../../app/config/mq-config')
 
