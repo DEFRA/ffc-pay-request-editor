@@ -42,7 +42,6 @@ const schema = Joi.object({
     schema: Joi.string().default('public'),
     username: Joi.string()
   }),
-  useV2Events: Joi.boolean().default(true),
   debtsReportName: Joi.string().default('ffc-pay-debts-report.csv')
 })
 
@@ -95,7 +94,6 @@ const config = {
     schema: process.env.POSTGRES_SCHEMA_NAME || 'public',
     username: process.env.POSTGRES_USERNAME
   },
-  useV2Events: process.env.USE_V2_EVENTS,
   debtsReportName: 'ffc-pay-debts-report.csv'
 }
 
