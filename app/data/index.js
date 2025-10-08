@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require('node:path')
 const dbConfig = require('../config').database
 const modelPath = path.join(__dirname, 'models')
 const { Database } = require('ffc-database')
