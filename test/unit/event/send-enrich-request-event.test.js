@@ -12,9 +12,6 @@ jest.mock('ffc-pay-event-publisher', () => {
   }
 })
 
-jest.mock('../../../app/config')
-const config = require('../../../app/config')
-
 jest.mock('../../../app/config/mq-config')
 const messageConfig = require('../../../app/config/mq-config')
 
@@ -33,7 +30,6 @@ describe('V2 send enrich request blocked event for payment request requiring deb
   beforeEach(async () => {
     uuidv4.mockImplementation(() => { '70cb0f07-e0cf-449c-86e8-0344f2c6cc6c' })
 
-    config.useV2Events = true
     messageConfig.eventsTopic = 'v2-events'
 
     paymentRequest = {
@@ -45,18 +41,6 @@ describe('V2 send enrich request blocked event for payment request requiring deb
 
   afterEach(async () => {
     jest.clearAllMocks()
-  })
-
-  test('send V2 events when v2 events enabled ', async () => {
-    config.useV2Events = true
-    await sendEnrichRequestEvent(paymentRequest, user)
-    expect(mockPublishEvent).toHaveBeenCalled()
-  })
-
-  test('should not send V2 events when v2 events disabled ', async () => {
-    config.useV2Events = false
-    await sendEnrichRequestEvent(paymentRequest, user)
-    expect(mockPublishEvent).not.toHaveBeenCalled()
   })
 
   test('should send event to V2 topic', async () => {

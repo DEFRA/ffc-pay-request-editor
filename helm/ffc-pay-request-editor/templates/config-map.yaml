@@ -34,5 +34,4 @@ data:
   {{- end }}
   AUTHENTICATION_ENABLED: {{ quote .Values.azureAppRegistration.enabled }}
   COOKIE_PASSWORD: {{ quote .Values.container.cookiePassword }}
-  USE_V2_EVENTS: {{ quote .Values.container.useV2Events }}
 {{- end -}}
