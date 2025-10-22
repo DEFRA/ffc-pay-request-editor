@@ -77,21 +77,21 @@
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Request</th>
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount</th>
                 <th scope="col" class="govuk-table__header govuk-body-s">Received</th>
-                <th scope="col" class="govuk-table__header">Actions</th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Actions</th>
               </tr>
             </thead>
             <tbody class="govuk-table__body">
               {% for data in ledgerData %}
                 <tr class="govuk-table__row">
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.marketingYear }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.agreementNumber }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.invoiceNumber }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequestNumber }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s noWrap">{{ data.valueText }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.receivedFormatted }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">
+                  <td class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
+                  <td class="govuk-table__cell govuk-body-s">{{ data.marketingYear }}</td>
+                  <td class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
+                  <td class="govuk-table__cell govuk-body-s">{{ data.agreementNumber }}</td>
+                  <td class="govuk-table__cell govuk-body-s">{{ data.invoiceNumber }}</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.paymentRequestNumber }}</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s noWrap">{{ data.valueText }}</td>
+                  <td class="govuk-table__cell govuk-body-s">{{ data.receivedFormatted }}</td>
+                  <td class="govuk-table__cell govuk-body-s">
                     {% if not data.manualLedgerChecked %}
                       <a href="/manual-ledger-check?paymentrequestid={{data.paymentRequestId}}">Review</a>
                     {% endif %}
