@@ -1,8 +1,11 @@
 {% extends '_layout.njk' %}
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "macros/search-box.njk" import searchBox %}
-{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+
+{% from "macros/search-input.njk" import searchInput %}
+
 
 {% block content %}
   {{ govukBackLink({
@@ -21,7 +24,7 @@
           <div class="user-search-box govuk-!-width-one-third">
             <form class="search-form" action="/manual-ledger" method="POST">
               <input type="hidden" name="crumb" value="{{crumb}}"/>
-              {{searchBox(model)}}
+              {{ searchInput(model) }}
             </form>
           </div>
 
@@ -74,7 +77,7 @@
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Request</th>
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount</th>
                 <th scope="col" class="govuk-table__header govuk-body-s">Received</th>
-                <th scope="col" class="govuk-table__header"></th>
+                <th scope="col" class="govuk-table__header">Actions</th>
               </tr>
             </thead>
             <tbody class="govuk-table__body">

@@ -1,24 +1,23 @@
-function ViewModel (labelText, value, error) {
+function ViewModel (details, value = null, generalError = null) {
   this.model = {
-    id: 'user-search',
+    id: details.id || 'user-search-frn',
     name: 'frn',
-    label: {
-      text: labelText,
-      classes: 'govuk-!-font-weight-bold'
-    },
-    input: {
-      classes: 'govuk-input--width-20'
-    },
-    button: {
-      classes: 'search-button'
-    },
+    type: 'text',
+    labelText: details.labelText,
+    labelClasses: 'govuk-!-font-weight-bold',
+    isPageHeading: false,
+    classes: 'govuk-input--width-20',
     inputmode: 'numeric',
-    value
+    value: details.value || '',
+    hintText: details.hintText || '',
+    errorText: details.error ? details.error.message : generalError?.message || undefined,
+    buttonText: 'Search',
+    buttonType: 'submit'
   }
 
-  if (error) {
+  if (generalError) {
     this.model.errorMessage = {
-      text: error.message
+      text: generalError.message
     }
   }
 }

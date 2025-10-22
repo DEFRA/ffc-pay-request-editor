@@ -1,18 +1,8 @@
-function ViewModel (input, select, generalError) {
+const SearchViewModel = require('./search')
+
+function ViewModel (details, select, generalError) {
   this.model = {
-    input: {
-      id: 'user-search-frn',
-      name: 'frn',
-      label: {
-        text: input.labelText,
-        classes: 'govuk-!-font-weight-bold'
-      },
-      input: {
-        classes: 'govuk-input--width-20'
-      },
-      inputmode: 'numeric',
-      value: input.value
-    },
+    input: new SearchViewModel(details, select, generalError).model,
     select: {
       id: 'user-search-scheme',
       name: 'scheme',
@@ -23,16 +13,6 @@ function ViewModel (input, select, generalError) {
       value: select.value,
       error: false,
       options: select.options
-    },
-    button: {
-      classes: 'search-button'
-    }
-  }
-
-  if (input.error) {
-    this.model.error = true
-    this.model.input.errorMessage = {
-      text: input.error.message
     }
   }
 

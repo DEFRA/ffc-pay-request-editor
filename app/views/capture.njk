@@ -1,9 +1,10 @@
 {% extends '_layout.njk' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
-{% from "macros/search-combined.njk" import searchCombined %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+
+{% from "macros/search-combined.njk" import searchCombined %}
 
 {% block content %}
   {{ govukBackLink({
@@ -28,7 +29,7 @@
       <div class="user-search-box govuk-!-width-one-third">
         <form class="search-form" action="/capture" method="POST">
           <input type="hidden" name="crumb" value="{{crumb}}"/>
-          {{searchCombined(model)}}
+          {{ searchCombined(model) }}
         </form>
       </div>
 
@@ -105,45 +106,45 @@
             <caption class="govuk-table__caption govuk-table__caption--s">Existing reporting datasets</caption>
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">FRN</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Agreement number</th>
-                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Net value</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Debt type</th>
-                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Date of Discovery</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Created by</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Status</th>
-                <th scope="col" class="govuk-table__header"></th>
+                <th class="govuk-table__header govuk-body-s">Scheme</th>
+                <th class="govuk-table__header govuk-body-s">FRN</th>
+                <th class="govuk-table__header govuk-body-s">Agreement number</th>
+                <th class="govuk-table__header govuk-table__header--numeric govuk-body-s">Net value</th>
+                <th class="govuk-table__header govuk-body-s">Debt type</th>
+                <th class="govuk-table__header govuk-table__header--numeric govuk-body-s">Date of Discovery</th>
+                <th class="govuk-table__header govuk-body-s">Created by</th>
+                <th class="govuk-table__header govuk-body-s">Status</th>
+                <th class="govuk-table__header">Actions</th>
               </tr>
             </thead>
             <tbody class="govuk-table__body">
               {% for data in captureData %}
                 <tr class="govuk-table__row capture-datasets">
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">
+                  <td class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
+                  <td class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
+                  <td class="govuk-table__cell govuk-body-s">
                     {% if data.reference %}
                       {{ data.reference }}
                       {%else%}
                       Manual enrichment
                     {%endif%}
                     </td>
-                    <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">
+                    <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">
                       {% if data.netValueText %}
                         {{ data.netValueText }}
                         {%endif%}
                       </td>
-                      <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}</td>
-                      <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}</td>
-                      <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.createdBy }}</td>
-                      <td scope="col" class="govuk-table__cell govuk-body-s">
+                      <td class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}</td>
+                      <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}</td>
+                      <td class="govuk-table__cell govuk-body-s">{{ data.createdBy }}</td>
+                      <td class="govuk-table__cell govuk-body-s">
                         {% if data.paymentRequestId %}
                           <strong class="govuk-tag govuk-tag--green capture-status">Attached</strong>
                         {% else %}
                           <strong class="govuk-tag capture-status">Pending</strong>
                         {% endif %}
                       </td>
-                      <td scope="col" class="govuk-table__cell govuk-body-s">
+                      <td class="govuk-table__cell govuk-body-s">
                         {% if not data.paymentRequestId %}
                           <form action="/capture/delete" method="POST">
                             <input type="hidden" name="crumb" value="{{crumb}}"/>

@@ -1,6 +1,6 @@
 {% extends '_layout.njk' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "macros/search-box.njk" import searchBox %}
+{% from "macros/search-input.njk" import searchInput %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 
@@ -21,7 +21,7 @@
           <div class="user-search-box govuk-!-width-one-third">
             <form class="search-form" action="/quality-check" method="POST">
               <input type="hidden" name="crumb" value="{{crumb}}"/>
-              {{searchBox(model)}}
+              {{searchInput(model)}}
             </form>
           </div>
 
@@ -75,7 +75,7 @@
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount</th>
                 <th scope="col" class="govuk-table__header govuk-body-s">Reviewed by</th>
                 <th scope="col" class="govuk-table__header govuk-body-s">Ledger changed</th>
-                <th scope="col" class="govuk-table__header"></th>
+                <th scope="col" class="govuk-table__header">Actions</th>
               </tr>
             </thead>
             <tbody class="govuk-table__body">

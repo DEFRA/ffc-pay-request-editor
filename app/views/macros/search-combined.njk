@@ -1,28 +1,36 @@
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% from "macros/search-input.njk" import searchInput %}
+
 {% macro searchCombined(model) %}
-    <div class="govuk-form-group {% if model.error %}govuk-form-group--error{% endif %}">
-        <label class="govuk-label {{model.input.label.classes}}" for="{{model.input.name}}">{{model.input.label.text}}</label>
-        {% if model.input.errorMessage %}
-            <span id="error-message" class="govuk-error-message">{{model.input.errorMessage.text}}</span>
-        {% endif %}
-        <input class="govuk-input {{model.input.classes}}"
-            id="{{model.input.id}}"
-            name="{{model.input.name}}"
-            inputmode="{{model.input.inputmode}}"
-            type="text"
-            value="{{model.input.value}}"/>
-        <button class="{{model.button.classes}}" data-module="govuk-button"></button>
-        <label class="govuk-label {{model.select.label.classes}}" for="{{model.select.name}}">{{model.select.label.text}}</label>
-        {% if model.select.errorMessage %}
-            <span id="error-message" class="govuk-error-message">{{model.select.errorMessage.text}}</span>
-        {% endif %}
-        <select class="govuk-select"
-                id="{{model.select.scheme}}"
-                name="{{model.select.name}}">
-            <option value="" {% if model.select.value is null %}selected{% endif %}></option>
-            {% for s in model.select.options %}
-                <option value="{{s}}" {% if model.select.value === s %}selected{% endif %}>{{s}}</option>
-            {% endfor %}
-        </select>
-        <button class="{{model.button.classes}}" data-module="govuk-button"></button>
-    </div>
+  <div class="govuk-form-group govuk-!-margin-bottom-1">
+    {{ searchInput(model.input) }}
+  </div>
+
+  <div class="govuk-form-group govuk-!-margin-bottom-1">
+    {% set selectItems = [{ value: "", text: "", selected: not model.select.value }] %}
+    {% for opt in model.select.options %}
+      {% set selected = (opt == model.select.value) %}
+      {% set selectItems = selectItems.concat([{ value: opt, text: opt, selected: selected }]) %}
+    {% endfor %}
+
+    {{ govukSelect({
+      id: model.select.id,
+      name: model.select.name,
+      label: {
+        text: model.select.label.text,
+        classes: model.select.label.classes
+      },
+      classes: model.select.classes,
+      items: selectItems,
+      errorMessage: model.select.errorMessage
+    }) }}
+
+    {{ govukButton({
+      text: model.select.buttonText or "Search",
+      classes: model.select.buttonClasses or "govuk-button govuk-!-margin-top-2"
+    }) }}
+  </div>
 {% endmacro %}
