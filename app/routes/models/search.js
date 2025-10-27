@@ -1,4 +1,4 @@
-function viewModel (details, generalError = null) {
+function viewModel (details, value = null, generalError = null) {
   this.model = {
     id: details.id || 'user-search-frn',
     name: 'frn',
@@ -8,7 +8,7 @@ function viewModel (details, generalError = null) {
     isPageHeading: false,
     classes: 'govuk-input--width-20',
     inputmode: 'numeric',
-    value: details.value || '',
+    value: details.value ? value : '',
     hintText: details.hintText || '',
     errorText: details.error ? details.error.message : generalError?.message || undefined,
     buttonText: 'Search',
