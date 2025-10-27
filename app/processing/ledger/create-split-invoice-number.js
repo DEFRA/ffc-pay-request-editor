@@ -1,20 +1,11 @@
-const { SFI, SFI_PILOT, LUMP_SUMS, CS, BPS, FDMR, SFI23, DELINKED, SFI_EXPANDED } = require('../../constants/schemes')
+const { SFI, SFI_PILOT, LUMP_SUMS, CS, BPS, FDMR, SFI23, DELINKED, SFI_EXPANDED, COHTR, COHTC } = require('../../constants/schemes')
+const SITI_AGRI_SCHEMES = new Set([SFI, SFI_PILOT, LUMP_SUMS, CS, BPS, FDMR, SFI23, DELINKED, SFI_EXPANDED, COHTR, COHTC])
 
 const createSplitInvoiceNumber = (invoiceNumber, splitId, schemeId) => {
-  switch (schemeId) {
-    case SFI:
-    case SFI_PILOT:
-    case LUMP_SUMS:
-    case CS:
-    case BPS:
-    case FDMR:
-    case SFI23:
-    case DELINKED:
-    case SFI_EXPANDED:
-      return createSitiAgriInvoiceNumber(invoiceNumber, splitId)
-    default:
-      return createDefaultInvoiceNumber(invoiceNumber, splitId)
+  if (SITI_AGRI_SCHEMES.has(schemeId)) {
+    return createSitiAgriInvoiceNumber(invoiceNumber, splitId)
   }
+  return createDefaultInvoiceNumber(invoiceNumber, splitId)
 }
 
 const createSitiAgriInvoiceNumber = (invoiceNumber, splitId) => {
