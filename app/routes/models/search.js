@@ -1,4 +1,4 @@
-function ViewModel (details, value = null, generalError = null) {
+function viewModel (details, generalError = null) {
   this.model = {
     id: details.id || 'user-search-frn',
     name: 'frn',
@@ -22,4 +22,4 @@ function ViewModel (details, value = null, generalError = null) {
   }
 }
 
-module.exports = ViewModel
+module.exports = viewModel

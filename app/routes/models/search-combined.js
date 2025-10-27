@@ -1,8 +1,8 @@
 const SearchViewModel = require('./search')
 
-function ViewModel (details, select, generalError) {
+function viewModel (details, select, generalError) {
   this.model = {
-    input: new SearchViewModel(details, select, generalError).model,
+    input: new SearchViewModel(details, generalError).model,
     select: {
       id: 'user-search-scheme',
       name: 'scheme',
@@ -31,4 +31,4 @@ function ViewModel (details, select, generalError) {
   }
 }
 
-module.exports = ViewModel
+module.exports = viewModel
