@@ -1,10 +1,11 @@
 const ViewModel = require('./models/search')
+const viewModelDetails = { labelText: 'Search for a request by FRN number' }
+
 const { getQualityChecks, getChangedQualityChecks } = require('../quality-check')
 const schema = require('./schemas/quality-check')
 const { ledger } = require('../auth/permissions')
 const { getUser } = require('../auth')
 const statusCodes = require('../constants/status-codes')
-const searchLabelText = 'Search for a request by FRN number'
 
 const defaultPage = 1
 const defaultPerPage = 100
@@ -26,7 +27,7 @@ module.exports = [{
         userId,
         page,
         perPage,
-        ...new ViewModel(searchLabelText)
+        ...new ViewModel(viewModelDetails)
       })
     }
   }
@@ -42,7 +43,7 @@ module.exports = [{
         const qualityCheckData = await getQualityChecks()
         const changedQualityChecks = await getChangedQualityChecks(qualityCheckData)
         const { userId } = getUser(request)
-        return h.view(view, { qualityCheckData: changedQualityChecks, userId, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(statusCodes.BAD_REQUEST).takeover()
+        return h.view(view, { qualityCheckData: changedQualityChecks, userId, ...new ViewModel(viewModelDetails, request.payload.frn, error) }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
@@ -53,10 +54,10 @@ module.exports = [{
       const { userId } = getUser(request)
 
       if (filteredQualityCheckData.length) {
-        return h.view(view, { qualityCheckData: filteredQualityCheckData, userId, ...new ViewModel(searchLabelText, frn) })
+        return h.view(view, { qualityCheckData: filteredQualityCheckData, userId, ...new ViewModel(viewModelDetails, frn) })
       }
 
-      return h.view(view, { userId, ...new ViewModel(searchLabelText, frn, { message: 'No quality checks match the FRN provided.' }) }).code(statusCodes.BAD_REQUEST)
+      return h.view(view, { userId, ...new ViewModel(viewModelDetails, frn, { message: 'No quality checks match the FRN provided.' }) }).code(statusCodes.BAD_REQUEST)
     }
   }
 }]

@@ -1,8 +1,9 @@
 {% extends '_layout.njk' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "macros/search-box.njk" import searchBox %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+
+{% from "macros/search-input.njk" import searchInput %}
 
 {% block content %}
   {{ govukBackLink({
@@ -22,7 +23,7 @@
           <div class="user-search-box govuk-!-width-one-third">
             <form class="search-form" action="/enrich" method="POST">
               <input type="hidden" name="crumb" value="{{crumb}}"/>
-              {{searchBox(model)}}
+              {{searchInput(model)}}
             </form>
           </div>
 
@@ -75,19 +76,19 @@
                 <th scope="col" class="govuk-table__header govuk-body-s">Agreement number</th>
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount</th>
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Days waiting</th>
-                <th scope="col" class="govuk-table__header"></th>
+                <th scope="col" class="govuk-table__header govuk-body-s">Actions</th>
               </tr>
             </thead>
             <tbody class="govuk-table__body">
               {% for data in enrichData %}
                 <tr class="govuk-table__row">
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.marketingYear }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">{{ data.agreementNumber }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s noWrap">{{ data.valueText }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.daysWaiting }}</td>
-                  <td scope="col" class="govuk-table__cell govuk-body-s">
+                  <td class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
+                  <td class="govuk-table__cell govuk-body-s">{{ data.marketingYear }}</td>
+                  <td class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
+                  <td class="govuk-table__cell govuk-body-s">{{ data.agreementNumber }}</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s noWrap">{{ data.valueText }}</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.daysWaiting }}</td>
+                  <td class="govuk-table__cell govuk-body-s">
                       <a href="enrich-request?invoiceNumber={{ data.invoiceNumber }}&paymentRequestId={{ data.paymentRequestId }}">Enrich</a>
                   </td>
                 </tr>

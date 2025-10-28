@@ -1,0 +1,26 @@
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% macro searchInput(params) %}
+    {{ govukInput({
+      id: params.id,
+      name: params.name,
+      type: params.type or "text",
+      value: params.value or "",
+      classes: params.classes,
+      inputmode: params.inputmode,
+      label: {
+        text: params.labelText,
+        classes: params.labelClasses
+      },
+      hint: hint,
+      errorMessage: params.errorMessage
+    }) }}
+
+    {{ govukButton({
+      text: params.buttonText or "Search",
+      type: params.buttonType or "submit",
+      classes: params.buttonClasses or "govuk-button govuk-!-margin-top-2"
+    }) }}
+  </div>
+{% endmacro %}

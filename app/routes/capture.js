@@ -21,8 +21,8 @@ module.exports = [{
   options: {
     auth: { scope: [enrichment] },
     handler: async (request, h) => {
-      const page = parseInt(request.query.page) || defaultPage
-      const perPage = parseInt(request.query.perPage) || defaultPerPage
+      const page = Number.parseInt(request.query.page) || defaultPage
+      const perPage = Number.parseInt(request.query.perPage) || defaultPerPage
       const getDebtsParams = {
         includeAttached: true,
         page,
@@ -36,6 +36,7 @@ module.exports = [{
         perPage,
         ...new ViewModel(
           {
+            id: 'user-search-frn',
             labelText: frnSearchLabelText
           },
           {
@@ -62,9 +63,22 @@ module.exports = [{
           usePagination: false
         }
         const captureData = await getDebts(getDebtsParams)
+
         const frnError = error.details.find(e => e.context.key === 'frn')
         const schemeError = error.details.find(e => e.context.key === 'scheme')
-        return h.view(view, { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn, error: frnError }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme, error: schemeError }) }).code(statusCodes.BAD_REQUEST).takeover()
+
+        const generalMessage = schemeError?.message || frnError?.message || ''
+
+        return h.view(view, {
+          captureData,
+          page: defaultPage,
+          perPage: defaultPerPage,
+          ...new ViewModel(
+            { labelText: frnSearchLabelText, value: request.payload.frn, error: frnError },
+            { labelText: schemeSearchLabelText, options, value: request.payload.scheme, error: schemeError },
+            { message: generalMessage }
+          )
+        }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
