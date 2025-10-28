@@ -39,7 +39,6 @@ module.exports = [{
       payload: schema,
       failAction: async (request, h, error) => {
         const ledgerData = await getManualLedgers(statuses)
-        console.log(new ViewModel(viewModelDetails, request.payload.frn, error))
         return h.view(view, { ledgerData, ...new ViewModel(viewModelDetails, request.payload.frn, error) }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
