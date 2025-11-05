@@ -1,4 +1,8 @@
 {% extends "govuk/template.njk" %}
+
+{% from "govuk/components/header/macro.njk" import govukHeader %}
+{% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
+
 {% set govukRebrand = true %}
 
 {% block head %}
@@ -6,17 +10,28 @@
 {% endblock %}
 
 {% block header %}
-  {{ govukHeader({ rebrand: true, homepageUrl: "/", productName: serviceName, serviceUrl: "/" }) }}
+    {{ govukHeader({
+    classes: "govuk-header--full-width-border",
+    homepageUrl: "/", 
+    productName: serviceName, 
+    serviceUrl: "/"
+  }) }}
+  
+  {% if auth.isAuthenticated %}
+    {{ govukServiceNavigation({
+      navigation: [
+        {
+          href: "/logout",
+          text: "Sign Out"
+        }
+      ]
+    }) }}
+  {% endif %}
 {% endblock %}
+
 
 {% block pageTitle %}
   {{ pageTitle }}
-{% endblock %}
-
-{% block beforeContent %}
-  {% if auth.isAuthenticated %}
-    <a href="/logout" class="govuk-body govuk-link">Sign out</a>    
-  {% endif %}
 {% endblock %}
 
 {% block footer %}

@@ -8,5 +8,7 @@ module.exports = {
   FDMR: 7,
   SFI23: 12,
   DELINKED: 13,
-  SFI_EXPANDED: 14
+  SFI_EXPANDED: 14,
+  COHTR: 15,
+  COHTC: 16
 }

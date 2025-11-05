@@ -8,5 +8,7 @@ module.exports = [
   'FDMR',
   'SFI23',
   'Delinked',
-  'Expanded SFI Offer'
+  'Expanded SFI Offer',
+  'Combined Offer Higher Tier Revenue',
+  'Combined Offer Higher Tier Capital'
 ]

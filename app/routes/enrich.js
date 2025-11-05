@@ -3,7 +3,7 @@ const { getPaymentRequest } = require('../payment-request')
 const schema = require('./schemas/enrich')
 const { enrichment } = require('../auth/permissions')
 const statusCodes = require('../constants/status-codes')
-const searchLabelText = 'Search for a request by FRN number'
+const viewModelDetails = { labelText: 'Search for a request by FRN number' }
 
 const defaultPage = 1
 const defaultPerPage = 100
@@ -18,11 +18,12 @@ module.exports = [{
       const page = parseInt(request.query.page) || defaultPage
       const perPage = parseInt(request.query.perPage) || defaultPerPage
       const paymentRequest = await getPaymentRequest(page, perPage)
+
       return h.view(view, {
         enrichData: paymentRequest,
         page,
         perPage,
-        ...new ViewModel(searchLabelText)
+        ...new ViewModel(viewModelDetails)
       })
     }
   }
@@ -36,7 +37,7 @@ module.exports = [{
       payload: schema,
       failAction: async (request, h, error) => {
         const paymentRequest = await getPaymentRequest()
-        return h.view(view, { enrichData: paymentRequest, ...new ViewModel(searchLabelText, request.payload.frn, error) }).code(statusCodes.BAD_REQUEST).takeover()
+        return h.view(view, { enrichData: paymentRequest, ...new ViewModel(viewModelDetails, request.payload.frn, error) }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
@@ -45,10 +46,10 @@ module.exports = [{
       const filteredEnrichData = paymentRequest.filter(x => x.frn === String(frn))
 
       if (filteredEnrichData.length) {
-        return h.view(view, { enrichData: filteredEnrichData, ...new ViewModel(searchLabelText, frn) })
+        return h.view(view, { enrichData: filteredEnrichData, ...new ViewModel(viewModelDetails, frn) })
       }
 
-      return h.view(view, new ViewModel(searchLabelText, frn, { message: 'No payments match the FRN provided.' })).code(statusCodes.BAD_REQUEST)
+      return h.view(view, new ViewModel(viewModelDetails, frn, { message: 'No payments match the FRN provided.' })).code(statusCodes.BAD_REQUEST)
     }
   }
 }]
