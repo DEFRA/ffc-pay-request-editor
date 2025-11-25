@@ -56,7 +56,10 @@ describe('Manual-ledger-check tests', () => {
       { desc: 'no manual Ledger data', mockValue: null },
       { desc: 'no paymentRequestId', url: manualLedgerCheckUrl }
     ])('returns 404 view when $desc', async ({ mockValue, url }) => {
-      if (mockValue !== undefined) getManualLedger.mockResolvedValue(mockValue)
+      if (mockValue !== undefined) {
+        getManualLedger.mockResolvedValue(mockValue)
+      }
+      
       const response = await server.inject({ method, auth, url: url || `${manualLedgerCheckUrl}?paymentrequestid=${paymentRequest.paymentRequestId}` })
       expect(response.request.response.source.template).toBe('404')
     })

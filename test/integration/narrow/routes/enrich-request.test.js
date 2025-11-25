@@ -96,7 +96,9 @@ describe('Enrich request tests', () => {
     ])('handles query with invoiceNumber and paymentRequestId', async ({ released, ledger, expectedTemplate }) => {
       const url = '/enrich-request?invoiceNumber=S00000001SFIP000001V001&paymentRequestId=1'
       paymentRequest.released = released
-      if (ledger) paymentRequest.ledger = ledger
+      if (ledger) {
+        paymentRequest.ledger = ledger
+      }
 
       await db.scheme.create(scheme)
       await db.paymentRequest.create(paymentRequest)

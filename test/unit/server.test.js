@@ -21,9 +21,6 @@ describe('session handler', () => {
     mockObject = { foo: 'bar' }
   })
 
-  // -----------------------------
-  // GET Tests
-  // -----------------------------
   test('get returns object if it exists', () => {
     mockGet.mockReturnValue(mockObject)
     const result = sessionHandler.get(request, MOCK_KEY)
@@ -36,9 +33,6 @@ describe('session handler', () => {
     expect(result).toStrictEqual({})
   })
 
-  // -----------------------------
-  // SET Tests
-  // -----------------------------
   const setScenarios = [
     {
       desc: 'no existing object',
@@ -84,9 +78,6 @@ describe('session handler', () => {
     expect(mockSet).toHaveBeenCalledWith(MOCK_KEY, expected)
   })
 
-  // -----------------------------
-  // UPDATE Tests
-  // -----------------------------
   test('update calls yar.get and yar.set with merged object', () => {
     mockGet.mockReturnValue({ foo: 'bar' })
     const updateObj = { baz: 'qux' }
@@ -95,9 +86,6 @@ describe('session handler', () => {
     expect(mockSet).toHaveBeenCalledWith(MOCK_KEY, { foo: 'bar', baz: 'qux' })
   })
 
-  // -----------------------------
-  // CLEAR Tests
-  // -----------------------------
   test('clear calls yar.clear once with key', () => {
     sessionHandler.clear(request, MOCK_KEY)
     expect(mockClear).toHaveBeenCalledTimes(1)

@@ -61,7 +61,7 @@ describe('Manual-ledger-review tests', () => {
       { desc: 'no paymentRequestId', query: undefined },
       { desc: 'no manualLedgerData', query: '1', mockValue: undefined }
     ])('redirects to /quality-check when $desc', async ({ query, mockValue }) => {
-      getManualLedger.mockResolvedValue(mockValue) // always mock, even if undefined
+      getManualLedger.mockResolvedValue(mockValue)
       const response = await server.inject({
         method: 'GET',
         auth,
