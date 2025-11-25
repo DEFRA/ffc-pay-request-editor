@@ -1,16 +1,16 @@
-const { enrichment } = require('../../../../app/auth/permissions')
+const { enrichment } = require('../../app/auth/permissions')
 
 describe('capture-debt route', () => {
   jest.mock('ffc-messaging')
-  jest.mock('../../../../app/plugins/crumb')
-  jest.mock('../../../../app/processing/scheme')
-  jest.mock('../../../../app/auth')
-  const mockAuth = require('../../../../app/auth')
-  const { getSchemeId, getSchemes } = require('../../../../app/processing/scheme')
-  const db = require('../../../../app/data')
-  const { SCHEMES } = require('../../../data/scheme')
-  const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
-  const { ADMINISTRATIVE } = require('../../../../app/constants/debt-types')
+  jest.mock('../../app/plugins/crumb')
+  jest.mock('../../app/processing/scheme')
+  jest.mock('../../app/auth')
+  const mockAuth = require('../../app/auth')
+  const { getSchemeId, getSchemes } = require('../../app/processing/scheme')
+  const db = require('../../app/data')
+  const { SCHEMES } = require('../data/scheme')
+  const { SCHEME_ID_SFI } = require('../data/scheme-id')
+  const { ADMINISTRATIVE } = require('../../app/constants/debt-types')
   const {
     invalidSchemeTests,
     invalidFrnTests,
@@ -18,7 +18,7 @@ describe('capture-debt route', () => {
     invalidNetTests,
     invalidDebtTypeTests,
     invalidDateTests
-  } = require('../../../helpers/capture-debt-validation-cases')
+  } = require('../helpers/capture-debt-validation-cases')
 
   const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
   const user = { userId: '1', username: 'Developer' }
@@ -45,7 +45,7 @@ describe('capture-debt route', () => {
     mockAuth.getUser.mockResolvedValue(user)
     getSchemes.mockResolvedValue(SCHEMES)
     getSchemeId.mockResolvedValue(SCHEME_ID_SFI)
-    createServer = require('../../../../app/server')
+    createServer = require('../../app/server')
     server = await createServer()
     await server.initialize()
   })

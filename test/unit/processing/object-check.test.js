@@ -1,28 +1,22 @@
 const objectCheck = require('../../../app/processing/object-check')
 
 describe('object check', () => {
-  test('getObjectKey returns key', () => {
-    const result = objectCheck.getObjectKey({ a: 'b' }, 'a')
-    expect(result).toBe('b')
+  describe('getObjectKey', () => {
+    test.each([
+      [{ a: 'b' }, 'a', undefined, 'b'],
+      [{ e: 'b' }, 'a', 'c', 'c']
+    ])('getObjectKey(%o, %s, %s) => %s', (obj, key, defaultValue, expected) => {
+      expect(objectCheck.getObjectKey(obj, key, defaultValue)).toBe(expected)
+    })
   })
 
-  test('getObjectKey returns default key if key does not exist', () => {
-    const result = objectCheck.getObjectKey({ e: 'b' }, 'a', 'c')
-    expect(result).toBe('c')
-  })
-
-  test('getObjectKeyEquals returns true if key exists and equals value', () => {
-    const result = objectCheck.getObjectKeyEquals({ a: 'b' }, 'a', 'b')
-    expect(result).toBe(true)
-  })
-
-  test('getObjectKeyEquals returns false if key exists and does not equal value', () => {
-    const result = objectCheck.getObjectKeyEquals({ a: 'b' }, 'a', 'c')
-    expect(result).toBe(false)
-  })
-
-  test('getObjectKeyEquals returns default if object undefined', () => {
-    const result = objectCheck.getObjectKeyEquals(undefined, 'a', 'c')
-    expect(result).toBe(false)
+  describe('getObjectKeyEquals', () => {
+    test.each([
+      [{ a: 'b' }, 'a', 'b', true],
+      [{ a: 'b' }, 'a', 'c', false],
+      [undefined, 'a', 'c', false]
+    ])('getObjectKeyEquals(%o, %s, %s) => %s', (obj, key, value, expected) => {
+      expect(objectCheck.getObjectKeyEquals(obj, key, value)).toBe(expected)
+    })
   })
 })
