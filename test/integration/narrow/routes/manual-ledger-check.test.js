@@ -59,7 +59,7 @@ describe('Manual-ledger-check tests', () => {
       if (mockValue !== undefined) {
         getManualLedger.mockResolvedValue(mockValue)
       }
-      
+
       const response = await server.inject({ method, auth, url: url || `${manualLedgerCheckUrl}?paymentrequestid=${paymentRequest.paymentRequestId}` })
       expect(response.request.response.source.template).toBe('404')
     })
