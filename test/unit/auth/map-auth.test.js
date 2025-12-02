@@ -1,72 +1,41 @@
 const mapAuth = require('../../../app/auth/map-auth')
 const { ledger, enrichment } = require('../../../app/auth/permissions')
-let request
 
-describe('is in role', () => {
+describe('mapAuth', () => {
+  let request
+
   beforeEach(() => {
     request = {
       auth: {
         isAuthenticated: true,
-        credentials: {
-          scope: []
-        }
+        credentials: { scope: [] }
       }
     }
   })
 
-  test('should return isAuthenticated if authenticated', () => {
-    const result = mapAuth(request)
-    expect(result.isAuthenticated).toBeTruthy()
+  describe('authentication flags', () => {
+    test('should return correct isAuthenticated and isAnonymous values', () => {
+      let result = mapAuth(request)
+      expect(result.isAuthenticated).toBeTruthy()
+      expect(result.isAnonymous).not.toBeTruthy()
+
+      request.auth.isAuthenticated = false
+      result = mapAuth(request)
+      expect(result.isAuthenticated).not.toBeTruthy()
+      expect(result.isAnonymous).toBeTruthy()
+    })
   })
 
-  test('should not return isAuthenticated if unauthenticated', () => {
-    request.auth.isAuthenticated = false
-    const result = mapAuth(request)
-    expect(result.isAuthenticated).not.toBeTruthy()
-  })
-
-  test('should return isAnonymous if unauthenticated', () => {
-    request.auth.isAuthenticated = false
-    const result = mapAuth(request)
-    expect(result.isAnonymous).toBeTruthy()
-  })
-
-  test('should not return isAnonymous if authenticated', () => {
-    const result = mapAuth(request)
-    expect(result.isAnonymous).not.toBeTruthy()
-  })
-
-  test('should not return isEnrichmentUser if no roles', () => {
-    const result = mapAuth(request)
-    expect(result.isEnrichmentUser).not.toBeTruthy()
-  })
-
-  test('should not return isLedgerUser if no roles', () => {
-    const result = mapAuth(request)
-    expect(result.isLedgerUser).not.toBeTruthy()
-  })
-
-  test('should not return isEnrichmentUser if not in role', () => {
-    request.auth.credentials.scope = [ledger]
-    const result = mapAuth(request)
-    expect(result.isEnrichmentUser).not.toBeTruthy()
-  })
-
-  test('should not return isLedgerUser if not in role', () => {
-    request.auth.credentials.scope = [enrichment]
-    const result = mapAuth(request)
-    expect(result.isLedgerUser).not.toBeTruthy()
-  })
-
-  test('should return isEnrichmentUser if in role', () => {
-    request.auth.credentials.scope = [enrichment]
-    const result = mapAuth(request)
-    expect(result.isEnrichmentUser).toBeTruthy()
-  })
-
-  test('should return isLedgerUser if in role', () => {
-    request.auth.credentials.scope = [ledger]
-    const result = mapAuth(request)
-    expect(result.isLedgerUser).toBeTruthy()
+  describe('role-based flags', () => {
+    test.each([
+      [[], false, false],
+      [[ledger], true, false],
+      [[enrichment], false, true]
+    ])('scope=%p -> isLedgerUser=%p, isEnrichmentUser=%p', (scope, ledgerFlag, enrichmentFlag) => {
+      request.auth.credentials.scope = scope
+      const result = mapAuth(request)
+      expect(result.isLedgerUser).toBe(ledgerFlag)
+      expect(result.isEnrichmentUser).toBe(enrichmentFlag)
+    })
   })
 })

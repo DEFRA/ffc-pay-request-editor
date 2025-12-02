@@ -1,121 +1,94 @@
-const createServer = require('../../app/server')
+const mockGet = jest.fn()
+const mockSet = jest.fn()
+const mockClear = jest.fn()
+const MOCK_KEY = 'key'
 
-jest.mock('@hapi/hapi')
-jest.mock('@hapi/catbox-redis', () => jest.fn())
-jest.mock('@hapi/catbox-memory', () => jest.fn())
-jest.mock('../../app/config', () => ({
-  authConfig: { enabled: false },
-  useRedis: false,
-  processingActive: true,
-  isDev: false,
-  port: 3000,
-  cacheName: 'test-cache',
-  catboxOptions: {}
-}))
+let request
+let mockObject
 
-jest.mock('@hapi/inert')
-jest.mock('../../app/plugins/auth')
-jest.mock('../../app/plugins/views')
-jest.mock('../../app/plugins/router')
-jest.mock('../../app/plugins/error-pages')
-jest.mock('../../app/plugins/crumb')
-jest.mock('../../app/plugins/session-cache')
-jest.mock('../../app/plugins/view-context')
-jest.mock('../../app/plugins/logging')
-jest.mock('../../app/routes/healthy')
-jest.mock('../../app/routes/healthz')
-jest.mock('blipp')
+const sessionHandler = require('../../app/session-handler')
 
-jest.mock('@hapi/hapi', () => {
-  return {
-    server: jest.fn(() => ({
-      register: jest.fn(),
-      route: jest.fn()
-    }))
-  }
-})
-
-describe('createServer', () => {
-  test('should use @hapi/catbox-memory when useRedis is false', async () => {
-    jest.resetModules()
-
-    jest.doMock('../../app/config', () => ({
-      ...jest.requireActual('../../app/config'),
-      useRedis: false
-    }))
-
-    const catboxMemory = jest.fn()
-    jest.doMock('@hapi/catbox-memory', () => catboxMemory)
-
-    jest.isolateModules(() => {
-      require('../../app/server')
-    })
-
-    expect(require('@hapi/catbox-memory')).toBe(catboxMemory)
+describe('session handler', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    request = {
+      yar: {
+        get: mockGet,
+        set: mockSet,
+        clear: mockClear
+      }
+    }
+    mockObject = { foo: 'bar' }
   })
 
-  test('should use @hapi/catbox-redis when useRedis is true', async () => {
-    jest.resetModules()
-
-    jest.doMock('../../app/config', () => ({
-      ...jest.requireActual('../../app/config'),
-      useRedis: true
-    }))
-
-    const catboxRedis = jest.fn()
-    jest.doMock('@hapi/catbox-redis', () => catboxRedis)
-
-    jest.isolateModules(() => {
-      require('../../app/server')
-    })
-
-    expect(require('@hapi/catbox-redis')).toBe(catboxRedis)
+  test('get returns object if it exists', () => {
+    mockGet.mockReturnValue(mockObject)
+    const result = sessionHandler.get(request, MOCK_KEY)
+    expect(result).toStrictEqual(mockObject)
   })
 
-  test('should register plugins when processingActive is true', async () => {
-    const server = await createServer()
-    expect(server.register).toHaveBeenCalledWith(require('../../app/plugins/auth'))
-    expect(server.register).toHaveBeenCalledWith(require('@hapi/inert'))
-    expect(server.register).toHaveBeenCalledWith(require('../../app/plugins/views'))
-    expect(server.register).toHaveBeenCalledWith(require('../../app/plugins/router'))
-    expect(server.register).toHaveBeenCalledWith(require('../../app/plugins/error-pages'))
-    expect(server.register).toHaveBeenCalledWith(require('../../app/plugins/crumb'))
-    expect(server.register).toHaveBeenCalledWith(require('../../app/plugins/session-cache'))
-    expect(server.register).toHaveBeenCalledWith(require('../../app/plugins/view-context'))
-    expect(server.register).toHaveBeenCalledWith(require('../../app/plugins/logging'))
+  test('get returns empty object if key not found', () => {
+    mockGet.mockReturnValue(null)
+    const result = sessionHandler.get(request, MOCK_KEY)
+    expect(result).toStrictEqual({})
   })
 
-  test('should register health check routes when processingActive is false', async () => {
-    jest.resetModules()
-    jest.doMock('../../app/config', () => ({
-      useRedis: false,
-      processingActive: false,
-      isDev: false,
-      port: 3000,
-      cacheName: 'test-cache',
-      catboxOptions: {}
-    }))
-    const createServerWithoutProcessing = require('../../app/server')
-    const server = await createServerWithoutProcessing()
-    expect(server.register).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'router'
-      })
-    )
+  const setScenarios = [
+    {
+      desc: 'no existing object',
+      existing: null,
+      update: { foo: 'bar' },
+      expected: { foo: 'bar' }
+    },
+    {
+      desc: 'unchanged object',
+      existing: { foo: 'bar' },
+      update: { foo: 'bar' },
+      expected: { foo: 'bar' }
+    },
+    {
+      desc: 'property updated',
+      existing: { foo: 'bar' },
+      update: { foo: 'baz' },
+      expected: { foo: 'baz' }
+    },
+    {
+      desc: 'property added',
+      existing: { foo: 'bar' },
+      update: { foo: 'bar', mar: 'baz' },
+      expected: { foo: 'bar', mar: 'baz' }
+    },
+    {
+      desc: 'property removed',
+      existing: { foo: 'bar' },
+      update: {},
+      expected: {}
+    },
+    {
+      desc: 'array replaced',
+      existing: { arr: ['a', 'b'] },
+      update: { arr: ['c', 'd'] },
+      expected: { arr: ['c', 'd'] }
+    }
+  ]
+
+  test.each(setScenarios)('set calls yar.set correctly when $desc', ({ existing, update, expected }) => {
+    mockGet.mockReturnValue(existing)
+    sessionHandler.set(request, MOCK_KEY, update)
+    expect(mockSet).toHaveBeenCalledWith(MOCK_KEY, expected)
   })
 
-  test('should register blipp plugin in development mode', async () => {
-    jest.resetModules()
-    jest.doMock('../../app/config', () => ({
-      useRedis: false,
-      processingActive: true,
-      isDev: true,
-      port: 3000,
-      cacheName: 'test-cache',
-      catboxOptions: {}
-    }))
-    const createServerDev = require('../../app/server')
-    const server = await createServerDev()
-    expect(server.register).toHaveBeenCalledWith(require('blipp'))
+  test('update calls yar.get and yar.set with merged object', () => {
+    mockGet.mockReturnValue({ foo: 'bar' })
+    const updateObj = { baz: 'qux' }
+    sessionHandler.update(request, MOCK_KEY, updateObj)
+    expect(mockGet).toHaveBeenCalledWith(MOCK_KEY)
+    expect(mockSet).toHaveBeenCalledWith(MOCK_KEY, { foo: 'bar', baz: 'qux' })
+  })
+
+  test('clear calls yar.clear once with key', () => {
+    sessionHandler.clear(request, MOCK_KEY)
+    expect(mockClear).toHaveBeenCalledTimes(1)
+    expect(mockClear).toHaveBeenCalledWith(MOCK_KEY)
   })
 })

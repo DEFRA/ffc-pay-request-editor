@@ -1,46 +1,25 @@
-const {
-  convertToPence,
-  convertToPounds
-} = require('../../../app/processing/conversion')
+const { convertToPence, convertToPounds } = require('../../../app/processing/conversion')
 
-describe('Currency convertor', () => {
-  test('converts 100 to pence', () => {
-    const result = convertToPence(100)
-    expect(result).toEqual(10000)
+describe('Currency converter', () => {
+  describe('convertToPence', () => {
+    test.each([
+      [100, 10000],
+      [100.10, 10010],
+      [100.1, 10010],
+      ['100', 10000],
+      ['100.10', 10010],
+      ['100.1', 10010]
+    ])('converts %p to pence -> %p', (input, expected) => {
+      expect(convertToPence(input)).toEqual(expected)
+    })
   })
 
-  test('converts 100.10 to pence', () => {
-    const result = convertToPence(100.10)
-    expect(result).toEqual(10010)
-  })
-
-  test('converts 100.1 to pence', () => {
-    const result = convertToPence(100.1)
-    expect(result).toEqual(10010)
-  })
-
-  test('converts 100 to pence if string', () => {
-    const result = convertToPence('100')
-    expect(result).toEqual(10000)
-  })
-
-  test('converts 100.10 to pence if string', () => {
-    const result = convertToPence('100.10')
-    expect(result).toEqual(10010)
-  })
-
-  test('converts 100.1 to pence if string', () => {
-    const result = convertToPence('100.1')
-    expect(result).toEqual(10010)
-  })
-
-  test('converts 10000 to pounds', () => {
-    const result = convertToPounds(10000)
-    expect(result).toEqual(100.00)
-  })
-
-  test('converts 10010 to pounds', () => {
-    const result = convertToPounds(10010)
-    expect(result).toEqual(100.10)
+  describe('convertToPounds', () => {
+    test.each([
+      [10000, 100.00],
+      [10010, 100.10]
+    ])('converts %p to pounds -> %p', (input, expected) => {
+      expect(convertToPounds(input)).toEqual(expected)
+    })
   })
 })

@@ -1,23 +1,20 @@
-const { AP } = require('../../../app/processing/ledger/ledgers')
-const {
-  PENDING,
-  AWAITING_ENRICHMENT
-} = require('../../../app/quality-check/statuses')
+const { AP, AR } = require('../../../app/processing/ledger/ledgers')
+const { PENDING, AWAITING_ENRICHMENT } = require('../../../app/quality-check/statuses')
 
 let mockManualLedgerRequests
-
 let config
 let checkForARLedger
 let checkForDebtData
 let copyDebtInformationFromArLedger
 let sendEnrichRequestBlockedEvent
 
-describe('check for ar ledger', () => {
-  beforeEach(async () => {
-    mockManualLedgerRequests = require('./mock-manual-ledger-requests')
+describe('checkForARLedger', () => {
+  beforeEach(() => {
+    mockManualLedgerRequests = require('../../mocks/mock-manual-ledger-requests')
 
     jest.mock('../../../app/config')
     config = require('../../../app/config')
+    config.isAlerting = true
 
     jest.mock('../../../app/manual-ledger/check-for-debt-data')
     checkForDebtData = require('../../../app/manual-ledger/check-for-debt-data')
@@ -30,249 +27,103 @@ describe('check for ar ledger', () => {
     sendEnrichRequestBlockedEvent = require('../../../app/event').sendEnrichRequestBlockedEvent
 
     checkForARLedger = require('../../../app/manual-ledger/check-for-ar-ledger')
-
-    config.isAlerting = true
   })
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.resetAllMocks()
     jest.resetModules()
   })
 
-  test('should call checkForDebtData when mockManualLedgerRequests and PENDING status are received', async () => {
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(checkForDebtData).toHaveBeenCalled()
+  const modifiers = [
+    ['zero value', arr => arr.map(x => ({
+      ...x,
+      ledgerPaymentRequest: { ...x.ledgerPaymentRequest, value: 0 }
+    }))],
+    ['AP ledger', arr => arr.map(x => ({
+      ...x,
+      ledgerPaymentRequest: { ...x.ledgerPaymentRequest, ledger: AP }
+    }))],
+    ['empty request', () => [{ ledgerPaymentRequest: { ledger: AR, value: 0 } }]]
+  ]
+
+  describe('checkForDebtData calls', () => {
+    test('should call checkForDebtData with first non-zero AR request', async () => {
+      await checkForARLedger(mockManualLedgerRequests, PENDING)
+      expect(checkForDebtData).toHaveBeenCalledWith(mockManualLedgerRequests[0])
+      expect(checkForDebtData).toHaveBeenCalledTimes(1)
+    })
+
+    test.each(modifiers)('should not call checkForDebtData for %s requests', async (_, modify) => {
+      const requests = modify([...mockManualLedgerRequests])
+      await checkForARLedger(requests, PENDING)
+      expect(checkForDebtData).not.toHaveBeenCalled()
+    })
   })
 
-  test('should call checkForDebtData once when mockManualLedgerRequests and PENDING status are received', async () => {
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(checkForDebtData).toHaveBeenCalledTimes(1)
+  describe('copyDebtInformationFromArLedger calls', () => {
+    test('should call with null or debt object depending on checkForDebtData return', async () => {
+      await checkForARLedger(mockManualLedgerRequests, PENDING)
+      expect(copyDebtInformationFromArLedger).toHaveBeenCalledWith(null, mockManualLedgerRequests[0])
+      expect(copyDebtInformationFromArLedger).toHaveBeenCalledTimes(1)
+
+      const debtObj = { test: 'exists' }
+      checkForDebtData.mockReturnValue(debtObj)
+      await checkForARLedger(mockManualLedgerRequests, PENDING)
+      expect(copyDebtInformationFromArLedger).toHaveBeenCalledWith(debtObj, mockManualLedgerRequests[0])
+    })
+
+    test.each(modifiers)('should not call copyDebtInformationFromArLedger for %s requests', async (_, modify) => {
+      const requests = modify([...mockManualLedgerRequests])
+      await checkForARLedger(requests, PENDING)
+      expect(copyDebtInformationFromArLedger).not.toHaveBeenCalled()
+    })
   })
 
-  test('should call checkForDebtData with 1 mockManualLedgerRequest when mockManualLedgerRequests and PENDING status are received', async () => {
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(checkForDebtData).toHaveBeenCalledWith(mockManualLedgerRequests[0])
+  describe('sendEnrichRequestBlockedEvent calls', () => {
+    test('should call sendEnrichRequestBlockedEvent when checkForDebtData is null and alerting is true', async () => {
+      await checkForARLedger(mockManualLedgerRequests, PENDING)
+      expect(sendEnrichRequestBlockedEvent).toHaveBeenCalledWith(mockManualLedgerRequests[0].ledgerPaymentRequest)
+      expect(sendEnrichRequestBlockedEvent).toHaveBeenCalledTimes(1)
+    })
+
+    test('should not call sendEnrichRequestBlockedEvent when alerting is false', async () => {
+      config.isAlerting = false
+      await checkForARLedger(mockManualLedgerRequests, PENDING)
+      expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
+    })
+
+    test.each(modifiers)('should not call sendEnrichRequestBlockedEvent for %s requests', async (_, modify) => {
+      const requests = modify([...mockManualLedgerRequests])
+      await checkForARLedger(requests, PENDING)
+      expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
+    })
   })
 
-  test('should call checkForDebtData with 1st AR mockManualLedgerRequest when multiple AR mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests = [mockManualLedgerRequests[0],
-      {
-        ...mockManualLedgerRequests[0],
-        frn: 9999999999
-      }
+  describe('return status', () => {
+    const statusCases = [
+      ['zero value', arr => arr.map(x => ({
+        ...x,
+        ledgerPaymentRequest: { ...x.ledgerPaymentRequest, value: 0 }
+      })), PENDING],
+      ['AP ledger', arr => arr.map(x => ({
+        ...x,
+        ledgerPaymentRequest: { ...x.ledgerPaymentRequest, ledger: AP }
+      })), PENDING],
+      ['empty request', () => [{ ledgerPaymentRequest: { ledger: AR, value: 0 } }], PENDING],
+      ['debt exists', () => mockManualLedgerRequests, PENDING],
+      ['no debt', () => mockManualLedgerRequests, AWAITING_ENRICHMENT]
     ]
 
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-
-    expect(checkForDebtData).toHaveBeenCalledWith(mockManualLedgerRequests[0])
-  })
-
-  test('should not call checkForDebtData when only 0 value mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.value = 0; return x })
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(checkForDebtData).not.toHaveBeenCalled()
-  })
-
-  test('should call checkForDebtData with 1st non-zero value AR mockManualLedgerRequest when multiple AR mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests = [mockManualLedgerRequests[0],
-      {
-        ...mockManualLedgerRequests[0],
-        value: 0
+    test.each(statusCases)('should return %s status', async (_, modify, expected) => {
+      if (_ === 'debt exists') {
+        checkForDebtData.mockReturnValue({ test: 'exists' })
+      } else if (_ === 'no debt') {
+        checkForDebtData.mockReturnValue(null)
       }
-    ]
 
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-
-    expect(checkForDebtData).toHaveBeenCalled()
-  })
-
-  test('should not call checkForDebtData when only AP mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.ledger = AP; return x })
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(checkForDebtData).not.toHaveBeenCalled()
-  })
-
-  test('should not call checkForDebtData when an empty manualLedgerRequests and PENDING status are received', async () => {
-    await checkForARLedger([{}], PENDING)
-    expect(checkForDebtData).not.toHaveBeenCalled()
-  })
-
-  test('should not call sendEnrichRequestBlockedEvent when only 0 value mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.value = 0; return x })
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
-  })
-
-  test('should not call sendEnrichRequestBlockedEvent when only AP mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.ledger = AP; return x })
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
-  })
-
-  test('should not call sendEnrichRequestBlockedEvent when an empty manualLedgerRequest and PENDING status are received', async () => {
-    await checkForARLedger([{}], PENDING)
-    expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
-  })
-
-  test('should not call sendEnrichRequestBlockedEvent when only 0 value mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.value = 0; return x })
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
-  })
-
-  test('should not call sendEnrichRequestBlockedEvent when only AP mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.ledger = AP; return x })
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
-  })
-
-  test('should not call sendEnrichRequestBlockedEvent when an empty manualLedgerRequest and PENDING status are received', async () => {
-    await checkForARLedger([{}], PENDING)
-    expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
-  })
-
-  test('should not call copyDebtInformationFromArLedger when only 0 value mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.value = 0; return x })
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(copyDebtInformationFromArLedger).not.toHaveBeenCalled()
-  })
-
-  test('should not call copyDebtInformationFromArLedger when only AP mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.ledger = AP; return x })
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(copyDebtInformationFromArLedger).not.toHaveBeenCalled()
-  })
-
-  test('should not call copyDebtInformationFromArLedger when an empty manualLedgerRequest and PENDING status are received', async () => {
-    await checkForARLedger([{}], PENDING)
-    expect(copyDebtInformationFromArLedger).not.toHaveBeenCalled()
-  })
-
-  test('should not call copyDebtInformationFromArLedger when only 0 value mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.value = 0; return x })
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(copyDebtInformationFromArLedger).not.toHaveBeenCalled()
-  })
-
-  test('should not call copyDebtInformationFromArLedger when only AP mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.ledger = AP; return x })
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(copyDebtInformationFromArLedger).not.toHaveBeenCalled()
-  })
-
-  test('should not call copyDebtInformationFromArLedger when an empty manualLedgerRequest and PENDING status are received', async () => {
-    await checkForARLedger([{}], PENDING)
-    expect(copyDebtInformationFromArLedger).not.toHaveBeenCalled()
-  })
-
-  test('should call sendEnrichRequestBlockedEvent when mockManualLedgerRequests and PENDING status are received, checkForDebtData returns null and config.isAlerting is true', async () => {
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(sendEnrichRequestBlockedEvent).toHaveBeenCalled()
-  })
-
-  test('should call sendEnrichRequestBlockedEvent once when mockManualLedgerRequests and PENDING status are received, checkForDebtData returns null and config.isAlerting is true', async () => {
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(sendEnrichRequestBlockedEvent).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call sendEnrichRequestBlockedEvent with mockManualLedgerRequest when mockManualLedgerRequests and PENDING status are received, checkForDebtData returns null and config.isAlerting is true', async () => {
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(sendEnrichRequestBlockedEvent).toHaveBeenCalledWith(mockManualLedgerRequests[0].ledgerPaymentRequest)
-  })
-
-  test('should not call sendEnrichRequestBlockedEvent when mockManualLedgerRequests and PENDING status are received, checkForDebtData returns null and config.isAlerting is false', async () => {
-    config.isAlerting = false
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
-  })
-
-  test('should call copyDebtInformationFromArLedger when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns null', async () => {
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(copyDebtInformationFromArLedger).toHaveBeenCalled()
-  })
-
-  test('should call copyDebtInformationFromArLedger once when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns null', async () => {
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(copyDebtInformationFromArLedger).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call copyDebtInformationFromArLedger with null and mockManualLedgerRequest when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns null', async () => {
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(copyDebtInformationFromArLedger).toHaveBeenCalledWith(null, mockManualLedgerRequests[0])
-  })
-
-  test('should call copyDebtInformationFromArLedger when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns an object', async () => {
-    checkForDebtData.mockReturnValue({ test: 'value does not matter, just that it exists' })
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(copyDebtInformationFromArLedger).toHaveBeenCalled()
-  })
-
-  test('should call copyDebtInformationFromArLedger once when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns an object', async () => {
-    checkForDebtData.mockReturnValue({ test: 'value does not matter, just that it exists' })
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(copyDebtInformationFromArLedger).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call copyDebtInformationFromArLedger with empty object and mockManualLedgerRequest when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns an object', async () => {
-    checkForDebtData.mockReturnValue({ test: 'value does not matter, just that it exists' })
-    await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(copyDebtInformationFromArLedger).toHaveBeenCalledWith({ test: 'value does not matter, just that it exists' }, mockManualLedgerRequests[0])
-  })
-
-  test('should return PENDING status when only 0 value mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.value = 0; return x })
-    const result = await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(result).toBe(PENDING)
-  })
-
-  test('should return PENDING status when only AP mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.ledger = AP; return x })
-    const result = await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(result).toBe(PENDING)
-  })
-
-  test('should return PENDING status when an empty manualLedgerRequest and PENDING status are received', async () => {
-    const result = await checkForARLedger([{}], PENDING)
-    expect(result).toBe(PENDING)
-  })
-
-  test('should return PENDING status when only 0 value mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.value = 0; return x })
-    const result = await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(result).toBe(PENDING)
-  })
-
-  test('should return PENDING status when only AP mockManualLedgerRequests and PENDING status are received', async () => {
-    mockManualLedgerRequests.map(x => { x.ledgerPaymentRequest.ledger = AP; return x })
-    const result = await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(result).toBe(PENDING)
-  })
-
-  test('should return PENDING status when an empty manualLedgerRequest and PENDING status are received', async () => {
-    const result = await checkForARLedger([{}], PENDING)
-    expect(result).toBe(PENDING)
-  })
-
-  test('should return PENDING status when mockManualLedgerRequests and PENDING status are received and checkForDebtData returns an object', async () => {
-    checkForDebtData.mockReturnValue({ test: 'value does not matter, just that it exists' })
-    const result = await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(result).toBe(PENDING)
-  })
-
-  test('should return AWAITING_ENRICHMENT status when mockManualLedgerRequests and PENDING status are received, checkForDebtData returns null', async () => {
-    const result = await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(result).toBe(AWAITING_ENRICHMENT)
-  })
-
-  test('should return AWAITING_ENRICHMENT status when mockManualLedgerRequests and PENDING status are received, checkForDebtData returns null and config.isAlerting is true', async () => {
-    config.isAlerting = true
-    const result = await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(result).toBe(AWAITING_ENRICHMENT)
-  })
-
-  test('should return AWAITING_ENRICHMENT status when mockManualLedgerRequests and PENDING status are received, checkForDebtData returns null and config.isAlerting is false', async () => {
-    config.isAlerting = false
-    const result = await checkForARLedger(mockManualLedgerRequests, PENDING)
-    expect(result).toBe(AWAITING_ENRICHMENT)
+      const requests = modify([...mockManualLedgerRequests])
+      const result = await checkForARLedger(requests, PENDING)
+      expect(result).toBe(expected)
+    })
   })
 })

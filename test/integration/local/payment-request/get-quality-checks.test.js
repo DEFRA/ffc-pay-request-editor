@@ -2,11 +2,11 @@ const { getQualityChecks, getQualityChecksCount } = require('../../../../app/qua
 const db = require('../../../../app/data')
 const { PENDING } = require('../../../../app/quality-check/statuses')
 
-describe('Get quality checks test', () => {
-  let qualityCheck
+describe('Get quality checks', () => {
   let paymentRequest
   let ledgerPaymentRequest
   let manualLedgerPaymentRequest
+  let qualityCheck
 
   const resetTables = async () => {
     await db.qualityCheck.truncate({ cascade: true })
@@ -48,10 +48,8 @@ describe('Get quality checks test', () => {
     }
 
     await db.scheme.create(scheme)
-    await db.paymentRequest.create(paymentRequest)
-    await db.paymentRequest.create(ledgerPaymentRequest)
+    await db.paymentRequest.bulkCreate([paymentRequest, ledgerPaymentRequest])
     await db.manualLedgerPaymentRequest.create(manualLedgerPaymentRequest)
-
     await db.qualityCheck.create(qualityCheck)
   })
 
@@ -60,30 +58,22 @@ describe('Get quality checks test', () => {
     await db.sequelize.close()
   })
 
-  test('should return 1 quality check record', async () => {
+  test('should return 1 quality check record with updated scheme name', async () => {
     const qualityChecks = await getQualityChecks()
     expect(qualityChecks).toHaveLength(1)
-  })
-
-  test('should return SFI22 as scheme name if scheme name is SFI', async () => {
-    const qualityChecks = await getQualityChecks()
     expect(qualityChecks[0].paymentRequest.schemes.name).toBe('SFI22')
   })
 
-  test('should return count of 1 for quality check', async () => {
-    const qualityCheckCount = await getQualityChecksCount()
-    expect(qualityCheckCount).toEqual(1)
+  test('should return correct count for quality checks', async () => {
+    const count = await getQualityChecksCount()
+    expect(count).toEqual(1)
   })
 
-  test('should return zero quality check records', async () => {
+  test('should return zero quality check records when tables are empty', async () => {
     await resetTables()
     const qualityChecks = await getQualityChecks()
+    const count = await getQualityChecksCount()
     expect(qualityChecks).toHaveLength(0)
-  })
-
-  test('should return count of 0 for quality check', async () => {
-    await resetTables()
-    const qualityCheckCount = await getQualityChecksCount()
-    expect(qualityCheckCount).toEqual(0)
+    expect(count).toEqual(0)
   })
 })

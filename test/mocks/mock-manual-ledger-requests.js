@@ -1,4 +1,4 @@
-const { AR } = require('../../../app/processing/ledger/ledgers')
+const { AR } = require('../../app/processing/ledger/ledgers')
 
 module.exports = [{
   ledgerPaymentRequest: {

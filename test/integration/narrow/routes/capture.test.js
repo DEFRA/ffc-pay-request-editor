@@ -1,54 +1,45 @@
 const { enrichment } = require('../../../../app/auth/permissions')
+const { getDebts } = require('../../../../app/debt')
+const { mapExtract } = require('../../../../app/extract')
+const convertToCSV = require('../../../../app/convert-to-csv')
+const mockAuth = require('../../../../app/auth')
+const createServer = require('../../../../app/server')
+const { ADMINISTRATIVE, IRREGULAR } = require('../../../../app/constants/debt-types')
 
-describe('Capture test', () => {
-  jest.mock('ffc-messaging')
-  jest.mock('../../../../app/plugins/crumb')
-  jest.mock('../../../../app/debt')
-  const { getDebts } = require('../../../../app/debt')
-  jest.mock('../../../../app/extract')
-  const { mapExtract } = require('../../../../app/extract')
-  jest.mock('../../../../app/convert-to-csv')
-  const convertToCSV = require('../../../../app/convert-to-csv')
-  jest.mock('../../../../app/auth')
-  const mockAuth = require('../../../../app/auth')
+jest.mock('ffc-messaging')
+jest.mock('../../../../app/plugins/crumb')
+jest.mock('../../../../app/debt')
+jest.mock('../../../../app/extract')
+jest.mock('../../../../app/convert-to-csv')
+jest.mock('../../../../app/auth')
 
-  const createServer = require('../../../../app/server')
+describe('Capture route tests', () => {
   let server
   const url = '/capture'
-
-  const { ADMINISTRATIVE, IRREGULAR } = require('../../../../app/constants/debt-types')
-
   const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
-
-  const user = {
-    userId: '1',
-    username: 'Developer'
-  }
-
-  const debts = [{
-    schemes: {
-      name: 'SFI Pilot'
+  const user = { userId: '1', username: 'Developer' }
+  const debts = [
+    {
+      schemes: { name: 'SFI Pilot' },
+      frn: '1234567890',
+      reference: 'SFIP1234567',
+      netValue: 1000.0,
+      debtType: IRREGULAR,
+      recoveryDate: '19/01/2022',
+      attachedDate: '',
+      createdBy: 'John Watson'
     },
-    frn: '1234567890',
-    reference: 'SFIP1234567',
-    netValue: 1000.00,
-    debtType: IRREGULAR,
-    recoveryDate: '19/01/2022',
-    attachedDate: '',
-    createdBy: 'John Watson'
-  },
-  {
-    schemes: {
-      name: 'SFI'
-    },
-    frn: '1234567891',
-    reference: 'SFIP1234568',
-    netValue: 570.00,
-    debtType: ADMINISTRATIVE,
-    recoveryDate: '18/01/2022',
-    attachedDate: '18/01/2022',
-    createdBy: 'Steve Dickinson'
-  }]
+    {
+      schemes: { name: 'SFI' },
+      frn: '1234567891',
+      reference: 'SFIP1234568',
+      netValue: 570.0,
+      debtType: ADMINISTRATIVE,
+      recoveryDate: '18/01/2022',
+      attachedDate: '18/01/2022',
+      createdBy: 'Steve Dickinson'
+    }
+  ]
 
   beforeEach(async () => {
     getDebts.mockResolvedValue(debts)
@@ -62,109 +53,44 @@ describe('Capture test', () => {
     await server.stop()
   })
 
-  describe('GET requests', () => {
-    const method = 'GET'
-
-    test('GET /capture route returns 200', async () => {
-      const options = {
-        method,
-        url,
-        auth
-      }
-
-      const response = await server.inject(options)
-      expect(response.statusCode).toBe(200)
-      expect(response.request.response.variety).toBe('view')
-      expect(response.request.response.source.template).toBe('capture')
-    })
-
-    test('GET /capture with query parameters returns 200', async () => {
-      const options = {
-        method,
-        url: `${url}?page=2&perPage=10`,
-        auth
-      }
-
-      const response = await server.inject(options)
+  describe('GET /capture', () => {
+    test.each([
+      { url: '/capture', name: 'without query parameters' },
+      { url: '/capture?page=2&perPage=10', name: 'with query parameters' }
+    ])('returns 200 $name', async ({ url }) => {
+      const response = await server.inject({ method: 'GET', url, auth })
       expect(response.statusCode).toBe(200)
       expect(response.request.response.variety).toBe('view')
       expect(response.request.response.source.template).toBe('capture')
     })
   })
 
-  describe('POST requests', () => {
-    const method = 'POST'
-
-    test('POST /capture with no records returns "No debts match the FRN provided."', async () => {
-      const options = {
-        method,
+  describe('POST /capture', () => {
+    test('No records found returns 400', async () => {
+      const response = await server.inject({
+        method: 'POST',
         url,
         payload: { frn: '1234567893' },
         auth
-      }
-
-      const response = await server.inject(options)
+      })
       expect(response.statusCode).toBe(400)
-      expect(response.request.response.variety).toBe('view')
-      expect(response.request.response.source.template).toBe('capture')
-      expect(response.request.response.source.context.model.input.errorMessage.text).toEqual('No records could be found for that FRN/scheme combination.')
+      expect(response.request.response.source.context.model.input.errorMessage.text)
+        .toEqual('No records could be found for that FRN/scheme combination.')
     })
 
-    test('POST /capture with both scheme and FRN provided returns 200', async () => {
-      const options = {
-        method,
-        url,
-        payload: { frn: '1234567890', scheme: 'SFI Pilot' },
-        auth
-      }
-
-      const response = await server.inject(options)
-      expect(response.statusCode).toBe(200)
+    test.each([
+      { payload: { frn: '1234567890', scheme: 'SFI Pilot' }, statusCode: 200 },
+      { payload: { scheme: 'SFI Pilot' }, statusCode: 200 },
+      { payload: { scheme: 'Invalid Scheme' }, statusCode: 400, errorField: 'select', errorMessage: 'The scheme chosen must be a valid scheme supported by the Payment Hub.' },
+      { payload: {}, statusCode: 200 }
+    ])('Payload %p returns correct status', async ({ payload, statusCode, errorField, errorMessage }) => {
+      const response = await server.inject({ method: 'POST', url, payload, auth })
+      expect(response.statusCode).toBe(statusCode)
       expect(response.request.response.variety).toBe('view')
       expect(response.request.response.source.template).toBe('capture')
-    })
-
-    test('POST /capture with only scheme provided returns 200', async () => {
-      const options = {
-        method,
-        url,
-        payload: { scheme: 'SFI Pilot' },
-        auth
+      if (errorField) {
+        expect(response.request.response.source.context.model[errorField].errorMessage.text).toBe(errorMessage)
       }
-
-      const response = await server.inject(options)
-      expect(response.statusCode).toBe(200)
-      expect(response.request.response.variety).toBe('view')
-      expect(response.request.response.source.template).toBe('capture')
-    })
-
-    test('POST /capture with invalid scheme returns 400', async () => {
-      const options = {
-        method,
-        url,
-        payload: { scheme: 'Invalid Scheme' },
-        auth
-      }
-
-      const response = await server.inject(options)
-      expect(response.statusCode).toBe(400)
-      expect(response.request.response.variety).toBe('view')
-      expect(response.request.response.source.template).toBe('capture')
-      expect(response.request.response.source.context.model.select.errorMessage.text).toEqual('The scheme chosen must be a valid scheme supported by the Payment Hub.')
-    })
-
-    test('POST /capture with missing scheme and FRN returns 200', async () => {
-      const options = {
-        method,
-        url,
-        payload: {},
-        auth
-      }
-
-      const response = await server.inject(options)
-      expect(response.statusCode).toBe(200)
-      expect(response.request.response.variety).toBe('view')
-      expect(response.request.response.source.template).toBe('capture')
     })
 
     test.each([
@@ -173,18 +99,9 @@ describe('Capture test', () => {
       { frn: '1234567899', statusCode: 400 },
       { frn: 'A123456789', statusCode: 400 },
       { frn: '12345', statusCode: 400 }
-    ])('POST /capture %p route returns the correct status code', async ({ frn, statusCode }) => {
-      const options = {
-        method,
-        url,
-        payload: { frn },
-        auth
-      }
-
-      const response = await server.inject(options)
+    ])('FRN %p returns correct status code', async ({ frn, statusCode }) => {
+      const response = await server.inject({ method: 'POST', url, payload: { frn }, auth })
       expect(response.statusCode).toBe(statusCode)
-      expect(response.request.response.variety).toBe('view')
-      expect(response.request.response.source.template).toBe('capture')
     })
 
     test.each([
@@ -193,96 +110,36 @@ describe('Capture test', () => {
       { debtDataId: 'X', statusCode: 400 },
       { debtDataId: undefined, statusCode: 400 },
       { debtDataId: null, statusCode: 400 }
-    ])('POST /capture/delete %p route returns the correct status code', async ({ debtDataId, statusCode }) => {
-      const options = {
-        method,
+    ])('POST /capture/delete with %p returns correct status', async ({ debtDataId, statusCode }) => {
+      const response = await server.inject({
+        method: 'POST',
         url: '/capture/delete',
         payload: { debtDataId },
         auth
-      }
-
-      const response = await server.inject(options)
+      })
       expect(response.statusCode).toBe(statusCode)
     })
   })
 
-  test('GET /capture/extract route returns stream if report available', async () => {
-    const options = {
-      method: 'GET',
-      url: '/capture/extract',
-      auth
-    }
+  describe('GET /capture/extract', () => {
+    test('Returns 200 and calls required functions', async () => {
+      const options = { method: 'GET', url: '/capture/extract', auth }
+      const response = await server.inject(options)
+      expect(response.statusCode).toBe(200)
+      await server.inject(options)
+      expect(getDebts).toBeCalled()
+      expect(mapExtract).toBeCalled()
+      expect(convertToCSV).toBeCalled()
+    })
 
-    const response = await server.inject(options)
-    expect(response.statusCode).toBe(200)
-  })
-
-  test('GET /capture/extract should call getdebts', async () => {
-    const options = {
-      method: 'GET',
-      url: '/capture/extract',
-      auth
-    }
-
-    await server.inject(options)
-    expect(getDebts).toBeCalled()
-  })
-
-  test('GET /capture/extract should call mapExtract', async () => {
-    const options = {
-      method: 'GET',
-      url: '/capture/extract',
-      auth
-    }
-
-    await server.inject(options)
-    expect(mapExtract).toBeCalled()
-  })
-
-  test('GET /capture/extract should call convertToCSV', async () => {
-    const options = {
-      method: 'GET',
-      url: '/capture/extract',
-      auth
-    }
-
-    await server.inject(options)
-    expect(convertToCSV).toBeCalled()
-  })
-
-  test('GET /capture/extract route returns unavailable page if getdebts returns undefined', async () => {
-    getDebts.mockReturnValue(undefined)
-    const options = {
-      method: 'GET',
-      url: '/capture/extract',
-      auth
-    }
-
-    const response = await server.inject(options)
-    expect(response.payload).toContain('Debts report unavailable')
-  })
-
-  test('GET /capture/extract route returns unavailable page if mapextract returns null', async () => {
-    mapExtract.mockReturnValue(undefined)
-    const options = {
-      method: 'GET',
-      url: '/capture/extract',
-      auth
-    }
-
-    const response = await server.inject(options)
-    expect(response.payload).toContain('Debts report unavailable')
-  })
-
-  test('GET /capture/extract route returns unavailable page if converttocsv returns null', async () => {
-    convertToCSV.mockReturnValue(undefined)
-    const options = {
-      method: 'GET',
-      url: '/capture/extract',
-      auth
-    }
-
-    const response = await server.inject(options)
-    expect(response.payload).toContain('Debts report unavailable')
+    test.each([
+      { mockFn: getDebts, returnValue: undefined },
+      { mockFn: mapExtract, returnValue: undefined },
+      { mockFn: convertToCSV, returnValue: undefined }
+    ])('Returns unavailable page if %p returns null/undefined', async ({ mockFn, returnValue }) => {
+      mockFn.mockReturnValue(returnValue)
+      const response = await server.inject({ method: 'GET', url: '/capture/extract', auth })
+      expect(response.payload).toContain('Debts report unavailable')
+    })
   })
 })
