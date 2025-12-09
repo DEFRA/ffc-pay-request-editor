@@ -1,15 +1,21 @@
 {% extends '_layout.njk' %}
+
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% from "macros/search-combined.njk" import searchCombined %}
 
 {% block content %}
   {{ govukBackLink({
     text: "Back",
-    href: "/"
+    href: "/",
+    attributes: {
+      id: "back"
+    }
   }) }}
 
   <div class="govuk-grid-row">
@@ -26,8 +32,8 @@
         isStartButton: true
       }) }}
 
-      <div class="user-search-box govuk-!-width-one-third">
-        <form class="search-form" action="/capture" method="POST">
+      <div class="govuk-!-width-one-third">
+        <form action="/capture" method="POST">
           <input type="hidden" name="crumb" value="{{crumb}}"/>
           {{ searchCombined(model) }}
         </form>
@@ -35,9 +41,9 @@
 
       {% if captureData.length %}
         <div class="govuk-!-padding-bottom-3">
-          <div class="govuk-inset-text">
-            Datasets that are attached to payment requests are shown for reference only and cannot be deleted
-          </div>
+          {{ govukInsetText({
+            text: "Datasets that are attached to payment requests are shown for reference only and cannot be deleted"
+          }) }}
 
           {{ govukRadios({
             name: "unattached-data",
@@ -68,10 +74,10 @@
               <div class="govuk-grid-column-one-half">
                 <a href="/capture/extract" class="govuk-link">Download an extract</a>
               </div>
-              <div class="govuk-grid-column-one-half">
+              <div class="govuk-grid-column-one-half govuk-!-text-align-right">
                 <form action="/capture" method="get">
                   {{ govukSelect({
-                    id: "records",
+                    id: "perPage",
                     name: "perPage",
                     label: {
                       text: "Number of records per page"
@@ -164,45 +170,38 @@
             </tbody>
           </table>
 
-          <nav class="govuk-pagination" aria-label="Pagination">
-            {% if page > 1 %}
-              <div class="govuk-pagination__prev">
-                <a class="govuk-link govuk-pagination__link" href="?page={{ page - 1 }}&perPage={{ perPage }}" rel="prev">
-                  <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-                    <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
-                  </svg>
-                  <span class="govuk-pagination__link-title">
-                    Previous<span class="govuk-visually-hidden"> page</span>
-                  </span>
-                </a>
-              </div>
-            {% endif %}
-            <ul class="govuk-pagination__list">
-              <li class="govuk-pagination__item govuk-pagination__item--current">
-                <span class="govuk-pagination__link-title">
-                  {{ page }}
-                  <span class="govuk-visually-hidden"> page</span>
-                </span>
-              </li>
-            </ul>
-            {% if captureData.length >= perPage %}
-              <div class="govuk-pagination__next">
-                <a class="govuk-link govuk-pagination__link" href="?page={{ page + 1 }}&perPage={{ perPage }}" rel="next">
-                  <span class="govuk-pagination__link-title">
-                    Next<span class="govuk-visually-hidden"> page</span>
-                  </span>
-                  <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-                    <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
-                  </svg>
-                </a>
-              </div>
-            {% endif %}
-          </nav>
+          {% set paginationPrevious = undefined %}
+          {% set paginationNext = undefined %}
+
+          {% if page > 1 %}
+            {% set paginationPrevious = {
+              href: "?page=" + (page - 1) + "&perPage=" + perPage,
+              labelText: "Previous page"
+            } %}
+          {% endif %}
+
+          {% if captureData.length >= perPage %}
+            {% set paginationNext = {
+              href: "?page=" + (page + 1) + "&perPage=" + perPage,
+              labelText: "Next page"
+            } %}
+          {% endif %}
+
+          {{ govukPagination({
+            previous: paginationPrevious,
+            next: paginationNext,
+            items: [
+              {
+                number: page,
+                current: true
+              }
+            ]
+          }) }}
         </div>
       {% else %}
-        <div class="govuk-inset-text">
-          No reporting datasets
-        </div>
+        {{ govukInsetText({
+          text: "No reporting datasets"
+        }) }}
       {% endif %}
     </div>
   </div>

@@ -1,4 +1,5 @@
 {% extends '_layout.njk' %}
+
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block content %}
@@ -35,48 +36,47 @@
           </div>
         </div>
       {% endif %}
-    {% if auth.isLedgerUser %}
-    <div class="govuk-cards govuk-cards--2">
-        <div class="govuk-cards--2__item govuk-card--dashboard">
-          <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Awaiting ledger assignment</h2>
-          <p class="govuk-heading-xl govuk-!-margin-bottom-5">
-            {{ manualLedgerCount }}
-          </p>
-          <ul class="govuk-list">
-            <li>
-              {% if manualLedgerCount > 0 %}
-                <a href="/manual-ledger" class="govuk-link">View awaiting ledger assignment</a>
-              {% endif %}
-            </li>
-          </ul>
+      {% if auth.isLedgerUser %}
+        <div class="govuk-cards govuk-cards--2">
+          <div class="govuk-cards--2__item govuk-card--dashboard">
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Awaiting ledger assignment</h2>
+            <p class="govuk-heading-xl govuk-!-margin-bottom-5">
+              {{ manualLedgerCount }}
+            </p>
+            <ul class="govuk-list">
+              <li>
+                {% if manualLedgerCount > 0 %}
+                  <a href="/manual-ledger" class="govuk-link">View awaiting ledger assignment</a>
+                {% endif %}
+              </li>
+            </ul>
+          </div>
+          <div class="govuk-cards--2__item govuk-card--dashboard">
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Requests awaiting quality check</h2>
+            <p class="govuk-heading-xl govuk-!-margin-bottom-5">
+              {{ qualityCheckCount }}
+            </p>
+            <ul class="govuk-list">
+              <li>
+                {% if qualityCheckCount > 0 %}
+                  <a href="/quality-check" class="govuk-link">View awaiting quality check</a>
+                {% endif %}
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="govuk-cards--2__item govuk-card--dashboard">
-          <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Requests awaiting quality check</h2>
-          <p class="govuk-heading-xl govuk-!-margin-bottom-5">
-            {{ qualityCheckCount }}
-          </p>
-          <ul class="govuk-list">
-            <li>
-              {% if qualityCheckCount > 0 %}
-                <a href="/quality-check" class="govuk-link">View awaiting quality check</a>
-              {% endif %}
-            </li>
-          </ul>
-        </div>
-      </div>
-    {% endif %}
-    {% if auth.isEnrichmentUser %}
-      <h2 class="govuk-heading-m">Capture new reporting dataset</h2>
-      <p class="govuk-body">
-        Datasets are automatically attached to matching requests when they are received in the request editor.
-      </p>
-      <a href="/capture-debt" class="govuk-button govuk-button--start">
-        Capture new dataset
-        <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" role="presentation" aria-hidden="true" focusable="false">
-          <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" fill-rule="evenodd"></path>
-        </svg>
-      </a>
-    {% endif %}
+      {% endif %}
+      {% if auth.isEnrichmentUser %}
+        <h2 class="govuk-heading-m">Capture new reporting dataset</h2>
+        <p class="govuk-body">
+          Datasets are automatically attached to matching requests when they are received in the request editor.
+        </p>
+        {{ govukButton({
+          text: "Capture new dataset",
+          href: "/capture-debt",
+          isStartButton: true
+        }) }}
+      {% endif %}
     </div>
   </div>
 {% endblock %}

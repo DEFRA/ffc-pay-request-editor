@@ -39,5 +39,8 @@ module.exports = {
   testPathIgnorePatterns: [],
   setupFilesAfterEnv: ['./jest.setup.js'],
   verbose: true,
-  timers: 'legacy'
+  fakeTimers: {
+    enableGlobally: true,
+    legacyFakeTimers: true
+  }
 }
