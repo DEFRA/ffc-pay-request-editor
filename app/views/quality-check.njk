@@ -1,143 +1,141 @@
 {% extends '_layout.njk' %}
+
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "macros/search-input.njk" import searchInput %}
-{% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{% from "macros/search-input.njk" import searchInput %}
 
 {% block content %}
   {{ govukBackLink({
-        text: "Back",
-        href: "/",
-        attributes: {
-          id: "back"
-        }
-      }) 
-    }}
+    text: "Back",
+    href: "/",
+    attributes: {
+      id: "back"
+    }
+  }) }}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l">Ledger assignments awaiting quality check</h1>
+
       {% if qualityCheckData.length %}
         <div class="govuk-!-padding-bottom-3">
-          <div class="user-search-box govuk-!-width-one-third">
-            <form class="search-form" action="/quality-check" method="POST">
+          <div class="govuk-!-width-one-third">
+            <form action="/quality-check" method="POST">
               <input type="hidden" name="crumb" value="{{crumb}}"/>
-              {{searchInput(model)}}
+              {{ searchInput(model) }}
             </form>
           </div>
 
           <p class="govuk-body">
             <a href="/quality-check" class="govuk-link govuk-link--no-visited-state">View all outstanding quality checks</a>
           </p>
-          <div class="govuk-body">
-            <div style="float: right;">
-              <form action="/quality-check" method="get">
-                {{ govukSelect({
-                  id: "records",
-                  name: "perPage",
-                  label: {
-                    text: "Number of records per page"
+
+          <div class="govuk-!-text-align-right govuk-!-margin-bottom-6">
+            <form action="/quality-check" method="get">
+              {{ govukSelect({
+                id: "perPage",
+                name: "perPage",
+                label: {
+                  text: "Number of records per page"
+                },
+                attributes: {
+                  onchange: "this.form.submit()"
+                },
+                items: [
+                  {
+                    value: 100,
+                    text: "100",
+                    selected: perPage == 100
                   },
-                  attributes: {
-                    onchange: "this.form.submit()"
+                  {
+                    value: 500,
+                    text: "500",
+                    selected: perPage == 500
                   },
-                  items: [
-                    {
-                      value: 100,
-                      text: "100",
-                      selected: perPage == 100
-                    },
-                    {
-                      value: 500,
-                      text: "500",
-                      selected: perPage == 500
-                    },
-                    {
-                      value: 1000,
-                      text: "1000",
-                      selected: perPage == 1000
-                    }
-                  ]
-                }) }}
-              </form>
-            </div>
-            <div style="clear: both;"></div>
+                  {
+                    value: 1000,
+                    text: "1000",
+                    selected: perPage == 1000
+                  }
+                ]
+              }) }}
+            </form>
           </div>
-          <table class="govuk-table">
-            <caption class="govuk-table__caption govuk-table__caption--s">Ledger assignments</caption>
-            <thead class="govuk-table__head">
-              <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Scheme year</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">FRN</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Agreement</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Invoice</th>
-                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Request</th>
-                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Total amount</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Reviewed by</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Ledger changed</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="govuk-table__body">
-            {% for qualityCheck in qualityCheckData %}
-              <tr class="govuk-table__row">
-                <td class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.schemes.name }}</td>
-                <td class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.marketingYear }}</td>
-                <td class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.frn }}</td>
-                <td class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.agreementNumber }}</td>
-                <td class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.invoiceNumber }}</td>
-                <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ qualityCheck.paymentRequest.paymentRequestNumber }}</td>
-                <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s noWrap">{{ qualityCheck.paymentRequest.valueText }}</td>
-                <td class="govuk-table__cell govuk-body-s">{{ qualityCheck.paymentRequest.manualLedgerChecks[0].createdBy }}</td>
-                <td class="govuk-table__cell govuk-body-s"> {{ qualityCheck.hasDismissed }}</td>
-                <td class="govuk-table__cell govuk-body-s">
-                  {% if qualityCheck.status === 'Pending' and qualityCheck.paymentRequest.manualLedgerChecks[0].createdById != user.userId %}
-                    <a href="/manual-ledger-review?paymentrequestid={{qualityCheck.paymentRequest.paymentRequestId}}">Review</a>
-                  {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
-            </tbody>
-          </table>
-          <nav class="govuk-pagination" aria-label="Pagination">
-            {% if page > 1 %}
-              <div class="govuk-pagination__prev">
-                <a class="govuk-link govuk-pagination__link" href="?page={{ page - 1 }}&perPage={{ perPage }}" rel="prev">
-                  <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-                    <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
-                  </svg>
-                  <span class="govuk-pagination__link-title">
-                    Previous<span class="govuk-visually-hidden"> page</span>
-                  </span>
-                </a>
+
+          {% set tableRows = [] %}
+          {% for qualityCheck in qualityCheckData %}
+            {% set actionHtml %}
+              {% if qualityCheck.status === 'Pending' and qualityCheck.paymentRequest.manualLedgerChecks[0].createdById != user.userId %}
+                <a href="/manual-ledger-review?paymentrequestid={{qualityCheck.paymentRequest.paymentRequestId}}" class="govuk-link" aria-label="Review invoice {{ qualityCheck.paymentRequest.invoiceNumber }} for FRN {{ qualityCheck.paymentRequest.frn }}">Review</a>
               {% endif %}
-            </div>
-            <ul class="govuk-pagination__list">
-              <li class="govuk-pagination__item govuk-pagination__item--current">
-                <span class="govuk-pagination__link-title">
-                  {{ page }}
-                  <span class="govuk-visually-hidden"> page</span>
-                </span>
-              </li>
-            </ul>
-            {% if qualityCheckData.length >= perPage %}
-              <div class="govuk-pagination__next">
-                <a class="govuk-link govuk-pagination__link" href="?page={{ page + 1 }}&perPage={{ perPage }}" rel="next">
-                  <span class="govuk-pagination__link-title">
-                    Next<span class="govuk-visually-hidden"> page</span>
-                  </span>
-                  <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-                    <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
-                  </svg>
-                </a>
-              {% endif %}
-            </div>
-          </nav>
+            {% endset %}
+
+            {% set tableRows = (tableRows.push([
+              { text: qualityCheck.paymentRequest.schemes.name, classes: "govuk-body-s" },
+              { text: qualityCheck.paymentRequest.marketingYear, classes: "govuk-body-s" },
+              { text: qualityCheck.paymentRequest.frn, classes: "govuk-body-s" },
+              { text: qualityCheck.paymentRequest.agreementNumber, classes: "govuk-body-s" },
+              { text: qualityCheck.paymentRequest.invoiceNumber, classes: "govuk-body-s" },
+              { text: qualityCheck.paymentRequest.paymentRequestNumber, format: "numeric", classes: "govuk-body-s" },
+              { text: qualityCheck.paymentRequest.valueText, format: "numeric", classes: "govuk-body-s noWrap" },
+              { text: qualityCheck.paymentRequest.manualLedgerChecks[0].createdBy, classes: "govuk-body-s" },
+              { text: qualityCheck.hasDismissed, classes: "govuk-body-s" },
+              { html: actionHtml, classes: "govuk-body-s" }
+            ]), tableRows) %}
+          {% endfor %}
+
+          {{ govukTable({
+            caption: "Ledger assignments",
+            captionClasses: "govuk-table__caption--s",
+            head: [
+              { text: "Scheme", classes: "govuk-body-s" },
+              { text: "Scheme year", classes: "govuk-body-s" },
+              { text: "FRN", classes: "govuk-body-s" },
+              { text: "Agreement", classes: "govuk-body-s" },
+              { text: "Invoice", classes: "govuk-body-s" },
+              { text: "Request", format: "numeric", classes: "govuk-body-s" },
+              { text: "Total amount", format: "numeric", classes: "govuk-body-s" },
+              { text: "Reviewed by", classes: "govuk-body-s" },
+              { text: "Ledger changed", classes: "govuk-body-s" },
+              { text: "Actions", classes: "govuk-body-s" }
+            ],
+            rows: tableRows
+          }) }}
+
+          {% set paginationItems = [] %}
+          {% if page > 1 %}
+            {% set paginationPrevious = {
+              href: "?page=" + (page - 1) + "&perPage=" + perPage,
+              labelText: "Previous page"
+            } %}
+          {% endif %}
+
+          {% if qualityCheckData.length >= perPage %}
+            {% set paginationNext = {
+              href: "?page=" + (page + 1) + "&perPage=" + perPage,
+              labelText: "Next page"
+            } %}
+          {% endif %}
+
+          {{ govukPagination({
+            previous: paginationPrevious,
+            next: paginationNext,
+            items: [
+              {
+                number: page,
+                current: true
+              }
+            ]
+          }) }}
         </div>
       {% else %}
-        <div class="govuk-inset-text">
-          No payment requests awaiting quality check
-        </div>
+        {{ govukInsetText({
+          text: "No payment requests awaiting quality check"
+        }) }}
       {% endif %}
     </div>
   </div>
