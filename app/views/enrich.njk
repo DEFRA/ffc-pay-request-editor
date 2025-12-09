@@ -7,23 +7,20 @@
 
 {% block content %}
   {{ govukBackLink({
-        text: "Back",
-        href: "/",
-        attributes: {
-          id: "back"
-        }
-      }) 
-    }}
+    text: "Back",
+    href: "/"
+  }) }}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l">Requests awaiting reporting data</h1>
 
-      {% if enrichData.length%}
+      {% if enrichData.length %}
         <div class="govuk-!-padding-bottom-3">
           <div class="user-search-box govuk-!-width-one-third">
             <form class="search-form" action="/enrich" method="POST">
               <input type="hidden" name="crumb" value="{{crumb}}"/>
-              {{searchInput(model)}}
+              {{ searchInput(model) }}
             </form>
           </div>
 
@@ -31,39 +28,40 @@
             <a href="/enrich" class="govuk-link govuk-link--no-visited-state">View all requests</a>
           </p>
 
-          <div class="govuk-body">
-            <div style="float: right;">
-              <form action="/enrich" method="get">
-                {{ govukSelect({
-                  id: "records",
-                  name: "perPage",
-                  label: {
-                    text: "Number of records per page"
-                  },
-                  attributes: {
-                    onchange: "this.form.submit()"
-                  },
-                  items: [
-                    {
-                      value: 100,
-                      text: "100",
-                      selected: perPage == 100
+          <div class="govuk-!-margin-bottom-6">
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-full">
+                <form action="/enrich" method="get" class="govuk-!-text-align-right">
+                  {{ govukSelect({
+                    id: "records",
+                    name: "perPage",
+                    label: {
+                      text: "Number of records per page"
                     },
-                    {
-                      value: 500,
-                      text: "500",
-                      selected: perPage == 500
+                    attributes: {
+                      onchange: "this.form.submit()"
                     },
-                    {
-                      value: 1000,
-                      text: "1000",
-                      selected: perPage == 1000
-                    }
-                  ]
-                }) }}
-              </form>
+                    items: [
+                      {
+                        value: 100,
+                        text: "100",
+                        selected: perPage == 100
+                      },
+                      {
+                        value: 500,
+                        text: "500",
+                        selected: perPage == 500
+                      },
+                      {
+                        value: 1000,
+                        text: "1000",
+                        selected: perPage == 1000
+                      }
+                    ]
+                  }) }}
+                </form>
+              </div>
             </div>
-            <div style="clear: both;"></div>
           </div>
 
           <table class="govuk-table">
@@ -89,12 +87,13 @@
                   <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s noWrap">{{ data.valueText }}</td>
                   <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.daysWaiting }}</td>
                   <td class="govuk-table__cell govuk-body-s">
-                      <a href="enrich-request?invoiceNumber={{ data.invoiceNumber }}&paymentRequestId={{ data.paymentRequestId }}">Enrich</a>
+                    <a href="enrich-request?invoiceNumber={{ data.invoiceNumber }}&paymentRequestId={{ data.paymentRequestId }}" class="govuk-link" aria-label="Enrich invoice {{ data.invoiceNumber }} for FRN {{ data.frn }} with agreement {{ data.agreementNumber }}">Enrich</a>
                   </td>
                 </tr>
               {% endfor %}
             </tbody>
           </table>
+
           <nav class="govuk-pagination" aria-label="Pagination">
             {% if page > 1 %}
               <div class="govuk-pagination__prev">
