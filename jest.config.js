@@ -43,4 +43,5 @@ module.exports = {
     enableGlobally: true,
     legacyFakeTimers: true
   }
+  verbose: true
 }
