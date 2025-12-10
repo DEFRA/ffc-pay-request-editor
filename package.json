@@ -47,13 +47,8 @@
     "applicationinsights": "2.9.5",
     "ffc-database": "1.0.23",
     "ffc-messaging": "2.10.1",
-<<<<<<< HEAD
-    "ffc-pay-event-publisher": "1.2.0",
-    "govuk-frontend": "5.13.0",
-=======
     "ffc-pay-event-publisher": "1.2.1",
-    "govuk-frontend": "5.10.0",
->>>>>>> main
+    "govuk-frontend": "5.13.0",
     "hapi-pino": "13.0.0",
     "joi": "17.7.0",
     "log-timestamp": "0.3.0",
