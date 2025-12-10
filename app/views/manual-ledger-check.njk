@@ -1,30 +1,31 @@
 {% extends '_layout.njk' %}
+
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
 {% from "macros/payment-request-header.njk" import paymentRequestHeader %}
 {% from "macros/payment-request-invoice-lines.njk" import paymentRequestInvoiceLines %}
-{% from "macros/ledger-check.njk" import ledgerCheck %}
 
 {% block content %}
   {{ govukBackLink({
-      text: "Back",
-      href: "/manual-ledger",
-      attributes: {
-        id: "back"
-      }
-    }) 
-  }}
+    text: "Back",
+    href: "/manual-ledger",
+    attributes: {
+      id: "back"
+    }
+  }) }}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <span class="govuk-caption-l">{{model.manualLedgerData.invoiceNumber}}</span>
+      <span class="govuk-caption-l">{{ model.manualLedgerData.invoiceNumber }}</span>
       <h1 class="govuk-heading-l">Review ledger assignment</h1>
     </div>
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m">Original</h2>
-      {{paymentRequestHeader(model.manualLedgerData, false)}}
+      {{ paymentRequestHeader(model.manualLedgerData, false) }}
       
       <details class="govuk-details" data-module="govuk-details">
         <summary class="govuk-details__summary">
@@ -33,89 +34,113 @@
           </span>
         </summary>
         <div class="govuk-details__text">
-          {{paymentRequestInvoiceLines(model.manualLedgerData.invoiceLines)}}
+          {{ paymentRequestInvoiceLines(model.manualLedgerData.invoiceLines) }}
         </div>
       </details>
 
-      
       {% if showLedgerSplit %}
         <h2 class="govuk-heading-m">Change ledger allocation</h2>
-        <form method="GET" action="/manual-ledger-check/calculate?paymentrequestid={{ model.manualLedgerData.paymentRequestId }}" novalidate>
+        <form method="GET" action="/manual-ledger-check/calculate" novalidate>
           <div id="ledger-wrapper" class="govuk-form-group">
-            <p id="ledger-value-error" class="govuk-error-message ">
-              <span class="govuk-visually-hidden ">Error:</span> The entered values must equal {{ model.manualLedgerData.valueInPoundsText }}
+            <p id="ledger-value-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> The entered values must equal {{ model.manualLedgerData.valueInPoundsText }}
             </p>
             <input type="hidden" name="paymentRequestId" value="{{ model.manualLedgerData.paymentRequestId }}"/>
-            {{ledgerCheck('ap', model.manualLedgerData.apAutoValue)}}
-            {{ledgerCheck('ar', model.manualLedgerData.arAutoValue)}}
+            
+            {{ govukInput({
+              label: {
+                text: "AP (Accounts Payable)"
+              },
+              classes: "govuk-input--width-10",
+              id: "ap-value",
+              name: "ap-value",
+              value: model.manualLedgerData.apAutoValue,
+              prefix: {
+                text: "£"
+              },
+              spellcheck: false,
+              attributes: {
+                inputmode: "decimal"
+              }
+            }) }}
+
+            {{ govukInput({
+              label: {
+                text: "AR (Accounts Receivable)"
+              },
+              classes: "govuk-input--width-10",
+              id: "ar-value",
+              name: "ar-value",
+              value: model.manualLedgerData.arAutoValue,
+              prefix: {
+                text: "£"
+              },
+              spellcheck: false,
+              attributes: {
+                inputmode: "decimal"
+              }
+            }) }}
           </div>
-          <div class="govuk-grid-column-full">
-            {{ govukButton({
-                text: "Calculate",
-                attributes: {
-                  id: "calculate-ledger"
-                }
-              }) 
-            }}
-          </div>
+          
+          {{ govukButton({
+            text: "Calculate",
+            attributes: {
+              id: "calculate-ledger"
+            }
+          }) }}
         </form>
       {% else %}
         <h2 class="govuk-heading-m">Provisional</h2>
         {% for data in model.manualLedgerData.manualLedgerChecks %}
-          {{paymentRequestHeader(data.ledgerPaymentRequest)}}
+          {{ paymentRequestHeader(data.ledgerPaymentRequest) }}
 
           <details class="govuk-details" data-module="govuk-details">
-        <summary class="govuk-details__summary">
-          <span class="govuk-details__summary-text">
-            Invoice Lines
-          </span>
-        </summary>
-        <div class="govuk-details__text">
-          {{paymentRequestInvoiceLines(data.ledgerPaymentRequest.invoiceLines)}}
-        </div>
-      </details>
-
-
+            <summary class="govuk-details__summary">
+              <span class="govuk-details__summary-text">
+                Invoice Lines
+              </span>
+            </summary>
+            <div class="govuk-details__text">
+              {{ paymentRequestInvoiceLines(data.ledgerPaymentRequest.invoiceLines) }}
+            </div>
+          </details>
         {% endfor %}
-        {{ model.errorMessage.text }}
+
         {% if model.errorMessage %}
-            {{ govukErrorSummary({
-                titleText: "There is a problem",
-                errorList: model.errorMessage
-              }) 
-            }}
+          {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: model.errorMessage
+          }) }}
         {% endif %}
-        <form action="/manual-ledger-check" method="post" novalidate="">
-          <div class="govuk-form-group">
-            <input type="hidden" name="paymentRequestId" value="{{model.manualLedgerData.paymentRequestId}}"/>
-            <input type="hidden" name="crumb" value="{{crumb}}"/>
-            <input type="hidden" name="provisionalValue" value="{{provisionalValue}}"/>
-            {{ govukRadios(model.ledgerAgreement) }}
-            {{ govukButton({
-                text: "Continue",
-                attributes: {
-                  id: "manual-ledger-continue"
-                }
-              }) 
-            }}
+
+        <form action="/manual-ledger-check" method="post" novalidate>
+          <input type="hidden" name="paymentRequestId" value="{{ model.manualLedgerData.paymentRequestId }}"/>
+          <input type="hidden" name="crumb" value="{{ crumb }}"/>
+          <input type="hidden" name="provisionalValue" value="{{ provisionalValue }}"/>
+          
+          {{ govukRadios(model.ledgerAgreement) }}
+          
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "manual-ledger-continue"
+            }
+          }) }}
         </form>
       {% endif %}
     </div>
   </div>
-</div>
-  
+
   {% if model.errorSummary %}
     {{ govukErrorSummary({
       titleText: "There is a problem",
       errorList: model.errorSummary
-    }) 
-  }}
+    }) }}
   {% endif %}
 
-</div>
 <script>
-  const totalValueInPounds = {{model.manualLedgerData.valueInPounds}}
-  const totalValueInPence = {{model.manualLedgerData.value}}
+  const totalValueInPounds = {{ model.manualLedgerData.valueInPounds }}
+  const totalValueInPence = {{ model.manualLedgerData.value }}
 
   const apValueId = 'ap-value'
   const arValueId = 'ar-value'
