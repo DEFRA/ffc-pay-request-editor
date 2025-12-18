@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-request-editor",
-  "version": "1.24.37",
+  "version": "1.24.38",
   "description": "Edit payment requests",
   "homepage": "https://github.com/DEFRA/ffc-pay-request-editor",
   "main": "app/index.js",
@@ -47,7 +47,7 @@
     "applicationinsights": "2.9.5",
     "ffc-database": "1.0.23",
     "ffc-messaging": "2.10.1",
-    "ffc-pay-event-publisher": "1.2.1",
+    "ffc-pay-event-publisher": "1.2.0",
     "govuk-frontend": "5.13.0",
     "hapi-pino": "13.0.0",
     "joi": "17.7.0",
