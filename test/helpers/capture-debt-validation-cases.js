@@ -1,4 +1,4 @@
-const SCHEME_ERROR = 'The scheme must be one of the following: SFI22, SFI Pilot, Lump Sums, Vet Visits, CS, BPS, FDMR, SFI23, Delinked, Expanded SFI Offer, Combined Offer Higher Tier Revenue, Combined Offer Higher Tier Capital.'
+const SCHEME_ERROR = 'The scheme must be one of the following: SFI22, SFI Pilot, Lump Sums, Vet Visits, CS, BPS, SFI23, Delinked, Expanded SFI Offer, Combined Offer Higher Tier Revenue, Combined Offer Higher Tier Capital.'
 
 const invalidSchemeTests = [
   { description: 'no scheme', field: () => ({ scheme: '' }), error: SCHEME_ERROR },
