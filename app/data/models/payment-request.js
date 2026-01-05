@@ -61,7 +61,10 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     released: DataTypes.DATE,
-    referenceId: DataTypes.UUID
+    referenceId: DataTypes.UUID,
+    fesCode: DataTypes.STRING,
+    annualValue: DataTypes.DECIMAL,
+    remmittanceDescription: DataTypes.STRING
   },
   {
     tableName: 'paymentRequests',

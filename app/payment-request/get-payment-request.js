@@ -30,7 +30,10 @@ const getPaymentRequest = async (page = 1, pageSize = 100, usePagination = true)
       'ledger',
       'marketingYear',
       'daysWaiting',
-      'netValue'
+      'netValue',
+      'fesCode',
+      'annualValue',
+      'remmittanceDescription'
     ],
     order: [['received']]
   }
