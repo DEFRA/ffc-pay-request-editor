@@ -23,4 +23,4 @@ const getSchema = () => {
   })
 }
 
-module.exports = getSchema()
+module.exports = getSchema
