@@ -26,7 +26,7 @@ module.exports = [{
   options: {
     auth: { scope: [enrichment] },
     validate: {
-      payload: schema,
+      payload: schema(),
       failAction: async (request, h, error) => {
         const schemes = (await getSchemes()).map(x => x.name)
         return h.view(view, new ViewModel(schemes, request.payload, error)).code(statusCodes.BAD_REQUEST).takeover()
