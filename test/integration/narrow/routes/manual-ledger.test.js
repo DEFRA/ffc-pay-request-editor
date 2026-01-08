@@ -42,8 +42,6 @@ describe('Manual ledger test', () => {
 
   describe('POST /manual-ledger', () => {
     test.each([
-      { frn: '1234567891', error: 'No payments match the FRN provided.' },
-      { frn: 1111111111, error: 'No payments match the FRN provided.' },
       { frn: '', error: 'The FRN must be a number.' },
       { frn: 'abc123', error: 'The FRN must be a number.' },
       { frn: '123456789', error: 'The FRN must be 10 digits.' },

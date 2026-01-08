@@ -21,7 +21,9 @@ module.exports = [{
   handler: async (request, h) => {
     const page = Number.parseInt(request.query.page) || defaultPage
     const perPage = Number.parseInt(request.query.perPage) || defaultPerPage
+    console.log(`Request for manual ledger data received with properties page ${page}, perPage ${perPage}`)
     const ledgerData = await getManualLedgers(statuses, page, perPage)
+    console.log(`Manual ledger data retrieved with ${ledgerData.length} records`)
     return h.view(view, {
       ledgerData,
       page,
@@ -44,8 +46,7 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const frn = request.payload.frn
-      const ledgerData = await getManualLedgers(statuses, undefined, undefined, false)
-      const filteredManualLedger = ledgerData.filter(x => x?.frn === String(frn))
+      const filteredManualLedger = await getManualLedgers(statuses, undefined, undefined, false, String(frn))
 
       if (filteredManualLedger.length) {
         return h.view(view, { ledgerData: filteredManualLedger, ...new ViewModel(viewModelDetails, frn) })
