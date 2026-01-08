@@ -24,7 +24,7 @@ describe('Get manual ledgers test', () => {
     paymentRequest = {
       paymentRequestId: 1,
       schemeId: SCHEME_ID_SFI,
-      frn: 1234567890,
+      frn: 1234567800,
       categoryId: 2
     }
 
@@ -93,6 +93,12 @@ describe('Get manual ledgers test', () => {
 
   test('should use default page number if omitted', async () => {
     const paymentRequests = await getManualLedgers(statuses, undefined, 1, true)
+    expect(paymentRequests.length).toBe(1)
+    expect(paymentRequests[0].paymentRequestId).toBe(1)
+  })
+
+  test('should filter by frn if provided', async () => {
+    const paymentRequests = await getManualLedgers(statuses, undefined, undefined, false, '1234567800')
     expect(paymentRequests.length).toBe(1)
     expect(paymentRequests[0].paymentRequestId).toBe(1)
   })
