@@ -1,6 +1,11 @@
-/*
-* Add an `onPreResponse` listener to return error pages
-*/
+const ERROR_VIEWS = require('../constants/error-views')
+const {
+  NOT_AUTHORIZED,
+  FORBIDDEN,
+  NOT_FOUND,
+  INTERNAL_SERVER_ERROR,
+  SERVICE_TIMEOUT
+} = require('../constants/status-codes')
 
 module.exports = {
   plugin: {
@@ -9,31 +14,35 @@ module.exports = {
       server.ext('onPreResponse', (request, h) => {
         const response = request.response
 
-        if (response.isBoom) {
-          // An error was raised during
-          // processing the request
-          const statusCode = response.output.statusCode
-
-          // if not authorised then request login
-          if (statusCode === 401 || statusCode === 403) {
-            return h.view('unauthorized').code(statusCode)
-          }
-
-          // In the event of 404
-          // return the `404` view
-          if (statusCode === 404) {
-            return h.view('404').code(statusCode)
-          }
-
-          request.log('error', {
-            statusCode,
-            data: response.data,
-            message: response.message
-          })
-
-          // The return the `500` view
-          return h.view('500').code(statusCode)
+        if (!response.isBoom) {
+          return h.continue
         }
+
+        const statusCode = response.output.statusCode
+        const message = response.message || 'An unexpected error occurred'
+
+        if (statusCode === NOT_AUTHORIZED || statusCode === FORBIDDEN) {
+          return h.view(ERROR_VIEWS.NOT_AUTHORIZED).code(statusCode)
+        }
+
+        if (statusCode === NOT_FOUND) {
+          return h.view(ERROR_VIEWS.NOT_FOUND).code(statusCode)
+        }
+
+        if (statusCode === INTERNAL_SERVER_ERROR) {
+          return h.view(ERROR_VIEWS.INTERNAL_SERVER_ERROR, { message }).code(statusCode)
+        }
+
+        if (statusCode === SERVICE_TIMEOUT) {
+          return h.view(ERROR_VIEWS.SERVICE_TIMEOUT, { message }).code(statusCode)
+        }
+
+        request.log('error', {
+          statusCode,
+          data: response.data,
+          message: response.message
+        })
+
         return h.continue
       })
     }
