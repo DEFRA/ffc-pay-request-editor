@@ -1,6 +1,7 @@
 const db = require('../../../app/data')
 const { SCHEME_ID_SFI } = require('../../data/scheme-id')
 const getManualLedgers = require('../../../app/manual-ledger/get-manual-ledgers')
+
 const { NOT_READY, FAILED } = require('../../../app/quality-check/statuses')
 const statuses = [NOT_READY, FAILED]
 
@@ -25,7 +26,13 @@ describe('Get manual ledgers test', () => {
       paymentRequestId: 1,
       schemeId: SCHEME_ID_SFI,
       frn: 1234567800,
-      categoryId: 2
+      categoryId: 2,
+      marketingYear: 2023,
+      agreementNumber: 'AGR001',
+      invoiceNumber: 'INV001',
+      paymentRequestNumber: 2,
+      value: -1234567,
+      received: new Date('2023-04-10').toISOString()
     }
 
     provisionalPaymentRequest = {
@@ -128,5 +135,17 @@ describe('Get manual ledgers test', () => {
         expect(pr.receivedFormatted).toBe('')
       }
     }
+  })
+
+  test('should correctly format received date for payment requests with received value', async () => {
+    const paymentRequests = await getManualLedgers(statuses)
+
+    const prWithReceived = paymentRequests.find(pr => pr.paymentRequestId === 1)
+
+    expect(prWithReceived).toBeDefined()
+    expect(prWithReceived.received).toBeTruthy()
+
+    const expectedDate = new Date(prWithReceived.received).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })
+    expect(prWithReceived.receivedFormatted).toBe(expectedDate)
   })
 })
