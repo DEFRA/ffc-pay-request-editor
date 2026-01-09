@@ -65,19 +65,25 @@ describe('Get manual ledgers test', () => {
     await db.sequelize.close()
   })
 
-  test('should return 2 payment request records with a provisional payment request if pagination details not present', async () => {
+  test('should return only payment requests with categoryId 2 and matching statuses', async () => {
     const paymentRequests = await getManualLedgers(statuses)
     expect(paymentRequests.length).toBe(2)
+    const ids = paymentRequests.map(p => p.paymentRequestId)
+    expect(ids).toEqual(expect.arrayContaining([1, 3]))
+    expect(ids).not.toContain(2)
   })
 
-  test('should return payment request record with scheme name SFI22 if scheme name is SFI', async () => {
+  test('should return payment request record with schemeName "SFI22" if schemeName is "SFI"', async () => {
     const paymentRequests = await getManualLedgers(statuses)
-    expect(paymentRequests[0].schemes.name).toBe('SFI22')
+    for (const pr of paymentRequests) {
+      expect(pr.schemeName).toBe('SFI22')
+    }
   })
 
   test('should return paginated results correctly', async () => {
-    const paymentRequestsPage1 = await getManualLedgers(statuses, 1, 1)
-    const paymentRequestsPage2 = await getManualLedgers(statuses, 2, 1)
+    const pageSize = 1
+    const paymentRequestsPage1 = await getManualLedgers(statuses, 1, pageSize)
+    const paymentRequestsPage2 = await getManualLedgers(statuses, 2, pageSize)
 
     expect(paymentRequestsPage1.length).toBe(1)
     expect(paymentRequestsPage2.length).toBe(1)
@@ -98,8 +104,29 @@ describe('Get manual ledgers test', () => {
   })
 
   test('should filter by frn if provided', async () => {
-    const paymentRequests = await getManualLedgers(statuses, undefined, undefined, false, '1234567800')
+    const frnToFilter = '1234567800'
+    const paymentRequests = await getManualLedgers(statuses, undefined, undefined, false, frnToFilter)
     expect(paymentRequests.length).toBe(1)
     expect(paymentRequests[0].paymentRequestId).toBe(1)
+    expect(paymentRequests[0].frn.toString()).toBe(frnToFilter)
+  })
+
+  test('should add valueText property converted to string format', async () => {
+    const paymentRequests = await getManualLedgers(statuses)
+    for (const pr of paymentRequests) {
+      expect(typeof pr.valueText).toBe('string')
+      expect(pr.valueText.length).toBeGreaterThan(0)
+    }
+  })
+
+  test('should format received date as DD/MM/YYYY if received present', async () => {
+    const paymentRequests = await getManualLedgers(statuses)
+    for (const pr of paymentRequests) {
+      if (pr.received) {
+        expect(pr.receivedFormatted).toMatch(/\d{2}\/\d{2}\/\d{4}/)
+      } else {
+        expect(pr.receivedFormatted).toBe('')
+      }
+    }
   })
 })
