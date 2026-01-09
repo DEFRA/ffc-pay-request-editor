@@ -1,5 +1,5 @@
-const { SFI, SFI_PILOT, LUMP_SUMS, CS, BPS, FDMR, SFI23, DELINKED, SFI_EXPANDED, COHTR, COHTC } = require('../../constants/schemes')
-const SITI_AGRI_SCHEMES = new Set([SFI, SFI_PILOT, LUMP_SUMS, CS, BPS, FDMR, SFI23, DELINKED, SFI_EXPANDED, COHTR, COHTC])
+const { SFI, SFI_PILOT, LUMP_SUMS, CS, BPS, SFI23, DELINKED, SFI_EXPANDED, COHTR, COHTC } = require('../../constants/schemes')
+const SITI_AGRI_SCHEMES = new Set([SFI, SFI_PILOT, LUMP_SUMS, CS, BPS, SFI23, DELINKED, SFI_EXPANDED, COHTR, COHTC])
 
 const createSplitInvoiceNumber = (invoiceNumber, splitId, schemeId) => {
   if (SITI_AGRI_SCHEMES.has(schemeId)) {

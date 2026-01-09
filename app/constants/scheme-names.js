@@ -5,7 +5,6 @@ module.exports = [
   'Vet Visits',
   'CS',
   'BPS',
-  'FDMR',
   'SFI23',
   'Delinked',
   'Expanded SFI Offer',
