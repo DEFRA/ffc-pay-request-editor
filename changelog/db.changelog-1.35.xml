@@ -10,6 +10,10 @@
         </sqlCheck>
     </preConditions>
 
+    <delete tableName="paymentRequests">
+        <where>"schemeId" = 7</where>
+    </delete>
+
     <delete tableName="schemes">
         <where>"schemeId" = 7</where>
     </delete>
