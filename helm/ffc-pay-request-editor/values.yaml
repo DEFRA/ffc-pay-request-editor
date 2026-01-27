@@ -14,7 +14,7 @@ containerConfigMap:
   name: ffc-pay-request-editor-config-map
 
 containerSecret:
-  name: ffc-pay-request-editor-container-secret
+  name: ffc-pay-request-editor
   type: Opaque
 
 deployment: {}
