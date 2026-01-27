@@ -1,0 +1,13 @@
+---
+environment: production
+environmentCode: snd
+pr: true
+container:
+  messageQueueHost: SNDFFCINFSB2001.servicebus.windows.net
+  debtTopicAddress: queue:ffc-pay-debt-data
+  debtSubscriptionAddress: ffc-pay-request-editor
+  manualLedgerTopicAddress: queue:ffc-pay-manual-check-data
+  manualLedgerSubscriptionAddress: ffc-pay-request-editor
+  qcTopicAddress: queue:ffc-pay-quality-check
+  eventsTopicAddress: queue:ffc-pay-events
+  debtResponseTopicAddress: queue:ffc-pay-debt-data-response

@@ -1,0 +1,35 @@
+---
+environment: production
+environmentCode: test
+container:
+  messageQueueHost: DEVFFCINFSB1001.servicebus.windows.net
+  debtTopicAddress: ffc-pay-debt-data-test
+  debtSubscriptionAddress: ffc-pay-request-editor
+  manualLedgerTopicAddress: ffc-pay-manual-check-data-test
+  manualLedgerSubscriptionAddress: ffc-pay-request-editor
+  qcTopicAddress: ffc-pay-quality-check-test
+  eventsTopicAddress: ffc-pay-events-test
+  debtResponseTopicAddress: ffc-pay-debt-data-response-test
+secretProviderClass:
+  azure:
+    keyvaultName: DEVFFCINFKV1001
+    objects:
+      - objectName: devtest-ffcahwr-appInsights-connectionString
+        objectType: secret
+      - objectName: dev-ffc-pay-cookie-password
+        objectType: secret
+      - objectName: prd-ffcPayRequestEditorClientSecret
+        objectType: secret
+      - objectName: test-ffcPayRequestEditorClientSecret
+        objectType: secret
+
+  secretObjects:
+    - secretName: ffc-pay-request-editor
+      type: Opaque
+      data:
+        - objectName: devtest-ffcahwr-appInsights-connectionString
+          key: APPINSIGHTS_CONNECTIONSTRING
+        - objectName: dev-ffc-pay-cookie-password
+          key: COOKIE_PASSWORD
+        - objectName: test-ffcPayRequestEditorClientSecret
+          key: AZUREID_CLIENT_SECRET

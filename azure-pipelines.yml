@@ -1,0 +1,77 @@
+# Pipeline name convention
+name: '$(Build.SourceBranchName)$(System.PullRequest.SourceBranch)$(Rev:.r)'
+
+# Trigger configuration
+trigger:
+  - main
+  - feature/*
+  - release/*
+
+pr:
+  - main
+  - releases/*
+
+# Parameters
+parameters:
+  - name: prDeployment
+    type: boolean
+    default: true
+  - name: branchDeployment
+    type: boolean
+    default: true
+  - name: sndDeployment
+    type: boolean
+    default: true
+
+# Resources
+resources:
+  repositories:
+    - repository: templates
+      endpoint: DEFRA
+      type: github
+      name: defra/fcp-pipeline-common
+      # ref: pl-1043   # Optional: build with a specific pipeline version
+
+# Pipeline template
+extends:
+  template: fcp-common-pipeline.yaml@templates
+  parameters:
+    appFrameworkType: nodejs   # Optional: nodejs (default), dotnet, java
+    Type: kubernetes           # Optional: kubernetes (default), npm, functions, nuget
+    npmLegacyPeerDeps: false   # Optional: default is false
+    dockerFilePath: Dockerfile # Optional default is Dockerfile
+    prDeployment: ${{ parameters.prDeployment }}
+    branchDeployment: ${{ parameters.branchDeployment }}
+    sndDeployment: ${{ parameters.sndDeployment }}
+    # failOnThreshold: moderate
+    variableGroupName: ffc-pay-request-editor-env-var
+    pr_params:
+      processingActive: $(pr_processingActive)
+      azureAppRegistrationEnabled: $(pr_azureAppRegistrationEnabled)
+      azureAppRegistrationClientId: $(pr_azureAppRegistrationClientId)
+      azureAppRegistrationTenantId: $(pr_azureAppRegistrationTenantId)
+    snd2_params:
+      processingActive: $(snd2_processingActive)
+      azureAppRegistrationEnabled: $(snd2_azureAppRegistrationEnabled)
+      azureAppRegistrationClientId: $(snd2_azureAppRegistrationClientId)
+      azureAppRegistrationTenantId: $(snd2_azureAppRegistrationTenantId)
+    dev_params:
+      processingActive: $(dev_processingActive)
+      azureAppRegistrationEnabled: $(dev_azureAppRegistrationEnabled)
+      azureAppRegistrationClientId: $(dev_azureAppRegistrationClientId)
+      azureAppRegistrationTenantId: $(dev_azureAppRegistrationTenantId)
+    test_params:
+      processingActive: $(test_processingActive)
+      azureAppRegistrationEnabled: $(test_azureAppRegistrationEnabled)
+      azureAppRegistrationClientId: $(test_azureAppRegistrationClientId)
+      azureAppRegistrationTenantId: $(test_azureAppRegistrationTenantId)
+    pre_params:
+      processingActive: $(pre_processingActive)
+      azureAppRegistrationEnabled: $(pre_azureAppRegistrationEnabled)
+      azureAppRegistrationClientId: $(pre_azureAppRegistrationClientId)
+      azureAppRegistrationTenantId: $(pre_azureAppRegistrationTenantId)
+    prd_params:
+      processingActive: $(prd_processingActive)
+      azureAppRegistrationEnabled: $(prd_azureAppRegistrationEnabled)
+      azureAppRegistrationClientId: $(prd_azureAppRegistrationClientId)
+      azureAppRegistrationTenantId: $(prd_azureAppRegistrationTenantId)

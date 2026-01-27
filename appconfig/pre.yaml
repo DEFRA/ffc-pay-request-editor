@@ -1,0 +1,33 @@
+---
+environment: production
+environmentCode: pre
+container:
+  messageQueueHost: PREFFCINFSB1001.servicebus.windows.net
+  debtTopicAddress: ffc-pay-debt-data-pre
+  debtSubscriptionAddress: ffc-pay-request-editor
+  manualLedgerTopicAddress: ffc-pay-manual-check-data-pre
+  manualLedgerSubscriptionAddress: ffc-pay-request-editor
+  qcTopicAddress: ffc-pay-quality-check-pre
+  eventsTopicAddress: ffc-pay-events-pre
+  debtResponseTopicAddress: ffc-pay-debt-data-response-pre
+secretProviderClass:
+  azure:
+    keyvaultName: PREFFCINFKV1001
+    objects:
+      - objectName: pre-ffcahwr-appInsights-connectionString
+        objectType: secret
+      - objectName: pre-ffc-pay-cookie-password
+        objectType: secret
+      - objectName: pre-ffcPayRequestEditorClientSecret
+        objectType: secret
+
+  secretObjects:
+    - secretName: ffc-pay-request-editor
+      type: Opaque
+      data:
+        - objectName: pre-ffcahwr-appInsights-connectionString
+          key: APPINSIGHTS_CONNECTIONSTRING
+        - objectName: pre-ffc-pay-cookie-password
+          key: COOKIE_PASSWORD
+        - objectName: pre-ffcPayRequestEditorClientSecret
+          key: AZUREID_CLIENT_SECRET
