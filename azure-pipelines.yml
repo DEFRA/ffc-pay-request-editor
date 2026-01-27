@@ -46,32 +46,32 @@ extends:
     # failOnThreshold: moderate
     variableGroupName: ffc-pay-request-editor-env-var
     pr_params:
-      processingActive: $(pr_processingActive)
-      azureAppRegistrationEnabled: $(pr_azureAppRegistrationEnabled)
+      processingActive: ${{ eq(variables['pr_processingActive'], 'true') }}
+      azureAppRegistrationEnabled: ${{ eq(variables['pr_azureAppRegistrationEnabled'], 'true') }}
       azureAppRegistrationClientId: $(pr_azureAppRegistrationClientId)
       azureAppRegistrationTenantId: $(pr_azureAppRegistrationTenantId)
     snd2_params:
-      processingActive: $(snd2_processingActive)
-      azureAppRegistrationEnabled: $(snd2_azureAppRegistrationEnabled)
+      processingActive: ${{ eq(variables['snd2_processingActive'], 'true') }}
+      azureAppRegistrationEnabled: ${{ eq(variables['snd2_azureAppRegistrationEnabled'], 'true') }}
       azureAppRegistrationClientId: $(snd2_azureAppRegistrationClientId)
       azureAppRegistrationTenantId: $(snd2_azureAppRegistrationTenantId)
     dev_params:
-      processingActive: $(dev_processingActive)
-      azureAppRegistrationEnabled: $(dev_azureAppRegistrationEnabled)
+      processingActive: ${{ eq(variables['dev_processingActive'], 'true') }}
+      azureAppRegistrationEnabled: ${{ eq(variables['dev_azureAppRegistrationEnabled'], 'true') }}
       azureAppRegistrationClientId: $(dev_azureAppRegistrationClientId)
       azureAppRegistrationTenantId: $(dev_azureAppRegistrationTenantId)
     test_params:
-      processingActive: $(test_processingActive)
-      azureAppRegistrationEnabled: $(test_azureAppRegistrationEnabled)
+      processingActive: ${{ eq(variables['test_processingActive'], 'true') }}
+      azureAppRegistrationEnabled: ${{ eq(variables['test_azureAppRegistrationEnabled'], 'true') }}
       azureAppRegistrationClientId: $(test_azureAppRegistrationClientId)
       azureAppRegistrationTenantId: $(test_azureAppRegistrationTenantId)
     pre_params:
-      processingActive: $(pre_processingActive)
-      azureAppRegistrationEnabled: $(pre_azureAppRegistrationEnabled)
+      processingActive: ${{ eq(variables['pre_processingActive'], 'true') }}
+      azureAppRegistrationEnabled: ${{ eq(variables['pre_azureAppRegistrationEnabled'], 'true') }}
       azureAppRegistrationClientId: $(pre_azureAppRegistrationClientId)
       azureAppRegistrationTenantId: $(pre_azureAppRegistrationTenantId)
     prd_params:
-      processingActive: $(prd_processingActive)
-      azureAppRegistrationEnabled: $(prd_azureAppRegistrationEnabled)
+      processingActive: ${{ eq(variables['prd_processingActive'], 'true') }}
+      azureAppRegistrationEnabled: ${{ eq(variables['prod_azureAppRegistrationEnabled'], 'true') }}
       azureAppRegistrationClientId: $(prd_azureAppRegistrationClientId)
       azureAppRegistrationTenantId: $(prd_azureAppRegistrationTenantId)
