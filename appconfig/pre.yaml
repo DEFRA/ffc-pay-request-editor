@@ -3,13 +3,17 @@ environment: production
 environmentCode: pre
 container:
   messageQueueHost: PREFFCINFSB1001.servicebus.windows.net
-  debtTopicAddress: ffc-pay-debt-data-pre
+  debtTopicAddress: ffc-pay-debt-data
   debtSubscriptionAddress: ffc-pay-request-editor
-  manualLedgerTopicAddress: ffc-pay-manual-check-data-pre
+  manualLedgerTopicAddress: ffc-pay-manual-check-data
   manualLedgerSubscriptionAddress: ffc-pay-request-editor
-  qcTopicAddress: ffc-pay-quality-check-pre
-  eventsTopicAddress: ffc-pay-events-pre
-  debtResponseTopicAddress: ffc-pay-debt-data-response-pre
+  qcTopicAddress: ffc-pay-quality-check
+  eventsTopicAddress: ffc-pay-events
+  debtResponseTopicAddress: ffc-pay-debt-data-response
+ingress:
+  class: nginx
+  endpoint: ffc-pay-request-editor-pre
+  server: azure.defra.cloud
 secretProviderClass:
   azure:
     keyvaultName: PREFFCINFKV1001
