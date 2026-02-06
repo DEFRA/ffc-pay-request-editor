@@ -14,5 +14,5 @@ container:
   azureAppRegistrationRedirectUrl: authenticate
 ingress:
   class: nginx
-  endpoint: ffc-pay-request-editor-snd2
+  endpoint: ffc-pay-request-editor-snd
   server: azure.defra.cloud
