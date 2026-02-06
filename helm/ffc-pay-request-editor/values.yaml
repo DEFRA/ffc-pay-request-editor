@@ -35,7 +35,12 @@ container:
   debtResponseTopicAddress: ffc-pay-debt-data-response
   cookiePassword: cookiecookiecookiecookiecookiecookie
   processingActive: true
-  
+  azureAppRegistrationEnabled: true
+  azureAppRegistrationClientId:
+  azureAppRegistrationTenantId:
+  azureAppRegistrationClientSecret:
+  azureAppRegistrationRedirectUrl: authenticate
+
 livenessProbe:
   path: /healthz
   port: 3001
@@ -73,13 +78,6 @@ ingress:
 service:
   port: 80
   type: ClusterIP
-
-azureAppRegistration:
-  enabled: true
-  clientId:
-  clientSecret:
-  tenantId:
-  redirectUrl: authenticate
 
 secretProviderClass:
   azure:

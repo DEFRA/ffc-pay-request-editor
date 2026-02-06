@@ -11,6 +11,7 @@ container:
   qcTopicAddress: queue:ffc-pay-quality-check
   eventsTopicAddress: queue:ffc-pay-events
   debtResponseTopicAddress: queue:ffc-pay-debt-data-response
+  azureAppRegistrationRedirectUrl: authenticate
 ingress:
   class: nginx
   endpoint: ffc-pay-request-editor-snd2
