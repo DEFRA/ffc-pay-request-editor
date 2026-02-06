@@ -25,11 +25,8 @@ data:
   POSTGRES_HOST: {{ quote .Values.postgresService.postgresqlHost }}
   POSTGRES_PORT: {{ quote .Values.postgresService.postgresPort }}
   POSTGRES_SCHEMA_NAME: {{ quote .Values.postgresService.postgresSchema }}
-  POSTGRES_USERNAME: {{ .Values.postgresService.postgresUser | quote }}  {{- if .Values.pr }}
-  REDIRECT_URL: https://{{ .Values.ingress.endpoint }}-{{ .Values.pr }}.{{ .Values.ingress.server }}/{{ .Values.container.azureAppRegistrationRedirectUrl }}
-  {{ else }}
+  POSTGRES_USERNAME: {{ .Values.postgresService.postgresUser | quote }}
   REDIRECT_URL: https://{{ .Values.ingress.endpoint }}.{{ .Values.ingress.server }}/{{ .Values.container.azureAppRegistrationRedirectUrl }}
-  {{- end }}
   AUTHENTICATION_ENABLED: {{ quote .Values.container.azureAppRegistrationEnabled }}
   {{- if .Values.container.azureAppRegistrationEnabled }}
   AZUREID_CLIENT_ID: {{ quote .Values.container.azureAppRegistrationClientId }}
