@@ -9,5 +9,6 @@ module.exports = {
   DELINKED: 13,
   SFI_EXPANDED: 14,
   COHTR: 15,
-  COHTC: 16
+  COHTC: 16,
+  FPTT: 17
 }
