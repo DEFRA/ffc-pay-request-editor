@@ -2,18 +2,39 @@ resources:
   identity: pay-request-editor
   postgreSql:
     name: ffc-pay-request-editor
-  topics:
-    - name: ffc-pay-debt-data
-      role: receiver
-      subscriptions:
-        - name: ffc-pay-request-editor
-    - name: ffc-pay-manual-check-data
-      role: receiver
-      subscriptions:
-        - name: ffc-pay-request-editor
-    - name: ffc-pay-debt-data-response
-      role: sender
-    - name: ffc-pay-events
-      role: sender
-    - name: ffc-pay-quality-check
-      role: sender
+  service_bus:
+    topics:
+      - name: ffc-pay-debt-data
+        defaultMessageTimeToLive: P3650D
+        duplicateDetectionHistoryTimeWindow: PT10M30S
+        requiresDuplicateDetection: true
+        roles: 
+        - name: receiver
+        subscriptions:
+          - name: ffc-pay-request-editor
+      - name: ffc-pay-manual-check-data
+        defaultMessageTimeToLive: P3650D
+        duplicateDetectionHistoryTimeWindow: PT10M30S
+        requiresDuplicateDetection: true
+        roles: 
+        - name: receiver
+        subscriptions:
+          - name: ffc-pay-request-editor
+      - name: ffc-pay-events
+        defaultMessageTimeToLive: P3650D
+        duplicateDetectionHistoryTimeWindow: PT10M30S
+        requiresDuplicateDetection: true
+        roles: 
+        - name: sender
+      - name: ffc-pay-debt-data-response
+        defaultMessageTimeToLive: P3650D
+        duplicateDetectionHistoryTimeWindow: PT10M30S
+        requiresDuplicateDetection: true
+        roles: 
+        - name: sender
+      - name: ffc-pay-quality-check
+        defaultMessageTimeToLive: P3650D
+        duplicateDetectionHistoryTimeWindow: PT10M30S
+        requiresDuplicateDetection: true
+        roles: 
+        - name: sender

@@ -6,19 +6,17 @@ data:
   APPINSIGHTS_CLOUDROLE: {{ quote .Values.name }}
   MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
   PROCESSING_ACTIVE: {{ quote .Values.container.processingActive }}
-  {{- if and (.Values.environmentCode) (not .Values.pr) }}
+  {{- if (.Values.environmentCode) }}
   DEBT_TOPIC_ADDRESS: {{ .Values.container.debtTopicAddress }}-{{ .Values.environmentCode }}
   DEBTRESPONSE_TOPIC_ADDRESS: {{ .Values.container.debtResponseTopicAddress }}-{{ .Values.environmentCode }}
   MANUALLEDGER_TOPIC_ADDRESS: {{ .Values.container.manualLedgerTopicAddress }}-{{ .Values.environmentCode }}
   QC_TOPIC_ADDRESS: {{ .Values.container.qcTopicAddress }}-{{ .Values.environmentCode }}
-  EVENT_TOPIC_ADDRESS: {{ .Values.container.eventTopicAddress }}-{{ .Values.environmentCode }}
   EVENTS_TOPIC_ADDRESS: {{ .Values.container.eventsTopicAddress }}-{{ .Values.environmentCode }}
   {{ else }}
   DEBT_TOPIC_ADDRESS: {{ quote .Values.container.debtTopicAddress }}
   DEBTRESPONSE_TOPIC_ADDRESS: {{ quote .Values.container.debtResponseTopicAddress }}
   MANUALLEDGER_TOPIC_ADDRESS: {{ quote .Values.container.manualLedgerTopicAddress }}
   QC_TOPIC_ADDRESS: {{ quote .Values.container.qcTopicAddress }}
-  EVENT_TOPIC_ADDRESS: {{ quote .Values.container.eventTopicAddress }}
   EVENTS_TOPIC_ADDRESS: {{ .Values.container.eventsTopicAddress }}
   {{- end }}
   DEBT_SUBSCRIPTION_ADDRESS: {{ quote .Values.container.debtSubscriptionAddress }}
@@ -27,11 +25,12 @@ data:
   POSTGRES_HOST: {{ quote .Values.postgresService.postgresqlHost }}
   POSTGRES_PORT: {{ quote .Values.postgresService.postgresPort }}
   POSTGRES_SCHEMA_NAME: {{ quote .Values.postgresService.postgresSchema }}
-  {{- if .Values.pr }}
-  REDIRECT_URL: https://{{ .Values.ingress.endpoint }}-{{ .Values.pr }}.{{ .Values.ingress.server }}/{{ .Values.azureAppRegistration.redirectUrl }}
-  {{ else }}
-  REDIRECT_URL: https://{{ .Values.ingress.endpoint }}.{{ .Values.ingress.server }}/{{ .Values.azureAppRegistration.redirectUrl }}
+  POSTGRES_USERNAME: {{ .Values.postgresService.postgresUser | quote }}
+  REDIRECT_URL: https://{{ .Values.ingress.endpoint }}.{{ .Values.ingress.server }}/{{ .Values.container.azureAppRegistrationRedirectUrl }}
+  AUTHENTICATION_ENABLED: {{ quote .Values.container.azureAppRegistrationEnabled }}
+  {{- if .Values.container.azureAppRegistrationEnabled }}
+  AZUREID_CLIENT_ID: {{ quote .Values.container.azureAppRegistrationClientId }}
+  AZUREID_TENANT_ID: {{ quote .Values.container.azureAppRegistrationTenantId }}
   {{- end }}
-  AUTHENTICATION_ENABLED: {{ quote .Values.azureAppRegistration.enabled }}
   COOKIE_PASSWORD: {{ quote .Values.container.cookiePassword }}
 {{- end -}}

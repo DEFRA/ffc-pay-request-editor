@@ -25,9 +25,6 @@ const mqSchema = Joi.object({
     address: Joi.string(),
     type: Joi.string().default('subscription')
   }),
-  eventTopic: {
-    address: Joi.string().required()
-  },
   eventsTopic: {
     address: Joi.string().required()
   }
@@ -58,9 +55,6 @@ const mqConfig = {
     address: process.env.MANUALLEDGER_SUBSCRIPTION_ADDRESS,
     type: 'subscription'
   },
-  eventTopic: {
-    address: process.env.EVENT_TOPIC_ADDRESS
-  },
   eventsTopic: {
     address: process.env.EVENTS_TOPIC_ADDRESS
   }
@@ -78,7 +72,6 @@ const debtSubscription = { ...mqResult.value.messageQueue, ...mqResult.value.deb
 const manualLedgerSubscription = { ...mqResult.value.messageQueue, ...mqResult.value.manualLedgerSubscription }
 const qcTopic = { ...mqResult.value.messageQueue, ...mqResult.value.qcTopic }
 const debtResponseTopic = { ...mqResult.value.messageQueue, ...mqResult.value.debtResponseTopic }
-const eventTopic = { ...mqResult.value.messageQueue, ...mqResult.value.eventTopic }
 const eventsTopic = { ...mqResult.value.messageQueue, ...mqResult.value.eventsTopic }
 
 module.exports = {
@@ -86,6 +79,5 @@ module.exports = {
   manualLedgerSubscription,
   qcTopic,
   debtResponseTopic,
-  eventTopic,
   eventsTopic
 }
