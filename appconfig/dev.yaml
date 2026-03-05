@@ -21,7 +21,7 @@ secretProviderClass:
     objects:
       - objectName: devtest-ffcahwr-appInsights-connectionString
         objectType: secret
-      - objectName: snd2-ffc-pay-cookie-password
+      - objectName: dev-ffc-pay-cookie-password
         objectType: secret
       - objectName: dev-ffcPayRequestEditorClientSecret
         objectType: secret
