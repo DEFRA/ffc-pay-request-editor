@@ -46,32 +46,32 @@ extends:
     sndDeployment: ${{ parameters.sndDeployment }}
     variableGroupName: ffc-pay-request-editor-env-var
     pr_params:
-      container.processingActive: ${{ eq(variables['pr_processingActive'], 'true') }}
-      container.azureAppRegistrationEnabled: ${{ eq(variables['pr_azureAppRegistrationEnabled'], 'true') }}
+      container.processingActive: $(pr_processingActive)
+      container.azureAppRegistrationEnabled: $(pr_azureAppRegistrationEnabled)
       container.azureAppRegistrationClientId: $(pr_azureAppRegistrationClientId)
       container.azureAppRegistrationTenantId: $(pr_azureAppRegistrationTenantId)
     snd2_params:
-      container.processingActive: ${{ eq(variables['snd2_processingActive'], 'true') }}
-      container.azureAppRegistrationEnabled: ${{ eq(variables['snd2_azureAppRegistrationEnabled'], 'true') }}
+      container.processingActive: $(snd2_processingActive)
+      container.azureAppRegistrationEnabled: $(snd2_azureAppRegistrationEnabled)
       container.azureAppRegistrationClientId: $(snd2_azureAppRegistrationClientId)
       container.azureAppRegistrationTenantId: $(snd2_azureAppRegistrationTenantId)
     dev_params:
-      container.processingActive: ${{ eq(variables['dev_processingActive'], 'true') }}
-      container.azureAppRegistrationEnabled: ${{ eq(variables['dev_azureAppRegistrationEnabled'], 'true') }}
+      container.processingActive: $(dev_processingActive)
+      container.azureAppRegistrationEnabled: $(dev_azureAppRegistrationEnabled)
       container.azureAppRegistrationClientId: $(dev_azureAppRegistrationClientId)
       container.azureAppRegistrationTenantId: $(dev_azureAppRegistrationTenantId)
     test_params:
-      container.processingActive: ${{ eq(variables['test_processingActive'], 'true') }}
-      container.azureAppRegistrationEnabled: ${{ eq(variables['test_azureAppRegistrationEnabled'], 'true') }}
+      container.processingActive: $(test_processingActive)
+      container.azureAppRegistrationEnabled: $(test_azureAppRegistrationEnabled)
       container.azureAppRegistrationClientId: $(test_azureAppRegistrationClientId)
       container.azureAppRegistrationTenantId: $(test_azureAppRegistrationTenantId)
     pre_params:
-      container.processingActive: ${{ eq(variables['pre_processingActive'], 'true') }}
-      container.azureAppRegistrationEnabled: ${{ eq(variables['pre_azureAppRegistrationEnabled'], 'true') }}
+      container.processingActive: $(pre_processingActive)
+      container.azureAppRegistrationEnabled: $(pre_azureAppRegistrationEnabled)
       container.azureAppRegistrationClientId: $(pre_azureAppRegistrationClientId)
       container.azureAppRegistrationTenantId: $(pre_azureAppRegistrationTenantId)
     prd_params:
-      container.processingActive: ${{ eq(variables['prd_processingActive'], 'true') }}
-      container.azureAppRegistrationEnabled: ${{ eq(variables['prod_azureAppRegistrationEnabled'], 'true') }}
+      container.processingActive: $(prd_processingActive)
+      container.azureAppRegistrationEnabled: $(prod_azureAppRegistrationEnabled)
       container.azureAppRegistrationClientId: $(prd_azureAppRegistrationClientId)
       container.azureAppRegistrationTenantId: $(prd_azureAppRegistrationTenantId)
