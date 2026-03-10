@@ -23,8 +23,6 @@ secretProviderClass:
         objectType: secret
       - objectName: dev-ffc-pay-cookie-password
         objectType: secret
-      - objectName: prd-ffcPayRequestEditorClientSecret
-        objectType: secret
       - objectName: test-ffcPayRequestEditorClientSecret
         objectType: secret
 
