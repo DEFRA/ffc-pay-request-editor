@@ -72,6 +72,6 @@ extends:
       container.azureAppRegistrationTenantId: $(pre_azureAppRegistrationTenantId)
     prd_params:
       container.processingActive: $(prd_processingActive)
-      container.azureAppRegistrationEnabled: $(prod_azureAppRegistrationEnabled)
+      container.azureAppRegistrationEnabled: $(prd_azureAppRegistrationEnabled)
       container.azureAppRegistrationClientId: $(prd_azureAppRegistrationClientId)
       container.azureAppRegistrationTenantId: $(prd_azureAppRegistrationTenantId)
