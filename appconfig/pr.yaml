@@ -1,0 +1,17 @@
+---
+environment: production
+environmentCode: snd
+container:
+  messageQueueHost: SNDFFCINFSB2001.servicebus.windows.net
+  debtTopicAddress: queue:ffc-pay-debt-data
+  debtSubscriptionAddress: ffc-pay-request-editor
+  manualLedgerTopicAddress: queue:ffc-pay-manual-check-data
+  manualLedgerSubscriptionAddress: ffc-pay-request-editor
+  qcTopicAddress: queue:ffc-pay-quality-check
+  eventsTopicAddress: queue:ffc-pay-events
+  debtResponseTopicAddress: queue:ffc-pay-debt-data-response
+  azureAppRegistrationRedirectUrl: authenticate
+ingress:
+  class: nginx
+  endpoint: ffc-pay-request-editor-snd
+  server: azure.defra.cloud

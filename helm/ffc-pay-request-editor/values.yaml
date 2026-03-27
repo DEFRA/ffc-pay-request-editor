@@ -14,7 +14,7 @@ containerConfigMap:
   name: ffc-pay-request-editor-config-map
 
 containerSecret:
-  name: ffc-pay-request-editor-container-secret
+  name: ffc-pay-request-editor
   type: Opaque
 
 deployment: {}
@@ -31,12 +31,16 @@ container:
   manualLedgerTopicAddress: ffc-pay-manual-check-data
   manualLedgerSubscriptionAddress: ffc-pay-request-editor
   qcTopicAddress: ffc-pay-quality-check
-  eventTopicAddress: ffc-pay-event
   eventsTopicAddress: ffc-pay-events
   debtResponseTopicAddress: ffc-pay-debt-data-response
   cookiePassword: cookiecookiecookiecookiecookiecookie
   processingActive: true
-  
+  azureAppRegistrationEnabled: true
+  azureAppRegistrationClientId:
+  azureAppRegistrationTenantId:
+  azureAppRegistrationClientSecret:
+  azureAppRegistrationRedirectUrl: authenticate
+
 livenessProbe:
   path: /healthz
   port: 3001
@@ -75,9 +79,24 @@ service:
   port: 80
   type: ClusterIP
 
-azureAppRegistration:
-  enabled: true
-  clientId:
-  clientSecret:
-  tenantId:
-  redirectUrl: authenticate
+secretProviderClass:
+  azure:
+    keyvaultName: SNDFFCINFKV2001
+    objects: # reading the secret from Azure Key Vault
+      - objectName: appInsights-connectionString # secret name in Azure Key Vault
+        objectType: secret
+      - objectName: snd2-ffc-pay-cookie-password
+        objectType: secret
+      - objectName: snd2-ffcPayRequestEditorClientSecret
+        objectType: secret
+
+  secretObjects: # creating a Kubernetes secret from the Azure Key Vault secrets
+    - secretName: ffc-pay-request-editor
+      type: Opaque
+      data:
+        - objectName: appInsights-connectionString # secret name in Azure Key Vault
+          key: APPINSIGHTS_CONNECTIONSTRING # the secret key in the Kubernetes secret and use in the application
+        - objectName: snd2-ffc-pay-cookie-password # secret name in Azure Key Vault
+          key: COOKIE_PASSWORD # the secret key in the Kubernetes secret and use in the application
+        - objectName: snd2-ffcPayRequestEditorClientSecret
+          key: AZUREID_CLIENT_SECRET

@@ -116,7 +116,6 @@ value.debtSubscription = mqConfig.debtSubscription
 value.manualLedgerSubscription = mqConfig.manualLedgerSubscription
 value.qcTopic = mqConfig.qcTopic
 value.debtResponseTopic = mqConfig.debtResponseTopic
-value.eventTopic = mqConfig.eventTopic
 value.eventsTopic = mqConfig.eventsTopic
 
 value.isDev = value.env === 'development'
