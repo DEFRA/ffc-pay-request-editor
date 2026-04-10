@@ -10,5 +10,5 @@ module.exports = [
   'Expanded SFI Offer',
   'Combined Offer Higher Tier Revenue',
   'Combined Offer Higher Tier Capital',
-  'Future Payments Technical Test'
+  'Farm Payments Technical Test'
 ]
