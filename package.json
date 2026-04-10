@@ -35,6 +35,7 @@
   "dependencies": {
     "@azure/identity": "4.4.1",
     "@azure/msal-node": "2.9.2",
+    "@hapi/catbox-memory": "5.0.1",
     "@hapi/catbox-redis": "6.0.2",
     "@hapi/cookie": "11.0.2",
     "@hapi/crumb": "8.0.1",
@@ -57,7 +58,6 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
-    "@hapi/catbox-memory": "5.0.1",
     "blipp": "4.0.2",
     "clean-webpack-plugin": "3.0.0",
     "css-loader": "5.2.6",
