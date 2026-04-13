@@ -1,7 +1,6 @@
 ---
 environment: production
 environmentCode: snd1
-pr: true
 container:
   messageQueueHost: SNDFFCINFSB1001.servicebus.windows.net
   debtTopicAddress: ffc-pay-debt-data
