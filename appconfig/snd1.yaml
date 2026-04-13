@@ -1,0 +1,32 @@
+---
+environment: production
+environmentCode: snd1
+pr: true
+container:
+  messageQueueHost: SNDFFCINFSB1001.servicebus.windows.net
+  debtTopicAddress: ffc-pay-debt-data
+  debtSubscriptionAddress: ffc-pay-request-editor
+  manualLedgerTopicAddress: ffc-pay-manual-check-data
+  manualLedgerSubscriptionAddress: ffc-pay-request-editor
+  qcTopicAddress: ffc-pay-quality-check
+  eventsTopicAddress: ffc-pay-events
+  debtResponseTopicAddress: ffc-pay-debt-data-response
+  azureAppRegistrationRedirectUrl: authenticate
+ingress:
+  class: nginx
+  endpoint: ffc-pay-request-editor-snd1
+  server: azure.defra.cloud
+
+secretProviderClass:
+  azure:
+    keyvaultName: SNDFFCINFKV1001
+    objects:
+      - objectName: appInsights-connectionString
+        objectType: secret
+
+  secretObjects:
+    - secretName: ffc-pay-request-editor
+      type: Opaque
+      data:
+        - objectName: appInsights-connectionString
+          key: APPINSIGHTS_CONNECTIONSTRING
