@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-request-editor",
-  "version": "1.24.51",
+  "version": "1.24.54",
   "description": "Edit payment requests",
   "homepage": "https://github.com/DEFRA/ffc-pay-request-editor",
   "main": "app/index.js",
@@ -36,10 +36,11 @@
   "dependencies": {
     "@azure/identity": "4.4.1",
     "@azure/msal-node": "2.9.2",
+    "@hapi/catbox-memory": "5.0.1",
     "@hapi/catbox-redis": "6.0.2",
     "@hapi/cookie": "11.0.2",
     "@hapi/crumb": "8.0.1",
-    "@hapi/hapi": "20.2.1",
+    "@hapi/hapi": "21.4.8",
     "@hapi/hoek": "9.1.1",
     "@hapi/inert": "6.0.3",
     "@hapi/vision": "6.1.0",
@@ -47,8 +48,8 @@
     "@joi/date": "2.1.0",
     "applicationinsights": "2.9.8",
     "ffc-database": "1.0.24",
-    "ffc-messaging": "2.10.4",
-    "ffc-pay-event-publisher": "1.2.1",
+    "ffc-messaging": "2.10.5",
+    "ffc-pay-event-publisher": "1.2.3",
     "govuk-frontend": "5.13.0",
     "hapi-pino": "13.0.0",
     "joi": "17.7.0",
@@ -58,7 +59,6 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
-    "@hapi/catbox-memory": "5.0.1",
     "blipp": "4.0.2",
     "clean-webpack-plugin": "3.0.0",
     "css-loader": "5.2.6",

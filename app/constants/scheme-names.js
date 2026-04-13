@@ -9,5 +9,6 @@ module.exports = [
   'Delinked',
   'Expanded SFI Offer',
   'Combined Offer Higher Tier Revenue',
-  'Combined Offer Higher Tier Capital'
+  'Combined Offer Higher Tier Capital',
+  'Farm Payments Technical Test'
 ]
