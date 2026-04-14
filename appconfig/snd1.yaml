@@ -35,5 +35,5 @@ secretProviderClass:
           key: APPINSIGHTS_CONNECTIONSTRING # the secret key in the Kubernetes secret and use in the application
         - objectName: snd1-ffc-pay-cookie-password # secret name in Azure Key Vault
           key: COOKIE_PASSWORD # the secret key in the Kubernetes secret and use in the application
-        - objectName: snd1-ffcPayRequestEditorClientSecret
+        - objectName: snd-ffcPayRequestEditorClientSecret
           key: AZUREID_CLIENT_SECRET
