@@ -19,7 +19,10 @@ parameters:
   - name: branchDeployment
     type: boolean
     default: true
-  - name: sndDeployment
+  - name: snd2Deployment
+    type: boolean
+    default: true
+  - name: snd1Deployment
     type: boolean
     default: true
 
@@ -43,13 +46,19 @@ extends:
     failOnThreshold: moderate  # Optional: moderate (default), low, high, critical
     prDeployment: ${{ parameters.prDeployment }}
     branchDeployment: ${{ parameters.branchDeployment }}
-    sndDeployment: ${{ parameters.sndDeployment }}
+    sndDeployment: ${{ parameters.snd2Deployment }}
+    snd1Deployment: ${{ parameters.snd1Deployment }}
     variableGroupName: ffc-pay-request-editor-env-var
     pr_params:
       container.processingActive: $(pr_processingActive)
       container.azureAppRegistrationEnabled: $(pr_azureAppRegistrationEnabled)
       container.azureAppRegistrationClientId: $(pr_azureAppRegistrationClientId)
       container.azureAppRegistrationTenantId: $(pr_azureAppRegistrationTenantId)
+    snd1_params:
+      container.processingActive: $(snd1_processingActive)
+      container.azureAppRegistrationEnabled: $(snd1_azureAppRegistrationEnabled)
+      container.azureAppRegistrationClientId: $(snd1_azureAppRegistrationClientId)
+      container.azureAppRegistrationTenantId: $(snd1_azureAppRegistrationTenantId)
     snd2_params:
       container.processingActive: $(snd2_processingActive)
       container.azureAppRegistrationEnabled: $(snd2_azureAppRegistrationEnabled)
