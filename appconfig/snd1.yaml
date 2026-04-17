@@ -24,7 +24,7 @@ secretProviderClass:
         objectType: secret
       - objectName: snd1-ffc-pay-cookie-password
         objectType: secret
-      - objectName: snd1-ffcPayRequestEditorClientSecret
+      - objectName: snd-ffcPayRequestEditorClientSecret
         objectType: secret
 
   secretObjects: # creating a Kubernetes secret from the Azure Key Vault secrets
