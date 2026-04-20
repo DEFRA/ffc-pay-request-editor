@@ -9,9 +9,9 @@ const { removeQualityChecks } = require('./remove-quality-checks')
 const removeAgreementData = async (retentionData) => {
   const transaction = await db.sequelize.transaction()
   try {
-    const { agreementNumber, frn, schemeId } = retentionData
+    const { agreementNumber, frn, schemeId, usesContractNumber } = retentionData
 
-    const paymentRequests = await findPaymentRequests(agreementNumber, frn, schemeId, transaction)
+    const paymentRequests = await findPaymentRequests(agreementNumber, frn, schemeId, usesContractNumber, transaction)
     const paymentRequestIds = paymentRequests.map(pr => pr.paymentRequestId)
     if (paymentRequests.length === 0) {
       console.log('No payment request related agreement data to remove')

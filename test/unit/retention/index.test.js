@@ -47,7 +47,8 @@ describe('removeAgreementData', () => {
   const retentionData = {
     agreementNumber: 'AGR123',
     frn: 456789,
-    schemeId: 10
+    schemeId: 10,
+    usesContractNumber: false
   }
   let transaction
 
@@ -71,6 +72,7 @@ describe('removeAgreementData', () => {
       retentionData.agreementNumber,
       retentionData.frn,
       retentionData.schemeId,
+      retentionData.usesContractNumber,
       transaction
     )
     expect(transaction.commit).toHaveBeenCalledTimes(1)
@@ -97,6 +99,7 @@ describe('removeAgreementData', () => {
       retentionData.agreementNumber,
       retentionData.frn,
       retentionData.schemeId,
+      retentionData.usesContractNumber,
       transaction
     )
     expect(removeDebtData).toHaveBeenCalledWith(
