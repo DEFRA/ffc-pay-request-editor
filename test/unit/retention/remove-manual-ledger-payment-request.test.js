@@ -2,6 +2,11 @@ const { removeManualLedgerPaymentRequest } = require('../../../app/retention/rem
 const db = require('../../../app/data')
 
 jest.mock('../../../app/data', () => ({
+  Sequelize: {
+    Op: {
+      in: 'IN_OPERATOR'
+    }
+  },
   manualLedgerPaymentRequest: {
     destroy: jest.fn()
   }
@@ -20,7 +25,9 @@ describe('removeManualLedgerPaymentRequest', () => {
 
     expect(db.manualLedgerPaymentRequest.destroy).toHaveBeenCalledTimes(1)
     expect(db.manualLedgerPaymentRequest.destroy).toHaveBeenCalledWith({
-      where: { paymentRequestId: paymentRequestIds },
+      where: {
+        paymentRequestId: { [db.Sequelize.Op.in]: paymentRequestIds }
+      },
       transaction
     })
   })
@@ -29,7 +36,9 @@ describe('removeManualLedgerPaymentRequest', () => {
     await removeManualLedgerPaymentRequest(paymentRequestIds)
 
     expect(db.manualLedgerPaymentRequest.destroy).toHaveBeenCalledWith({
-      where: { paymentRequestId: paymentRequestIds },
+      where: {
+        paymentRequestId: { [db.Sequelize.Op.in]: paymentRequestIds }
+      },
       transaction: undefined
     })
   })

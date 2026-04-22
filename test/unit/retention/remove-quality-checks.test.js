@@ -2,6 +2,11 @@ const { removeQualityChecks } = require('../../../app/retention/remove-quality-c
 const db = require('../../../app/data')
 
 jest.mock('../../../app/data', () => ({
+  Sequelize: {
+    Op: {
+      in: 'IN_OPERATOR'
+    }
+  },
   qualityCheck: {
     destroy: jest.fn()
   }
@@ -20,7 +25,9 @@ describe('removeQualityChecks', () => {
 
     expect(db.qualityCheck.destroy).toHaveBeenCalledTimes(1)
     expect(db.qualityCheck.destroy).toHaveBeenCalledWith({
-      where: { paymentRequestId: paymentRequestIds },
+      where: {
+        paymentRequestId: { [db.Sequelize.Op.in]: paymentRequestIds }
+      },
       transaction
     })
   })
@@ -29,7 +36,9 @@ describe('removeQualityChecks', () => {
     await removeQualityChecks(paymentRequestIds)
 
     expect(db.qualityCheck.destroy).toHaveBeenCalledWith({
-      where: { paymentRequestId: paymentRequestIds },
+      where: {
+        paymentRequestId: { [db.Sequelize.Op.in]: paymentRequestIds }
+      },
       transaction: undefined
     })
   })
