@@ -1,5 +1,5 @@
 const { ledger, enrichment } = require('./permissions')
-const { v4: uuidv4 } = require('uuid')
+const { randomUUID } = require('node:crypto')
 const devAccount = require('./dev-account')
 
 const getAuthenticationUrl = () => {
@@ -23,7 +23,7 @@ const refresh = async (account, cookieAuth, forceRefresh = true) => {
 }
 
 const logout = async (account) => {
-  devAccount.homeAccountId = uuidv4()
+  devAccount.homeAccountId = randomUUID()
 }
 
 module.exports = {

@@ -25,6 +25,20 @@ module.exports = {
             watch: config.isDev
           })
 
+          options.compileOptions.environment.addGlobal('getAssetPath', function (assetPath) {
+            const base = (options && options.context && options.context.assetPath) || '/static'
+            const normalizedBase = String(base).replace(/\/+$/, '')
+            const normalizedAsset = String(assetPath || '').replace(/^\/+/, '')
+            return normalizedBase + (normalizedAsset ? '/' + normalizedAsset : '')
+          })
+
+          options.compileOptions.environment.addGlobal('getGovukAssetPath', function (assetPath) {
+            const base = (options && options.context && options.context.govukAssetPath) || '/assets'
+            const normalizedBase = String(base).replace(/\/+$/, '')
+            const normalizedAsset = String(assetPath || '').replace(/^\/+/, '')
+            return normalizedBase + (normalizedAsset ? '/' + normalizedAsset : '')
+          })
+
           return next()
         }
       }
