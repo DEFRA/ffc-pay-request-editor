@@ -55,8 +55,7 @@
     "joi": "17.7.0",
     "log-timestamp": "0.3.0",
     "nunjucks": "3.2.4",
-    "sequelize": "6.37.8",
-    "sitemap": "^9.0.1"
+    "sequelize": "6.37.8"
   },
   "devDependencies": {
     "blipp": "4.0.2",
