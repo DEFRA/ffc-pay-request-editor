@@ -34,4 +34,5 @@ data:
   AZUREID_TENANT_ID: {{ quote .Values.container.azureAppRegistrationTenantId }}
   {{- end }}
   COOKIE_PASSWORD: {{ quote .Values.container.cookiePassword }}
+  GOOGLE_TAG_MANAGER_KEY: {{ quote .Values.container.googleTagManagerKey}}
 {{- end -}}

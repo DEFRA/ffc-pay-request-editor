@@ -17,6 +17,16 @@ const schema = Joi.object({
   cookiePassword: Joi.string().required(),
   sessionTimeoutMinutes: Joi.number().default(30),
   staticCacheTimeoutMillis: Joi.number().default(7 * 24 * 60 * 60 * 1000), // 1 day
+  googleTagManagerKey: Joi.string().default('GTM-5XJKV8F'),
+  cookieOptions: Joi.object({
+    ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
+    isSameSite: Joi.string().valid('Lax').default('Lax'),
+    encoding: Joi.string().valid('base64json').default('base64json'),
+    isSecure: Joi.bool().default(true),
+    isHttpOnly: Joi.bool().default(true),
+    clearInvalid: Joi.bool().default(false),
+    strictHeader: Joi.bool().default(true)
+  }),
   publishPollingInterval: Joi.number().default(10000), // 10 seconds
   database: Joi.object({
     database: Joi.string(),
@@ -59,6 +69,16 @@ const config = {
   cookiePassword: process.env.COOKIE_PASSWORD,
   sessionTimeoutMinutes: process.env.SESSION_TIMEOUT_IN_MINUTES,
   staticCacheTimeoutMillis: process.env.STATIC_CACHE_TIMEOUT_IN_MILLIS,
+  googleTagManagerKey: process.env.GOOGLE_TAG_MANAGER_KEY,
+  cookieOptions: {
+    ttl: process.env.COOKIE_TTL_IN_MILLIS,
+    isSameSite: 'Lax',
+    encoding: 'base64json',
+    isSecure: process.env.NODE_ENV === 'production',
+    isHttpOnly: true,
+    clearInvalid: false,
+    strictHeader: true
+  },
   publishPollingInterval: process.env.PUBLISH_POLLING_INTERVAL,
   database: {
     database: process.env.POSTGRES_DB,
@@ -107,7 +127,7 @@ if (result.error) {
   throw new Error(`The server config is invalid. ${result.error.message}`)
 }
 
-// Use the joi validated value
+// Use the Joi validated value
 const value = result.value
 
 value.authConfig = authConfig

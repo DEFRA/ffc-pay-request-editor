@@ -40,6 +40,7 @@ container:
   azureAppRegistrationTenantId:
   azureAppRegistrationClientSecret:
   azureAppRegistrationRedirectUrl: authenticate
+  googleTagManagerKey: GTM-5XJKV8F
 
 livenessProbe:
   path: /healthz
