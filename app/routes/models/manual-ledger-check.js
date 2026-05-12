@@ -2,7 +2,7 @@ const { convertToPounds } = require('../../processing/conversion')
 const toCurrencyString = require('../../utils/to-currency-string')
 const errorMessage = 'Please select Yes or No to agree if the provisional values are correct.'
 
-function ViewModel (manualLedgerData, error) {
+function viewModel (manualLedgerData, error) {
   this.model = {
     manualLedgerData: buildManualLedger(manualLedgerData),
     ledgerAgreement: createLedgerAgreementComponent(error)
@@ -59,4 +59,4 @@ const createLedgerAgreementComponent = (error) => {
   return LedgerAgreementComponent
 }
 
-module.exports = ViewModel
+module.exports = viewModel

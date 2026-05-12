@@ -4,7 +4,7 @@ module.exports = {
   method: 'GET',
   path: '/sitemap',
   options: {
-    handler: (request, h) => {
+    handler: (_request, h) => {
       const sections = [
         {
           title: '',
