@@ -1,6 +1,6 @@
 {% extends '_layout.njk' %}
 
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
@@ -8,126 +8,133 @@
 
 {% from "macros/search-input.njk" import searchInput %}
 
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [{
+      text: "Home",
+      href: "/"
+    }, {
+      text: "Requests awaiting reporting data"
+    }]
+  })}}
+{% endblock %}
+
 {% block content %}
-  {{ govukBackLink({
-    text: "Back",
-    href: "/"
-  }) }}
+  <main class="govuk-main-wrapper " id="main-content" role="main">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-l">Requests awaiting reporting data</h1>
+        {% if enrichData.length %}
+          <div class="govuk-!-padding-bottom-3">
+            <div class="govuk-!-width-one-third">
+              <form action="/enrich" method="POST">
+                <input type="hidden" name="crumb" value="{{crumb}}"/>
+                {{ searchInput(model) }}
+              </form>
+            </div>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-l">Requests awaiting reporting data</h1>
+            <p class="govuk-body">
+              <a href="/enrich" class="govuk-link govuk-link--no-visited-state">View all requests</a>
+            </p>
 
-      {% if enrichData.length %}
-        <div class="govuk-!-padding-bottom-3">
-          <div class="govuk-!-width-one-third">
-            <form action="/enrich" method="POST">
-              <input type="hidden" name="crumb" value="{{crumb}}"/>
-              {{ searchInput(model) }}
-            </form>
-          </div>
-
-          <p class="govuk-body">
-            <a href="/enrich" class="govuk-link govuk-link--no-visited-state">View all requests</a>
-          </p>
-
-          <div class="govuk-!-text-align-right govuk-!-margin-bottom-6">
-            <form action="/enrich" method="get">
-              {{ govukSelect({
-                id: "perPage",
-                name: "perPage",
-                label: {
-                  text: "Number of records per page"
-                },
-                attributes: {
-                  onchange: "this.form.submit()"
-                },
-                items: [
-                  {
-                    value: 100,
-                    text: "100",
-                    selected: perPage == 100
+            <div class="govuk-!-text-align-right govuk-!-margin-bottom-6">
+              <form action="/enrich" method="get">
+                {{ govukSelect({
+                  id: "perPage",
+                  name: "perPage",
+                  label: {
+                    text: "Number of records per page"
                   },
-                  {
-                    value: 500,
-                    text: "500",
-                    selected: perPage == 500
+                  attributes: {
+                    onchange: "this.form.submit()"
                   },
-                  {
-                    value: 1000,
-                    text: "1000",
-                    selected: perPage == 1000
-                  }
-                ]
-              }) }}
-            </form>
+                  items: [
+                    {
+                      value: 100,
+                      text: "100",
+                      selected: perPage == 100
+                    },
+                    {
+                      value: 500,
+                      text: "500",
+                      selected: perPage == 500
+                    },
+                    {
+                      value: 1000,
+                      text: "1000",
+                      selected: perPage == 1000
+                    }
+                  ]
+                }) }}
+              </form>
+            </div>
+
+            {% set tableRows = [] %}
+            {% for data in enrichData %}
+              {% set actionHtml %}
+                <a href="enrich-request?invoiceNumber={{ data.invoiceNumber }}&paymentRequestId={{ data.paymentRequestId }}" class="govuk-link" aria-label="Enrich invoice {{ data.invoiceNumber }} for FRN {{ data.frn }} with agreement {{ data.agreementNumber }}">Enrich</a>
+              {% endset %}
+
+              {% set tableRows = (tableRows.push([
+                { text: data.schemes.name, classes: "govuk-body-s" },
+                { text: data.marketingYear, classes: "govuk-body-s" },
+                { text: data.frn, classes: "govuk-body-s" },
+                { text: data.agreementNumber, classes: "govuk-body-s" },
+                { text: data.valueText, format: "numeric", classes: "govuk-body-s noWrap" },
+                { text: data.daysWaiting, format: "numeric", classes: "govuk-body-s" },
+                { html: actionHtml, classes: "govuk-body-s" }
+              ]), tableRows) %}
+            {% endfor %}
+
+            {{ govukTable({
+              caption: "Requests",
+              captionClasses: "govuk-table__caption--s",
+              head: [
+                { text: "Scheme", classes: "govuk-body-s" },
+                { text: "Scheme Year", classes: "govuk-body-s" },
+                { text: "FRN", classes: "govuk-body-s" },
+                { text: "Agreement number", classes: "govuk-body-s" },
+                { text: "Total amount", format: "numeric", classes: "govuk-body-s" },
+                { text: "Days waiting", format: "numeric", classes: "govuk-body-s" },
+                { text: "Actions", classes: "govuk-body-s" }
+              ],
+              rows: tableRows
+            }) }}
+
+            {% set paginationPrevious = undefined %}
+            {% set paginationNext = undefined %}
+
+            {% if page > 1 %}
+              {% set paginationPrevious = {
+                href: "?page=" + (page - 1) + "&perPage=" + perPage,
+                labelText: "Previous page"
+              } %}
+            {% endif %}
+
+            {% if enrichData.length >= perPage %}
+              {% set paginationNext = {
+                href: "?page=" + (page + 1) + "&perPage=" + perPage,
+                labelText: "Next page"
+              } %}
+            {% endif %}
+
+            {{ govukPagination({
+              previous: paginationPrevious,
+              next: paginationNext,
+              items: [
+                {
+                  number: page,
+                  current: true
+                }
+              ]
+            }) }}
           </div>
-
-          {% set tableRows = [] %}
-          {% for data in enrichData %}
-            {% set actionHtml %}
-              <a href="enrich-request?invoiceNumber={{ data.invoiceNumber }}&paymentRequestId={{ data.paymentRequestId }}" class="govuk-link" aria-label="Enrich invoice {{ data.invoiceNumber }} for FRN {{ data.frn }} with agreement {{ data.agreementNumber }}">Enrich</a>
-            {% endset %}
-
-            {% set tableRows = (tableRows.push([
-              { text: data.schemes.name, classes: "govuk-body-s" },
-              { text: data.marketingYear, classes: "govuk-body-s" },
-              { text: data.frn, classes: "govuk-body-s" },
-              { text: data.agreementNumber, classes: "govuk-body-s" },
-              { text: data.valueText, format: "numeric", classes: "govuk-body-s noWrap" },
-              { text: data.daysWaiting, format: "numeric", classes: "govuk-body-s" },
-              { html: actionHtml, classes: "govuk-body-s" }
-            ]), tableRows) %}
-          {% endfor %}
-
-          {{ govukTable({
-            caption: "Requests",
-            captionClasses: "govuk-table__caption--s",
-            head: [
-              { text: "Scheme", classes: "govuk-body-s" },
-              { text: "Scheme Year", classes: "govuk-body-s" },
-              { text: "FRN", classes: "govuk-body-s" },
-              { text: "Agreement number", classes: "govuk-body-s" },
-              { text: "Total amount", format: "numeric", classes: "govuk-body-s" },
-              { text: "Days waiting", format: "numeric", classes: "govuk-body-s" },
-              { text: "Actions", classes: "govuk-body-s" }
-            ],
-            rows: tableRows
+        {% else %}
+          {{ govukInsetText({
+            text: "No payment requests awaiting reporting data"
           }) }}
-
-          {% set paginationPrevious = undefined %}
-          {% set paginationNext = undefined %}
-
-          {% if page > 1 %}
-            {% set paginationPrevious = {
-              href: "?page=" + (page - 1) + "&perPage=" + perPage,
-              labelText: "Previous page"
-            } %}
-          {% endif %}
-
-          {% if enrichData.length >= perPage %}
-            {% set paginationNext = {
-              href: "?page=" + (page + 1) + "&perPage=" + perPage,
-              labelText: "Next page"
-            } %}
-          {% endif %}
-
-          {{ govukPagination({
-            previous: paginationPrevious,
-            next: paginationNext,
-            items: [
-              {
-                number: page,
-                current: true
-              }
-            ]
-          }) }}
-        </div>
-      {% else %}
-        {{ govukInsetText({
-          text: "No payment requests awaiting reporting data"
-        }) }}
-      {% endif %}
+        {% endif %}
+      </div>
     </div>
-  </div>
+  </main>
 {% endblock %}

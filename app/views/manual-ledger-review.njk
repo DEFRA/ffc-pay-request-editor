@@ -1,6 +1,6 @@
 {% extends '_layout.njk' %}
 
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
@@ -8,38 +8,30 @@
 {% from "macros/payment-request-header.njk" import paymentRequestHeader %}
 {% from "macros/payment-request-invoice-lines.njk" import paymentRequestInvoiceLines %}
 
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [{
+      text: "Home",
+      href: "/"
+    }, {
+      text: "Ledger assignments awaiting quality check",
+      href: "/quality-check"
+    }, {
+      text: "Quality check ledger assignment"
+    }]
+  })}}
+{% endblock %}
+
 {% block content %}
-  {{ govukBackLink({
-    text: "Back",
-    href: "/quality-check",
-    attributes: {
-      id: "back"
-    }
-  }) }}
-
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <span class="govuk-caption-l">{{model.manualLedgerData.invoiceNumber}}</span>
-      <h1 class="govuk-heading-l">Quality check ledger assignment</h1>
-    </div>
-    <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">Original</h2>
-      {{ paymentRequestHeader(model.manualLedgerData) }}
-
-      <details class="govuk-details" data-module="govuk-details">
-        <summary class="govuk-details__summary">
-          <span class="govuk-details__summary-text">
-            Invoice Lines
-          </span>
-        </summary>
-        <div class="govuk-details__text">
-          {{ paymentRequestInvoiceLines(model.manualLedgerData.invoiceLines) }}
-        </div>
-      </details>
-
-      <h2 class="govuk-heading-m">Provisional</h2>
-      {% for data in model.manualLedgerData.manualLedgerChecks %}
-        {{ paymentRequestHeader(data.ledgerPaymentRequest) }}
+  <main class="govuk-main-wrapper " id="main-content" role="main">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <span class="govuk-caption-l">{{model.manualLedgerData.invoiceNumber}}</span>
+        <h1 class="govuk-heading-l">Quality check ledger assignment</h1>
+      </div>
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-m">Original</h2>
+        {{ paymentRequestHeader(model.manualLedgerData) }}
 
         <details class="govuk-details" data-module="govuk-details">
           <summary class="govuk-details__summary">
@@ -48,28 +40,44 @@
             </span>
           </summary>
           <div class="govuk-details__text">
-            {{ paymentRequestInvoiceLines(data.ledgerPaymentRequest.invoiceLines) }}
+            {{ paymentRequestInvoiceLines(model.manualLedgerData.invoiceLines) }}
           </div>
         </details>
-      {% endfor %}
 
-      {% if model.errorMessage %}
-        {{ govukErrorSummary({
-          titleText: "There is a problem",
-          errorList: model.errorMessage
-        }) }}
-      {% endif %}
+        <h2 class="govuk-heading-m">Provisional</h2>
+        {% for data in model.manualLedgerData.manualLedgerChecks %}
+          {{ paymentRequestHeader(data.ledgerPaymentRequest) }}
 
-      <form action="/manual-ledger-review" method="post" novalidate>
-        <input type="hidden" name="paymentRequestId" value="{{model.manualLedgerData.paymentRequestId}}"/>
-        <input type="hidden" name="crumb" value="{{crumb}}"/>
-        
-        {{ govukRadios(model.ledgerAgreement) }}
-        
-        {{ govukButton({
-          text: "Submit"
-        }) }}
-      </form>
+          <details class="govuk-details" data-module="govuk-details">
+            <summary class="govuk-details__summary">
+              <span class="govuk-details__summary-text">
+                Invoice Lines
+              </span>
+            </summary>
+            <div class="govuk-details__text">
+              {{ paymentRequestInvoiceLines(data.ledgerPaymentRequest.invoiceLines) }}
+            </div>
+          </details>
+        {% endfor %}
+
+        {% if model.errorMessage %}
+          {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: model.errorMessage
+          }) }}
+        {% endif %}
+
+        <form action="/manual-ledger-review" method="post" novalidate>
+          <input type="hidden" name="paymentRequestId" value="{{model.manualLedgerData.paymentRequestId}}"/>
+          <input type="hidden" name="crumb" value="{{crumb}}"/>
+          
+          {{ govukRadios(model.ledgerAgreement) }}
+          
+          {{ govukButton({
+            text: "Submit"
+          }) }}
+        </form>
+      </div>
     </div>
-  </div>
+  </main>
 {% endblock %}
