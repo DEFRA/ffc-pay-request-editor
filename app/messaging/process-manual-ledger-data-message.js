@@ -1,10 +1,8 @@
 const { processManualLedgerRequest } = require('../manual-ledger')
-const util = require('util')
-
 const processManualLedgerDataMessage = async (message, receiver) => {
   try {
     const manualLedgerRequest = message.body
-    console.log('Payment request received for manual ledger check', util.inspect(manualLedgerRequest, false, null, true))
+    console.log('Payment request received for manual ledger check', { sbi: manualLedgerRequest.sbi, frn: manualLedgerRequest.frn, invoiceNumber: manualLedgerRequest.invoiceNumber })
     await processManualLedgerRequest(manualLedgerRequest)
     await receiver.completeMessage(message)
   } catch (err) {
