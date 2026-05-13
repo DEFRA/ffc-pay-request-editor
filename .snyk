@@ -1,9 +1,11 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
 version: v1.22.1
+
 ignore:
-  SNYK-JS-SEMVER-3247795:
+  SNYK-JS-UUID-16133035:
     - '*':
-        reason: None Given
-        expires: 2023-07-22T12:35:06.796Z
-        created: 2023-06-22T12:35:06.803Z
+        reason: Temporary ignore for transitive dependency via sequelize until dependency upgrade path is available
+        expires: 2026-06-10T00:00:00.000Z
+        created: 2026-05-13T00:00:00.000Z
+
 patch: {}
