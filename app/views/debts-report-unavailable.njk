@@ -1,7 +1,10 @@
 {% extends '_layout.njk' %}
 
-{% set mainClasses = "govuk-main-wrapper--l" %}
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{% set pageTitle = "Debts report unavailable" %}
+
+{% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
 
 {% block beforeContent %}
   {{ govukBreadcrumbs({
@@ -12,20 +15,18 @@
       text: "Capture reporting data",
       href: "/capture"
     }, {
-      text: "Debts report unavailable"
+      text: pageTitle
     }]
   })}}
 {% endblock %}
 
 {% block content %}
-  <main class="govuk-main-wrapper " id="main-content" role="main">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">Debts report unavailable</h1>
-        <p class="govuk-body">
-          There are currently no debts.
-        </p>
-      </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+      <p class="govuk-body">
+        There are currently no debts.
+      </p>
     </div>
-  </main>
+  </div>
 {% endblock %}
