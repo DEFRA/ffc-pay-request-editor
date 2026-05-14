@@ -59,6 +59,7 @@
   },
   "devDependencies": {
     "blipp": "4.0.2",
+    "cheerio": "1.0.0-rc.10",
     "clean-webpack-plugin": "3.0.0",
     "css-loader": "5.2.6",
     "eslint": "9.39.1",
