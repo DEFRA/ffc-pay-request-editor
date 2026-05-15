@@ -64,7 +64,8 @@ module.exports = (sequelize, DataTypes) => {
     referenceId: DataTypes.UUID,
     fesCode: DataTypes.STRING,
     annualValue: DataTypes.DECIMAL,
-    remmittanceDescription: DataTypes.STRING
+    remmittanceDescription: DataTypes.STRING,
+    providesAccountingValues: DataTypes.BOOLEAN
   },
   {
     tableName: 'paymentRequests',
