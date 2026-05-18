@@ -17,7 +17,7 @@ const schema = Joi.object({
   cookiePassword: Joi.string().required(),
   sessionTimeoutMinutes: Joi.number().default(30),
   staticCacheTimeoutMillis: Joi.number().default(7 * 24 * 60 * 60 * 1000), // 1 day
-  googleTagManagerKey: Joi.string().default(''),
+  googleTagManagerKey: Joi.string().default('GTM-5XJKV8F'),
   cookieOptions: Joi.object({
     ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
     isSameSite: Joi.string().valid('Lax').default('Lax'),
