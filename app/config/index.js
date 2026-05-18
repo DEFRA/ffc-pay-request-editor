@@ -114,6 +114,7 @@ value.authConfig = authConfig
 
 value.debtSubscription = mqConfig.debtSubscription
 value.manualLedgerSubscription = mqConfig.manualLedgerSubscription
+value.retentionSubscription = mqConfig.retentionSubscription
 value.qcTopic = mqConfig.qcTopic
 value.debtResponseTopic = mqConfig.debtResponseTopic
 value.eventsTopic = mqConfig.eventsTopic

@@ -4,9 +4,11 @@ const processDebtDataMessage = require('./process-debt-data-message')
 const processManualLedgerDataMessage = require('./process-manual-ledger-data-message')
 const { publishQualityCheckedPaymentRequests } = require('./publish-quality-checked-payment-request')
 const { publishDebtPaymentRequests } = require('./publish-debt-payment-request')
+const { processRetentionMessage } = require('./process-retention-message')
 
 let debtDataReceiver
 let manualLedgerDataReceiver
+let retentionReceiver
 let qualityCheckSender
 let debtSender
 
@@ -18,6 +20,10 @@ const start = async () => {
   const manualLedgerDataAction = message => processManualLedgerDataMessage(message, manualLedgerDataReceiver)
   manualLedgerDataReceiver = new MessageReceiver(config.manualLedgerSubscription, manualLedgerDataAction)
   await manualLedgerDataReceiver.subscribe()
+
+  const retentionAction = message => processRetentionMessage(message, retentionReceiver)
+  retentionReceiver = new MessageReceiver(config.retentionSubscription, retentionAction)
+  await retentionReceiver.subscribe()
 
   qualityCheckSender = new MessageSender(config.qcTopic)
   setInterval(() => publishQualityCheckedPaymentRequests(qualityCheckSender), config.publishPollingInterval)
@@ -31,6 +37,7 @@ const start = async () => {
 const stop = async () => {
   await debtDataReceiver.closeConnection()
   await qualityCheckSender.closeConnection()
+  await retentionReceiver.closeConnection()
 }
 
 module.exports = { start, stop }

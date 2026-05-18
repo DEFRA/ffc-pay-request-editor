@@ -2,7 +2,7 @@ jest.mock('../../../../app/event', () => ({
   sendEnrichRequestBlockedEvent: () => {}
 }))
 
-const { v4: uuidv4 } = require('uuid')
+const { randomUUID } = require('node:crypto')
 const db = require('../../../../app/data')
 const { processPaymentRequest } = require('../../../../app/payment-request')
 const { NOT_READY } = require('../../../../app/quality-check/statuses')
@@ -79,7 +79,7 @@ describe('process payment requests', () => {
     let rows = await db.paymentRequest.findAll({ where: { agreementNumber: paymentRequest.agreementNumber } })
     expect(rows.length).toBe(1)
 
-    paymentRequest.referenceId = uuidv4()
+    paymentRequest.referenceId = randomUUID()
     await processPaymentRequest(paymentRequest)
     rows = await db.paymentRequest.findAll({ where: { agreementNumber: paymentRequest.agreementNumber } })
     expect(rows.length).toBe(2)

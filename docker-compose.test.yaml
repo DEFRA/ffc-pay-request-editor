@@ -25,6 +25,8 @@ services:
       DEBT_SUBSCRIPTION_ADDRESS: ffc-pay-request-editor
       MANUAL_LEDGER_TOPIC_ADDRESS: ffc-pay-manual-check-data-test
       MANUAL_LEDGER_SUBSCRIPTION_ADDRESS: ffc-pay-request-editor
+      RETENTION_TOPIC_ADDRESS: fcp-pds-data-retention
+      RETENTION_SUBSCRIPTION_ADDRESS: ffc-pay-request-editor
       QC_TOPIC_ADDRESS: ffc-pay-quality-check-test
       EVENTS_TOPIC_ADDRESS: ffc-pay-events-test
       DEBT_RESPONSE_TOPIC_ADDRESS: ffc-pay-debt-data-response-test
