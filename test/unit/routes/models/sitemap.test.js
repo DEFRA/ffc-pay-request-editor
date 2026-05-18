@@ -34,4 +34,31 @@ describe('sitemap viewModel', () => {
     const vm = new ViewModel(null)
     expect(vm.model.sections).toEqual([])
   })
+
+  test('handles links array with mixed types including string, object, and unexpected types', () => {
+    const input = [
+      {
+        title: 'Mixed Links',
+        links: [
+          'stringLink',
+          { href: '/obj', text: 'Object Link' },
+          null,
+          123,
+          undefined
+        ]
+      }
+    ]
+
+    const vm = new ViewModel(input)
+
+    expect(vm.model.sections).toHaveLength(1)
+    expect(vm.model.sections[0].title).toBe('Mixed Links')
+    expect(vm.model.sections[0].links).toEqual([
+      { href: 'stringLink', text: 'stringLink' },
+      { href: '/obj', text: 'Object Link' },
+      null,
+      123,
+      undefined
+    ])
+  })
 })
