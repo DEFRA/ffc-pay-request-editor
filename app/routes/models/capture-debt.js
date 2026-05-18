@@ -10,7 +10,7 @@ const {
   IRREGULAR_TEXT
 } = require('../../constants/debt-types')
 
-function ViewModel (schemes, payload, error) {
+function viewModel (schemes, payload, error) {
   const errorMessages = {}
 
   if (error) {
@@ -168,4 +168,4 @@ function ViewModel (schemes, payload, error) {
   }
 }
 
-module.exports = ViewModel
+module.exports = viewModel

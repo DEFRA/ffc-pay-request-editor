@@ -2,7 +2,7 @@ const { FAILED, PASSED } = require('../../quality-check/statuses')
 
 const errorMessage = 'Please select Yes or No to agree if the request has been edited correctly.'
 
-function ViewModel (manualLedgerData, error) {
+function viewModel (manualLedgerData, error) {
   this.model = {
     manualLedgerData,
     ledgerAgreement: createLedgerAgreementComponent(error)
@@ -48,4 +48,4 @@ const createLedgerAgreementComponent = (error) => {
   return LedgerAgreementComponent
 }
 
-module.exports = ViewModel
+module.exports = viewModel

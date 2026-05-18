@@ -1,6 +1,8 @@
 {% extends '_layout.njk' %}
 
-{% set mainClasses = "govuk-main-wrapper--l" %}
+{% set pageTitle = "Sorry, your request timed out" %}
+
+{% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">

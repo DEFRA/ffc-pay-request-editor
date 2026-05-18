@@ -1,27 +1,36 @@
 {% extends '_layout.njk' %}
 
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-
 {% from "macros/payment-request-header.njk" import paymentRequestHeader %}
 {% from "macros/payment-request-invoice-lines.njk" import paymentRequestInvoiceLines %}
 
-{% block content %}
-  {{ govukBackLink({
-    text: "Back",
-    href: "/manual-ledger",
-    attributes: {
-      id: "back"
-    }
-  }) }}
+{% set pageTitle = "Review ledger assignment" %}
 
+{% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [{
+      text: "Home",
+      href: "/"
+    }, {
+      text: "Manual ledger assignment",
+      href: "/manual-ledger"
+    }, {
+      text: pageTitle
+    }]
+  })}}
+{% endblock %}
+
+{% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <span class="govuk-caption-l">{{ model.manualLedgerData.invoiceNumber }}</span>
-      <h1 class="govuk-heading-l">Review ledger assignment</h1>
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
     </div>
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m">Original</h2>
@@ -137,102 +146,101 @@
       errorList: model.errorSummary
     }) }}
   {% endif %}
+  <script>
+    const totalValueInPounds = {{ model.manualLedgerData.valueInPounds }}
+    const totalValueInPence = {{ model.manualLedgerData.value }}
 
-<script>
-  const totalValueInPounds = {{ model.manualLedgerData.valueInPounds }}
-  const totalValueInPence = {{ model.manualLedgerData.value }}
+    const apValueId = 'ap-value'
+    const arValueId = 'ar-value'
 
-  const apValueId = 'ap-value'
-  const arValueId = 'ar-value'
+    const ledgerWrapper = document.getElementById('ledger-wrapper')
+    const ledgerError = document.getElementById('ledger-value-error')
+    const calculateAction = document.getElementById('calculate-ledger')
 
-  const ledgerWrapper = document.getElementById('ledger-wrapper')
-  const ledgerError = document.getElementById('ledger-value-error')
-  const calculateAction = document.getElementById('calculate-ledger')
+    const apValue = document.getElementById(apValueId)
+    const arValue = document.getElementById(arValueId)
 
-  const apValue = document.getElementById(apValueId)
-  const arValue = document.getElementById(arValueId)
-
-  if (ledgerWrapper) {
-    const convertToPence = (valueInPounds) => {
-      const currencyArray = valueInPounds.toString().split('.')
-      const pounds = currencyArray[0]
-      const pence = (currencyArray[1] || '00').substring(0, 2).padEnd(2, '0')
-      return Number(pounds + pence)
-    }
-
-    const convertToPounds = (valueInPence) => {
-      return valueInPence / 100
-    }
-
-    const raiseError = (component, action, classType) => {
-      component.classList[action](classType)
-    }
-
-    const validateValues = () => {
-      const valuesToCheck = [apValue, arValue]
-      const inputErrorClass = 'govuk-input--error'
-      const formErrorClass = 'govuk-form-group--error'
-      const checkIfValueString = valuesToCheck.every(value => isNaN(value.value))
-      const checkIfValidValues = valuesToCheck.every(value => !isValidValue(value.value))
-      
-      if (checkIfValueString || checkIfValidValues) {
-        valuesToCheck.forEach(value => {
-          raiseError(value, 'add', inputErrorClass)
-        })
-        raiseError(ledgerWrapper, 'add', formErrorClass)
-        ledgerError.style.display = 'block'
-        calculateAction.disabled = true
-      } else {
-        valuesToCheck.forEach(value => {
-          raiseError(value, 'remove', inputErrorClass)
-        })
-        raiseError(ledgerWrapper, 'remove', formErrorClass)
-        ledgerError.style.display = 'none'
-        calculateAction.disabled = false
-      }
-    }
-
-    const validateDecimals = (changedValue) => {
-      let value = document.getElementById(changedValue).value
-      document.getElementById(changedValue).value = (value.indexOf(".") >= 0) ? (value.substr(0, value.indexOf(".")) + value.substr(value.indexOf("."), 3)) : value
-    }
-
-    const isValidValue = (value) => {
-      const valueInPence = convertToPence(value)
-      if(totalValueInPence < 0 && (valueInPence > 0 || valueInPence < totalValueInPence)) {
-        return false
+    if (ledgerWrapper) {
+      const convertToPence = (valueInPounds) => {
+        const currencyArray = valueInPounds.toString().split('.')
+        const pounds = currencyArray[0]
+        const pence = (currencyArray[1] || '00').substring(0, 2).padEnd(2, '0')
+        return Number(pounds + pence)
       }
 
-      if(totalValueInPence > 0 && (valueInPence < 0 || valueInPence > totalValueInPence)) {
-        return false
+      const convertToPounds = (valueInPence) => {
+        return valueInPence / 100
       }
 
-      if(totalValueInPence === 0 && valueInPence !== totalValueInPence) {
-        return false
+      const raiseError = (component, action, classType) => {
+        component.classList[action](classType)
       }
 
-      return true
-    }
+      const validateValues = () => {
+        const valuesToCheck = [apValue, arValue]
+        const inputErrorClass = 'govuk-input--error'
+        const formErrorClass = 'govuk-form-group--error'
+        const checkIfValueString = valuesToCheck.every(value => isNaN(value.value))
+        const checkIfValidValues = valuesToCheck.every(value => !isValidValue(value.value))
+        
+        if (checkIfValueString || checkIfValidValues) {
+          valuesToCheck.forEach(value => {
+            raiseError(value, 'add', inputErrorClass)
+          })
+          raiseError(ledgerWrapper, 'add', formErrorClass)
+          ledgerError.style.display = 'block'
+          calculateAction.disabled = true
+        } else {
+          valuesToCheck.forEach(value => {
+            raiseError(value, 'remove', inputErrorClass)
+          })
+          raiseError(ledgerWrapper, 'remove', formErrorClass)
+          ledgerError.style.display = 'none'
+          calculateAction.disabled = false
+        }
+      }
 
-    validateValues()
+      const validateDecimals = (changedValue) => {
+        let value = document.getElementById(changedValue).value
+        document.getElementById(changedValue).value = (value.indexOf(".") >= 0) ? (value.substr(0, value.indexOf(".")) + value.substr(value.indexOf("."), 3)) : value
+      }
 
-    const setValue = (changedValue, valueToChange) => {
-      const value = document.getElementById(changedValue).value
-      const valueInPence = convertToPence(value)
-      const calculate = totalValueInPence - valueInPence
-      const valueInPounds = convertToPounds(calculate)
-      document.getElementById(valueToChange).value = valueInPounds
-      validateDecimals(changedValue)
+      const isValidValue = (value) => {
+        const valueInPence = convertToPence(value)
+        if(totalValueInPence < 0 && (valueInPence > 0 || valueInPence < totalValueInPence)) {
+          return false
+        }
+
+        if(totalValueInPence > 0 && (valueInPence < 0 || valueInPence > totalValueInPence)) {
+          return false
+        }
+
+        if(totalValueInPence === 0 && valueInPence !== totalValueInPence) {
+          return false
+        }
+
+        return true
+      }
+
       validateValues()
+
+      const setValue = (changedValue, valueToChange) => {
+        const value = document.getElementById(changedValue).value
+        const valueInPence = convertToPence(value)
+        const calculate = totalValueInPence - valueInPence
+        const valueInPounds = convertToPounds(calculate)
+        document.getElementById(valueToChange).value = valueInPounds
+        validateDecimals(changedValue)
+        validateValues()
+      }
+
+      arValue.addEventListener('input', (event) => {
+        setValue(arValueId, apValueId)
+      })
+
+      apValue.addEventListener('input', (event) => {
+        setValue(apValueId, arValueId)
+      })
     }
-
-    arValue.addEventListener('input', (event) => {
-      setValue(arValueId, apValueId)
-    })
-
-    apValue.addEventListener('input', (event) => {
-      setValue(apValueId, arValueId)
-    })
-  }
-</script>
+  </script>
 {% endblock %}

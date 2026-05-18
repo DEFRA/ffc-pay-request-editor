@@ -1,23 +1,29 @@
 {% extends '_layout.njk' %}
 
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
-
 {% from "macros/search-combined.njk" import searchCombined %}
 
-{% block content %}
-  {{ govukBackLink({
-    text: "Back",
-    href: "/",
-    attributes: {
-      id: "back"
-    }
-  }) }}
+{% set pageTitle = "Create new reporting dataset" %}
 
+{% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [{
+      text: "Home",
+      href: "/"
+    }, {
+      text: "Capture reporting data"
+    }]
+  })}}
+{% endblock %}
+
+{% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l">Capture reporting data</h1>
@@ -205,7 +211,6 @@
       {% endif %}
     </div>
   </div>
-
   <script>
     const toggleUnattachedForm = document.querySelectorAll('input[name="unattached-data"]')
 
