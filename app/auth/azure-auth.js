@@ -58,6 +58,7 @@ const refresh = async (account, cookieAuth, forceRefresh = true) => {
     return token.idTokenClaims.roles
   } catch (err) {
     console.error('Failed to acquire token on silent refresh:', err)
+    return null
   }
 }
 
