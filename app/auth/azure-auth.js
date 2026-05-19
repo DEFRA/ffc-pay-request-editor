@@ -51,7 +51,7 @@ const refresh = async (account, cookieAuth, forceRefresh = true) => {
     })
 
     cookieAuth.set({
-      scope: token.idTokenClaims.roles,
+      scope: token.idTokenClaims.roles || [],
       account: token.account
     })
 
