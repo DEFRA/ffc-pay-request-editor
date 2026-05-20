@@ -38,7 +38,7 @@ describe('Publish quality checked payment requests', () => {
     qualityCheckSender = { sendMessage: jest.fn() }
 
     message = {
-      body: paymentRequest,
+      body: { paymentRequest },
       type: 'uk.gov.defra.ffc.pay.quality.check',
       source: 'ffc-pay-request-editor'
     }
@@ -64,7 +64,7 @@ describe('Publish quality checked payment requests', () => {
   })
 
   test('completes valid message', async () => {
-    await publishPaymentRequest(paymentRequest, qualityCheckSender)
+    await publishPaymentRequest({ paymentRequest }, qualityCheckSender)
     expect(qualityCheckSender.sendMessage).toHaveBeenCalled()
     expect(qualityCheckSender.sendMessage).toHaveBeenCalledWith(message)
   })
