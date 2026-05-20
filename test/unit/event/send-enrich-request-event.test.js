@@ -15,8 +15,8 @@ jest.mock('ffc-pay-event-publisher', () => {
 jest.mock('../../../app/config/mq-config')
 const messageConfig = require('../../../app/config/mq-config')
 
-jest.mock('uuid')
-const { v4: uuidv4 } = require('uuid')
+jest.mock('node:crypto')
+const { randomUUID } = require('node:crypto')
 
 const { SOURCE } = require('../../../app/constants/source')
 const { PAYMENT_REQUEST_ENRICHED } = require('../../../app/constants/events')
@@ -28,7 +28,7 @@ let user
 
 describe('V2 send enrich request blocked event for payment request requiring debt data', () => {
   beforeEach(async () => {
-    uuidv4.mockImplementation(() => { '70cb0f07-e0cf-449c-86e8-0344f2c6cc6c' })
+    randomUUID.mockImplementation(() => { '70cb0f07-e0cf-449c-86e8-0344f2c6cc6c' })
 
     messageConfig.eventsTopic = 'v2-events'
 

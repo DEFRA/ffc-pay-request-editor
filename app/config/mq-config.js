@@ -6,7 +6,6 @@ const mqSchema = Joi.object({
     username: Joi.string(),
     password: Joi.string(),
     useCredentialChain: Joi.bool().default(false),
-    appInsights: Joi.object(),
     managedIdentityClientId: Joi.string().optional()
   },
   debtSubscription: Joi.object({
@@ -25,6 +24,11 @@ const mqSchema = Joi.object({
     address: Joi.string(),
     type: Joi.string().default('subscription')
   }),
+  retentionSubscription: Joi.object({
+    address: Joi.string().required(),
+    topic: Joi.string().required(),
+    type: Joi.string().default('subscription')
+  }),
   eventsTopic: {
     address: Joi.string().required()
   }
@@ -36,7 +40,6 @@ const mqConfig = {
     username: process.env.MESSAGE_QUEUE_USER,
     password: process.env.MESSAGE_QUEUE_PASSWORD,
     useCredentialChain: process.env.NODE_ENV === 'production',
-    appInsights: process.env.NODE_ENV === 'production' ? require('applicationinsights') : undefined,
     managedIdentityClientId: process.env.AZURE_CLIENT_ID
   },
   debtSubscription: {
@@ -55,6 +58,11 @@ const mqConfig = {
     address: process.env.MANUALLEDGER_SUBSCRIPTION_ADDRESS,
     type: 'subscription'
   },
+  retentionSubscription: {
+    address: process.env.RETENTION_SUBSCRIPTION_ADDRESS,
+    topic: process.env.RETENTION_TOPIC_ADDRESS,
+    type: 'subscription'
+  },
   eventsTopic: {
     address: process.env.EVENTS_TOPIC_ADDRESS
   }
@@ -70,6 +78,7 @@ if (mqResult.error) {
 
 const debtSubscription = { ...mqResult.value.messageQueue, ...mqResult.value.debtSubscription }
 const manualLedgerSubscription = { ...mqResult.value.messageQueue, ...mqResult.value.manualLedgerSubscription }
+const retentionSubscription = { ...mqResult.value.messageQueue, ...mqResult.value.retentionSubscription }
 const qcTopic = { ...mqResult.value.messageQueue, ...mqResult.value.qcTopic }
 const debtResponseTopic = { ...mqResult.value.messageQueue, ...mqResult.value.debtResponseTopic }
 const eventsTopic = { ...mqResult.value.messageQueue, ...mqResult.value.eventsTopic }
@@ -77,6 +86,7 @@ const eventsTopic = { ...mqResult.value.messageQueue, ...mqResult.value.eventsTo
 module.exports = {
   debtSubscription,
   manualLedgerSubscription,
+  retentionSubscription,
   qcTopic,
   debtResponseTopic,
   eventsTopic

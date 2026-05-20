@@ -1,6 +1,6 @@
 const createSplitInvoiceNumber = require('./create-split-invoice-number')
 const ensureValueConsistency = require('./ensure-value-consistency')
-const { v4: uuidv4 } = require('uuid')
+const { randomUUID } = require('node:crypto')
 
 const splitToLedger = (paymentRequest, targetValue, targetLedger) => {
   const originalValue = paymentRequest.value
@@ -31,7 +31,7 @@ const copyPaymentRequest = (paymentRequest, ledger) => {
     ...copiedPaymentRequest,
     ledger,
     invoiceNumber: createSplitInvoiceNumber(paymentRequest.originalInvoiceNumber, 'B', paymentRequest.schemeId),
-    referenceId: uuidv4()
+    referenceId: randomUUID()
   }
 }
 
