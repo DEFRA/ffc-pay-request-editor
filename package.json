@@ -35,7 +35,7 @@
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@azure/identity": "4.4.1",
-    "@azure/monitor-opentelemetry": "1.17.0",
+    "@azure/monitor-opentelemetry": "^1.18.0",
     "@azure/msal-node": "2.9.2",
     "@hapi/catbox-memory": "5.0.1",
     "@hapi/catbox-redis": "6.0.2",
@@ -82,5 +82,8 @@
     "ignore": [
       "**/test-output/**"
     ]
+  },
+  "overrides": {
+    "protobufjs": "8.2.0"
   }
 }
