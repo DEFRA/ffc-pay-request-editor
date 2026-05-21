@@ -54,11 +54,12 @@ describe('azure authentication', () => {
       expect(mockAcquireTokenByCode).toHaveBeenCalledTimes(1)
       expect(callParams.code).toBe('redirectCode')
       expect(callParams.redirectUri).toBe(authConfig.redirectUrl)
+      expect(callParams.scopes).toEqual(['openid', 'profile', 'offline_access'])
     })
 
     test('should set account and scope in cookieAuth', () => {
-      const cookieParams = mockCookieAuth.set.mock.calls[0][0]
       expect(mockCookieAuth.set).toHaveBeenCalledTimes(1)
+      const cookieParams = mockCookieAuth.set.mock.calls[0][0]
       expect(cookieParams.account).toBe(mockAccount)
       expect(cookieParams.scope).toBe(mockRoles)
     })
@@ -74,14 +75,24 @@ describe('azure authentication', () => {
       const callParams = mockAcquireTokenSilent.mock.calls[0][0]
       expect(callParams.account).toBe(mockAccount)
       expect(callParams.forceRefresh).toBe(expectedForce)
+      expect(callParams.scopes).toEqual(['openid', 'profile', 'offline_access'])
+
+      expect(mockCookieAuth.set).toHaveBeenCalledTimes(1)
       const cookieParams = mockCookieAuth.set.mock.calls[0][0]
       expect(cookieParams.account).toBe(mockAccount)
       expect(cookieParams.scope).toBe(mockRoles)
     })
 
-    test('should return roles', async () => {
+    test('should return roles on successful refresh', async () => {
       const result = await azureAuth.refresh(mockAccount, mockCookieAuth)
       expect(result).toBe(mockRoles)
+    })
+
+    test('should return null on error during refresh', async () => {
+      mockAcquireTokenSilent.mockRejectedValueOnce(new Error('Refresh error'))
+      const result = await azureAuth.refresh(mockAccount, mockCookieAuth)
+      expect(result).toBeNull()
+      expect(mockCookieAuth.set).not.toHaveBeenCalled()
     })
   })
 
@@ -92,6 +103,13 @@ describe('azure authentication', () => {
 
     test('should call removeAccount once with account', () => {
       expect(mockRemoveAccount).toHaveBeenCalledTimes(1)
+      expect(mockRemoveAccount).toHaveBeenCalledWith(mockAccount)
+    })
+
+    test('should handle error during removeAccount gracefully', async () => {
+      const error = new Error('Remove account error')
+      mockRemoveAccount.mockRejectedValueOnce(error)
+      await azureAuth.logout(mockAccount)
       expect(mockRemoveAccount).toHaveBeenCalledWith(mockAccount)
     })
   })

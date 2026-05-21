@@ -16,7 +16,7 @@ const isLeapYear = (payload, errorMessage) => {
   }
 }
 
-function ViewModel (payload, error) {
+function viewModel (payload, error) {
   const errorMessage = { }
 
   if (error) {
@@ -130,4 +130,4 @@ const getDateText = (msg) => {
   return 'Date must be valid and cannot be in the future'
 }
 
-module.exports = ViewModel
+module.exports = viewModel
