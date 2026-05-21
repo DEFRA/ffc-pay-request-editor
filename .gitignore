@@ -16,3 +16,4 @@ dist
 _layout.njk
 manual-ledger-check.template.njk
 .gitleaks-shared/
+_cookie-banner.njk

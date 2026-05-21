@@ -1,6 +1,8 @@
 {% extends '_layout.njk' %}
 
-{% set mainClasses = "govuk-main-wrapper--l" %}
+{% set pageTitle = "Sorry, there is a problem with the service" %}
+
+{% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">

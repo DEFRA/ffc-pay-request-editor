@@ -1,25 +1,31 @@
 {% extends '_layout.njk' %}
 
 {% from "govuk/components/select/macro.njk" import govukSelect %}
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
-
 {% from "macros/search-input.njk" import searchInput %}
 
-{% block content %}
-  {{ govukBackLink({
-    text: "Back",
-    href: "/",
-    attributes: {
-      id: "back"
-    }
-  }) }}
+{% set pageTitle = "Manual ledger assignment" %}
 
+{% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [{
+      text: "Home",
+      href: "/"
+    }, {
+      text: pageTitle
+    }]
+  })}}
+{% endblock %}
+
+{% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-l">Manual Ledger Assignment</h1>
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
       {% if ledgerData.length %}
         <div class="govuk-!-padding-bottom-3">

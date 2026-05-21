@@ -25,6 +25,13 @@ module.exports = {
             watch: config.isDev
           })
 
+          options.compileOptions.environment.addGlobal('getAssetPath', function (assetPath) {
+            const base = options?.context?.assetPath || '/static'
+            const normalizedBase = String(base).replace(/\/+$/, '')
+            const normalizedAsset = String(assetPath || '').replace(/^\/+/, '')
+            return normalizedBase + (normalizedAsset ? '/' + normalizedAsset : '')
+          })
+
           return next()
         }
       }
