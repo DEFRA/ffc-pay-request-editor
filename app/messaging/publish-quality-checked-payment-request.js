@@ -22,7 +22,7 @@ const publishPaymentRequest = async (paymentRequest, qualityCheckSender) => {
   const message = createMessage(paymentRequest, 'uk.gov.defra.ffc.pay.quality.check')
   await qualityCheckSender.sendMessage(message)
 
-  console.log('Completed request sent:', { frn: message.body.paymentRequest.frn, sbi: message.body.paymentRequest.sbi, invoiceNumber: message.body.paymentRequest.invoiceNumber })
+  console.log('Completed request sent:', { frn: message.body.paymentRequest.frn, invoiceNumber: message.body.paymentRequest.invoiceNumber })
 }
 
 module.exports = {
