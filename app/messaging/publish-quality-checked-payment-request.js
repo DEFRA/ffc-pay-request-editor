@@ -1,4 +1,3 @@
-const util = require('util')
 const createMessage = require('./create-message')
 const { updateQualityChecksStatus, getQualityCheckedPaymentRequests } = require('../quality-check')
 const { updatePaymentRequestReleased } = require('../payment-request')
@@ -23,7 +22,7 @@ const publishPaymentRequest = async (paymentRequest, qualityCheckSender) => {
   const message = createMessage(paymentRequest, 'uk.gov.defra.ffc.pay.quality.check')
   await qualityCheckSender.sendMessage(message)
 
-  console.log('Completed request sent:', util.inspect(message, false, null, true))
+  console.log('Completed request sent:', { frn: message.body.paymentRequest.frn, invoiceNumber: message.body.paymentRequest.invoiceNumber })
 }
 
 module.exports = {

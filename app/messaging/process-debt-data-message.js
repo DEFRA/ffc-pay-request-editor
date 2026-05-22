@@ -1,10 +1,9 @@
 const { processPaymentRequest } = require('../payment-request')
-const util = require('util')
 
 const processDebtDataMessage = async (message, receiver) => {
   try {
     const paymentRequest = message.body
-    console.log('Payment request received for enrichment', util.inspect(paymentRequest, false, null, true))
+    console.log('Payment request received for enrichment', { frn: paymentRequest.frn, invoiceNumber: paymentRequest.invoiceNumber })
     await processPaymentRequest(paymentRequest)
     await receiver.completeMessage(message)
   } catch (err) {
