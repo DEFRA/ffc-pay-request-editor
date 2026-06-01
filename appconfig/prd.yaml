@@ -23,7 +23,7 @@ secretProviderClass:
         objectType: secret
       - objectName: prd-ffc-pay-cookie-password
         objectType: secret
-      - objectName: prd-ffcPayRequestEditorClientSecret
+      - objectName: PRD-ffc-pay-request-editor-Secret
         objectType: secret
 
   secretObjects:
@@ -34,5 +34,5 @@ secretProviderClass:
           key: APPINSIGHTS_CONNECTIONSTRING
         - objectName: prd-ffc-pay-cookie-password
           key: COOKIE_PASSWORD
-        - objectName: prd-ffcPayRequestEditorClientSecret
+        - objectName: PRD-ffc-pay-request-editor-Secret
           key: AZUREID_CLIENT_SECRET
