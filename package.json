@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-request-editor",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Edit payment requests",
   "homepage": "https://github.com/DEFRA/ffc-pay-request-editor",
   "main": "app/index.js",
@@ -79,14 +79,12 @@
     "webpack-cli": "4.10.0"
   },
   "overrides": {
-    "protobufjs": "8.2.0"
+    "protobufjs": "8.2.0",
+    "uuid": "11.1.1"
   },
   "nodemonConfig": {
     "ignore": [
       "**/test-output/**"
     ]
-  },
-  "overrides": {
-    "protobufjs": "8.2.0"
   }
 }
