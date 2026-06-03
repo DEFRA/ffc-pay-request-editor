@@ -36,7 +36,10 @@ services:
       AZUREID_TENANT_ID: ${AZUREID_TENANT_ID}
       REDIRECT_URL: ${REDIRECT_URL}
       PROCESSING_ACTIVE: ${PROCESSING_ACTIVE:-true}
-
+      BANNER_ENABLED: ${BANNER_ENABLED:-false}
+      BANNER_HEADER: ${BANNER_HEADER}
+      BANNER_TEXT: ${BANNER_TEXT}
+      BANNER_EMAIL: ${BANNER_EMAIL}
   ffc-pay-request-editor-postgres:
     image: postgres:11.4-alpine
     environment:
