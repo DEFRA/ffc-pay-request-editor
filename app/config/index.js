@@ -52,7 +52,11 @@ const schema = Joi.object({
     schema: Joi.string().default('public'),
     username: Joi.string()
   }),
-  debtsReportName: Joi.string().default('ffc-pay-debts-report.csv')
+  debtsReportName: Joi.string().default('ffc-pay-debts-report.csv'),
+  bannerEnabled: Joi.bool().default(false),
+  bannerHeader: Joi.string().allow(null, ''),
+  bannerText: Joi.string().allow(null, ''),
+  bannerEmail: Joi.string().allow(null, '')
 })
 
 // Build config
@@ -114,7 +118,11 @@ const config = {
     schema: process.env.POSTGRES_SCHEMA_NAME || 'public',
     username: process.env.POSTGRES_USERNAME
   },
-  debtsReportName: 'ffc-pay-debts-report.csv'
+  debtsReportName: 'ffc-pay-debts-report.csv',
+  bannerEnabled: process.env.BANNER_ENABLED,
+  bannerHeader: process.env.BANNER_HEADER,
+  bannerText: process.env.BANNER_TEXT,
+  bannerEmail: process.env.BANNER_EMAIL
 }
 
 // Validate config
