@@ -54,9 +54,9 @@ const schema = Joi.object({
   }),
   debtsReportName: Joi.string().default('ffc-pay-debts-report.csv'),
   bannerEnabled: Joi.bool().default(false),
-  bannerHeader: Joi.string().allow(null),
-  bannerText: Joi.string().allow(null),
-  bannerEmail: Joi.string().allow(null)
+  bannerHeader: Joi.string().allow(null, ''),
+  bannerText: Joi.string().allow(null, ''),
+  bannerEmail: Joi.string().allow(null, '')
 })
 
 // Build config
