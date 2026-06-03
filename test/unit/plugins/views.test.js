@@ -65,14 +65,6 @@ describe('Vision plugin configuration', () => {
   })
 
   describe('prepare', () => {
-    function configureMock(returnObj = {}) {
-      const defaults = {
-        addGlobal: jest.fn(),
-        addFilter: jest.fn()
-      }
-      nunjucks.configure.mockReturnValue(Object.assign({}, defaults, returnObj))
-    }
-
     test('should configure nunjucks environment and call next', () => {
       const env = {
         addGlobal: jest.fn(),
