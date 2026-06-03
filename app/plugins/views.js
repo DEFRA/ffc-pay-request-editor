@@ -25,7 +25,7 @@ module.exports = {
             watch: config.isDev
           })
 
-          const sentenceSplitRe = /[^.!?]+[.!?]*/g
+          const sentenceSplitRegex = /[^.!?]+[.!?]*/g
           options.compileOptions.environment.addFilter('sentences', function (text) {
             if (!text && text !== 0) {
               return []
@@ -33,7 +33,7 @@ module.exports = {
             if (Array.isArray(text)) {
               return text
             }
-            return String(text).match(sentenceSplitRe)?.map(s => s.trim()).filter(Boolean) || []
+            return String(text).match(sentenceSplitRegex)?.map(s => s.trim()).filter(Boolean) || []
           })
 
           options.compileOptions.environment.addGlobal('getAssetPath', function (assetPath) {
