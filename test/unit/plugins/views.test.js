@@ -65,12 +65,20 @@ describe('Vision plugin configuration', () => {
   })
 
   describe('prepare', () => {
-    test('should configure nunjucks environment and call next', () => {
-      const addGlobalMock = jest.fn()
+    function configureMock(returnObj = {}) {
+      const defaults = {
+        addGlobal: jest.fn(),
+        addFilter: jest.fn()
+      }
+      nunjucks.configure.mockReturnValue(Object.assign({}, defaults, returnObj))
+    }
 
-      nunjucks.configure.mockReturnValue({
-        addGlobal: addGlobalMock
-      })
+    test('should configure nunjucks environment and call next', () => {
+      const env = {
+        addGlobal: jest.fn(),
+        addFilter: jest.fn()
+      }
+      nunjucks.configure.mockReturnValue(env)
 
       const options = {
         relativeTo: '/base',
@@ -98,7 +106,7 @@ describe('Vision plugin configuration', () => {
         watch: true
       })
 
-      expect(addGlobalMock).toHaveBeenCalledWith(
+      expect(env.addGlobal).toHaveBeenCalledWith(
         'getAssetPath',
         expect.any(Function)
       )
@@ -114,7 +122,8 @@ describe('Vision plugin configuration', () => {
           if (name === 'getAssetPath') {
             getAssetPath = fn
           }
-        }
+        },
+        addFilter: jest.fn()
       })
 
       const options = {
@@ -142,7 +151,8 @@ describe('Vision plugin configuration', () => {
           if (name === 'getAssetPath') {
             getAssetPath = fn
           }
-        }
+        },
+        addFilter: jest.fn()
       })
 
       const options = {
@@ -155,6 +165,66 @@ describe('Vision plugin configuration', () => {
       pluginModule.options.engines.njk.prepare(options, jest.fn())
 
       expect(getAssetPath('file.js')).toBe('/static/file.js')
+    })
+  })
+
+  describe('sentences filter', () => {
+    beforeEach(() => {
+      jest.clearAllMocks()
+    })
+
+    const getSentencesFilterFromPrepare = (context = {}) => {
+      let filterFn
+      nunjucks.configure.mockReturnValue({
+        addFilter: (name, fn) => { if (name === 'sentences') filterFn = fn },
+        addGlobal: jest.fn()
+      })
+
+      pluginModule.options.engines.njk.prepare({
+        relativeTo: '/base',
+        path: ['views'],
+        compileOptions: {},
+        context
+      }, jest.fn())
+
+      return filterFn
+    }
+
+    test('returns empty array for null or undefined', () => {
+      const filterFn = getSentencesFilterFromPrepare()
+      expect(filterFn(null)).toEqual([])
+      expect(filterFn(undefined)).toEqual([])
+    })
+
+    test('accepts numeric 0 and converts to string sentence', () => {
+      const filterFn = getSentencesFilterFromPrepare()
+      expect(filterFn(0)).toEqual(['0'])
+    })
+
+    test('returns input unchanged when already an array', () => {
+      const filterFn = getSentencesFilterFromPrepare()
+      const arr = ['One.', 'Two?']
+      expect(filterFn(arr)).toBe(arr)
+    })
+
+    test('splits text into sentences preserving punctuation and trimming', () => {
+      const filterFn = getSentencesFilterFromPrepare()
+      const text = ' Hello world. This is a test! Is it working?  '
+      expect(filterFn(text)).toEqual([
+        'Hello world.',
+        'This is a test!',
+        'Is it working?'
+      ])
+    })
+
+    test('handles text with no terminal punctuation', () => {
+      const filterFn = getSentencesFilterFromPrepare()
+      expect(filterFn('Single sentence without punctuation')).toEqual(['Single sentence without punctuation'])
+    })
+
+    test('filters out empty matches', () => {
+      const filterFn = getSentencesFilterFromPrepare()
+      expect(filterFn('...')).toEqual([])
     })
   })
 })
