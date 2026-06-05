@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require('node:path')
 const nunjucks = require('nunjucks')
 const config = require('../config')
 const { version } = require('../../package.json')
@@ -25,6 +25,17 @@ module.exports = {
             watch: config.isDev
           })
 
+          const sentenceSplitRegex = /[^.!?]+[.!?]*/g
+          options.compileOptions.environment.addFilter('sentences', function (text) {
+            if (!text && text !== 0) {
+              return []
+            }
+            if (Array.isArray(text)) {
+              return text
+            }
+            return String(text).match(sentenceSplitRegex)?.map(s => s.trim()).filter(Boolean) || []
+          })
+
           options.compileOptions.environment.addGlobal('getAssetPath', function (assetPath) {
             const base = options?.context?.assetPath || '/static'
             const normalizedBase = String(base).replace(/\/+$/, '')
@@ -44,7 +55,11 @@ module.exports = {
       assetPath: '/static',
       govukAssetPath: '/assets',
       serviceName: config.serviceName,
-      pageTitle: `${config.serviceName}`
+      pageTitle: `${config.serviceName}`,
+      bannerEnabled: config.bannerEnabled,
+      bannerHeader: config.bannerHeader,
+      bannerText: config.bannerText,
+      bannerEmail: config.bannerEmail
     }
   }
 }
