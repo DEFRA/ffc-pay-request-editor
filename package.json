@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-request-editor",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Edit payment requests",
   "homepage": "https://github.com/DEFRA/ffc-pay-request-editor",
   "main": "app/index.js",
@@ -43,16 +43,16 @@
     "@hapi/crumb": "8.0.1",
     "@hapi/hapi": "21.4.8",
     "@hapi/hoek": "9.1.1",
-    "@hapi/inert": "6.0.3",
+    "@hapi/inert": "7.1.2",
     "@hapi/vision": "6.1.0",
     "@hapi/yar": "11.0.3",
     "@joi/date": "2.1.0",
-    "ffc-database": "1.0.25",
-    "ffc-messaging": "2.10.6",
-    "ffc-pay-event-publisher": "1.2.5",
+    "ffc-database": "1.0.26",
+    "ffc-messaging": "2.10.7",
+    "ffc-pay-event-publisher": "1.2.6",
     "govuk-frontend": "6.1.0",
     "hapi-pino": "13.0.0",
-    "joi": "17.7.0",
+    "joi": "17.13.4",
     "log-timestamp": "0.3.0",
     "nunjucks": "3.2.4",
     "sequelize": "6.37.8"
@@ -79,7 +79,9 @@
     "webpack-cli": "4.10.0"
   },
   "overrides": {
-    "protobufjs": "8.2.0",
+    "@opentelemetry/core": "2.8.0",
+    "js-yaml": "4.2.0",
+    "protobufjs": "8.6.3",
     "uuid": "11.1.1"
   },
   "nodemonConfig": {
