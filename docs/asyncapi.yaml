@@ -26,7 +26,7 @@ components:
             description: Single Business Identifier, optional
           frn:
             type: number
-            description: Firm Reference Number
+            description: FRN (Firm Reference Number)
           marketingYear:
             type: number
             description: Scheme year for request

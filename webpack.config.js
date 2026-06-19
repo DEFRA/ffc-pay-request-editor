@@ -11,6 +11,7 @@ module.exports = {
   entry: {
     core: [
       './app/frontend/css/index.js',
+      './app/frontend/js/cards-equaliser.js',
       './app/frontend/images/android-chrome-192x192.png',
       './app/frontend/images/android-chrome-512x512.png',
       './app/frontend/images/apple-touch-icon.png',

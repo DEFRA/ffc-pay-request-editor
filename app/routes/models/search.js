@@ -4,7 +4,6 @@ function viewModel (details, value = null, generalError = null) {
     name: 'frn',
     type: 'text',
     labelText: details.labelText,
-    labelClasses: 'govuk-!-font-weight-bold',
     isPageHeading: false,
     classes: 'govuk-input--width-20',
     inputmode: 'numeric',

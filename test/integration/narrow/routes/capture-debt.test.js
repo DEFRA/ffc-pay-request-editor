@@ -70,12 +70,12 @@ describe('capture-debt route', () => {
   })
 
   describe('POST /capture-debt - Valid submission', () => {
-    test('redirects to home and saves to database', async () => {
+    test('redirects to capture with debtAdded=true and saves to database', async () => {
       await db.paymentRequest.create({ schemeId: 1, frn: VALID_PAYLOAD.frn })
       const result = await server.inject({ method: 'POST', url: '/capture-debt', payload: VALID_PAYLOAD, auth })
 
       expect(result.statusCode).toBe(302)
-      expect(result.headers.location).toBe('/')
+      expect(result.headers.location).toBe('/capture?debtAdded=true')
 
       const debtData = await db.debtData.findOne({ where: { schemeId: 1, frn: VALID_PAYLOAD.frn } })
       expect(debtData.schemeId).toBe(1)

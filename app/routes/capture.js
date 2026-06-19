@@ -4,8 +4,8 @@ const { mapExtract } = require('../extract')
 const schema = require('./schemas/capture-by-frn-or-scheme')
 const Joi = require('joi')
 const { enrichment } = require('../auth/permissions')
-const frnSearchLabelText = 'Search for data by FRN number'
-const schemeSearchLabelText = 'Search for data by scheme'
+const frnSearchLabelText = 'FRN (Firm Reference Number)'
+const schemeSearchLabelText = 'Scheme'
 const convertToCSV = require('../convert-to-csv')
 const config = require('../config')
 const options = require('../constants/scheme-names')
@@ -34,6 +34,7 @@ module.exports = [{
         captureData,
         page,
         perPage,
+        debtAdded: request.query?.debtAdded,
         ...new ViewModel(
           {
             id: 'user-search-frn',
@@ -95,10 +96,10 @@ module.exports = [{
         captureData = captureData.filter(x => x.frn === String(frn))
       }
       if (captureData.length) {
-        return h.view(view, { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }) })
+        return h.view(view, { captureData, page: defaultPage, perPage: defaultPerPage, frn, scheme, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }) })
       }
 
-      return h.view(view, new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }, { message: 'No records could be found for that FRN/scheme combination.' })).code(statusCodes.BAD_REQUEST)
+      return h.view(view, { frn, scheme, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }) })
     }
   }
 }, {

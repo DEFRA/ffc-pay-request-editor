@@ -7,8 +7,7 @@ function viewModel (details, select, generalError) {
       id: 'user-search-scheme',
       name: 'scheme',
       label: {
-        text: select.labelText,
-        classes: 'govuk-!-font-weight-bold'
+        text: select.labelText
       },
       value: select.value,
       error: false,

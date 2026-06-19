@@ -7,7 +7,7 @@ const {
 module.exports = {
   debtType: Joi.string().valid(ADMINISTRATIVE, IRREGULAR).required()
     .messages({
-      'any.only': 'The type of debt must be either administrative or irregular.',
-      'any.required': 'A type of debt must be selected.'
+      'any.only': 'The type of debt must be either administrative or irregular',
+      'any.required': 'A debt type must be selected'
     })
 }

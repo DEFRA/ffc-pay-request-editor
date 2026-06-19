@@ -42,10 +42,10 @@ describe('Manual ledger test', () => {
 
   describe('POST /manual-ledger', () => {
     test.each([
-      { frn: '', error: 'The FRN must be a number.' },
-      { frn: 'abc123', error: 'The FRN must be a number.' },
-      { frn: '123456789', error: 'The FRN must be 10 digits.' },
-      { frn: '12345678901', error: 'The FRN must be 10 digits.' }
+      { frn: '', error: 'The FRN must be a number' },
+      { frn: 'abc123', error: 'The FRN must be a number' },
+      { frn: '123456789', error: 'The FRN must be 10 digits' },
+      { frn: '12345678901', error: 'The FRN must be 10 digits' }
     ])('returns 400 and error message for frn=%p', async ({ frn, error }) => {
       const response = await server.inject({
         method: 'POST',

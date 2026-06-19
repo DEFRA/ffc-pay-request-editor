@@ -6,9 +6,11 @@
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "macros/search-combined.njk" import searchCombined %}
 
-{% set pageTitle = "Create new reporting dataset" %}
+{% set pageTitle = "Manage unattached reporting data" %}
 
 {% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
 
@@ -18,7 +20,7 @@
       text: "Home",
       href: "/"
     }, {
-      text: "Capture reporting data"
+      text: pageTitle
     }]
   })}}
 {% endblock %}
@@ -26,18 +28,38 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-l">Capture reporting data</h1>
-
+      {% if debtAdded %}
+        <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+          <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title-hold-added">
+              Success
+            </h2>
+          </div>
+          <div class="govuk-notification-banner__content">
+            <h3 class="govuk-notification-banner__heading">
+              New reporting dataset has been successfully created.
+            </h3>
+          </div>
+        </div>
+      {% endif %}
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
       <p class="govuk-body">
-        Datasets are automatically attached to matching requests when they are received in the request editor.
+        Provide a new dataset and search previous pending and attached datasets.
       </p>
 
+      <h2 class="govuk-heading-m">Create new reporting dataset</h2>
+      <p class="govuk-body">
+        Provide upcoming debt information for payments that haven’t been processed.
+      </p>
       {{ govukButton({
-        text: "Capture new dataset",
-        href: "/capture-debt",
-        isStartButton: true
+        text: "Create new dataset",
+        href: "/capture-debt"
       }) }}
 
+      <h2 class="govuk-heading-m">Search for dataset</h2>
+      <p class="govuk-body">
+        Search for pending and attached datasets by scheme, FRN or a combination of both. If they are no longer required, pending datasets can be removed from the system.
+      </p>
       <div class="govuk-!-width-one-third">
         <form action="/capture" method="POST">
           <input type="hidden" name="crumb" value="{{crumb}}"/>
@@ -46,179 +68,152 @@
       </div>
 
       {% if captureData.length %}
-        <div class="govuk-!-padding-bottom-3">
-          {{ govukInsetText({
-            text: "Datasets that are attached to payment requests are shown for reference only and cannot be deleted"
-          }) }}
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-half">
+            <div style="display:flex;align-items:baseline;gap:1rem;">
+              <h2 class="govuk-heading-m govuk-!-margin-0">Existing datasets</h2>
+              <a href="/capture/extract" class="govuk-link">Download as CSV</a>
+            </div>
+          </div>
 
-          {{ govukRadios({
-            name: "unattached-data",
-            fieldset: {
-              legend: {
-                text: "Show attached datasets",
-                classes: "govuk-fieldset__legend--s"
-              }
-            },
-            classes: "govuk-radios--inline govuk-radios--small",
-            items: [
-              {
-                value: "yes",
-                text: "Yes",
-                id: "unattached-data-yes",
-                checked: true
-              },
-              {
-                value: "no",
-                text: "No",
-                id: "unattached-data-no"
-              }
-            ]
-          }) }}
-
-          <div class="govuk-!-margin-bottom-6">
-            <div class="govuk-grid-row">
-              <div class="govuk-grid-column-one-half">
-                <a href="/capture/extract" class="govuk-link">Download an extract</a>
-              </div>
-              <div class="govuk-grid-column-one-half govuk-!-text-align-right">
-                <form action="/capture" method="get">
-                  {{ govukSelect({
-                    id: "perPage",
-                    name: "perPage",
-                    label: {
-                      text: "Number of records per page"
-                    },
-                    attributes: {
-                      onchange: "this.form.submit()"
-                    },
-                    items: [
-                      {
-                        value: 2500,
-                        text: "2500",
-                        selected: perPage == 2500
-                      },
-                      {
-                        value: 5000,
-                        text: "5000",
-                        selected: perPage == 5000
-                      },
-                      {
-                        value: 10000,
-                        text: "10000",
-                        selected: perPage == 10000
-                      }
-                    ]
-                  }) }}
+          <div class="govuk-grid-column-one-half govuk-!-padding-top-1">
+            <div style="display:flex;align-items:baseline;justify-content:flex-end;">
+              <div class="govuk-body-s" aria-label="Records per page" style="white-space:nowrap;vertical-align:baseline;">
+                <span>Records per page:</span>&nbsp;
+                {% set perPageOptions = [2500, 5000, 10000] %}
+                <form id="perPageForm" action="/capture" method="get" style="display:inline;vertical-align:baseline;">
+                  <input type="hidden" name="perPage" id="perPageInput" value="{{ perPage }}">
+                  <input type="hidden" name="page" value="1">
+                  {% for opt in perPageOptions %}
+                    {% if perPage == opt %}
+                      <strong>{{ opt }}</strong>
+                    {% else %}
+                      <a href="#" class="govuk-link perpage-link" data-perpage="{{ opt }}">{{ opt }}</a>
+                    {% endif %}
+                    {% if not loop.last %} &nbsp;|&nbsp; {% endif %}
+                  {% endfor %}
                 </form>
               </div>
             </div>
           </div>
-
-          <table class="govuk-table">
-            <caption class="govuk-table__caption govuk-table__caption--s">Existing reporting datasets</caption>
-            <thead class="govuk-table__head">
-              <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">FRN</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Agreement number</th>
-                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Net value</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Debt type</th>
-                <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Date of Discovery</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Created by</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Status</th>
-                <th scope="col" class="govuk-table__header govuk-body-s">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="govuk-table__body">
-              {% for data in captureData %}
-                <tr class="govuk-table__row capture-datasets" data-status="{{ 'attached' if data.paymentRequestId else 'pending' }}">
-                  <td class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
-                  <td class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
-                  <td class="govuk-table__cell govuk-body-s">
-                    {% if data.reference %}
-                      {{ data.reference }}
-                    {% else %}
-                      Manual enrichment
-                    {% endif %}
-                  </td>
-                  <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">
-                    {% if data.netValueText %}
-                      {{ data.netValueText }}
-                    {% endif %}
-                  </td>
-                  <td class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}</td>
-                  <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}</td>
-                  <td class="govuk-table__cell govuk-body-s">{{ data.createdBy }}</td>
-                  <td class="govuk-table__cell govuk-body-s">
-                    {% if data.paymentRequestId %}
-                      <strong class="govuk-tag govuk-tag--green">Attached</strong>
-                    {% else %}
-                      <strong class="govuk-tag">Pending</strong>
-                    {% endif %}
-                  </td>
-                  <td class="govuk-table__cell govuk-body-s">
-                    {% if not data.paymentRequestId %}
-                      <form action="/capture/delete" method="POST">
-                        <input type="hidden" name="crumb" value="{{crumb}}"/>
-                        <input type="hidden" name="debtDataId" value="{{data.debtDataId}}"/>
-                        {{ govukButton({
-                          text: "Delete",
-                          classes: "govuk-button--secondary govuk-button--small",
-                          attributes: {
-                            "aria-label": "Delete dataset for FRN " ~ data.frn ~ " with agreement " ~ (data.reference if data.reference else "manual enrichment")
-                          }
-                        }) }}
-                      </form>
-                    {% endif %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-
-          {% set paginationPrevious = undefined %}
-          {% set paginationNext = undefined %}
-
-          {% if page > 1 %}
-            {% set paginationPrevious = {
-              href: "?page=" + (page - 1) + "&perPage=" + perPage,
-              labelText: "Previous page"
-            } %}
-          {% endif %}
-
-          {% if captureData.length >= perPage %}
-            {% set paginationNext = {
-              href: "?page=" + (page + 1) + "&perPage=" + perPage,
-              labelText: "Next page"
-            } %}
-          {% endif %}
-
-          {{ govukPagination({
-            previous: paginationPrevious,
-            next: paginationNext,
-            items: [
-              {
-                number: page,
-                current: true
-              }
-            ]
-          }) }}
         </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            {{ govukCheckboxes({
+              name: "showAttached",
+              items: [
+                {
+                  value: "yes",
+                  text: "Show attached datasets (for reference only)",
+                  id: "show-attached",
+                  checked: true
+                }
+              ],
+              classes: "govuk-checkboxes--small"
+            }) }}
+          </div>
+        </div>
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
+              <th scope="col" class="govuk-table__header govuk-body-s">FRN</th>
+              <th scope="col" class="govuk-table__header govuk-body-s">Agreement number</th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Net value</th>
+              <th scope="col" class="govuk-table__header govuk-body-s">Debt type</th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Date of Discovery</th>
+              <th scope="col" class="govuk-table__header govuk-body-s">Created by</th>
+              <th scope="col" class="govuk-table__header govuk-body-s">Status</th>
+              <th scope="col" class="govuk-table__header govuk-body-s">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for data in captureData %}
+              <tr class="govuk-table__row capture-datasets" data-status="{{ 'attached' if data.paymentRequestId else 'pending' }}">
+                <td class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
+                <td class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
+                <td class="govuk-table__cell govuk-body-s">
+                  {% if data.reference %}
+                    {{ data.reference }}
+                  {% else %}
+                    Manual enrichment
+                  {% endif %}
+                </td>
+                <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">
+                  {% if data.netValueText %}
+                    {{ data.netValueText }}
+                  {% endif %}
+                </td>
+                <td class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}</td>
+                <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}</td>
+                <td class="govuk-table__cell govuk-body-s">{{ data.createdBy }}</td>
+                <td class="govuk-table__cell govuk-body-s">
+                  {% if data.paymentRequestId %}
+                    <strong class="govuk-tag govuk-tag--green">Attached</strong>
+                  {% else %}
+                    <strong class="govuk-tag">Pending</strong>
+                  {% endif %}
+                </td>
+                <td class="govuk-table__cell govuk-body-s">
+                  {% if not data.paymentRequestId %}
+                    <a href="#" class="govuk-link js-post-link" data-action="/capture/delete" data-crumb="{{ crumb }}" data-debtdataid="{{ data.debtDataId }}" aria-label="Delete dataset for FRN {{ data.frn }} with agreement {{ (data.reference if data.reference else 'manual enrichment') }}">
+                      Delete
+                    </a>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        {% set paginationPrevious = undefined %}
+        {% set paginationNext = undefined %}
+
+        {% if page > 1 %}
+          {% set paginationPrevious = {
+            href: "?page=" + (page - 1) + "&perPage=" + perPage,
+            labelText: "Previous page"
+          } %}
+        {% endif %}
+
+        {% if captureData.length >= perPage %}
+          {% set paginationNext = {
+            href: "?page=" + (page + 1) + "&perPage=" + perPage,
+            labelText: "Next page"
+          } %}
+        {% endif %}
+
+        {{ govukPagination({
+          previous: paginationPrevious,
+          next: paginationNext,
+          items: [
+            {
+              number: page,
+              current: true
+            }
+          ]
+        }) }}
       {% else %}
+      {% set extra = '.' %}
+        {% if frn and scheme %}
+          {% set extra = ' for ' ~ frn ~ ' & ' ~ scheme ~ ". Check your details and try again" %}
+        {% elif frn %}
+          {% set extra = ' for ' ~ frn ~ ". Check your details and try again" %}
+        {% elif scheme %}
+          {% set extra = ' for ' ~ scheme ~ ". Check your details and try again" %}
+        {% endif %}
         {{ govukInsetText({
-          text: "No reporting datasets"
+          text: "No datasets were found" ~ extra
         }) }}
       {% endif %}
     </div>
   </div>
   <script>
-    const toggleUnattachedForm = document.querySelectorAll('input[name="unattached-data"]')
+    const showAttachedCheckbox = document.getElementById('show-attached')
+    const tableRows = document.querySelectorAll('.govuk-table__row.capture-datasets')
 
     const toggleUnattachedData = () => {
-      const noToggle = document.getElementById('unattached-data-no')
-      const tableRows = document.querySelectorAll('.govuk-table__row.capture-datasets')
-      
-      if (noToggle.checked) {
+      if (!showAttachedCheckbox.checked) {
         tableRows.forEach(row => {
           if (row.getAttribute('data-status') === 'attached') {
             row.style.display = 'none'
@@ -229,6 +224,55 @@
       }
     }
 
-    toggleUnattachedForm.forEach(input => input.addEventListener('change', toggleUnattachedData))
+    showAttachedCheckbox.addEventListener('change', toggleUnattachedData)
+
+    toggleUnattachedData()
+
+    document.querySelectorAll('.perpage-link').forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault()
+        const newVal = this.dataset.perpage;
+        const input = document.getElementById('perPageInput')
+        if (!input || String(input.value) === String(newVal)) return
+        input.value = newVal
+        document.getElementById('perPageForm').submit()
+      })
+    })
+
+    const handlePostLink = (e) => {
+      const el = e.target.closest('.js-post-link')
+      if (!el) return
+      e.preventDefault()
+
+      const action = el.dataset.action
+      const crumb = el.dataset.crumb
+      const debtDataId = el.dataset.debtdataid
+
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action = action
+      form.style.display = 'none'
+
+      if (crumb) {
+        const i = document.createElement('input')
+        i.type = 'hidden'
+        i.name = 'crumb'
+        i.value = crumb
+        form.appendChild(i)
+      }
+
+      if (debtDataId) {
+        const i2 = document.createElement('input')
+        i2.type = 'hidden'
+        i2.name = 'debtDataId'
+        i2.value = debtDataId
+        form.appendChild(i2)
+      }
+
+      document.body.appendChild(form)
+      form.submit()
+    }
+
+    document.addEventListener('click', handlePostLink)
   </script>
 {% endblock %}

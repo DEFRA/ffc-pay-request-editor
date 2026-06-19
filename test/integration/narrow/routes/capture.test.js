@@ -33,7 +33,7 @@ describe('Capture route tests', () => {
       schemes: { name: 'SFI' },
       frn: '1234567891',
       reference: 'SFIP1234568',
-      netValue: 570.0,
+      netValue: 570,
       debtType: ADMINISTRATIVE,
       recoveryDate: '18/01/2022',
       attachedDate: '18/01/2022',
@@ -66,16 +66,14 @@ describe('Capture route tests', () => {
   })
 
   describe('POST /capture', () => {
-    test('No records found returns 400', async () => {
+    test('No records found returns 200', async () => {
       const response = await server.inject({
         method: 'POST',
         url,
         payload: { frn: '1234567893' },
         auth
       })
-      expect(response.statusCode).toBe(400)
-      expect(response.request.response.source.context.model.input.errorMessage.text)
-        .toEqual('No records could be found for that FRN/scheme combination.')
+      expect(response.statusCode).toBe(200)
     })
 
     test.each([
@@ -96,7 +94,7 @@ describe('Capture route tests', () => {
     test.each([
       { frn: 1234567890, statusCode: 200 },
       { frn: '1234567890', statusCode: 200 },
-      { frn: '1234567899', statusCode: 400 },
+      { frn: '1234567899', statusCode: 200 },
       { frn: 'A123456789', statusCode: 400 },
       { frn: '12345', statusCode: 400 }
     ])('FRN %p returns correct status code', async ({ frn, statusCode }) => {

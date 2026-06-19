@@ -6,8 +6,11 @@ const getSchemes = async () => {
     if (scheme.name === 'SFI') {
       scheme.name = 'SFI22'
     }
+    if (scheme.name === 'Vet Visits') {
+      scheme.name = 'Annual Health and Welfare Review'
+    }
   }
-  return schemes.map(x => x.get({ plain: true }))
+  return schemes.map(x => x.get({ plain: true })).sort((a, b) => a.name.localeCompare(b.name))
 }
 
 module.exports = { getSchemes }
