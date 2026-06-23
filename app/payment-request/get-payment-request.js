@@ -45,19 +45,33 @@ const getPaymentRequest = async (page = 1, pageSize = 100, usePagination = true)
   for (const payment of paymentRequest) {
     if (payment.schemes?.name === 'SFI') {
       payment.schemes.name = 'SFI22'
+    } else if (payment.schemes?.name === 'Vet Visits') {
+      payment.schemes.name = 'Annual Health and Welfare Review'
     }
   }
   return paymentRequest
 }
 
 const getPaymentRequestByInvoiceNumberAndRequestId = async (invoiceNumber, paymentRequestId) => {
-  return db.paymentRequest.findOne({
+  const paymentRequest = await db.paymentRequest.findOne({
     where: {
       invoiceNumber,
       paymentRequestId
     },
-    raw: true
+    include: [{
+      model: db.scheme,
+      as: 'schemes',
+      attributes: ['name']
+    }],
+    raw: true,
+    nest: true
   })
+  if (paymentRequest?.schemes?.name === 'SFI') {
+    paymentRequest.schemes.name = 'SFI22'
+  } else if (paymentRequest?.schemes?.name === 'Vet Visits') {
+    paymentRequest.schemes.name = 'Annual Health and Welfare Review'
+  }
+  return paymentRequest
 }
 
 const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, applicationIdentifier, netValue, categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {

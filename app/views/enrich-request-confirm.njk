@@ -1,0 +1,75 @@
+{% extends '_layout.njk' %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{% set pageTitle = "Check the data is correct before submitting" %}
+
+{% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [{
+      text: "Home",
+      href: "/"
+    }, {
+      text: "View awaiting reporting data",
+      href: "/enrich"
+    }, {
+      text: "Enrich request",
+      href: "/enrich-request?invoiceNumber=" ~ invoiceNumber ~ "&paymentRequestId=" ~ paymentRequestId
+    }, {
+      text: pageTitle
+    }]
+  })}}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+      <div class="govuk-summary-card">
+        <div class="govuk-summary-card__title-wrapper">
+          <h2 class="govuk-summary-card__title">
+            Enrich request
+          </h2>
+          <ul class="govuk-summary-card__actions">
+            <li class="govuk-summary-card__action">
+              <a class="govuk-link" href="/enrich-request?invoiceNumber={{ invoiceNumber }}&paymentRequestId={{ paymentRequestId }}">Change<span class="govuk-visually-hidden"> reporting dataset</span></a>            </li>
+          </ul>
+        </div>
+        <div class="govuk-summary-card__content">
+          <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Debt type
+              </dt>
+              <dd class="govuk-summary-list__value">
+                {{ debtTypeText }}
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Date debt discovered
+              </dt>
+              <dd class="govuk-summary-list__value">
+                {{ debtDiscoveredDay }}/{{ debtDiscoveredMonth }}/{{ debtDiscoveredYear }}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <form method="POST" action="/enrich-request" autocomplete="off" novalidate>
+        <input type="hidden" name="crumb" value="{{ crumb }}"/>
+        <input type="hidden" name="invoice-number" value="{{ invoiceNumber }}"/>
+        <input type="hidden" name="payment-request-id" value="{{ paymentRequestId }}"/>
+        <input type="hidden" name="debt-type" value="{{ debtType }}"/>
+        <input type="hidden" name="day" value="{{ debtDiscoveredDay }}"/>
+        <input type="hidden" name="month" value="{{ debtDiscoveredMonth }}"/>
+        <input type="hidden" name="year" value="{{ debtDiscoveredYear }}"/>
+        <button class="govuk-button" id="submit">
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

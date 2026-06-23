@@ -133,32 +133,28 @@ module.exports = [{
   options: {
     auth: { scope: [enrichment] },
     handler: async (_request, h) => {
-      try {
-        const getDebtsParams = {
-          includeAttached: true,
-          page: defaultPage,
-          pageSize: defaultPerPage,
-          usePagination: false
-        }
-        const debts = await getDebts(getDebtsParams)
-        if (debts) {
-          const extractData = mapExtract(debts)
-          const res = convertToCSV(extractData)
-          if (res) {
-            // Ensure that the £ symbol is properly encoded in UTF-8
-            const utf8BOM = '\uFEFF'
-            const csvContent = utf8BOM + res
-            return h.response(csvContent)
-              .type('text/csv; charset=utf-8')
-              .header('Connection', 'keep-alive')
-              .header('Cache-Control', 'no-cache')
-              .header('Content-Disposition', `attachment;filename=${config.debtsReportName}`)
-          }
-        }
-        return h.view('debts-report-unavailable')
-      } catch (err) {
-        return h.view('debts-report-unavailable')
+      const getDebtsParams = {
+        includeAttached: true,
+        page: defaultPage,
+        pageSize: defaultPerPage,
+        usePagination: false
       }
+      const debts = await getDebts(getDebtsParams)
+      if (debts) {
+        const extractData = mapExtract(debts)
+        const res = convertToCSV(extractData)
+        if (res) {
+          // Ensure that the £ symbol is properly encoded in UTF-8
+          const utf8BOM = '\uFEFF'
+          const csvContent = utf8BOM + res
+          return h.response(csvContent)
+            .type('text/csv; charset=utf-8')
+            .header('Connection', 'keep-alive')
+            .header('Cache-Control', 'no-cache')
+            .header('Content-Disposition', `attachment;filename=${config.debtsReportName}`)
+        }
+      }
+      return h.view('debts-report-unavailable')
     }
   }
 }]

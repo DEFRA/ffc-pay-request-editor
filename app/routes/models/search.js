@@ -19,6 +19,8 @@ function viewModel (details, value = null, generalError = null) {
       text: generalError.message
     }
   }
+
+  this.frn = value
 }
 
 module.exports = viewModel

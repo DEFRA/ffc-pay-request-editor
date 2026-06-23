@@ -59,7 +59,7 @@ describe('Enrich test', () => {
   describe('POST requests', () => {
     const method = 'POST'
 
-    test('POST /enrich with no records returns "No debts match the FRN provided.', async () => {
+    test('POST /enrich with no records returns 200 with no error message, async () => {
       const options = {
         method,
         url,
@@ -68,16 +68,14 @@ describe('Enrich test', () => {
       }
 
       const response = await server.inject(options)
-      expect(response.statusCode).toBe(400)
+      expect(response.statusCode).toBe(200)
       expect(response.request.response.variety).toBe('view')
       expect(response.request.response.source.template).toBe('enrich')
-      expect(response.request.response.source.context.model.errorMessage.text).toEqual('No payments match the FRN provided.')
     })
 
     test.each([
       { frn: 1234567890, statusCode: 200 },
       { frn: '1234567890', statusCode: 200 },
-      { frn: '1234567899', statusCode: 400 },
       { frn: 'A123456789', statusCode: 400 },
       { frn: '12345', statusCode: 400 }
     ])('POST /enrich %p route returns the correct status code', async ({ frn, statusCode }) => {

@@ -156,7 +156,7 @@ describe('Enrich request tests', () => {
         '"debt-type" is required'
       ])
       expect(model.radio.errorMessage.text).toBe('Select a type of debt')
-      expect(model.date.errorMessage.text).toBe('The date submitted is not valid')
+      expect(model.date.errorMessage.text).toBe('Enter a valid date')
     })
 
     test('displays error when date is in the future', async () => {
@@ -188,11 +188,11 @@ describe('Enrich request tests', () => {
       expect(qcRow.status).toBe(PENDING)
       expect(debtRow.paymentRequestId).toBe(1)
       expect(debtRow.schemeId).toBe(SCHEME_ID_SFI)
-      expect(parseInt(debtRow.frn)).toBe(1234567890)
+      expect(Number.parseInt(debtRow.frn)).toBe(1234567890)
       expect(debtRow.debtType).toBe(ADMINISTRATIVE)
       expect(debtRow.recoveryDate).toBe(expectedDate)
       expect(response.request.response.statusCode).toBe(302)
-      expect(response.headers.location).toBe('/enrich')
+      expect(response.headers.location).toBe('/enrich?debtAdded=true')
     })
   })
 })

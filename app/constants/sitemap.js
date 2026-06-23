@@ -1,12 +1,12 @@
 const HOME = { href: '/', text: 'Home' }
 
 const CAPTURE_LINKS = [
-  { href: '/capture', text: 'Capture reporting data' },
+  { href: '/capture', text: 'Manage unattached reporting data' },
   { href: '/capture-debt', text: 'Create new reporting dataset' }
 ]
 
 const ENRICH_LINKS = [
-  { href: '/enrich', text: 'Requests awaiting reporting data' }
+  { href: '/enrich', text: 'View awaiting reporting data' }
 ]
 
 const MANUAL_LEDGER_LINKS = [
