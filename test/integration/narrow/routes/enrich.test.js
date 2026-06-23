@@ -59,7 +59,7 @@ describe('Enrich test', () => {
   describe('POST requests', () => {
     const method = 'POST'
 
-    test('POST /enrich with no records returns 200 with no error message, async () => {
+    test('POST /enrich with no records returns 200 with no error message', async () => {
       const options = {
         method,
         url,
