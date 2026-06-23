@@ -38,13 +38,16 @@ const createLedgerAgreementComponent = (error) => {
         classes: 'govuk-fieldset__legend--s'
       }
     },
+    hint: {
+      text: 'Approved ledger assignments will need to be reviewed by another person.'
+    },
     items: [
       {
-        text: 'Yes',
+        text: 'Yes, I agree',
         value: 'true'
       },
       {
-        text: 'No',
+        text: 'No, I do not agree',
         value: 'false'
       }
     ]

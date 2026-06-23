@@ -18,7 +18,7 @@
       text: "Home",
       href: "/"
     }, {
-      text: "Manual ledger assignment",
+      text: "View awaiting ledger assignment",
       href: "/manual-ledger"
     }, {
       text: pageTitle
@@ -31,9 +31,12 @@
     <div class="govuk-grid-column-two-thirds">
       <span class="govuk-caption-l">{{ model.manualLedgerData.invoiceNumber }}</span>
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+      <p class="govuk-body">
+        Verify assignment details and, if necessary, adjust the payable and receivable amounts to ensure the customer is paid accurately.
+      </p>
     </div>
     <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">Original</h2>
+      <h2 class="govuk-heading-m">Original payment details</h2>
       {{ paymentRequestHeader(model.manualLedgerData, false) }}
       
       <details class="govuk-details" data-module="govuk-details">
@@ -49,6 +52,9 @@
 
       {% if showLedgerSplit %}
         <h2 class="govuk-heading-m">Change ledger allocation</h2>
+        <p class="govuk-body">
+          Adjust the payable and receivable amounts to ensure the customer is paid accurately.
+        </p>
         <form method="GET" action="/manual-ledger-check/calculate" novalidate>
           <div id="ledger-wrapper" class="govuk-form-group">
             <p id="ledger-value-error" class="govuk-error-message">
@@ -92,14 +98,14 @@
           </div>
           
           {{ govukButton({
-            text: "Calculate",
+            text: "Update",
             attributes: {
               id: "calculate-ledger"
             }
           }) }}
         </form>
       {% else %}
-        <h2 class="govuk-heading-m">Provisional</h2>
+        <h2 class="govuk-heading-m">Provisional payment details</h2>
         {% for data in model.manualLedgerData.manualLedgerChecks %}
           {{ paymentRequestHeader(data.ledgerPaymentRequest) }}
 
@@ -123,10 +129,10 @@
         {% endif %}
 
         <form action="/manual-ledger-check" method="post" novalidate>
-          <input type="hidden" name="paymentRequestId" value="{{ model.manualLedgerData.paymentRequestId }}"/>
-          <input type="hidden" name="crumb" value="{{ crumb }}"/>
-          <input type="hidden" name="provisionalValue" value="{{ provisionalValue }}"/>
-          
+          <input type="hidden" name="paymentRequestId" value="{{ model.manualLedgerData.paymentRequestId }}" />
+          <input type="hidden" name="crumb" value="{{ crumb }}" />
+          <input type="hidden" name="provisionalValue" value="{{ provisionalValue }}" />
+          <input type="hidden" name="invoiceNumber" value="{{ model.manualLedgerData.invoiceNumber }}" />
           {{ govukRadios(model.ledgerAgreement) }}
           
           {{ govukButton({

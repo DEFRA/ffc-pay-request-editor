@@ -3,7 +3,7 @@ const { getPaymentRequest } = require('../payment-request')
 const schema = require('./schemas/enrich')
 const { enrichment } = require('../auth/permissions')
 const statusCodes = require('../constants/status-codes')
-const viewModelDetails = { labelText: 'Firm Reference Number (FRN)' }
+const viewModelDetails = { labelText: 'FRN (Firm Reference Number)' }
 
 const defaultPage = 1
 const defaultPerPage = 100

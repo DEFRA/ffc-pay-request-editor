@@ -1,5 +1,5 @@
 const ViewModel = require('./models/search')
-const viewModelDetails = { labelText: 'Search for a request by FRN number' }
+const viewModelDetails = { labelText: 'FRN (Firm Reference Number)' }
 
 const schema = require('./schemas/manual-ledger')
 const { getManualLedgers } = require('../manual-ledger')
@@ -28,6 +28,7 @@ module.exports = [{
       ledgerData,
       page,
       perPage,
+      checkComplete: request.query?.checkComplete,
       ...new ViewModel(viewModelDetails)
     })
   }

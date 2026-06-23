@@ -1,5 +1,5 @@
 const ViewModel = require('./models/search')
-const viewModelDetails = { labelText: 'Search for a request by FRN number' }
+const viewModelDetails = { labelText: 'FRN (Firm Reference Number)' }
 
 const { getQualityChecks, getChangedQualityChecks } = require('../quality-check')
 const schema = require('./schemas/quality-check')
@@ -17,8 +17,8 @@ module.exports = [{
   options: {
     auth: { scope: [ledger] },
     handler: async (request, h) => {
-      const page = parseInt(request.query.page) || defaultPage
-      const perPage = parseInt(request.query.perPage) || defaultPerPage
+      const page = Number.parseInt(request.query.page) || defaultPage
+      const perPage = Number.parseInt(request.query.perPage) || defaultPerPage
       const qualityCheckData = await getQualityChecks(page, perPage)
       const changedQualityChecks = await getChangedQualityChecks(qualityCheckData)
       const { userId } = getUser(request)

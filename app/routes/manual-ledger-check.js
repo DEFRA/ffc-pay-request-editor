@@ -77,7 +77,8 @@ module.exports = [{
     validate: {
       payload: Joi.object({
         paymentRequestId: Joi.string().required(),
-        agree: Joi.boolean().required()
+        agree: Joi.boolean().required(),
+        invoiceNumber: Joi.string().required()
       }).options({ allowUnknown: true }),
       failAction: async (request, h, error) => {
         const { paymentRequestId } = request.payload
@@ -86,7 +87,7 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      const { paymentRequestId, agree } = request.payload
+      const { paymentRequestId, agree, invoiceNumber } = request.payload
 
       if (!agree) {
         const manualLedgerData = await getManualLedger(paymentRequestId)
@@ -103,7 +104,7 @@ module.exports = [{
       await updateManualLedgerUser(paymentRequestId, user)
       await updateQualityChecksStatus(paymentRequestId, PENDING)
       await sendManualLedgerCheckEvent(paymentRequestId, user, provisionalLedgerData)
-      return h.redirect('/quality-check')
+      return h.redirect(`/manual-ledger?checkComplete=${invoiceNumber}`)
     }
   }
 }]

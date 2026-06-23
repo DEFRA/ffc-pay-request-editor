@@ -10,7 +10,7 @@ const ENRICH_LINKS = [
 ]
 
 const MANUAL_LEDGER_LINKS = [
-  { href: '/manual-ledger', text: 'Manual Ledger Assignment' }
+  { href: '/manual-ledger', text: 'View awaiting ledger assignment' }
 ]
 
 const QUALITY_CHECK_LINKS = [
