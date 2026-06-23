@@ -45,7 +45,8 @@ const getPaymentRequest = async (page = 1, pageSize = 100, usePagination = true)
   for (const payment of paymentRequest) {
     if (payment.schemes?.name === 'SFI') {
       payment.schemes.name = 'SFI22'
-    } else if (payment.schemes?.name === 'Vet Visits') {
+    }
+    if (payment.schemes?.name === 'Vet Visits') {
       payment.schemes.name = 'Annual Health and Welfare Review'
     }
   }
@@ -68,7 +69,8 @@ const getPaymentRequestByInvoiceNumberAndRequestId = async (invoiceNumber, payme
   })
   if (paymentRequest?.schemes?.name === 'SFI') {
     paymentRequest.schemes.name = 'SFI22'
-  } else if (paymentRequest?.schemes?.name === 'Vet Visits') {
+  }
+  if (paymentRequest?.schemes?.name === 'Vet Visits') {
     paymentRequest.schemes.name = 'Annual Health and Welfare Review'
   }
   return paymentRequest
