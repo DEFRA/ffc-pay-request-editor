@@ -42,4 +42,5 @@ data:
   BANNER_HEADER: {{ quote .Values.container.bannerHeader }}
   BANNER_TEXT: {{ quote .Values.container.bannerText }}
   BANNER_EMAIL: {{ quote .Values.container.bannerEmail }}
+  AZURE_LOG_LEVEL: {{ quote .Values.container.azureLogLevel }}
 {{- end -}}
