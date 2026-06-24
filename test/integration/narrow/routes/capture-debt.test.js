@@ -111,4 +111,22 @@ describe('capture-debt route', () => {
       })
     })
   })
+
+  test('POST /capture-debt-confirm returns confirm view with formatted date', async () => {
+    const response = await server.inject({
+      method: 'POST',
+      url: '/capture-debt-confirm',
+      payload: VALID_PAYLOAD,
+      auth
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect(response.request.response.variety).toBe('view')
+    expect(response.request.response.source.template).toBe('capture-debt-confirm')
+    const ctx = response.request.response.source.context
+    expect(ctx.scheme).toBe(VALID_PAYLOAD.scheme)
+    expect(ctx.debtDiscoveredDay).toBe('02')
+    expect(ctx.debtDiscoveredMonth).toBe('01')
+    expect(ctx.debtDiscoveredYear).toBe(2015)
+  })
 })
