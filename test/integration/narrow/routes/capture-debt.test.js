@@ -9,7 +9,7 @@ describe('capture-debt route', () => {
   const { getSchemeId, getSchemes } = require('../../../../app/processing/scheme')
   const db = require('../../../../app/data')
   const { SCHEMES } = require('../../../data/scheme')
-  const { SCHEME_ID_SFI, SCHEME_ID_AHWR } = require('../../../data/scheme-id')
+  const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
   const { ADMINISTRATIVE } = require('../../../../app/constants/debt-types')
   const {
     invalidSchemeTests,
