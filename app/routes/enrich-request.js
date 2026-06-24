@@ -17,14 +17,38 @@ const processEnrichPayload = async (payload) => {
   const paymentRequest = await getPaymentRequestByInvoiceNumberAndRequestId(invoiceNumber, paymentRequestId)
 
   const validation = enrichRequestSchema.validate(payload, { abortEarly: false })
-  if (validation.error) return { validationError: validation.error, paymentRequest, payload }
+  if (validation.error) {
+    return { validationError: validation.error, paymentRequest, payload }
+  }
 
   const dateError = await validateDate(payload, paymentRequest.received)
-  if (dateError) return { dateError, paymentRequest, payload }
+  if (dateError) {
+    return { dateError, paymentRequest, payload }
+  }
 
-  if (paymentRequest.released) return { released: true, paymentRequest }
+  if (paymentRequest.released) {
+    return { released: true, paymentRequest }
+  }
 
   return { paymentRequest, payload }
+}
+
+const respondEnrichErrors = (h, result, payload) => {
+  if (result.validationError) {
+    return h.view(view, { paymentRequest: result.paymentRequest, ...new ViewModel(payload, result.validationError) })
+      .code(statusCodes.BAD_REQUEST)
+      .takeover()
+  }
+  if (result.dateError) {
+    return h.view(view, { paymentRequest: result.paymentRequest, ...new ViewModel(payload, result.dateError) })
+      .code(statusCodes.BAD_REQUEST)
+      .takeover()
+  }
+  if (result.released) {
+    console.log(`Debt information has already been attached to record with invoiceNumber: ${payload['invoice-number']}`)
+    return h.redirect('/enrich')
+  }
+  return null
 }
 
 module.exports = [
@@ -67,19 +91,9 @@ module.exports = [
         const debtTypeText = selectedDebt ? selectedDebt.text : payload['debt-type']
 
         const result = await processEnrichPayload(payload)
-        if (result.validationError) {
-          return h.view(view, { paymentRequest: result.paymentRequest, ...new ViewModel(payload, result.validationError) })
-            .code(statusCodes.BAD_REQUEST)
-            .takeover()
-        }
-        if (result.dateError) {
-          return h.view(view, { paymentRequest: result.paymentRequest, ...new ViewModel(payload, result.dateError) })
-            .code(statusCodes.BAD_REQUEST)
-            .takeover()
-        }
-        if (result.released) {
-          console.log(`Debt information has already been attached to record with invoiceNumber: ${payload['invoice-number']}`)
-          return h.redirect('/enrich')
+        const errorResponse = respondEnrichErrors(h, result, payload)
+        if (errorResponse) {
+          return errorResponse
         }
 
         return h.view(view + '-confirm', {
@@ -103,19 +117,9 @@ module.exports = [
         const payload = request.payload
 
         const result = await processEnrichPayload(payload)
-        if (result.validationError) {
-          return h.view(view, { paymentRequest: result.paymentRequest, ...new ViewModel(payload, result.validationError) })
-            .code(statusCodes.BAD_REQUEST)
-            .takeover()
-        }
-        if (result.dateError) {
-          return h.view(view, { paymentRequest: result.paymentRequest, ...new ViewModel(payload, result.dateError) })
-            .code(statusCodes.BAD_REQUEST)
-            .takeover()
-        }
-        if (result.released) {
-          console.log(`Debt information has already been attached to record with invoiceNumber: ${payload['invoice-number']}`)
-          return h.redirect('/enrich')
+        const errorResponse = respondEnrichErrors(h, result, payload)
+        if (errorResponse) {
+          return errorResponse
         }
 
         const user = getUser(request)

@@ -18,15 +18,42 @@ const validateAndFormatPayload = async (payload) => {
   const schemes = (await getSchemes()).map(x => x.name)
 
   const validation = schema().validate(payload, { abortEarly: false })
-  if (validation.error) return { validationError: validation.error, schemes }
+  if (validation.error) {
+    return { validationError: validation.error, schemes }
+  }
 
   const day = format(payload['debt-discovered-day'])
   const month = format(payload['debt-discovered-month'])
   const year = payload['debt-discovered-year']
   const validDate = dateSchema({ date: `${year}-${month}-${day}` })
-  if (validDate.error) return { dateError: validDate.error, schemes, payload, day, month, year }
+  if (validDate.error) {
+    return { dateError: validDate.error, schemes, payload, day, month, year }
+  }
 
   return { schemes, payload, day, month, year }
+}
+
+const respondValidationErrors = (h, result, payload) => {
+  if (result.validationError) {
+    return h.view(view, new ViewModel(result.schemes, payload, result.validationError))
+      .code(statusCodes.BAD_REQUEST)
+      .takeover()
+  }
+  if (result.dateError) {
+    return h.view(view, new ViewModel(result.schemes, payload, result.dateError))
+      .code(statusCodes.BAD_REQUEST)
+      .takeover()
+  }
+  return null
+}
+
+const normalizeScheme = (payload) => {
+  if (payload.scheme === 'SFI22') {
+    payload.scheme = 'SFI'
+  }
+  if (payload.scheme === 'Annual Health and Welfare Review') {
+    payload.scheme = 'Vet Visits'
+  }
 }
 
 module.exports = [{
@@ -62,12 +89,9 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const result = await validateAndFormatPayload(request.payload)
-
-      if (result.validationError) {
-        return h.view(view, new ViewModel(result.schemes, request.payload, result.validationError)).code(statusCodes.BAD_REQUEST).takeover()
-      }
-      if (result.dateError) {
-        return h.view(view, new ViewModel(result.schemes, request.payload, result.dateError)).code(statusCodes.BAD_REQUEST).takeover()
+      const errorResponse = respondValidationErrors(h, result, request.payload)
+      if (errorResponse) {
+        return errorResponse
       }
 
       return h.view(view + '-confirm', {
@@ -94,21 +118,12 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const result = await validateAndFormatPayload(request.payload)
-
-      if (result.validationError) {
-        return h.view(view, new ViewModel(result.schemes, request.payload, result.validationError)).code(statusCodes.BAD_REQUEST).takeover()
-      }
-      if (result.dateError) {
-        return h.view(view, new ViewModel(result.schemes, request.payload, result.dateError)).code(statusCodes.BAD_REQUEST).takeover()
+      const errorResponse = respondValidationErrors(h, result, request.payload)
+      if (errorResponse) {
+        return errorResponse
       }
 
-      // normalise scheme values before saving (same logic as before)
-      if (request.payload.scheme === 'SFI22') {
-        request.payload.scheme = 'SFI'
-      }
-      if (request.payload.scheme === 'Annual Health and Welfare Review') {
-        request.payload.scheme = 'Vet Visits'
-      }
+      normalizeScheme(request.payload)
 
       await captureDebtData(request)
       return h.redirect('/capture?debtAdded=true')
