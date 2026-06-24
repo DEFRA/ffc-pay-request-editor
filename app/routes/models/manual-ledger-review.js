@@ -29,11 +29,11 @@ const createLedgerAgreementComponent = (error) => {
     },
     items: [
       {
-        text: 'Yes',
+        text: 'Yes, edited correctly',
         value: PASSED
       },
       {
-        text: 'No',
+        text: 'No, not edited correctly',
         value: FAILED
       }
     ]

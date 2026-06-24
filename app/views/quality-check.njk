@@ -4,10 +4,10 @@
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "macros/search-input.njk" import searchInput %}
 
-{% set pageTitle = "Ledger assignments awaiting quality check" %}
+{% set pageTitle = "View ledger assignments to be quality checked" %}
 
 {% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
 
@@ -25,57 +25,84 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
+      {% if checkComplete %}
+        <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+          <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title-hold-added">
+              Success
+            </h2>
+          </div>
+          <div class="govuk-notification-banner__content">
+            <h3 class="govuk-notification-banner__heading">
+              {% set extra = '.' %}
+              {% if status == 'Failed'%}
+                {% set extra = ' and sent for review.' %}
+              {% endif %}
+              Ledger assignment for {{ checkComplete }} has been quality checked{{ extra }}
+            </h3>
+          </div>
+        </div>
+      {% endif %}
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
-
+      <p class="govuk-body">
+        Requests that have been through ledger assignment will need to be quality checked. Once the quality check is complete and approved, the payment request is sent to be processed.
+      </p>
+      <p class="govuk-body">
+        If any payment amounts need to be amended, a further review will be needed.
+      </p>
+      <p class="govuk-body">
+        You can search for an individual assignment using the FRN (Firm Reference Number) or review all assignments.
+      </p>
       {% if qualityCheckData.length %}
         <div class="govuk-!-padding-bottom-3">
           <div class="govuk-!-width-one-third">
             <form action="/quality-check" method="POST">
               <input type="hidden" name="crumb" value="{{crumb}}"/>
               {{ searchInput(model) }}
+              <div class="govuk-button-group">
+                {{ govukButton({
+                    text: "Search",
+                    classes: "govuk-button govuk-!-margin-top-2"
+                  }) 
+                }}
+                <a href="/quality-check" class="govuk-link govuk-link--no-visited-state">Reset table</a>
+              </div>
             </form>
           </div>
 
-          <p class="govuk-body">
-            <a href="/quality-check" class="govuk-link govuk-link--no-visited-state">View all outstanding quality checks</a>
-          </p>
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-half">
+              <div style="display:flex;align-items:baseline;gap:1rem;">
+                <h2 class="govuk-heading-m govuk-!-margin-0">Ledger assignments</h2>
+              </div>
+            </div>
 
-          <div class="govuk-!-text-align-right govuk-!-margin-bottom-6">
-            <form action="/quality-check" method="get">
-              {{ govukSelect({
-                id: "perPage",
-                name: "perPage",
-                label: {
-                  text: "Number of records per page"
-                },
-                attributes: {
-                  onchange: "this.form.submit()"
-                },
-                items: [
-                  {
-                    value: 100,
-                    text: "100",
-                    selected: perPage == 100
-                  },
-                  {
-                    value: 500,
-                    text: "500",
-                    selected: perPage == 500
-                  },
-                  {
-                    value: 1000,
-                    text: "1000",
-                    selected: perPage == 1000
-                  }
-                ]
-              }) }}
-            </form>
+            <div class="govuk-grid-column-one-half govuk-!-padding-top-1">
+              <div style="display:flex;align-items:baseline;justify-content:flex-end;">
+                <div class="govuk-body-s" aria-label="Records per page" style="white-space:nowrap;vertical-align:baseline;">
+                  <span>Number of records per page:</span>&nbsp;
+                  {% set perPageOptions = [100, 500, 1000] %}
+                  <form id="perPageForm" action="/enrich" method="get" style="display:inline;vertical-align:baseline;">
+                    <input type="hidden" name="perPage" id="perPageInput" value="{{ perPage }}">
+                    <input type="hidden" name="page" value="1">
+                    {% for opt in perPageOptions %}
+                      {% if perPage == opt %}
+                        <strong>{{ opt }}</strong>
+                      {% else %}
+                        <a href="#" class="govuk-link perpage-link" data-perpage="{{ opt }}">{{ opt }}</a>
+                      {% endif %}
+                      {% if not loop.last %} &nbsp;|&nbsp; {% endif %}
+                    {% endfor %}
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
 
           {% set tableRows = [] %}
           {% for qualityCheck in qualityCheckData %}
             {% set actionHtml %}
-              {% if qualityCheck.status === 'Pending' and qualityCheck.paymentRequest.manualLedgerChecks[0].createdById != user.userId %}
+              {% if qualityCheck.status == 'Pending' and qualityCheck.paymentRequest.manualLedgerChecks[0].createdById != user.userId %}
                 <a href="/manual-ledger-review?paymentrequestid={{qualityCheck.paymentRequest.paymentRequestId}}" class="govuk-link" aria-label="Review invoice {{ qualityCheck.paymentRequest.invoiceNumber }} for FRN {{ qualityCheck.paymentRequest.frn }}">Review</a>
               {% endif %}
             {% endset %}
@@ -95,15 +122,13 @@
           {% endfor %}
 
           {{ govukTable({
-            caption: "Ledger assignments",
-            captionClasses: "govuk-table__caption--s",
             head: [
               { text: "Scheme", classes: "govuk-body-s" },
               { text: "Scheme year", classes: "govuk-body-s" },
               { text: "FRN", classes: "govuk-body-s" },
-              { text: "Agreement", classes: "govuk-body-s" },
-              { text: "Invoice", classes: "govuk-body-s" },
-              { text: "Request", format: "numeric", classes: "govuk-body-s" },
+              { text: "Agreement number", classes: "govuk-body-s" },
+              { text: "Invoice number", classes: "govuk-body-s" },
+              { text: "Requests", format: "numeric", classes: "govuk-body-s" },
               { text: "Total amount", format: "numeric", classes: "govuk-body-s" },
               { text: "Reviewed by", classes: "govuk-body-s" },
               { text: "Ledger changed", classes: "govuk-body-s" },
@@ -139,10 +164,28 @@
           }) }}
         </div>
       {% else %}
-        {{ govukInsetText({
-          text: "No payment requests awaiting quality check"
-        }) }}
+        <div class="govuk-inset-text">
+          {% if frn %}
+            No ledger assignments awaiting quality check were found for the FRN. Check details and try again, or 
+            <a href="/quality-check" class="govuk-link govuk-link--no-visited-state">reset table</a> 
+            to view all ledger assignments awaiting quality check.
+          {% else %}
+            No ledger assignments awaiting quality check were found.
+          {% endif %}
+        </div>
       {% endif %}
     </div>
   </div>
+  <script>
+    document.querySelectorAll('.perpage-link').forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault()
+        const newVal = this.dataset.perpage
+        const input = document.getElementById('perPageInput')
+        if (!input || String(input.value) == String(newVal)) return
+        input.value = newVal
+        document.getElementById('perPageForm').submit()
+      })
+    })
+  </script>
 {% endblock %}

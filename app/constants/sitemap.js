@@ -14,7 +14,7 @@ const MANUAL_LEDGER_LINKS = [
 ]
 
 const QUALITY_CHECK_LINKS = [
-  { href: '/quality-check', text: 'Ledger assignments awaiting quality check' }
+  { href: '/quality-check', text: 'View ledger assignments to be quality checked' }
 ]
 
 const HELP_LINKS = [

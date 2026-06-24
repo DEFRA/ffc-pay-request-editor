@@ -27,6 +27,8 @@ module.exports = [{
         userId,
         page,
         perPage,
+        checkComplete: request.query?.checkComplete,
+        status: request.query?.status,
         ...new ViewModel(viewModelDetails)
       })
     }
