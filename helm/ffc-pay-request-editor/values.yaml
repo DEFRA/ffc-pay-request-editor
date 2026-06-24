@@ -43,6 +43,7 @@ container:
   azureAppRegistrationClientSecret:
   azureAppRegistrationRedirectUrl: authenticate
   googleTagManagerKey: GTM-5XJKV8F
+  azureLogLevel: error
 
 livenessProbe:
   path: /healthz
