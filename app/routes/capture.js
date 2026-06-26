@@ -69,11 +69,13 @@ module.exports = [{
         const schemeError = error.details.find(e => e.context.key === 'scheme')
 
         const generalMessage = schemeError?.message || frnError?.message || ''
-
+        console.log(request.payload)
         return h.view(view, {
           captureData,
           page: defaultPage,
           perPage: defaultPerPage,
+          frn: request.payload.frn,
+          scheme: request.payload.scheme,
           ...new ViewModel(
             { labelText: frnSearchLabelText, value: request.payload.frn, error: frnError },
             { labelText: schemeSearchLabelText, options, value: request.payload.scheme, error: schemeError },
