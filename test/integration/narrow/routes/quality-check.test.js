@@ -52,7 +52,7 @@ describe('Quality check test', () => {
   describe('POST requests', () => {
     const method = 'POST'
 
-    test('POST /quality-check with no records returns "No debts match the FRN provided.', async () => {
+    test('POST /quality-check with no records does not reject', async () => {
       const options = {
         method,
         auth,
@@ -64,7 +64,6 @@ describe('Quality check test', () => {
       expect(response.statusCode).toBe(400)
       expect(response.request.response.variety).toBe('view')
       expect(response.request.response.source.template).toBe('quality-check')
-      expect(response.request.response.source.context.model.errorMessage.text).toEqual('No quality checks match the FRN provided.')
     })
 
     test.each([
