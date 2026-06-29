@@ -65,7 +65,7 @@ describe('Manual-ledger-review tests', () => {
       const response = await server.inject({
         method: 'GET',
         auth,
-        url: query !== undefined ? `${url}?paymentrequestid=${query}` : url
+        url: query === undefined ? url : `${url}?paymentrequestid=${query}`
       })
       expect(response.statusCode).toBe(302)
       expect(response.headers.location).toBe('/quality-check')
@@ -93,10 +93,10 @@ describe('Manual-ledger-review tests', () => {
           method: 'POST',
           auth,
           url: `${url}?paymentrequestid=1`,
-          payload: { paymentRequestId: '1', status }
+          payload: { paymentRequestId: '1', status, invoiceNumber: 'INV01234' }
         })
         expect(response.statusCode).toBe(301)
-        expect(response.headers.location).toBe('/quality-check')
+        expect(response.headers.location).toBe(`/quality-check?checkComplete=INV01234&status=${status}`)
       }
     )
   })

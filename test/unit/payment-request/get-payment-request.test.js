@@ -119,4 +119,62 @@ describe('Payment Request Functions Test Suite', () => {
       expect(results[1].remmittanceDescription).toBe('Follow-up remittance')
     })
   })
+
+  test('maps Vet Visits to Annual Health and Welfare Review', async () => {
+    await resetTables()
+    const vetScheme = { schemeId: 10, name: 'Vet Visits' }
+    const pr = {
+      paymentRequestId: 10,
+      schemeId: vetScheme.schemeId,
+      frn: 1111111111,
+      categoryId: ENRICHMENT,
+      agreementNumber: 'AG200',
+      invoiceNumber: 'INV200',
+      paymentRequestNumber: 1,
+      value: 500,
+      received: new Date(),
+      ledger: AP,
+      marketingYear: 2023,
+      daysWaiting: 1,
+      netValue: -100,
+      fesCode: 'FES-VET',
+      annualValue: '10.00',
+      remmittanceDescription: 'Vet remittance'
+    }
+
+    await db.scheme.create(vetScheme)
+    await db.paymentRequest.create(pr)
+
+    const [res] = asPlain(await getPaymentRequest(1, 10, false))
+    expect(res.schemes.name).toBe('Annual Health and Welfare Review')
+  })
+
+  test('maps SFI to SFI22', async () => {
+    await resetTables()
+    const sfiScheme = { schemeId: 20, name: 'SFI' }
+    const pr = {
+      paymentRequestId: 20,
+      schemeId: sfiScheme.schemeId,
+      frn: 2222222222,
+      categoryId: ENRICHMENT,
+      agreementNumber: 'AG300',
+      invoiceNumber: 'INV300',
+      paymentRequestNumber: 1,
+      value: 600,
+      received: new Date(),
+      ledger: AP,
+      marketingYear: 2023,
+      daysWaiting: 2,
+      netValue: -150,
+      fesCode: 'FES-SFI',
+      annualValue: '20.00',
+      remmittanceDescription: 'SFI remittance'
+    }
+
+    await db.scheme.create(sfiScheme)
+    await db.paymentRequest.create(pr)
+
+    const [res] = asPlain(await getPaymentRequest(1, 10, false))
+    expect(res.schemes.name).toBe('SFI22')
+  })
 })

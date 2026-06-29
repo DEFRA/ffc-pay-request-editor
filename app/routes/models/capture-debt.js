@@ -28,33 +28,33 @@ function viewModel (schemes, payload, error) {
     errorMessages.debtDate = Object.entries(errorMessages).filter(x => x[0].startsWith('debt-discovered') || x[0] === 'date').map(x => x[1]).join(' ')
   }
 
+  const schemeItems = [{
+    value: '',
+    text: 'Select a scheme',
+    selected: !getObjectKey(payload, 'scheme')
+  }].concat(schemes.map(x => ({
+    value: x,
+    text: x,
+    selected: getObjectKeyEquals(payload, 'scheme', x)
+  })))
+
   const scheme = {
-    classes: 'govuk-radios--small govuk-radios--inline',
+    classes: 'govuk-input--width-10',
+    id: 'scheme',
     name: 'scheme',
-    fieldset: {
-      legend: {
-        text: 'Select a scheme',
-        classes: 'govuk-fieldset__legend--s'
-      }
+    label: {
+      text: 'Scheme',
+      classes: 'govuk-label--s'
     },
-    items: schemes.map(x => {
-      return {
-        text: x,
-        value: x,
-        checked: getObjectKeyEquals(payload, 'scheme', x)
-      }
-    })
+    items: schemeItems
   }
 
   scheme.errorMessage = errorMessages?.scheme ? { text: errorMessages.scheme } : ''
 
   const frn = {
     label: {
-      text: 'Firm reference number (FRN)',
+      text: 'FRN (Firm Reference Number)',
       classes: 'govuk-label--s'
-    },
-    hint: {
-      text: 'Enter the 10-digit FRN'
     },
     classes: 'govuk-input--width-10',
     id: 'frn',
@@ -66,11 +66,11 @@ function viewModel (schemes, payload, error) {
 
   const applicationIdentifier = {
     label: {
-      text: 'Agreement/claim number',
+      text: 'Agreement / claim number',
       classes: 'govuk-label--s'
     },
     hint: {
-      text: 'Enter the agreement/claim number, for example SIP000000000001 or 1234567'
+      text: 'For example, SIP000000000001 or 12345678'
     },
     classes: 'govuk-input--width-10',
     id: 'applicationIdentifier',
@@ -101,20 +101,20 @@ function viewModel (schemes, payload, error) {
     name: 'debtType',
     fieldset: {
       legend: {
-        text: 'Select a type of debt',
+        text: 'Debt type',
         classes: 'govuk-fieldset__legend--s'
       }
     },
     items: [
       {
-        text: IRREGULAR_TEXT,
-        value: IRREGULAR,
-        checked: getObjectKeyEquals(payload, 'debtType', IRREGULAR)
-      },
-      {
         text: ADMINISTRATIVE_TEXT,
         value: ADMINISTRATIVE,
         checked: getObjectKeyEquals(payload, 'debtType', ADMINISTRATIVE)
+      },
+      {
+        text: IRREGULAR_TEXT,
+        value: IRREGULAR,
+        checked: getObjectKeyEquals(payload, 'debtType', IRREGULAR)
       }
     ]
   }
@@ -131,7 +131,7 @@ function viewModel (schemes, payload, error) {
       }
     },
     hint: {
-      text: 'For example, 27 3 2022. The debt must be from 2015 onwards'
+      text: 'For example, 27 11 2023'
     },
     items: [
       {

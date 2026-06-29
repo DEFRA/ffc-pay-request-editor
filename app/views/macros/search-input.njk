@@ -10,17 +10,11 @@
       classes: params.classes,
       inputmode: params.inputmode,
       label: {
-        text: params.labelText,
-        classes: params.labelClasses
+        text: params.labelText
       },
       hint: hint,
       errorMessage: params.errorMessage
     }) }}
 
-    {{ govukButton({
-      text: params.buttonText or "Search",
-      type: params.buttonType or "submit",
-      classes: params.buttonClasses or "govuk-button govuk-!-margin-top-2"
-    }) }}
   </div>
 {% endmacro %}

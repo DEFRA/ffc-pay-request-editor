@@ -124,10 +124,10 @@ describe('Manual-ledger-check tests', () => {
         method: 'POST',
         auth,
         url: manualLedgerCheckUrl,
-        payload: { paymentRequestId: '1', agree: true }
+        payload: { paymentRequestId: '1', agree: true, invoiceNumber: 'INV0123' }
       })
       expect(response.statusCode).toBe(302)
-      expect(response.headers.location).toBe('/quality-check')
+      expect(response.headers.location).toBe('/manual-ledger?checkComplete=INV0123')
     })
 
     test('returns manual-ledger-check view if disagree', async () => {
@@ -135,7 +135,7 @@ describe('Manual-ledger-check tests', () => {
         method: 'POST',
         auth,
         url: manualLedgerCheckUrl,
-        payload: { paymentRequestId: '1', agree: false }
+        payload: { paymentRequestId: '1', agree: false, invoiceNumber: 'INV0123' }
       })
       expect(response.statusCode).toBe(200)
       expect(response.request.response.source.template).toBe('manual-ledger-check')

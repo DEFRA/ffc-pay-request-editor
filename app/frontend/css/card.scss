@@ -2,97 +2,132 @@ $govuk-suppressed-warnings: "legacy-organisation-colours";
 $govuk-assets-path: "~govuk-frontend/dist/govuk/assets/";
 @import "~govuk-frontend/dist/govuk/index";
 
-.govuk-cards__item {
-  box-sizing: border-box;
-
-  @include govuk-media-query($until: tablet) {
-      margin-bottom: 20px;
-  }
-
-  @include govuk-media-query($from: tablet) {
-      float: left;
-      margin-bottom: 40px;
-  }
-
-  @include govuk-media-query($from: desktop) {
-      width: 33.333333%;
-
-      &:not(:nth-child(3n+3)) {
-          padding-right: 20px;
-      }
-  }
-
-  @include govuk-media-query($from: tablet, $until: desktop) {
-      width: 50%;
-
-      &:not(:nth-child(2n+2)) {
-          padding-right: 15px;
-      }
-  }
+.govuk-cards,
+.govuk-cards--2,
+.govuk-cards--3 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    margin: 0;
 }
 
-/**
-* V2 cards with background colour
-*/
-.govuk-cards::after,
-.govuk-cards--2::after,
-.govuk-cards--3::after {
-  content: '';
-  display: block;
-  clear: both;
+.govuk-cards__item,
+.govuk-cards--2__item {
+    box-sizing: border-box;
+    float: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.govuk-cards__item>ul,
+.govuk-cards--2__item>ul {
+    margin-top: auto;
+}
+
+.govuk-cards__item {
+    @include govuk-media-query($until: tablet) {
+        width: 100%;
+        padding-right: 0;
+    }
+
+    @include govuk-media-query($from: tablet) {
+        margin-bottom: 40px;
+    }
 }
 
 .govuk-cards--2__item {
-  box-sizing: border-box;
-  border: 1px solid #b1b4b6;
-  background-color: #f3f2f1;
-  padding: 20px;
-  margin-bottom: 20px;
-  float: left;
+    box-sizing: border-box;
+    border: 1px solid #b1b4b6;
+    background-color: #f3f2f1;
+    padding: 20px;
+    margin-bottom: 20px;
+    float: none;
 
-  :last-child {
-      margin-bottom: 0;
-  }
-
-  @include govuk-media-query($from: desktop) {
-    width: calc(33% - 11px);
-    min-height: 220px;
-
-    &.govuk-card--company {
-        width: calc(66.8% - 10px);
+    :last-child {
+        margin-bottom: 0;
     }
 
-    &:not(:nth-child(3n+3)) {
-        margin-right: 20px;
+    @include govuk-media-query($from: desktop) {
+        flex: 0 0 calc(33% - 11px);
+        min-height: 220px;
+
+        &.govuk-card--company {
+            flex: 0 0 calc(66.8% - 10px);
+        }
+
+        &:not(:nth-child(3n+3)) {
+            margin-right: 20px;
+        }
+
+        .govuk-cards--3 &.govuk-card--contacts {
+            margin-right: 0;
+        }
     }
 
-    .govuk-cards--3 &.govuk-card--contacts {
-        margin-right: 0;
+    @include govuk-media-query($from: tablet, $until: desktop) {
+        flex: 0 0 calc(50% - 8px);
+        min-height: 220px;
+
+        &.govuk-card--company {
+            flex: 0 0 calc(66% - 8px);
+        }
+
+        &:not(:nth-child(2n+2)) {
+            margin-right: 15px;
+        }
+
+        .govuk-cards--3 &.govuk-card--contacts {
+            margin-right: 0;
+        }
     }
-  }
 
-  @include govuk-media-query($from: tablet, $until: desktop) {
-    width: calc(50% - 8px);
-    min-height: 220px;
-
-    &.govuk-card--company {
-        width: calc(66% - 8px);
-    }
-
-    &:not(:nth-child(2n+2)) {
-        margin-right: 15px;
-    }
-
-    .govuk-cards--3 &.govuk-card--contacts {
-        margin-right: 0;
-    }
-  }
-
-  @include govuk-media-query($until: tablet) {
-    width: 100%;
-
-    &.govuk-card--company {
+    @include govuk-media-query($until: tablet) {
+        flex: 0 0 100%;
         width: 100%;
+        margin-right: 0;
+
+        &.govuk-card--company {
+            width: 100%;
+            flex: 0 0 100%;
+        }
     }
-  }
+}
+
+.govuk-cards::after,
+.govuk-cards--2::after,
+.govuk-cards--3::after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.govuk-cards__item {
+    box-sizing: border-box;
+
+    @include govuk-media-query($until: tablet) {
+        margin-bottom: 20px;
+    }
+
+    @include govuk-media-query($from: tablet) {
+        margin-bottom: 40px;
+    }
+
+    @include govuk-media-query($from: desktop) {
+        flex: 0 0 33.333333%;
+        padding-right: 20px;
+
+        &:not(:nth-child(3n+3)) {
+            padding-right: 20px;
+        }
+    }
+
+    @include govuk-media-query($from: tablet, $until: desktop) {
+        flex: 0 0 50%;
+
+        &:not(:nth-child(2n+2)) {
+            padding-right: 15px;
+        }
+    }
 }

@@ -156,7 +156,7 @@ describe('Enrich request tests', () => {
         '"debt-type" is required'
       ])
       expect(model.radio.errorMessage.text).toBe('Select a type of debt')
-      expect(model.date.errorMessage.text).toBe('The date submitted is not valid')
+      expect(model.date.errorMessage.text).toBe('Enter a valid date')
     })
 
     test('displays error when date is in the future', async () => {
@@ -188,11 +188,73 @@ describe('Enrich request tests', () => {
       expect(qcRow.status).toBe(PENDING)
       expect(debtRow.paymentRequestId).toBe(1)
       expect(debtRow.schemeId).toBe(SCHEME_ID_SFI)
-      expect(parseInt(debtRow.frn)).toBe(1234567890)
+      expect(Number.parseInt(debtRow.frn)).toBe(1234567890)
       expect(debtRow.debtType).toBe(ADMINISTRATIVE)
       expect(debtRow.recoveryDate).toBe(expectedDate)
       expect(response.request.response.statusCode).toBe(302)
+      expect(response.headers.location).toBe('/enrich?debtAdded=true')
+    })
+  })
+
+  describe('POST /enrich-request-confirm', () => {
+    const method = 'POST'
+
+    test('redirects to /enrich if already released', async () => {
+      const payload = { day: 16, month: 10, year: 2015, 'debt-type': ADMINISTRATIVE, 'invoice-number': paymentRequest.invoiceNumber, 'payment-request-id': 1 }
+      paymentRequest.released = new Date()
+      await db.scheme.create(scheme)
+      await db.paymentRequest.create(paymentRequest)
+
+      const response = await server.inject({ method, url: '/enrich-request-confirm', payload, auth })
+      expect(response.request.response.statusCode).toBe(302)
       expect(response.headers.location).toBe('/enrich')
+    })
+
+    test('displays validation errors when input missing', async () => {
+      const payload = { 'invoice-number': paymentRequest.invoiceNumber, 'payment-request-id': 1 }
+      paymentRequest.released = undefined
+      await db.scheme.create(scheme)
+      await db.paymentRequest.create(paymentRequest)
+
+      const response = await server.inject({ method, url: '/enrich-request-confirm', payload, auth })
+      const model = response.request.response.source.context.model
+      expect(response.request.response.statusCode).toBe(400)
+      expect(model.errorMessage.titleText).toBe('There is a problem')
+      expect(model.errorMessage.errorList.map(e => e.message)).toEqual([
+        '"day" is required',
+        '"month" is required',
+        '"year" is required',
+        '"debt-type" is required'
+      ])
+      expect(model.radio.errorMessage.text).toBe('Select a type of debt')
+      expect(model.date.errorMessage.text).toBe('Enter a valid date')
+    })
+
+    test('displays error when date is in the future', async () => {
+      const payload = { day: 2, month: 3, year: 4000, 'debt-type': ADMINISTRATIVE, 'invoice-number': paymentRequest.invoiceNumber, 'payment-request-id': 1 }
+      paymentRequest.released = undefined
+      await db.scheme.create(scheme)
+      await db.paymentRequest.create(paymentRequest)
+
+      const response = await server.inject({ method, url: '/enrich-request-confirm', payload, auth })
+      expect(response.request.response.statusCode).toBe(400)
+      expect(response.request.response.source.context.model.date.errorMessage.text).toBe('Date cannot be after 25 10 2015')
+    })
+
+    test('renders confirm view with debtTypeText on success', async () => {
+      const payload = { day: 2, month: 3, year: 2015, 'debt-type': ADMINISTRATIVE, 'invoice-number': paymentRequest.invoiceNumber, 'payment-request-id': 1 }
+      paymentRequest.released = undefined
+      await db.scheme.create(scheme)
+      await db.paymentRequest.create(paymentRequest)
+
+      const response = await server.inject({ method, url: '/enrich-request-confirm', payload, auth })
+      expect(response.statusCode).toBe(200)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('enrich-request-confirm')
+      const ctx = response.request.response.source.context
+      expect(ctx.invoiceNumber).toBe(payload['invoice-number'])
+      expect(ctx.debtType).toBe(payload['debt-type'])
+      expect(ctx.debtTypeText).toBe('Administrative')
     })
   })
 })

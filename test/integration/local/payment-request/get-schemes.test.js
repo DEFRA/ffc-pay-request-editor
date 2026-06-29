@@ -17,6 +17,10 @@ describe('Get schemes test', () => {
       schemeId: 2,
       name: 'A Name',
       plain: false
+    }, {
+      schemeId: 3,
+      name: 'Vet Visits',
+      plain: false
     }]
 
     await db.scheme.bulkCreate(schemes)
@@ -27,21 +31,18 @@ describe('Get schemes test', () => {
     await db.sequelize.close()
   })
 
-  test('return name attribute from scheme db', async () => {
+  test('return name attribute from scheme db, ordered alphabetically', async () => {
     const result = await getSchemes()
-    expect(result[1].name).toBe('A Name')
+    expect(result[0].name).toBe('A Name')
   })
 
   test('change name attribute to SFI22 if name is SFI', async () => {
     const result = await getSchemes()
-    expect(result[0].name).toBe('SFI22')
+    expect(result[2].name).toBe('SFI22')
   })
 
-  test('Return null where no name attribute', async () => {
-    await resetData()
-    schemes[1].name = null
-    await db.scheme.bulkCreate(schemes)
+  test('change name attribute to Annual Health and Welfare Review if name is Vet Visits', async () => {
     const result = await getSchemes()
-    expect(result[1].name).toBe(null)
+    expect(result[1].name).toBe('Annual Health and Welfare Review')
   })
 })

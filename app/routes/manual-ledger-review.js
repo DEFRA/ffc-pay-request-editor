@@ -14,7 +14,7 @@ module.exports = [{
   options: {
     auth: { scope: [ledger] },
     handler: async (request, h) => {
-      const paymentRequestId = parseInt(request.query.paymentrequestid)
+      const paymentRequestId = Number.parseInt(request.query.paymentrequestid)
 
       if (!paymentRequestId) {
         return h.redirect(qcView)
@@ -38,7 +38,8 @@ module.exports = [{
     validate: {
       payload: Joi.object({
         paymentRequestId: Joi.string().required(),
-        status: Joi.string().required()
+        status: Joi.string().required(),
+        invoiceNumber: Joi.string().required()
       }),
       failAction: async (request, h, error) => {
         const { paymentRequestId } = request.payload
@@ -49,7 +50,7 @@ module.exports = [{
     handler: async (request, h) => {
       await ledgerReview(request)
 
-      return h.redirect(qcView).code(statusCodes.MOVED_PERMANENTLY)
+      return h.redirect(`${qcView}?checkComplete=${request.payload.invoiceNumber}&status=${request.payload.status}`).code(statusCodes.MOVED_PERMANENTLY)
     }
   }
 }]

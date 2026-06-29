@@ -6,7 +6,7 @@
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% set pageTitle = "Attach new dataset to invoice " ~ paymentRequest.invoiceNumber %}
+{% set pageTitle = "Enrich request" %}
 
 {% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
 
@@ -16,7 +16,7 @@
       text: "Home",
       href: "/"
     }, {
-      text: "Requests awaiting reporting data",
+      text: "View awaiting reporting data",
       href: "/enrich"
     }, {
       text: pageTitle
@@ -27,27 +27,72 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <span class="govuk-caption-l">FRN: {{ paymentRequest.frn }}</span>
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
-    </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <form action="/enrich-request" method="POST" novalidate>
+      <p class="govuk-body">
+        Add the debt type and the date the debt was discovered to the payment request.
+      </p>
+      <h2 class="govuk-heading-m">Request to enrich</h2>
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            FRN
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ paymentRequest.frn }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Scheme
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ paymentRequest.schemes.name }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Year
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ paymentRequest.marketingYear }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Agreement number
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ paymentRequest.agreementNumber }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Invoice number
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ paymentRequest.invoiceNumber }}
+          </dd>
+        </div>
+      </dl>
+      <form action="/enrich-request-confirm" method="POST" novalidate>
         <input type="hidden" name="crumb" value="{{crumb}}"/>
         <input type="hidden" name="invoice-number" value="{{ paymentRequest.invoiceNumber }}"/>
         <input type="hidden" name="payment-request-id" value="{{ paymentRequest.paymentRequestId }}"/>
+        <h2 class="govuk-heading-m">Dataset to attach</h2>
         {% if model.errorMessage %}
-        {{ govukErrorSummary(model.errorMessage) }}
+          {{ govukErrorSummary(model.errorMessage) }}
         {% endif %}
         {{ govukRadios(model.radio) }}
         {{ govukDateInput(model.date) }}
-        {{ govukButton({
-          text: "Continue",
-          attributes: {
-            id: "submit"
-          }
-        }) }}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "submit"
+            }
+          }) }}
+          <a class="govuk-link" href="/enrich">Cancel</a>
+        </div>
       </form>
     </div>
   </div>

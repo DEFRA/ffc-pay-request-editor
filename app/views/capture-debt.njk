@@ -2,6 +2,7 @@
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
@@ -16,6 +17,9 @@
       text: "Home",
       href: "/"
     }, {
+      text: "Manage unattached reporting data",
+      href: "/capture"
+    }, {
       text: pageTitle
     }]
   })}}
@@ -25,52 +29,60 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
-    </div>
-    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body">
+        Provide upcoming debt information for payments that haven’t been processed.
+      </p>
+      <p class="govuk-body">
+        Datasets will be unattached within request editor and automatically attached to a matching payment request when received.
+      </p>
 
-    {% if model.errorSummary %}
-      {{ govukErrorSummary({
-        titleText: "There is a problem",
-        errorList: model.errorSummary
-      }) 
-    }}
-    {% endif %}
-
-    <form method="POST" action="/capture-debt" novalidate>
-      <input type="hidden" name="crumb" value="{{ crumb }}"/>
-      
-      <div class="govuk-form-group">
-        {{ govukRadios(model.components.scheme) }}
-      </div>
-
-      <div class="govuk-form-group">
-        {{ govukInput(model.components.frn) }}
-      </div>
-
-      <div class="govuk-form-group">
-        {{ govukInput(model.components.applicationIdentifier) }}
-      </div>
-
-      <div class="govuk-form-group">
-        {{ govukInput(model.components.net) }}
-      </div>
-
-      <div class="govuk-form-group">
-        {{ govukRadios(model.components.debtType) }}
-      </div>
-
-      <div class="govuk-form-group">
-        {{ govukDateInput(model.components.debtDate) }}
-      </div>
-
-      {{ govukButton({
-          text: "Continue",
-          attributes: {
-            id: "capture-debt"
-          }
+      {% if model.errorSummary %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: model.errorSummary
         }) 
       }}
-    
-    </form>
+      {% endif %}
+
+      <form method="POST" action="/capture-debt-confirm" novalidate>
+        <input type="hidden" name="crumb" value="{{ crumb }}"/>
+        
+        <div class="govuk-form-group">
+          {{ govukSelect(model.components.scheme) }}
+        </div>
+
+        <div class="govuk-form-group">
+          {{ govukInput(model.components.frn) }}
+        </div>
+
+        <div class="govuk-form-group">
+          {{ govukInput(model.components.applicationIdentifier) }}
+        </div>
+
+        <div class="govuk-form-group">
+          {{ govukInput(model.components.net) }}
+        </div>
+
+        <div class="govuk-form-group">
+          {{ govukRadios(model.components.debtType) }}
+        </div>
+
+        <div class="govuk-form-group">
+          {{ govukDateInput(model.components.debtDate) }}
+        </div>
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+              text: "Continue",
+              attributes: {
+                id: "capture-debt"
+              }
+            }) 
+          }}
+          <a class="govuk-link" href="/capture">Cancel</a>
+        </div>
+      
+      </form>
+    </div>
   </div>
 {% endblock %}

@@ -70,12 +70,12 @@ describe('capture-debt route', () => {
   })
 
   describe('POST /capture-debt - Valid submission', () => {
-    test('redirects to home and saves to database', async () => {
+    test('redirects to capture with debtAdded=true and saves to database', async () => {
       await db.paymentRequest.create({ schemeId: 1, frn: VALID_PAYLOAD.frn })
       const result = await server.inject({ method: 'POST', url: '/capture-debt', payload: VALID_PAYLOAD, auth })
 
       expect(result.statusCode).toBe(302)
-      expect(result.headers.location).toBe('/')
+      expect(result.headers.location).toBe('/capture?debtAdded=true')
 
       const debtData = await db.debtData.findOne({ where: { schemeId: 1, frn: VALID_PAYLOAD.frn } })
       expect(debtData.schemeId).toBe(1)
@@ -110,5 +110,49 @@ describe('capture-debt route', () => {
         expect(result.request.response.source.context.model.schemes).toStrictEqual(SCHEMES.map(s => s.name))
       })
     })
+  })
+
+  test('POST /capture-debt-confirm returns confirm view with formatted date', async () => {
+    const response = await server.inject({
+      method: 'POST',
+      url: '/capture-debt-confirm',
+      payload: VALID_PAYLOAD,
+      auth
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect(response.request.response.variety).toBe('view')
+    expect(response.request.response.source.template).toBe('capture-debt-confirm')
+    const ctx = response.request.response.source.context
+    expect(ctx.scheme).toBe(VALID_PAYLOAD.scheme)
+    expect(ctx.debtDiscoveredDay).toBe('02')
+    expect(ctx.debtDiscoveredMonth).toBe('01')
+    expect(ctx.debtDiscoveredYear).toBe(2015)
+  })
+
+  test('POST /capture-debt normalises SFI22 to SFI when resolving scheme id', async () => {
+    const payload = { ...VALID_PAYLOAD, scheme: 'SFI22' }
+
+    await db.paymentRequest.create({ schemeId: SCHEME_ID_SFI, frn: payload.frn })
+
+    getSchemeId.mockClear()
+    getSchemeId.mockResolvedValue(SCHEME_ID_SFI)
+
+    const result = await server.inject({
+      method: 'POST',
+      url: '/capture-debt',
+      payload,
+      auth
+    })
+
+    expect(result.statusCode).toBe(302)
+    expect(result.headers.location).toBe('/capture?debtAdded=true')
+
+    const calledNames = getSchemeId.mock.calls.map(c => c[0])
+    expect(calledNames).toContain('SFI')
+
+    const debt = await db.debtData.findOne({ where: { frn: payload.frn } })
+    expect(debt).toBeDefined()
+    expect(debt.schemeId).toBe(SCHEME_ID_SFI)
   })
 })

@@ -11,7 +11,7 @@ const isLeapYear = (payload, errorMessage) => {
   if (payload?.day === '29' && payload?.month === '02') {
     const isLeap = new Date(payload?.year, 1, 29).getDate() === 29
     if (!isLeap) {
-      errorMessage['date-error'] = { text: 'It is not currently a leap year.' }
+      errorMessage['date-error'] = { text: 'The year provided is not a leap year' }
     }
   }
 }
@@ -28,7 +28,7 @@ function viewModel (payload, error) {
         detail.context.label === 'year') {
         detail.href = `#debt-discovered-date-${detail.context.label}`
         errorMessage['date-error'] = {
-          text: 'The date submitted is not valid'
+          text: 'Enter a valid date'
         }
       } else if (detail.context.label === 'date') {
         const text = getDateText(detail.message)
@@ -38,7 +38,7 @@ function viewModel (payload, error) {
           text
         }
       } else if (detail.context.label === 'date-not-leap-year') {
-        const text = 'Debt date entered is not a leap year'
+        const text = 'The year provided is not a leap year'
         detail.href = '#debt-discovered-date-day'
         detail.text = text
         errorMessage['date-error'] = {
@@ -72,20 +72,20 @@ function viewModel (payload, error) {
       classes: 'govuk-radios--small',
       fieldset: {
         legend: {
-          text: 'Select a type of debt',
-          classes: 'govuk-label govuk-label--s'
+          text: 'Debt type',
+          classes: 'govuk-label'
         }
       },
       items: [
         {
-          text: IRREGULAR_TEXT,
-          value: IRREGULAR,
-          checked: getObjectKeyEquals(payload, 'debt-type', IRREGULAR)
-        },
-        {
           text: ADMINISTRATIVE_TEXT,
           value: ADMINISTRATIVE,
           checked: getObjectKeyEquals(payload, 'debt-type', ADMINISTRATIVE)
+        },
+        {
+          text: IRREGULAR_TEXT,
+          value: IRREGULAR,
+          checked: getObjectKeyEquals(payload, 'debt-type', IRREGULAR)
         }
       ],
       errorMessage: errorMessage['radio-error']
@@ -95,11 +95,11 @@ function viewModel (payload, error) {
       fieldset: {
         legend: {
           text: 'Debt date discovered',
-          classes: 'govuk-fieldset__legend govuk-fieldset__legend--s'
+          classes: 'govuk-fieldset__legend'
         }
       },
       hint: {
-        text: 'For example, 27 3 2022. The debt must be from 2015 onwards'
+        text: 'For example, 27 11 2023'
       },
       errorMessage: errorMessage['date-error'],
       items: [

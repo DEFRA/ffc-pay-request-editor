@@ -1,4 +1,4 @@
-let SCHEMES = [{ schemeId: 1, name: 'SFI' }, { schemeId: 2, name: 'SFI Pilot' }]
+let SCHEMES = [{ schemeId: 1, name: 'SFI' }, { schemeId: 2, name: 'SFI Pilot' }, { schemeId: 4, name: 'Vet Visits' }]
 
 const SCHEME_NAMES = SCHEMES.map(scheme => scheme.name)
 

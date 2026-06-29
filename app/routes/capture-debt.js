@@ -9,14 +9,101 @@ const statusCodes = require('../constants/status-codes')
 
 const view = 'capture-debt'
 
+const createFailAction = (viewName) => async (request, h, error) => {
+  const schemes = (await getSchemes()).map(x => x.name)
+  return h.view(viewName, new ViewModel(schemes, request.payload, error)).code(statusCodes.BAD_REQUEST).takeover()
+}
+
+const validateAndFormatPayload = async (payload) => {
+  const schemes = (await getSchemes()).map(x => x.name)
+
+  const validation = schema().validate(payload, { abortEarly: false })
+  if (validation.error) {
+    return { validationError: validation.error, schemes }
+  }
+
+  const day = format(payload['debt-discovered-day'])
+  const month = format(payload['debt-discovered-month'])
+  const year = payload['debt-discovered-year']
+  const validDate = dateSchema({ date: `${year}-${month}-${day}` })
+  if (validDate.error) {
+    return { dateError: validDate.error, schemes, payload, day, month, year }
+  }
+
+  return { schemes, payload, day, month, year }
+}
+
+const respondValidationErrors = (h, result, payload) => {
+  if (result.validationError) {
+    return h.view(view, new ViewModel(result.schemes, payload, result.validationError))
+      .code(statusCodes.BAD_REQUEST)
+      .takeover()
+  }
+  if (result.dateError) {
+    return h.view(view, new ViewModel(result.schemes, payload, result.dateError))
+      .code(statusCodes.BAD_REQUEST)
+      .takeover()
+  }
+  return null
+}
+
+const normalizeScheme = (payload) => {
+  if (payload.scheme === 'SFI22') {
+    payload.scheme = 'SFI'
+  }
+  if (payload.scheme === 'Annual Health and Welfare Review') {
+    payload.scheme = 'Vet Visits'
+  }
+}
+
 module.exports = [{
   method: 'GET',
   path: '/capture-debt',
   options: {
     auth: { scope: [enrichment] },
-    handler: async (_request, h) => {
+    handler: async (request, h) => {
       const schemes = (await getSchemes()).map(x => x.name)
-      return h.view(view, new ViewModel(schemes))
+      const payload = {
+        scheme: request.query?.scheme,
+        frn: request.query?.frn,
+        applicationIdentifier: request.query?.applicationIdentifier,
+        net: request.query?.net,
+        debtType: request.query?.debtType,
+        'debt-discovered-day': request.query?.['debt-discovered-day'],
+        'debt-discovered-month': request.query?.['debt-discovered-month'],
+        'debt-discovered-year': request.query?.['debt-discovered-year']
+      }
+
+      return h.view(view, new ViewModel(schemes, payload))
+    }
+  }
+},
+{
+  method: 'POST',
+  path: '/capture-debt-confirm',
+  options: {
+    auth: { scope: [enrichment] },
+    validate: {
+      payload: schema(),
+      failAction: createFailAction(view)
+    },
+    handler: async (request, h) => {
+      const result = await validateAndFormatPayload(request.payload)
+      const errorResponse = respondValidationErrors(h, result, request.payload)
+      if (errorResponse) {
+        return errorResponse
+      }
+
+      return h.view(view + '-confirm', {
+        scheme: request.payload.scheme,
+        frn: request.payload.frn,
+        applicationIdentifier: request.payload.applicationIdentifier,
+        net: request.payload.net,
+        debtType: request.payload.debtType,
+        debtDiscoveredDay: result.day,
+        debtDiscoveredMonth: result.month,
+        debtDiscoveredYear: result.year
+      })
     }
   }
 },
@@ -27,27 +114,19 @@ module.exports = [{
     auth: { scope: [enrichment] },
     validate: {
       payload: schema(),
-      failAction: async (request, h, error) => {
-        const schemes = (await getSchemes()).map(x => x.name)
-        return h.view(view, new ViewModel(schemes, request.payload, error)).code(statusCodes.BAD_REQUEST).takeover()
-      }
+      failAction: createFailAction(view)
     },
     handler: async (request, h) => {
-      if (request.payload.scheme === 'SFI22') {
-        request.payload.scheme = 'SFI'
+      const result = await validateAndFormatPayload(request.payload)
+      const errorResponse = respondValidationErrors(h, result, request.payload)
+      if (errorResponse) {
+        return errorResponse
       }
-      const day = format(request.payload['debt-discovered-day'])
-      const month = format(request.payload['debt-discovered-month'])
-      const year = request.payload['debt-discovered-year']
-      const validDate = dateSchema({ date: `${year}-${month}-${day}` })
 
-      if (validDate.error) {
-        const schemes = (await getSchemes()).map(x => x.name)
-        return h.view(view, new ViewModel(schemes, request.payload, validDate.error)).code(statusCodes.BAD_REQUEST).takeover()
-      }
+      normalizeScheme(request.payload)
 
       await captureDebtData(request)
-      return h.redirect('/')
+      return h.redirect('/capture?debtAdded=true')
     }
   }
 }]

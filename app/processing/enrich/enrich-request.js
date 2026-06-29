@@ -8,7 +8,7 @@ const { sendEnrichRequestEvent } = require('../../event')
 const { checkAwaitingManualLedgerDebtData } = require('../../manual-ledger')
 
 const enrichRequest = async (user, payload, paymentRequest) => {
-  const paymentRequestId = parseInt(payload['payment-request-id'])
+  const paymentRequestId = Number.parseInt(payload['payment-request-id'])
 
   if (paymentRequest.categoryId === LEDGER_ENRICHMENT) {
     await updatePaymentRequestCategory(paymentRequestId, LEDGER_CHECK)

@@ -1,20 +1,20 @@
 const HOME = { href: '/', text: 'Home' }
 
 const CAPTURE_LINKS = [
-  { href: '/capture', text: 'Capture reporting data' },
+  { href: '/capture', text: 'Manage unattached reporting data' },
   { href: '/capture-debt', text: 'Create new reporting dataset' }
 ]
 
 const ENRICH_LINKS = [
-  { href: '/enrich', text: 'Requests awaiting reporting data' }
+  { href: '/enrich', text: 'View awaiting reporting data' }
 ]
 
 const MANUAL_LEDGER_LINKS = [
-  { href: '/manual-ledger', text: 'Manual Ledger Assignment' }
+  { href: '/manual-ledger', text: 'View awaiting ledger assignment' }
 ]
 
 const QUALITY_CHECK_LINKS = [
-  { href: '/quality-check', text: 'Ledger assignments awaiting quality check' }
+  { href: '/quality-check', text: 'View ledger assignments to be quality checked' }
 ]
 
 const HELP_LINKS = [

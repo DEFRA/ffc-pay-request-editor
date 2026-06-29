@@ -4,8 +4,8 @@ const { mapExtract } = require('../extract')
 const schema = require('./schemas/capture-by-frn-or-scheme')
 const Joi = require('joi')
 const { enrichment } = require('../auth/permissions')
-const frnSearchLabelText = 'Search for data by FRN number'
-const schemeSearchLabelText = 'Search for data by scheme'
+const frnSearchLabelText = 'FRN (Firm Reference Number)'
+const schemeSearchLabelText = 'Scheme'
 const convertToCSV = require('../convert-to-csv')
 const config = require('../config')
 const options = require('../constants/scheme-names')
@@ -34,6 +34,7 @@ module.exports = [{
         captureData,
         page,
         perPage,
+        debtAdded: request.query?.debtAdded,
         ...new ViewModel(
           {
             id: 'user-search-frn',
@@ -68,11 +69,13 @@ module.exports = [{
         const schemeError = error.details.find(e => e.context.key === 'scheme')
 
         const generalMessage = schemeError?.message || frnError?.message || ''
-
+        console.log(request.payload)
         return h.view(view, {
           captureData,
           page: defaultPage,
           perPage: defaultPerPage,
+          frn: request.payload.frn,
+          scheme: request.payload.scheme,
           ...new ViewModel(
             { labelText: frnSearchLabelText, value: request.payload.frn, error: frnError },
             { labelText: schemeSearchLabelText, options, value: request.payload.scheme, error: schemeError },
@@ -95,10 +98,10 @@ module.exports = [{
         captureData = captureData.filter(x => x.frn === String(frn))
       }
       if (captureData.length) {
-        return h.view(view, { captureData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }) })
+        return h.view(view, { captureData, page: defaultPage, perPage: defaultPerPage, frn, scheme, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }) })
       }
 
-      return h.view(view, new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }, { message: 'No records could be found for that FRN/scheme combination.' })).code(statusCodes.BAD_REQUEST)
+      return h.view(view, { frn, scheme, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }) })
     }
   }
 }, {
@@ -132,32 +135,28 @@ module.exports = [{
   options: {
     auth: { scope: [enrichment] },
     handler: async (_request, h) => {
-      try {
-        const getDebtsParams = {
-          includeAttached: true,
-          page: defaultPage,
-          pageSize: defaultPerPage,
-          usePagination: false
-        }
-        const debts = await getDebts(getDebtsParams)
-        if (debts) {
-          const extractData = mapExtract(debts)
-          const res = convertToCSV(extractData)
-          if (res) {
-            // Ensure that the £ symbol is properly encoded in UTF-8
-            const utf8BOM = '\uFEFF'
-            const csvContent = utf8BOM + res
-            return h.response(csvContent)
-              .type('text/csv; charset=utf-8')
-              .header('Connection', 'keep-alive')
-              .header('Cache-Control', 'no-cache')
-              .header('Content-Disposition', `attachment;filename=${config.debtsReportName}`)
-          }
-        }
-        return h.view('debts-report-unavailable')
-      } catch (err) {
-        return h.view('debts-report-unavailable')
+      const getDebtsParams = {
+        includeAttached: true,
+        page: defaultPage,
+        pageSize: defaultPerPage,
+        usePagination: false
       }
+      const debts = await getDebts(getDebtsParams)
+      if (debts) {
+        const extractData = mapExtract(debts)
+        const res = convertToCSV(extractData)
+        if (res) {
+          // Ensure that the £ symbol is properly encoded in UTF-8
+          const utf8BOM = '\uFEFF'
+          const csvContent = utf8BOM + res
+          return h.response(csvContent)
+            .type('text/csv; charset=utf-8')
+            .header('Connection', 'keep-alive')
+            .header('Cache-Control', 'no-cache')
+            .header('Content-Disposition', `attachment;filename=${config.debtsReportName}`)
+        }
+      }
+      return h.view('debts-report-unavailable')
     }
   }
 }]

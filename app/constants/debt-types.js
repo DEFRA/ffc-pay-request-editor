@@ -9,6 +9,7 @@ const IRREGULAR = DEBT_TYPES.find(debt => debt.id === 'irr').id
 const IRREGULAR_TEXT = DEBT_TYPES.find(debt => debt.id === 'irr').text
 
 module.exports = {
+  DEBT_TYPES,
   DEBT_IDS,
   ADMINISTRATIVE,
   ADMINISTRATIVE_TEXT,

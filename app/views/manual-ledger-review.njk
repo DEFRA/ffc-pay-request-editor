@@ -17,7 +17,7 @@
       text: "Home",
       href: "/"
     }, {
-      text: "Ledger assignments awaiting quality check",
+      text: "View ledger assignments to be quality checked",
       href: "/quality-check"
     }, {
       text: pageTitle
@@ -30,9 +30,15 @@
     <div class="govuk-grid-column-two-thirds">
       <span class="govuk-caption-l">{{model.manualLedgerData.invoiceNumber}}</span>
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+      <p class="govuk-body">
+        Review the provisional payment details and confirm that they are correct.
+      </p>
+      <p class="govuk-body">
+        If the details are incorrect, it will be sent back to ledger assignment to be reviewed and amended.
+      </p>
     </div>
     <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">Original</h2>
+      <h2 class="govuk-heading-m">Original payment details</h2>
       {{ paymentRequestHeader(model.manualLedgerData) }}
 
       <details class="govuk-details" data-module="govuk-details">
@@ -46,7 +52,7 @@
         </div>
       </details>
 
-      <h2 class="govuk-heading-m">Provisional</h2>
+      <h2 class="govuk-heading-m">Provisional payment details</h2>
       {% for data in model.manualLedgerData.manualLedgerChecks %}
         {{ paymentRequestHeader(data.ledgerPaymentRequest) }}
 
@@ -72,7 +78,7 @@
       <form action="/manual-ledger-review" method="post" novalidate>
         <input type="hidden" name="paymentRequestId" value="{{model.manualLedgerData.paymentRequestId}}"/>
         <input type="hidden" name="crumb" value="{{crumb}}"/>
-        
+        <input type="hidden" name="invoiceNumber" value="{{model.manualLedgerData.invoiceNumber}}"/>
         {{ govukRadios(model.ledgerAgreement) }}
         
         {{ govukButton({

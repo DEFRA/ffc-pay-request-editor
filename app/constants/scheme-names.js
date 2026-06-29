@@ -2,7 +2,7 @@ module.exports = [
   'SFI22',
   'SFI Pilot',
   'Lump Sums',
-  'Vet Visits',
+  'Annual Health and Welfare Review',
   'CS',
   'BPS',
   'SFI23',
