@@ -1,7 +1,7 @@
 const HOME = { href: '/', text: 'Home' }
 
 const CAPTURE_LINKS = [
-  { href: '/capture', text: 'Manage unattached reporting data' },
+  { href: '/capture', text: 'Manage unattached debt data' },
   { href: '/capture-debt', text: 'Create new reporting dataset' }
 ]
 
@@ -25,9 +25,9 @@ const HELP_LINKS = [
 
 module.exports = [
   { title: '', links: [HOME] },
-  { title: 'Unattached reporting datasets', links: CAPTURE_LINKS },
-  { title: 'Requests awaiting reporting data', links: ENRICH_LINKS },
-  { title: 'Awaiting ledger assignment', links: MANUAL_LEDGER_LINKS },
-  { title: 'Requests awaiting quality check', links: QUALITY_CHECK_LINKS },
+  { title: 'Manage unattached debt data', links: CAPTURE_LINKS },
+  { title: 'Requests awaiting debt data', links: ENRICH_LINKS },
+  { title: 'Manual ledger assignment', links: MANUAL_LEDGER_LINKS },
+  { title: 'Ledger assignment quality check', links: QUALITY_CHECK_LINKS },
   { title: 'Help', links: HELP_LINKS },
 ]

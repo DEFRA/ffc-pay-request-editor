@@ -1,0 +1,48 @@
+{% extends '_layout.njk' %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{% set pageTitle = "Remove debt data for " ~ frn ~ " | " ~ scheme %}
+
+{% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [{
+      text: "Home",
+      href: "/"
+    }, {
+      text: "Manage unattached debt data",
+      href: "/capture"
+    }, {
+      text: pageTitle
+    }]
+  })}}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="interruption-card">
+        <div class="interruption-card__content">
+          <h1 class="interruption-card__heading">Are you sure you want to remove this debt data?</h1>
+          <div class="interruption-card__body">
+            <p>Removing this debt data for {{ frn }} | {{ scheme }} means it will no longer be available to attach.</p>
+            <p>Any related payment requests which require debt data will it need adding manually.</p>
+          </div>
+          <div class="govuk-button-group interruption-card__actions">
+            <form method="POST" action="/capture/delete" autocomplete="off" novalidate>
+              <input type="hidden" name="crumb" value="{{ crumb }}"/>
+              <input type="hidden" name="debtDataId" value="{{ debtdataid }}"/>
+              <div class="govuk-button-group moj-interruption-card__actions">
+                <button id="submit" draggable="false" class="govuk-button govuk-button--inverse" data-module="govuk-button">
+                  Yes, remove
+                </button>
+                <a class="govuk-link govuk-link--inverse" href="/capture">Cancel</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
