@@ -9,7 +9,7 @@
       {% if auth.isEnrichmentUser %}
         <div class="govuk-cards govuk-cards--2">
           <div class="govuk-cards--2__item govuk-card--dashboard">
-            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Unattached reporting datasets</h2>
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Manage unattached debt data</h2>
             <p class="govuk-heading-xl govuk-!-margin-bottom-3">
               {{ captureCount }}
             </p>
@@ -20,13 +20,13 @@
             </ul>
           </div>
           <div class="govuk-cards--2__item govuk-card--dashboard">
-            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Requests awaiting reporting data</h2>
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Requests awaiting debt data</h2>
             <p class="govuk-heading-xl govuk-!-margin-bottom-3">
               {{ enrichCount }}
             </p>
             <ul class="govuk-list">
               <li>
-                <a href="/enrich" class="govuk-link">View awaiting reporting data</a>
+                <a href="/enrich" class="govuk-link">View awaiting debt data</a>
               </li>
             </ul>
           </div>
@@ -35,24 +35,24 @@
       {% if auth.isLedgerUser %}
         <div class="govuk-cards govuk-cards--2">
           <div class="govuk-cards--2__item govuk-card--dashboard">
-            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Awaiting ledger assignment</h2>
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Manual ledger assignment</h2>
             <p class="govuk-heading-xl govuk-!-margin-bottom-3">
               {{ manualLedgerCount }}
             </p>
             <ul class="govuk-list">
               <li>
-                <a href="/manual-ledger" class="govuk-link">View awaiting ledger assignment</a>
+                <a href="/manual-ledger" class="govuk-link">View awaiting manual ledger assignment</a>
               </li>
             </ul>
           </div>
           <div class="govuk-cards--2__item govuk-card--dashboard">
-            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Requests awaiting quality check</h2>
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Ledger assignment quality check</h2>
             <p class="govuk-heading-xl govuk-!-margin-bottom-3">
               {{ qualityCheckCount }}
             </p>
             <ul class="govuk-list">
               <li>
-                <a href="/quality-check" class="govuk-link">View awaiting quality check</a>
+                <a href="/quality-check" class="govuk-link">View awaiting ledger assignment quality check</a>
               </li>
             </ul>
           </div>

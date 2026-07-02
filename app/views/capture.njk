@@ -10,7 +10,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "macros/search-combined.njk" import searchCombined %}
 
-{% set pageTitle = "Manage unattached reporting data" %}
+{% set pageTitle = "Manage unattached debt data" %}
 
 {% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
 
@@ -28,7 +28,7 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      {% if debtAdded %}
+      {% if debtAdded or debtDeleted %}
         <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
           <div class="govuk-notification-banner__header">
             <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title-hold-added">
@@ -37,20 +37,20 @@
           </div>
           <div class="govuk-notification-banner__content">
             <h3 class="govuk-notification-banner__heading">
-              New reporting dataset has been successfully created.
+              {% if debtAdded %}
+                New reporting dataset has been successfully created.
+              {% else %}
+                Reporting dataset has been successfully deleted.
+              {% endif %}
             </h3>
           </div>
         </div>
       {% endif %}
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
       <p class="govuk-body">
-        Provide a new dataset and search previous pending and attached datasets.
+        Provide unattached debt data in advance of payment request processing and search previous pending and attached datasets.
       </p>
 
-      <h2 class="govuk-heading-m">Create new reporting dataset</h2>
-      <p class="govuk-body">
-        Provide upcoming debt information for payments that haven’t been processed.
-      </p>
       {{ govukButton({
         text: "Create new dataset",
         href: "/capture-debt"
@@ -156,9 +156,13 @@
                 </td>
                 <td class="govuk-table__cell govuk-body-s">
                   {% if not data.paymentRequestId %}
-                    <a href="#" class="govuk-link js-post-link" data-action="/capture/delete" data-crumb="{{ crumb }}" data-debtdataid="{{ data.debtDataId }}" aria-label="Delete dataset for FRN {{ data.frn }} with agreement {{ (data.reference if data.reference else 'manual enrichment') }}">
-                      Delete
-                    </a>
+                    <form method="post" action="/capture-delete-confirm">
+                      <input type="hidden" name="crumb" value="{{ crumb }}"/>
+                      <input type="hidden" name="debtdataid" value="{{ data.debtDataId }}"/>
+                      <input type="hidden" name="frn" value="{{ data.frn }}"/>
+                      <input type="hidden" name="scheme" value="{{ data.schemes.name }}"/>
+                      <button class="govuk-button-link">Delete</button>
+                    </form>
                   {% endif %}
                 </td>
               </tr>

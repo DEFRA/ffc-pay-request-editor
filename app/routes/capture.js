@@ -35,6 +35,7 @@ module.exports = [{
         page,
         perPage,
         debtAdded: request.query?.debtAdded,
+        debtDeleted: request.query?.debtDeleted,
         ...new ViewModel(
           {
             id: 'user-search-frn',
@@ -104,7 +105,19 @@ module.exports = [{
       return h.view(view, { frn, scheme, ...new ViewModel({ labelText: frnSearchLabelText, value: request.payload.frn }, { labelText: schemeSearchLabelText, options, value: request.payload.scheme }) })
     }
   }
-}, {
+},
+{
+  method: 'POST',
+  path: '/capture-delete-confirm',
+  options: {
+    auth: { scope: [enrichment] },
+    handler: async (request, h) => {
+      const { debtdataid, frn, scheme } = request.payload
+      return h.view('capture-delete-confirm', { debtdataid, frn, scheme })
+    }
+  }
+},
+{
   method: 'POST',
   path: '/capture/delete',
   options: {
@@ -126,7 +139,7 @@ module.exports = [{
     },
     handler: async (request, h) => {
       await deleteDebt(request.payload.debtDataId)
-      return h.redirect('/capture')
+      return h.redirect('/capture?debtDeleted=true')
     }
   }
 }, {

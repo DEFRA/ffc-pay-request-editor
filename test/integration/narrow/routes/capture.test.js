@@ -140,4 +140,62 @@ describe('Capture route tests', () => {
       expect(response.payload).toContain('Debts report unavailable')
     })
   })
+
+  describe('GET /capture', () => {
+    test.each([
+      { url: '/capture', name: 'without query parameters' },
+      { url: '/capture?page=2&perPage=10', name: 'with query parameters' }
+    ])('returns 200 $name', async ({ url }) => {
+      const response = await server.inject({ method: 'GET', url, auth })
+      expect(response.statusCode).toBe(200)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('capture')
+    })
+  })
+
+  describe('POST /capture', () => {
+    test('No records found returns 200', async () => {
+      const response = await server.inject({
+        method: 'POST',
+        url,
+        payload: { frn: '1234567893' },
+        auth
+      })
+      expect(response.statusCode).toBe(200)
+    })
+
+    test.each([
+      { payload: { frn: '1234567890', scheme: 'SFI Pilot' }, statusCode: 200 },
+      { payload: { scheme: 'SFI Pilot' }, statusCode: 200 },
+      { payload: { scheme: 'Invalid Scheme' }, statusCode: 400, errorField: 'select', errorMessage: 'The scheme chosen must be a valid scheme supported by the Payment Hub.' },
+      { payload: {}, statusCode: 200 }
+    ])('Payload %p returns correct status', async ({ payload, statusCode, errorField, errorMessage }) => {
+      const response = await server.inject({ method: 'POST', url, payload, auth })
+      expect(response.statusCode).toBe(statusCode)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('capture')
+      if (errorField) {
+        expect(response.request.response.source.context.model[errorField].errorMessage.text).toBe(errorMessage)
+      }
+    })
+  })
+
+  describe('POST /capture-delete-confirm', () => {
+    test('renders the delete confirmation page', async () => {
+      const response = await server.inject({
+        method: 'POST',
+        url: '/capture-delete-confirm',
+        payload: {
+          debtdataid: '123',
+          frn: '1234567890',
+          scheme: 'SFI Pilot'
+        },
+        auth
+      })
+
+      expect(response.statusCode).toBe(200)
+      expect(response.request.response.variety).toBe('view')
+      expect(response.request.response.source.template).toBe('capture-delete-confirm')
+    })
+  })
 })
