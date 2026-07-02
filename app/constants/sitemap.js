@@ -2,7 +2,7 @@ const HOME = { href: '/', text: 'Home' }
 
 const CAPTURE_LINKS = [
   { href: '/capture', text: 'Manage unattached debt data' },
-  { href: '/capture-debt', text: 'Create new reporting dataset' }
+  { href: '/capture-debt', text: 'Create new debt data' }
 ]
 
 const ENRICH_LINKS = [
