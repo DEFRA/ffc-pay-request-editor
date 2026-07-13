@@ -79,20 +79,16 @@
           <div class="govuk-grid-column-one-half govuk-!-padding-top-1">
             <div style="display:flex;align-items:baseline;justify-content:flex-end;">
               <div class="govuk-body-s" aria-label="Records per page" style="white-space:nowrap;vertical-align:baseline;">
-                <span>Records per page:</span>&nbsp;
-                {% set perPageOptions = [2500, 5000, 10000] %}
-                <form id="perPageForm" action="/capture" method="get" style="display:inline;vertical-align:baseline;">
-                  <input type="hidden" name="perPage" id="perPageInput" value="{{ perPage }}">
-                  <input type="hidden" name="page" value="1">
-                  {% for opt in perPageOptions %}
-                    {% if perPage == opt %}
-                      <strong>{{ opt }}</strong>
-                    {% else %}
-                      <a href="#" class="govuk-link perpage-link" data-perpage="{{ opt }}">{{ opt }}</a>
-                    {% endif %}
-                    {% if not loop.last %} &nbsp;|&nbsp; {% endif %}
-                  {% endfor %}
-                </form>
+                <span>Number of records per page:</span>&nbsp;
+                {% set perPageOptions = [100, 500, 1000] %}
+                {% for opt in perPageOptions %}
+                  {% if perPage == opt %}
+                    <strong>{{ opt }}</strong>
+                  {% else %}
+                    <a href="/capture?perPage={{ opt }}&page=1" class="govuk-link">{{ opt }}</a>
+                  {% endif %}
+                  {% if not loop.last %} &nbsp;|&nbsp; {% endif %}
+                {% endfor %}
               </div>
             </div>
           </div>
@@ -232,17 +228,6 @@
       showAttachedCheckbox.addEventListener('change', toggleUnattachedData)
       toggleUnattachedData()
     }
-
-    document.querySelectorAll('.perpage-link').forEach(link => {
-      link.addEventListener('click', function (e) {
-        e.preventDefault()
-        const newVal = this.dataset.perpage;
-        const input = document.getElementById('perPageInput')
-        if (!input || String(input.value) === String(newVal)) return
-        input.value = newVal
-        document.getElementById('perPageForm').submit()
-      })
-    })
 
     const handlePostLink = (e) => {
       const el = e.target.closest('.js-post-link')
