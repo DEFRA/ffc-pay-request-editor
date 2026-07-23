@@ -10,27 +10,35 @@
   </div>
 
   <div class="govuk-form-group govuk-!-margin-bottom-1">
-    {% set selectItems = [{ value: "", text: "", selected: not model.select.value }] %}
+    {%
+      set selectItems = [{ value: "", text: "", selected: not model.select.value }]
+    %}
     {% for opt in model.select.options %}
       {% set selected = (opt == model.select.value) %}
-      {% set selectItems = selectItems.concat([{ value: opt, text: opt, selected: selected }]) %}
+      {%
+        set selectItems = selectItems.concat([{ value: opt, text: opt, selected: selected }])
+      %}
     {% endfor %}
 
-    {{ govukSelect({
-      id: model.select.id,
-      name: model.select.name,
-      label: {
-        text: model.select.label.text,
-        classes: model.select.label.classes
-      },
-      classes: model.select.classes,
-      items: selectItems,
-      errorMessage: model.select.errorMessage
-    }) }}
+    {{
+      govukSelect({
+        id: model.select.id,
+        name: model.select.name,
+        label: {
+          text: model.select.label.text,
+          classes: model.select.label.classes
+        },
+        classes: model.select.classes,
+        items: selectItems,
+        errorMessage: model.select.errorMessage
+      })
+    }}
 
-    {{ govukButton({
-      text: "Search",
-      classes: "govuk-button govuk-!-margin-top-2 govuk-button--secondary"
-    }) }}
+    {{
+      govukButton({
+        text: "Search",
+        classes: "govuk-button govuk-!-margin-top-2 govuk-button--secondary"
+      })
+    }}
   </div>
 {% endmacro %}

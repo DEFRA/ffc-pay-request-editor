@@ -12,60 +12,83 @@
 {% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
 
 {% block beforeContent %}
-  {{ govukBreadcrumbs({
-    items: [{
-      text: "Home",
-      href: "/"
-    }, {
-      text: pageTitle
-    }]
-  })}}
+  {{
+    govukBreadcrumbs({
+      items: [{
+        text: "Home",
+        href: "/"
+      }, {
+        text: pageTitle
+      }]
+    })
+  }}
 {% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       {% if checkComplete %}
-        <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div
+          class="govuk-notification-banner govuk-notification-banner--success"
+          role="alert"
+          aria-labelledby="govuk-notification-banner-title"
+          data-module="govuk-notification-banner">
           <div class="govuk-notification-banner__header">
-            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title-hold-added">
+            <h2
+              class="govuk-notification-banner__title"
+              id="govuk-notification-banner-title-hold-added">
               Success
             </h2>
           </div>
           <div class="govuk-notification-banner__content">
             <h3 class="govuk-notification-banner__heading">
               {% set extra = '.' %}
-              {% if status == 'Failed'%}
+              {% if status == 'Failed' %}
                 {% set extra = ' and sent for review.' %}
               {% endif %}
-              Ledger assignment for {{ checkComplete }} has been quality checked{{ extra }}
+              Ledger assignment for {{ checkComplete }} has been quality
+              checked{{ extra }}
             </h3>
           </div>
         </div>
       {% endif %}
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
       <p class="govuk-body">
-        Requests that have been through ledger assignment will need to be quality checked. Once the quality check is complete and approved, the payment request is sent to be processed.
+        Requests that have been through ledger assignment will need to be
+        quality checked. Once the quality check is complete and approved, the
+        payment request is sent to be processed.
       </p>
       <p class="govuk-body">
-        If any payment amounts need to be amended, a further review will be needed.
+        If any payment amounts need to be amended, a further review will be
+        needed.
       </p>
       <p class="govuk-body">
-        You can search for an individual assignment using the FRN (Firm Reference Number) or review all assignments.
+        You can search for an individual assignment using the FRN (Firm
+        Reference Number) or review all assignments.
       </p>
       {% if qualityCheckData.length %}
         <div class="govuk-!-padding-bottom-3">
           <div class="govuk-!-width-one-third">
-            <form action="/quality-check" method="POST">
-              <input type="hidden" name="crumb" value="{{crumb}}"/>
+            <form
+              action="/quality-check"
+              method="POST">
+              <input
+                type="hidden"
+                name="crumb"
+                value="{{crumb}}"
+              />
               {{ searchInput(model) }}
               <div class="govuk-button-group">
-                {{ govukButton({
+                {{
+                  govukButton({
                     text: "Search",
                     classes: "govuk-button govuk-!-margin-top-2"
-                  }) 
+                  })
                 }}
-                <a href="/quality-check" class="govuk-link govuk-link--no-visited-state">Reset table</a>
+                <a
+                  href="/quality-check"
+                  class="govuk-link govuk-link--no-visited-state">Reset
+                  table</a>
               </div>
             </form>
           </div>
@@ -73,22 +96,32 @@
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-half">
               <div style="display:flex;align-items:baseline;gap:1rem;">
-                <h2 class="govuk-heading-m govuk-!-margin-0">Ledger assignments</h2>
+                <h2 class="govuk-heading-m govuk-!-margin-0">
+                  Ledger assignments
+                </h2>
               </div>
             </div>
 
             <div class="govuk-grid-column-one-half govuk-!-padding-top-1">
-              <div style="display:flex;align-items:baseline;justify-content:flex-end;">
-                <div class="govuk-body-s" aria-label="Records per page" style="white-space:nowrap;vertical-align:baseline;">
+              <div
+                style="display:flex;align-items:baseline;justify-content:flex-end;">
+                <div
+                  class="govuk-body-s"
+                  aria-label="Records per page"
+                  style="white-space:nowrap;vertical-align:baseline;">
                   <span>Number of records per page:</span>&nbsp;
                   {% set perPageOptions = [100, 500, 1000] %}
                   {% for opt in perPageOptions %}
                     {% if perPage == opt %}
                       <strong>{{ opt }}</strong>
                     {% else %}
-                      <a href="/quality-check?perPage={{ opt }}&page=1" class="govuk-link">{{ opt }}</a>
+                      <a
+                        href="/quality-check?perPage={{ opt }}&page=1"
+                        class="govuk-link">{{ opt }}</a>
                     {% endif %}
-                    {% if not loop.last %} &nbsp;|&nbsp; {% endif %}
+                    {% if not loop.last %}
+                      &nbsp;|&nbsp;
+                    {% endif %}
                   {% endfor %}
                 </div>
               </div>
@@ -98,72 +131,90 @@
           {% set tableRows = [] %}
           {% for qualityCheck in qualityCheckData %}
             {% set actionHtml %}
-              {% if qualityCheck.status == 'Pending' and qualityCheck.paymentRequest.manualLedgerChecks[0].createdById != user.userId %}
-                <a href="/manual-ledger-review?paymentrequestid={{qualityCheck.paymentRequest.paymentRequestId}}" class="govuk-link" aria-label="Review invoice {{ qualityCheck.paymentRequest.invoiceNumber }} for FRN {{ qualityCheck.paymentRequest.frn }}">Review</a>
+              {%
+                if qualityCheck.status == 'Pending' and qualityCheck.paymentRequest.manualLedgerChecks[0].createdById != user.userId
+              %}
+                <a
+                  href="/manual-ledger-review?paymentrequestid={{qualityCheck.paymentRequest.paymentRequestId}}"
+                  class="govuk-link"
+                  aria-label="Review invoice {{ qualityCheck.paymentRequest.invoiceNumber }} for FRN {{ qualityCheck.paymentRequest.frn }}">Review</a>
               {% endif %}
             {% endset %}
 
-            {% set tableRows = (tableRows.push([
-              { text: qualityCheck.paymentRequest.schemes.name, classes: "govuk-body-s" },
-              { text: qualityCheck.paymentRequest.marketingYear, classes: "govuk-body-s" },
-              { text: qualityCheck.paymentRequest.frn, classes: "govuk-body-s" },
-              { text: qualityCheck.paymentRequest.agreementNumber, classes: "govuk-body-s" },
-              { text: qualityCheck.paymentRequest.invoiceNumber, classes: "govuk-body-s" },
-              { text: qualityCheck.paymentRequest.paymentRequestNumber, format: "numeric", classes: "govuk-body-s" },
-              { text: qualityCheck.paymentRequest.valueText, format: "numeric", classes: "govuk-body-s noWrap" },
-              { text: qualityCheck.paymentRequest.manualLedgerChecks[0].createdBy, classes: "govuk-body-s" },
-              { text: qualityCheck.hasDismissed, classes: "govuk-body-s" },
-              { html: actionHtml, classes: "govuk-body-s" }
-            ]), tableRows) %}
+            {%
+              set tableRows = (tableRows.push([
+                { text: qualityCheck.paymentRequest.schemes.name, classes: "govuk-body-s" },
+                { text: qualityCheck.paymentRequest.marketingYear, classes: "govuk-body-s" },
+                { text: qualityCheck.paymentRequest.frn, classes: "govuk-body-s" },
+                { text: qualityCheck.paymentRequest.agreementNumber, classes: "govuk-body-s" },
+                { text: qualityCheck.paymentRequest.invoiceNumber, classes: "govuk-body-s" },
+                { text: qualityCheck.paymentRequest.paymentRequestNumber, format: "numeric", classes: "govuk-body-s" },
+                { text: qualityCheck.paymentRequest.valueText, format: "numeric", classes: "govuk-body-s noWrap" },
+                { text: qualityCheck.paymentRequest.manualLedgerChecks[0].createdBy, classes: "govuk-body-s" },
+                { text: qualityCheck.hasDismissed, classes: "govuk-body-s" },
+                { html: actionHtml, classes: "govuk-body-s" }
+              ]), tableRows)
+            %}
           {% endfor %}
 
-          {{ govukTable({
-            head: [
-              { text: "Scheme", classes: "govuk-body-s" },
-              { text: "Scheme year", classes: "govuk-body-s" },
-              { text: "FRN", classes: "govuk-body-s" },
-              { text: "Agreement number", classes: "govuk-body-s" },
-              { text: "Invoice number", classes: "govuk-body-s" },
-              { text: "Requests", format: "numeric", classes: "govuk-body-s" },
-              { text: "Total amount", format: "numeric", classes: "govuk-body-s" },
-              { text: "Reviewed by", classes: "govuk-body-s" },
-              { text: "Ledger changed", classes: "govuk-body-s" },
-              { text: "Actions", classes: "govuk-body-s" }
-            ],
-            rows: tableRows
-          }) }}
+          {{
+            govukTable({
+              head: [
+                { text: "Scheme", classes: "govuk-body-s" },
+                { text: "Scheme year", classes: "govuk-body-s" },
+                { text: "FRN", classes: "govuk-body-s" },
+                { text: "Agreement number", classes: "govuk-body-s" },
+                { text: "Invoice number", classes: "govuk-body-s" },
+                { text: "Requests", format: "numeric", classes: "govuk-body-s" },
+                { text: "Total amount", format: "numeric", classes: "govuk-body-s" },
+                { text: "Reviewed by", classes: "govuk-body-s" },
+                { text: "Ledger changed", classes: "govuk-body-s" },
+                { text: "Actions", classes: "govuk-body-s" }
+              ],
+              rows: tableRows
+            })
+          }}
 
           {% set paginationItems = [] %}
           {% if page > 1 %}
-            {% set paginationPrevious = {
-              href: "?page=" + (page - 1) + "&perPage=" + perPage,
-              labelText: "Previous page"
-            } %}
+            {%
+              set paginationPrevious = {
+                href: "?page=" + (page - 1) + "&perPage=" + perPage,
+                labelText: "Previous page"
+              }
+            %}
           {% endif %}
 
           {% if qualityCheckData.length >= perPage %}
-            {% set paginationNext = {
-              href: "?page=" + (page + 1) + "&perPage=" + perPage,
-              labelText: "Next page"
-            } %}
+            {%
+              set paginationNext = {
+                href: "?page=" + (page + 1) + "&perPage=" + perPage,
+                labelText: "Next page"
+              }
+            %}
           {% endif %}
 
-          {{ govukPagination({
-            previous: paginationPrevious,
-            next: paginationNext,
-            items: [
-              {
-                number: page,
-                current: true
-              }
-            ]
-          }) }}
+          {{
+            govukPagination({
+              previous: paginationPrevious,
+              next: paginationNext,
+              items: [
+                {
+                  number: page,
+                  current: true
+                }
+              ]
+            })
+          }}
         </div>
       {% else %}
         <div class="govuk-inset-text">
           {% if frn %}
-            No ledger assignments awaiting quality check were found for the FRN. Check details and try again, or 
-            <a href="/quality-check" class="govuk-link govuk-link--no-visited-state">reset table</a> 
+            No ledger assignments awaiting quality check were found for the FRN.
+            Check details and try again, or
+            <a
+              href="/quality-check"
+              class="govuk-link govuk-link--no-visited-state">reset table</a>
             to view all ledger assignments awaiting quality check.
           {% else %}
             No ledger assignments awaiting quality check were found.
