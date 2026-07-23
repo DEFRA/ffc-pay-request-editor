@@ -2,7 +2,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% macro searchInput(params) %}
-    {{ govukInput({
+  {{
+    govukInput({
       id: params.id,
       name: params.name,
       type: params.type or "text",
@@ -14,7 +15,8 @@
       },
       hint: hint,
       errorMessage: params.errorMessage
-    }) }}
+    })
+  }}
 
   </div>
 {% endmacro %}

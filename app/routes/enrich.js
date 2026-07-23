@@ -37,8 +37,8 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        const paymentRequest = await getPaymentRequest()
-        return h.view(view, { enrichData: paymentRequest, ...new ViewModel(viewModelDetails, request.payload.frn, error) }).code(statusCodes.BAD_REQUEST).takeover()
+        const paymentRequest = await getPaymentRequest(defaultPage, defaultPerPage)
+        return h.view(view, { enrichData: paymentRequest, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ ...viewModelDetails, value: request.payload.frn }, error) }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
@@ -47,10 +47,10 @@ module.exports = [{
       const filteredEnrichData = paymentRequest.filter(x => x.frn === String(frn))
 
       if (filteredEnrichData.length) {
-        return h.view(view, { enrichData: filteredEnrichData, frn, ...new ViewModel(viewModelDetails, frn) })
+        return h.view(view, { enrichData: filteredEnrichData, page: defaultPage, perPage: defaultPerPage, ...new ViewModel({ ...viewModelDetails, value: frn }) })
       }
 
-      return h.view(view, new ViewModel(viewModelDetails, frn))
+      return h.view(view, new ViewModel({ ...viewModelDetails, value: frn }))
     }
   }
 }]
