@@ -65,6 +65,36 @@ describe('Capture route tests', () => {
     })
   })
 
+  describe('GET /capture records per page options', () => {
+    const perPageOptions = [2500, 5000, 10000]
+
+    test('renders all records per page options', async () => {
+      const response = await server.inject({ method: 'GET', url, auth })
+      for (const option of perPageOptions) {
+        expect(response.payload).toContain(String(option))
+      }
+    })
+
+    test('defaults to 2500 per page and highlights it as selected', async () => {
+      const response = await server.inject({ method: 'GET', url, auth })
+      expect(response.request.response.source.context.perPage).toBe(2500)
+      expect(getDebts).toHaveBeenCalledWith(expect.objectContaining({ page: 1, pageSize: 2500, usePagination: true }))
+      expect(response.payload).toContain('<strong>2500</strong>')
+    })
+
+    test.each(perPageOptions)('selecting %p per page requests that page size and highlights it', async (perPage) => {
+      const response = await server.inject({ method: 'GET', url: `${url}?page=1&perPage=${perPage}`, auth })
+      expect(response.statusCode).toBe(200)
+      expect(response.request.response.source.context.perPage).toBe(perPage)
+      expect(getDebts).toHaveBeenCalledWith(expect.objectContaining({ page: 1, pageSize: perPage, usePagination: true }))
+      expect(response.payload).toContain(`<strong>${perPage}</strong>`)
+      for (const option of perPageOptions.filter(x => x !== perPage)) {
+        expect(response.payload).toContain(`/capture?perPage=${option}&page=1`)
+        expect(response.payload).not.toContain(`<strong>${option}</strong>`)
+      }
+    })
+  })
+
   describe('POST /capture', () => {
     test('No records found returns 200', async () => {
       const response = await server.inject({
