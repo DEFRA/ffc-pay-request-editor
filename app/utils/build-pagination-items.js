@@ -1,12 +1,20 @@
-const buildPaginationItems = (page, totalPages, perPage, extraParams = {}) => {
+const buildPaginationItems = (
+    page,
+    totalPages,
+    perPage,
+    extraParams = {}
+) => {
     const items = []
+
     const extraQuery = Object.entries(extraParams)
         .filter(([, value]) => value !== undefined && value !== null && value !== '')
         .map(([key, value]) => `&${key}=${encodeURIComponent(value)}`)
         .join('')
 
-    const hrefFor = pageNumber => `?page=${pageNumber}&perPage=${perPage}${extraQuery}`
+    const hrefFor = pageNumber =>
+        `?page=${pageNumber}&perPage=${perPage}${extraQuery}`
 
+    // Show all pages when there are only a few
     if (totalPages <= 4) {
         for (let i = 1; i <= totalPages; i++) {
             items.push({
@@ -26,30 +34,40 @@ const buildPaginationItems = (page, totalPages, perPage, extraParams = {}) => {
         current: page === 1
     })
 
-    // Left ellipsis
-    if (page > 3) {
+    if (page <= 4) {
+        // Show all pages up to one ahead of the current page
+        for (let i = 2; i <= Math.min(page + 1, totalPages - 1); i++) {
+            items.push({
+                number: i,
+                href: hrefFor(i),
+                current: i === page
+            })
+        }
+    } else {
+        // Left ellipsis begins at page 5
         items.push({ ellipsis: true })
-    }
 
-    // Previous page number
-    if (page > 2) {
+        // Previous page
         items.push({
             number: page - 1,
             href: hrefFor(page - 1)
         })
+
+        // Current page
+        if (page !== totalPages) {
+            items.push({
+                number: page,
+                href: hrefFor(page),
+                current: true
+            })
+        }
     }
 
-    // Current page (unless first/last)
-    if (page !== 1 && page !== totalPages) {
-        items.push({
-            number: page,
-            href: hrefFor(page),
-            current: true
-        })
-    }
-
-    // Next page number
-    if (page < totalPages - 1) {
+    // Next page (if not near the end)
+    if (
+        page > 4 &&
+        page < totalPages - 1
+    ) {
         items.push({
             number: page + 1,
             href: hrefFor(page + 1)
