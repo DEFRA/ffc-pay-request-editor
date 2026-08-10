@@ -1,15 +1,26 @@
 const ViewModel = require('./models/search')
 const viewModelDetails = { labelText: 'FRN (Firm Reference Number)' }
-
 const { getQualityChecks, getChangedQualityChecks } = require('../quality-check')
 const schema = require('./schemas/quality-check')
 const { ledger } = require('../auth/permissions')
 const { getUser } = require('../auth')
 const statusCodes = require('../constants/status-codes')
+const buildPaginationItems = require('../utils/build-pagination-items')
 
 const defaultPage = 1
 const defaultPerPage = 100
 const view = 'quality-check'
+
+// Shared view-model builder used by every handler that renders the `quality-check` view,
+// so pagination/filtering logic only lives in one place.
+const buildQualityCheckViewData = async ({ page, perPage, frn }) => {
+  const result = await getQualityChecks(page, perPage, true, frn)
+  const qualityCheckData = await getChangedQualityChecks(result.rows)
+  const totalPages = Math.ceil(result.count / perPage)
+  const paginationItems = buildPaginationItems(page, totalPages, perPage, { frn })
+
+  return { qualityCheckData, totalPages, paginationItems }
+}
 
 module.exports = [{
   method: 'GET',
@@ -17,19 +28,24 @@ module.exports = [{
   options: {
     auth: { scope: [ledger] },
     handler: async (request, h) => {
-      const page = Number.parseInt(request.query.page) || defaultPage
-      const perPage = Number.parseInt(request.query.perPage) || defaultPerPage
-      const qualityCheckData = await getQualityChecks(page, perPage)
-      const changedQualityChecks = await getChangedQualityChecks(qualityCheckData)
+      const page = Number.parseInt(request.query.page) > 0 ? Number.parseInt(request.query.page) : defaultPage
+      const perPage = Number.parseInt(request.query.perPage) > 0 ? Number.parseInt(request.query.perPage) : defaultPerPage
+      const { frn } = request.query
       const { userId } = getUser(request)
+
+      const { qualityCheckData, totalPages, paginationItems } = await buildQualityCheckViewData({ page, perPage, frn })
+
       return h.view(view, {
-        qualityCheckData: changedQualityChecks,
+        qualityCheckData,
         userId,
         page,
         perPage,
+        totalPages,
+        paginationItems,
+        frn,
         checkComplete: request.query?.checkComplete,
         status: request.query?.status,
-        ...new ViewModel(viewModelDetails)
+        ...new ViewModel({ ...viewModelDetails, value: frn })
       })
     }
   }
@@ -42,24 +58,35 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        const qualityCheckData = await getQualityChecks()
-        const changedQualityChecks = await getChangedQualityChecks(qualityCheckData)
+        const { qualityCheckData, totalPages, paginationItems } = await buildQualityCheckViewData({
+          page: defaultPage,
+          perPage: defaultPerPage
+        })
         const { userId } = getUser(request)
-        return h.view(view, { qualityCheckData: changedQualityChecks, userId, ...new ViewModel(viewModelDetails, request.payload.frn, error) }).code(statusCodes.BAD_REQUEST).takeover()
+
+        return h.view(view, {
+          qualityCheckData,
+          userId,
+          totalPages,
+          paginationItems,
+          page: defaultPage,
+          perPage: defaultPerPage,
+          ...new ViewModel({ ...viewModelDetails, value: request.payload.frn }, error)
+        }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
-      const frn = request.payload.frn
-      const qualityCheckData = await getQualityChecks(undefined, undefined, false)
-      const changedQualityChecks = await getChangedQualityChecks(qualityCheckData)
-      const filteredQualityCheckData = changedQualityChecks.filter(x => x?.paymentRequest?.frn === String(frn))
-      const { userId } = getUser(request)
-
-      if (filteredQualityCheckData.length) {
-        return h.view(view, { qualityCheckData: filteredQualityCheckData, userId, ...new ViewModel(viewModelDetails, frn) })
+      // Redirect to the GET route (POST/redirect/GET) so the search filter becomes part of the
+      // URL - this means pagination on the results, and reloading/bookmarking the page, both
+      // keep working with the filter applied, instead of only ever showing an unpaginated
+      // in-memory-filtered result for the single POST that triggered the search.
+      const { frn } = request.payload
+      const params = new URLSearchParams({ page: defaultPage, perPage: defaultPerPage })
+      if (frn) {
+        params.set('frn', frn)
       }
 
-      return h.view(view, { userId, ...new ViewModel(viewModelDetails, frn, { message: 'No quality checks match the FRN provided.' }) }).code(statusCodes.BAD_REQUEST)
+      return h.redirect(`/quality-check?${params.toString()}`)
     }
   }
 }]

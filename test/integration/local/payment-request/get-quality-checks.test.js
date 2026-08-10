@@ -1,4 +1,4 @@
-const { getQualityChecks, getQualityChecksCount } = require('../../../../app/quality-check')
+const { getQualityChecks } = require('../../../../app/quality-check')
 const db = require('../../../../app/data')
 const { PENDING } = require('../../../../app/quality-check/statuses')
 
@@ -17,7 +17,10 @@ describe('Get quality checks', () => {
   beforeEach(async () => {
     await resetTables()
 
-    const scheme = { schemeId: 1, name: 'SFI' }
+    const scheme = {
+      schemeId: 1,
+      name: 'SFI'
+    }
 
     paymentRequest = {
       paymentRequestId: 1,
@@ -48,8 +51,16 @@ describe('Get quality checks', () => {
     }
 
     await db.scheme.create(scheme)
-    await db.paymentRequest.bulkCreate([paymentRequest, ledgerPaymentRequest])
-    await db.manualLedgerPaymentRequest.create(manualLedgerPaymentRequest)
+
+    await db.paymentRequest.bulkCreate([
+      paymentRequest,
+      ledgerPaymentRequest
+    ])
+
+    await db.manualLedgerPaymentRequest.create(
+      manualLedgerPaymentRequest
+    )
+
     await db.qualityCheck.create(qualityCheck)
   })
 
@@ -60,20 +71,73 @@ describe('Get quality checks', () => {
 
   test('should return 1 quality check record with updated scheme name', async () => {
     const qualityChecks = await getQualityChecks()
-    expect(qualityChecks).toHaveLength(1)
-    expect(qualityChecks[0].paymentRequest.schemes.name).toBe('SFI22')
+
+    expect(qualityChecks.rows).toHaveLength(1)
+    expect(qualityChecks.count).toBe(1)
+
+    expect(
+      qualityChecks.rows[0].paymentRequest.schemes.name
+    ).toBe('SFI22')
   })
 
   test('should return correct count for quality checks', async () => {
-    const count = await getQualityChecksCount()
-    expect(count).toEqual(1)
+    const qualityChecks = await getQualityChecks()
+
+    expect(qualityChecks.count).toEqual(1)
   })
 
   test('should return zero quality check records when tables are empty', async () => {
     await resetTables()
+
     const qualityChecks = await getQualityChecks()
-    const count = await getQualityChecksCount()
-    expect(qualityChecks).toHaveLength(0)
-    expect(count).toEqual(0)
+
+    expect(qualityChecks.rows).toHaveLength(0)
+    expect(qualityChecks.count).toEqual(0)
+  })
+
+  test('should return paginated results correctly', async () => {
+    const page1 = await getQualityChecks(1, 1)
+    const page2 = await getQualityChecks(2, 1)
+
+    expect(page1.rows).toHaveLength(1)
+    expect(page1.count).toBe(1)
+
+    expect(page2.rows).toHaveLength(0)
+    expect(page2.count).toBe(1)
+  })
+
+  test('should return all results when usePagination is false', async () => {
+    const qualityChecks = await getQualityChecks(
+      1,
+      100,
+      false
+    )
+
+    expect(qualityChecks.rows).toHaveLength(1)
+    expect(qualityChecks.count).toBe(1)
+  })
+
+  test('should filter by frn when provided', async () => {
+    const qualityChecks = await getQualityChecks(
+      1,
+      100,
+      true,
+      '1234567890'
+    )
+
+    expect(qualityChecks.rows).toHaveLength(1)
+    expect(qualityChecks.count).toBe(1)
+  })
+
+  test('should return no results for unknown frn', async () => {
+    const qualityChecks = await getQualityChecks(
+      1,
+      100,
+      true,
+      '9999999999'
+    )
+
+    expect(qualityChecks.rows).toHaveLength(0)
+    expect(qualityChecks.count).toBe(0)
   })
 })
