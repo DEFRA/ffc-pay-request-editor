@@ -183,4 +183,23 @@ describe('Get debts test', () => {
     expect(result.rows).toHaveLength(1)
     expect(result.rows[0].schemes.name).toBe('SFI22')
   })
+
+  test('should return debts when includeAttached is true', async () => {
+    const result = await getDebts({
+      includeAttached: true
+    })
+
+    expect(result.rows).toHaveLength(1)
+    expect(result.count).toBe(1)
+  })
+
+  test('should filter by stored scheme name SFI', async () => {
+    const result = await getDebts({
+      scheme: 'SFI'
+    })
+
+    expect(result.rows).toHaveLength(1)
+    expect(result.count).toBe(1)
+    expect(result.rows[0].schemes.name).toBe('SFI22')
+  })
 })

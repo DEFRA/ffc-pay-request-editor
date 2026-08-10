@@ -146,7 +146,7 @@ module.exports = [{
       payload: Joi.object({
         debtDataId: Joi.number().integer().required()
       }),
-      failAction: async (request, h, error) => {
+      failAction: async (_request, h, error) => {
         const { captureData, totalPages, paginationItems } = await buildCaptureViewData({
           page: defaultPage,
           perPage: defaultPerPage

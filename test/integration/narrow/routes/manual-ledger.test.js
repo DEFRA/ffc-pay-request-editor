@@ -167,5 +167,19 @@ describe('Manual ledger test', () => {
           .toBe('manual-ledger')
       }
     )
+    test('redirects with frn query parameter when frn is supplied', async () => {
+      const response = await server.inject({
+        method: 'POST',
+        url: '/manual-ledger',
+        payload: {
+          frn: '1234567890'
+        },
+        auth
+      })
+
+      expect(response.statusCode).toBe(302)
+      expect(response.headers.location)
+        .toBe('/manual-ledger?page=1&perPage=100&frn=1234567890')
+    })
   })
 })

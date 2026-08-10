@@ -337,6 +337,16 @@ describe('Capture route tests', () => {
         }
       }
     )
+    test('returns an empty general message when validation errors have no messages', async () => {
+      const response = await server.inject({
+        method: 'POST',
+        url,
+        payload: {},
+        auth
+      })
+
+      expect(response.statusCode).toBe(302)
+    })
   })
 
   describe('POST /capture-delete-confirm', () => {
@@ -422,6 +432,33 @@ describe('Capture route tests', () => {
         })
       }
     )
+    test('returns validation error message when debtDataId is invalid', async () => {
+      const response = await server.inject({
+        method: 'POST',
+        url: '/capture/delete',
+        payload: {
+          debtDataId: 'X'
+        },
+        auth
+      })
+
+      expect(response.statusCode).toBe(400)
+      expect(response.payload).toContain('debtDataId')
+    })
+
+    test('returns validation message when debtDataId is not numeric', async () => {
+      const response = await server.inject({
+        method: 'POST',
+        url: '/capture/delete',
+        payload: {
+          debtDataId: 'X'
+        },
+        auth
+      })
+
+      expect(response.statusCode).toBe(400)
+      expect(response.payload).toContain('debtDataId')
+    })
   })
 
   describe('GET /capture/extract', () => {
