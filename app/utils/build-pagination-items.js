@@ -4,87 +4,87 @@ const buildPaginationItems = (
   perPage,
   extraParams = {}
 ) => {
-  const items = []
-
   const extraQuery = Object.entries(extraParams)
     .filter(([, value]) => value !== undefined && value !== null && value !== '')
     .map(([key, value]) => `&${key}=${encodeURIComponent(value)}`)
     .join('')
 
   const hrefFor = pageNumber =>
-        `?page=${pageNumber}&perPage=${perPage}${extraQuery}`
+    `?page=${pageNumber}&perPage=${perPage}${extraQuery}`
 
   // Show all pages when there are only a few
   if (totalPages <= 4) {
-    for (let i = 1; i <= totalPages; i++) {
-      items.push({
-        number: i,
-        href: hrefFor(i),
-        current: i === page
-      })
-    }
+    return Array.from({ length: totalPages }, (_, index) => {
+      const pageNumber = index + 1
 
-    return items
+      return {
+        number: pageNumber,
+        href: hrefFor(pageNumber),
+        current: pageNumber === page
+      }
+    })
   }
 
-  // First page
-  items.push({
-    number: 1,
-    href: hrefFor(1),
-    current: page === 1
-  })
+  let items = [
+    {
+      number: 1,
+      href: hrefFor(1),
+      current: page === 1
+    }
+  ]
 
   if (page <= 4) {
-    // Show all pages up to one ahead of the current page
-    for (let i = 2; i <= Math.min(page + 1, totalPages - 1); i++) {
-      items.push({
-        number: i,
-        href: hrefFor(i),
-        current: i === page
-      })
-    }
+    items = items.concat(
+      Array.from(
+        { length: Math.min(page + 1, totalPages - 1) - 1 },
+        (_, index) => {
+          const pageNumber = index + 2
+
+          return {
+            number: pageNumber,
+            href: hrefFor(pageNumber),
+            current: pageNumber === page
+          }
+        }
+      )
+    )
   } else {
-    // Left ellipsis begins at page 5
-    items.push({ ellipsis: true })
-
-    // Previous page
-    items.push({
-      number: page - 1,
-      href: hrefFor(page - 1)
-    })
-
-    // Current page
-    if (page !== totalPages) {
-      items.push({
-        number: page,
-        href: hrefFor(page),
-        current: true
-      })
-    }
+    items = items.concat([
+      { ellipsis: true },
+      {
+        number: page - 1,
+        href: hrefFor(page - 1)
+      },
+      ...(page !== totalPages
+        ? [{
+            number: page,
+            href: hrefFor(page),
+            current: true
+          }]
+        : [])
+    ])
   }
 
-  // Next page (if not near the end)
-  if (
-    page > 4 &&
-        page < totalPages - 1
-  ) {
-    items.push({
-      number: page + 1,
-      href: hrefFor(page + 1)
-    })
+  if (page > 4 && page < totalPages - 1) {
+    items = items.concat([
+      {
+        number: page + 1,
+        href: hrefFor(page + 1)
+      }
+    ])
   }
 
-  // Right ellipsis
   if (page < totalPages - 2) {
-    items.push({ ellipsis: true })
+    items = items.concat([{ ellipsis: true }])
   }
 
-  // Last page
-  items.push({
-    number: totalPages,
-    href: hrefFor(totalPages),
-    current: page === totalPages
-  })
+  items = items.concat([
+    {
+      number: totalPages,
+      href: hrefFor(totalPages),
+      current: page === totalPages
+    }
+  ])
 
   return items
 }

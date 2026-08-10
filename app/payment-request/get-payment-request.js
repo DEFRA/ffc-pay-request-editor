@@ -2,7 +2,7 @@ const db = require('../data')
 const { ENRICHMENT, LEDGER_ENRICHMENT } = require('./categories')
 const { getPaymentRequestMatchingReference } = require('./get-payment-request-matching-reference')
 
-const getPaymentRequest = async (page = 1, pageSize = 100, usePagination = true, frn) => {
+const getPaymentRequest = async (page = 1, pageSize = 100, usePagination = true, frn = null) => {
   const categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]
   const offset = (page - 1) * pageSize
   const where = {
