@@ -4,37 +4,29 @@ const { mapExtract } = require('../extract')
 const schema = require('./schemas/capture-by-frn-or-scheme')
 const Joi = require('joi')
 const { enrichment } = require('../auth/permissions')
-const frnSearchLabelText = 'FRN (Firm Reference Number)'
-const schemeSearchLabelText = 'Scheme'
 const convertToCSV = require('../convert-to-csv')
 const config = require('../config')
 const options = require('../constants/scheme-names')
 const statusCodes = require('../constants/status-codes')
-const buildPaginationItems = require('../utils/build-pagination-items')
+const { parsePaginationParams, withPagination, redirectWithFilters } = require('../utils/list-view')
 
+const frnSearchLabelText = 'FRN (Firm Reference Number)'
+const schemeSearchLabelText = 'Scheme'
 const defaultPage = 1
 const defaultPerPage = 2500
 const view = 'capture'
 
-// Shared view-model builder used by every handler that renders the `capture` view,
-// so pagination/filtering logic only lives in one place.
-const buildCaptureViewData = async ({ page, perPage, frn, scheme }) => {
-  const getDebtsParams = {
+const buildCaptureViewData = withPagination(async ({ page, perPage, frn, scheme }) => {
+  const result = await getDebts({
     includeAttached: true,
     page,
     pageSize: perPage,
     usePagination: true,
     frn,
     scheme
-  }
-
-  const result = await getDebts(getDebtsParams)
-  const captureData = result.rows
-  const totalPages = Math.ceil(result.count / perPage)
-  const paginationItems = buildPaginationItems(page, totalPages, perPage, { frn, scheme })
-
-  return { captureData, totalPages, paginationItems }
-}
+  })
+  return { data: result.rows, count: result.count }
+})
 
 module.exports = [{
   method: 'GET',
@@ -42,11 +34,10 @@ module.exports = [{
   options: {
     auth: { scope: [enrichment] },
     handler: async (request, h) => {
-      const page = Number.parseInt(request.query.page) > 0 ? Number.parseInt(request.query.page) : defaultPage
-      const perPage = Number.parseInt(request.query.perPage) > 0 ? Number.parseInt(request.query.perPage) : defaultPerPage
+      const { page, perPage } = parsePaginationParams(request.query, defaultPerPage)
       const { frn, scheme } = request.query
 
-      const { captureData, totalPages, paginationItems } = await buildCaptureViewData({ page, perPage, frn, scheme })
+      const { data: captureData, totalPages, paginationItems } = await buildCaptureViewData({ page, perPage, frn, scheme })
 
       return h.view(view, {
         captureData,
@@ -82,14 +73,13 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        const { captureData, totalPages, paginationItems } = await buildCaptureViewData({
+        const { data: captureData, totalPages, paginationItems } = await buildCaptureViewData({
           page: defaultPage,
           perPage: defaultPerPage
         })
 
         const frnError = error.details.find(e => e.context.key === 'frn')
         const schemeError = error.details.find(e => e.context.key === 'scheme')
-
         const generalMessage = frnError?.message || schemeError?.message || ''
 
         return h.view(view, {
@@ -108,22 +98,7 @@ module.exports = [{
         }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
-    handler: async (request, h) => {
-      // Redirect to the GET route (POST/redirect/GET) so the search filter becomes part of the
-      // URL - this means pagination on the results, and reloading/bookmarking the page, both
-      // keep working with the filter applied, instead of only ever showing an unpaginated
-      // in-memory-filtered result for the single POST that triggered the search.
-      const { scheme, frn } = request.payload
-      const params = new URLSearchParams({ page: defaultPage, perPage: defaultPerPage })
-      if (frn) {
-        params.set('frn', frn)
-      }
-      if (scheme) {
-        params.set('scheme', scheme)
-      }
-
-      return h.redirect(`/capture?${params.toString()}`)
-    }
+    handler: async (request, h) => redirectWithFilters(h, '/capture', defaultPerPage, request.payload)
   }
 },
 {
@@ -147,7 +122,7 @@ module.exports = [{
         debtDataId: Joi.number().integer().required()
       }),
       failAction: async (_request, h, error) => {
-        const { captureData, totalPages, paginationItems } = await buildCaptureViewData({
+        const { data: captureData, totalPages, paginationItems } = await buildCaptureViewData({
           page: defaultPage,
           perPage: defaultPerPage
         })
@@ -179,13 +154,12 @@ module.exports = [{
   options: {
     auth: { scope: [enrichment] },
     handler: async (_request, h) => {
-      const getDebtsParams = {
+      const result = await getDebts({
         includeAttached: true,
         page: defaultPage,
         pageSize: defaultPerPage,
         usePagination: false
-      }
-      const result = await getDebts(getDebtsParams)
+      })
 
       if (result.rows) {
         const extractData = mapExtract(result.rows)
