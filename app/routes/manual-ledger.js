@@ -10,7 +10,8 @@ const viewModelDetails = { labelText: 'FRN (Firm Reference Number)' }
 const statuses = [NOT_READY, FAILED]
 const defaultPage = 1
 const defaultPerPage = 100
-const view = 'manual-ledger'
+
+const manualLedger = 'manual-ledger'
 
 const buildLedgerViewData = withPagination(async ({ page, perPage, frn }) => {
   const result = await getManualLedgers(statuses, page, perPage, true, frn)
@@ -19,14 +20,15 @@ const buildLedgerViewData = withPagination(async ({ page, perPage, frn }) => {
 
 module.exports = [{
   method: 'GET',
-  path: '/manual-ledger',
+  path: `/${manualLedger}`,
   options: {
     auth: { scope: [ledger] },
     handler: async (request, h) => {
       const { page, perPage } = parsePaginationParams(request.query, defaultPerPage)
       const { frn } = request.query
       const { data: ledgerData, totalPages, paginationItems } = await buildLedgerViewData({ page, perPage, frn })
-      return h.view(view, {
+
+      return h.view(manualLedger, {
         ledgerData,
         page,
         perPage,
@@ -41,7 +43,7 @@ module.exports = [{
 },
 {
   method: 'POST',
-  path: '/manual-ledger',
+  path: `/${manualLedger}`,
   options: {
     auth: { scope: [ledger] },
     validate: {
@@ -51,7 +53,8 @@ module.exports = [{
           page: defaultPage,
           perPage: defaultPerPage
         })
-        return h.view(view, {
+
+        return h.view(manualLedger, {
           ledgerData,
           totalPages,
           paginationItems,
@@ -61,6 +64,7 @@ module.exports = [{
         }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
-    handler: async (request, h) => redirectWithFilters(h, '/manual-ledger', defaultPerPage, request.payload)
+    handler: async (request, h) =>
+      redirectWithFilters(h, `/${manualLedger}`, defaultPerPage, request.payload)
   }
 }]

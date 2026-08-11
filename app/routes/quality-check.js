@@ -9,7 +9,7 @@ const { parsePaginationParams, withPagination, redirectWithFilters } = require('
 const viewModelDetails = { labelText: 'FRN (Firm Reference Number)' }
 const defaultPage = 1
 const defaultPerPage = 100
-const view = 'quality-check'
+const qualityCheck = 'quality-check'
 
 const buildQualityCheckViewData = withPagination(async ({ page, perPage, frn }) => {
   const result = await getQualityChecks(page, perPage, true, frn)
@@ -19,7 +19,7 @@ const buildQualityCheckViewData = withPagination(async ({ page, perPage, frn }) 
 
 module.exports = [{
   method: 'GET',
-  path: '/quality-check',
+  path: `/${qualityCheck}`,
   options: {
     auth: { scope: [ledger] },
     handler: async (request, h) => {
@@ -27,7 +27,7 @@ module.exports = [{
       const { frn } = request.query
       const { userId } = getUser(request)
       const { data: qualityCheckData, totalPages, paginationItems } = await buildQualityCheckViewData({ page, perPage, frn })
-      return h.view(view, {
+      return h.view(qualityCheck, {
         qualityCheckData,
         userId,
         page,
@@ -44,7 +44,7 @@ module.exports = [{
 },
 {
   method: 'POST',
-  path: '/quality-check',
+  path: `/${qualityCheck}`,
   options: {
     auth: { scope: [ledger] },
     validate: {
@@ -55,7 +55,7 @@ module.exports = [{
           perPage: defaultPerPage
         })
         const { userId } = getUser(request)
-        return h.view(view, {
+        return h.view(qualityCheck, {
           qualityCheckData,
           userId,
           totalPages,
@@ -66,6 +66,6 @@ module.exports = [{
         }).code(statusCodes.BAD_REQUEST).takeover()
       }
     },
-    handler: async (request, h) => redirectWithFilters(h, '/quality-check', defaultPerPage, request.payload)
+    handler: async (request, h) => redirectWithFilters(h, `/${qualityCheck}`, defaultPerPage, request.payload)
   }
 }]
