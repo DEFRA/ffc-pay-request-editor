@@ -3,9 +3,6 @@ const { getPaymentRequest } = require('../../../app/payment-request')
 const { ENRICHMENT, LEDGER_ENRICHMENT } = require('../../../app/payment-request/categories')
 const { AP } = require('../../../app/processing/ledger/ledgers')
 
-// Converts Sequelize instances to plain objects
-const asPlain = rows => rows.map(r => r.toJSON())
-
 describe('Payment Request Functions Test Suite', () => {
   let paymentRequest1
   let paymentRequest2
@@ -19,7 +16,12 @@ describe('Payment Request Functions Test Suite', () => {
 
   beforeEach(async () => {
     await resetTables()
-    scheme = { schemeId: 1, name: 'SFI' }
+
+    scheme = {
+      schemeId: 1,
+      name: 'SFI'
+    }
+
     paymentRequest1 = {
       paymentRequestId: 1,
       schemeId: scheme.schemeId,
@@ -74,46 +76,58 @@ describe('Payment Request Functions Test Suite', () => {
     const paymentRequestsPage1 = await getPaymentRequest(1, 1)
     const paymentRequestsPage2 = await getPaymentRequest(2, 1)
 
-    expect(paymentRequestsPage1.length).toBe(1)
-    expect(paymentRequestsPage2.length).toBe(1)
+    expect(paymentRequestsPage1.rows.length).toBe(1)
+    expect(paymentRequestsPage2.rows.length).toBe(1)
 
-    expect(paymentRequestsPage1[0].paymentRequestId).toBe(1)
-    expect(paymentRequestsPage2[0].paymentRequestId).toBe(2)
+    expect(paymentRequestsPage1.rows[0].paymentRequestId).toBe(1)
+    expect(paymentRequestsPage2.rows[0].paymentRequestId).toBe(2)
+
+    expect(paymentRequestsPage1.count).toBe(2)
+    expect(paymentRequestsPage2.count).toBe(2)
   })
 
   test('should return all results when usePagination is false', async () => {
     const paymentRequests = await getPaymentRequest(1, 1, false)
-    expect(paymentRequests.length).toBe(2)
+
+    expect(paymentRequests.rows.length).toBe(2)
+    expect(paymentRequests.count).toBe(2)
   })
 
   test('should use default page number if omitted', async () => {
     const paymentRequests = await getPaymentRequest(undefined, 1, true)
-    expect(paymentRequests.length).toBe(1)
-    expect(paymentRequests[0].paymentRequestId).toBe(1)
+
+    expect(paymentRequests.rows.length).toBe(1)
+    expect(paymentRequests.rows[0].paymentRequestId).toBe(1)
   })
 
   describe('new fields: fesCode, annualValue, remmittanceDescription', () => {
     test('should return fesCode for first record', async () => {
-      const [pr] = asPlain(await getPaymentRequest(1, 1))
+      const [pr] = (await getPaymentRequest(1, 1)).rows
+
       expect(pr.fesCode).toBe('FES-001')
     })
 
     test('should return annualValue as string for second record', async () => {
-      const [pr] = asPlain(await getPaymentRequest(2, 1))
+      const [pr] = (await getPaymentRequest(2, 1)).rows
+
       expect(pr.annualValue).toBe('9876543210.12')
     })
 
     test('should return remmittanceDescription for first record', async () => {
-      const [pr] = asPlain(await getPaymentRequest(1, 1))
+      const [pr] = (await getPaymentRequest(1, 1)).rows
+
       expect(pr.remmittanceDescription).toBe('Initial remittance')
     })
 
     test('should return all new fields when usePagination=false', async () => {
-      const results = asPlain(await getPaymentRequest(1, 10, false))
+      const results = (await getPaymentRequest(1, 10, false)).rows
+
       expect(results.length).toBe(2)
+
       expect(results[0].fesCode).toBe('FES-001')
       expect(results[0].annualValue).toBe('1234.56')
       expect(results[0].remmittanceDescription).toBe('Initial remittance')
+
       expect(results[1].fesCode).toBe('FES-002')
       expect(results[1].annualValue).toBe('9876543210.12')
       expect(results[1].remmittanceDescription).toBe('Follow-up remittance')
@@ -122,7 +136,12 @@ describe('Payment Request Functions Test Suite', () => {
 
   test('maps Vet Visits to Annual Health and Welfare Review', async () => {
     await resetTables()
-    const vetScheme = { schemeId: 10, name: 'Vet Visits' }
+
+    const vetScheme = {
+      schemeId: 10,
+      name: 'Vet Visits'
+    }
+
     const pr = {
       paymentRequestId: 10,
       schemeId: vetScheme.schemeId,
@@ -145,13 +164,20 @@ describe('Payment Request Functions Test Suite', () => {
     await db.scheme.create(vetScheme)
     await db.paymentRequest.create(pr)
 
-    const [res] = asPlain(await getPaymentRequest(1, 10, false))
-    expect(res.schemes.name).toBe('Annual Health and Welfare Review')
+    const result = await getPaymentRequest(1, 10, false)
+
+    expect(result.rows[0].schemes.name)
+      .toBe('Annual Health and Welfare Review')
   })
 
   test('maps SFI to SFI22', async () => {
     await resetTables()
-    const sfiScheme = { schemeId: 20, name: 'SFI' }
+
+    const sfiScheme = {
+      schemeId: 20,
+      name: 'SFI'
+    }
+
     const pr = {
       paymentRequestId: 20,
       schemeId: sfiScheme.schemeId,
@@ -174,7 +200,8 @@ describe('Payment Request Functions Test Suite', () => {
     await db.scheme.create(sfiScheme)
     await db.paymentRequest.create(pr)
 
-    const [res] = asPlain(await getPaymentRequest(1, 10, false))
-    expect(res.schemes.name).toBe('SFI22')
+    const result = await getPaymentRequest(1, 10, false)
+
+    expect(result.rows[0].schemes.name).toBe('SFI22')
   })
 })

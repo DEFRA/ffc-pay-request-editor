@@ -9,56 +9,89 @@
 
 {% set pageTitle = "Manual ledger assignment" %}
 
-{% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
+{% set hasMultiplePages = totalPages and totalPages > 1 %}
+
+{% set extraQuery = '' %}
+{% if frn %}{% set extraQuery = extraQuery ~ '&frn=' ~ frn %}{% endif %}
+
+{% block pageTitle %}
+  {% if hasMultiplePages %}
+    Page {{ page }} - {{ pageTitle }} - {{ serviceName }}
+  {% else %}
+    {{ pageTitle }} - {{ serviceName }}
+  {% endif %}
+{% endblock %}
 
 {% block beforeContent %}
-  {{ govukBreadcrumbs({
-    items: [{
-      text: "Home",
-      href: "/"
-    }, {
-      text: pageTitle
-    }]
-  })}}
+  {{
+    govukBreadcrumbs({
+      items: [{
+        text: "Home",
+        href: "/"
+      }, {
+        text: pageTitle
+      }]
+    })
+  }}
 {% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       {% if checkComplete %}
-        <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div
+          class="govuk-notification-banner govuk-notification-banner--success"
+          role="alert"
+          aria-labelledby="govuk-notification-banner-title"
+          data-module="govuk-notification-banner">
           <div class="govuk-notification-banner__header">
-            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title-hold-added">
+            <h2
+              class="govuk-notification-banner__title"
+              id="govuk-notification-banner-title">
               Success
             </h2>
           </div>
           <div class="govuk-notification-banner__content">
             <h3 class="govuk-notification-banner__heading">
-              Ledger assignment for {{ checkComplete }} has been updated and sent for quality checking.
+              Ledger assignment for {{ checkComplete }} has been updated and
+              sent for quality checking.
             </h3>
           </div>
         </div>
       {% endif %}
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
       <p class="govuk-body">
-        Payment requests that have been modified will need to be compared to the original amount, and if needed, adjusted to make sure the customer is paid correctly.
+        Payment requests that have been modified will need to be compared to the
+        original amount, and if needed, adjusted to make sure the customer is
+        paid correctly.
       </p>
       <p class="govuk-body">
-        Review assignments awaiting quality check or search for an individual assignment using the FRN (Firm Reference Number).
+        Review assignments awaiting quality check or search for an individual
+        assignment using the FRN (Firm Reference Number).
       </p>
       {% if ledgerData.length %}
         <div class="govuk-!-padding-bottom-3">
           <div class="govuk-!-width-one-third">
-            <form action="/manual-ledger" method="POST">
-              <input type="hidden" name="crumb" value="{{crumb}}"/>
+            <form
+              action="/manual-ledger"
+              method="POST">
+              <input
+                type="hidden"
+                name="crumb"
+                value="{{crumb}}"
+              />
               {{ searchInput(model) }}
               <div class="govuk-button-group">
-                {{ govukButton({
+                {{
+                  govukButton({
                     text: "Search",
                     classes: "govuk-button govuk-!-margin-top-2"
-                  }) 
+                  })
                 }}
-                <a href="/manual-ledger" class="govuk-link govuk-link--no-visited-state">Reset table</a>
+                <a
+                  href="/manual-ledger"
+                  class="govuk-link govuk-link--no-visited-state">Reset
+                  table</a>
               </div>
             </form>
           </div>
@@ -66,95 +99,129 @@
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-half">
               <div style="display:flex;align-items:baseline;gap:1rem;">
-                <h2 class="govuk-heading-m govuk-!-margin-0">Ledger assignments</h2>
+                <h2 class="govuk-heading-m govuk-!-margin-0">
+                  Ledger assignments
+                </h2>
               </div>
             </div>
 
-            <div class="govuk-grid-column-one-half govuk-!-padding-top-1">
-              <div style="display:flex;align-items:baseline;justify-content:flex-end;">
-                <div class="govuk-body-s" aria-label="Records per page" style="white-space:nowrap;vertical-align:baseline;">
-                  <span>Number of records per page:</span>&nbsp;
-                  {% set perPageOptions = [100, 500, 1000] %}
-                  {% for opt in perPageOptions %}
-                    {% if perPage == opt %}
-                      <strong>{{ opt }}</strong>
-                    {% else %}
-                      <a href="/manual-ledger?perPage={{ opt }}&page=1" class="govuk-link">{{ opt }}</a>
-                    {% endif %}
-                    {% if not loop.last %} &nbsp;|&nbsp; {% endif %}
-                  {% endfor %}
+            {% if hasMultiplePages %}
+              <div class="govuk-grid-column-one-half govuk-!-padding-top-1">
+                <div
+                  style="display:flex;align-items:baseline;justify-content:flex-end;">
+                  <div
+                    class="govuk-body-s"
+                    aria-label="Records per page"
+                    style="white-space:nowrap;vertical-align:baseline;">
+                    <span>Number of records per page:</span>&nbsp;
+                    {% set perPageOptions = [100, 500, 1000] %}
+                    {% for opt in perPageOptions %}
+                      {% if perPage == opt %}
+                        <strong>{{ opt }}</strong>
+                      {% else %}
+                        <a
+                          href="/manual-ledger?perPage={{ opt }}&page=1{{ extraQuery }}"
+                          class="govuk-link">{{ opt }}</a>
+                      {% endif %}
+                      {% if not loop.last %}
+                        &nbsp;|&nbsp;
+                      {% endif %}
+                    {% endfor %}
+                  </div>
                 </div>
               </div>
-            </div>
+            {% endif %}
           </div>
+          <p
+            class="govuk-body-m"
+            id="dataset-count">
+            Showing {{ ledgerData.length }} assignment{{
+              's' if ledgerData.length != 1
+            }}
+          </p>
 
           {% set tableRows = [] %}
           {% for data in ledgerData %}
             {% set actionHtml %}
               {% if not data.manualLedgerChecked %}
-                <a href="/manual-ledger-check?paymentrequestid={{data.paymentRequestId}}" class="govuk-link" aria-label="Review invoice {{ data.invoiceNumber }} for FRN {{ data.frn }}">Review</a>
+                <a
+                  href="/manual-ledger-check?paymentrequestid={{data.paymentRequestId}}"
+                  class="govuk-link"
+                  aria-label="Review invoice {{ data.invoiceNumber }} for FRN {{ data.frn }}">Review</a>
               {% endif %}
             {% endset %}
 
-            {% set tableRows = (tableRows.push([
-              { text: data.schemeName, classes: "govuk-body-s" },
-              { text: data.marketingYear, classes: "govuk-body-s" },
-              { text: data.frn, classes: "govuk-body-s" },
-              { text: data.agreementNumber, classes: "govuk-body-s" },
-              { text: data.invoiceNumber, classes: "govuk-body-s" },
-              { text: data.paymentRequestNumber, format: "numeric", classes: "govuk-body-s" },
-              { text: data.valueText, format: "numeric", classes: "govuk-body-s noWrap" },
-              { text: data.receivedFormatted, classes: "govuk-body-s" },
-              { html: actionHtml, classes: "govuk-body-s" }
-            ]), tableRows) %}
+            {%
+              set tableRows = (tableRows.push([
+                { text: data.schemeName, classes: "govuk-body-s" },
+                { text: data.marketingYear, classes: "govuk-body-s" },
+                { text: data.frn, classes: "govuk-body-s" },
+                { text: data.agreementNumber, classes: "govuk-body-s" },
+                { text: data.invoiceNumber, classes: "govuk-body-s" },
+                { text: data.paymentRequestNumber, format: "numeric", classes: "govuk-body-s" },
+                { text: data.valueText, format: "numeric", classes: "govuk-body-s noWrap" },
+                { text: data.receivedFormatted, classes: "govuk-body-s" },
+                { html: actionHtml, classes: "govuk-body-s" }
+              ]), tableRows)
+            %}
           {% endfor %}
 
-          {{ govukTable({
-            head: [
-              { text: "Scheme", classes: "govuk-body-s" },
-              { text: "Scheme Year", classes: "govuk-body-s" },
-              { text: "FRN", classes: "govuk-body-s" },
-              { text: "Agreement number", classes: "govuk-body-s" },
-              { text: "Invoice number", classes: "govuk-body-s" },
-              { text: "Requests", format: "numeric", classes: "govuk-body-s" },
-              { text: "Total amount", format: "numeric", classes: "govuk-body-s" },
-              { text: "Received", classes: "govuk-body-s" },
-              { text: "Actions", classes: "govuk-body-s" }
-            ],
-            rows: tableRows
-          }) }}
+          {{
+            govukTable({
+              head: [
+                { text: "Scheme", classes: "govuk-body-s" },
+                { text: "Scheme Year", classes: "govuk-body-s" },
+                { text: "FRN", classes: "govuk-body-s" },
+                { text: "Agreement number", classes: "govuk-body-s" },
+                { text: "Invoice number", classes: "govuk-body-s" },
+                { text: "Requests", format: "numeric", classes: "govuk-body-s" },
+                { text: "Total amount", format: "numeric", classes: "govuk-body-s" },
+                { text: "Received", classes: "govuk-body-s" },
+                { text: "Actions", classes: "govuk-body-s" }
+              ],
+              rows: tableRows
+            })
+          }}
 
-          {% set paginationItems = [] %}
-          {% if page > 1 %}
-            {% set paginationPrevious = {
-              href: "?page=" + (page - 1) + "&perPage=" + perPage,
-              labelText: "Previous page"
-            } %}
+          {% if hasMultiplePages %}
+            {% set paginationPrevious = undefined %}
+            {% set paginationNext = undefined %}
+
+            {% if page > 1 %}
+              {%
+                set paginationPrevious = {
+                  href: "?page=" + (page - 1) + "&perPage=" + perPage + extraQuery,
+                  labelText: "Previous page"
+                }
+              %}
+            {% endif %}
+
+            {% if page < totalPages %}
+              {%
+                set paginationNext = {
+                  href: "?page=" + (page + 1) + "&perPage=" + perPage + extraQuery,
+                  labelText: "Next page"
+                }
+              %}
+            {% endif %}
+
+            {{
+              govukPagination({
+                previous: paginationPrevious,
+                next: paginationNext,
+                items: paginationItems
+              })
+            }}
           {% endif %}
-
-          {% if ledgerData.length >= perPage %}
-            {% set paginationNext = {
-              href: "?page=" + (page + 1) + "&perPage=" + perPage,
-              labelText: "Next page"
-            } %}
-          {% endif %}
-
-          {{ govukPagination({
-            previous: paginationPrevious,
-            next: paginationNext,
-            items: [
-              {
-                number: page,
-                current: true
-              }
-            ]
-          }) }}
         </div>
       {% else %}
         <div class="govuk-inset-text">
           {% if frn %}
-            No ledger assignments were found for the FRN. Check details and try again, or 
-            <a href="/manual-ledger" class="govuk-link govuk-link--no-visited-state">reset table</a> 
+            No ledger assignments were found for the FRN. Check details and try
+            again, or
+            <a
+              href="/manual-ledger"
+              class="govuk-link govuk-link--no-visited-state">reset table</a>
             to view all datasets awaiting ledger assignments.
           {% else %}
             No ledger assignments were found.

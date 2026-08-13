@@ -12,26 +12,48 @@
 
 {% set pageTitle = "Manage unattached debt data" %}
 
-{% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
+{% set hasMultiplePages = totalPages and totalPages > 1 %}
+
+{% set extraQuery = '' %}
+{% if frn %}{% set extraQuery = extraQuery ~ '&frn=' ~ frn %}{% endif %}
+{% if scheme %}{% set extraQuery = extraQuery ~ '&scheme=' ~ scheme %}{%
+  endif
+%}
+
+{% block pageTitle %}
+  {% if hasMultiplePages %}
+    Page {{ page }} - {{ pageTitle }} - {{ serviceName }}
+  {% else %}
+    {{ pageTitle }} - {{ serviceName }}
+  {% endif %}
+{% endblock %}
 
 {% block beforeContent %}
-  {{ govukBreadcrumbs({
-    items: [{
-      text: "Home",
-      href: "/"
-    }, {
-      text: pageTitle
-    }]
-  })}}
+  {{
+    govukBreadcrumbs({
+      items: [{
+        text: "Home",
+        href: "/"
+      }, {
+        text: pageTitle
+      }]
+    })
+  }}
 {% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       {% if debtAdded or debtDeleted %}
-        <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div
+          class="govuk-notification-banner govuk-notification-banner--success"
+          role="alert"
+          aria-labelledby="govuk-notification-banner-title"
+          data-module="govuk-notification-banner">
           <div class="govuk-notification-banner__header">
-            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title-hold-added">
+            <h2
+              class="govuk-notification-banner__title"
+              id="govuk-notification-banner-title">
               Success
             </h2>
           </div>
@@ -48,21 +70,32 @@
       {% endif %}
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
       <p class="govuk-body">
-        Provide unattached debt data in advance of payment request processing and search previous pending and attached datasets.
+        Provide unattached debt data in advance of payment request processing
+        and search previous pending and attached datasets.
       </p>
 
-      {{ govukButton({
-        text: "Create new dataset",
-        href: "/capture-debt"
-      }) }}
+      {{
+        govukButton({
+          text: "Create new dataset",
+          href: "/capture-debt"
+        })
+      }}
 
       <h2 class="govuk-heading-m">Search for dataset</h2>
       <p class="govuk-body">
-        Search for pending and attached datasets by scheme, FRN or a combination of both. If they are no longer required, pending datasets can be removed from the system.
+        Search for pending and attached datasets by scheme, FRN or a combination
+        of both. If they are no longer required, pending datasets can be removed
+        from the system.
       </p>
       <div class="govuk-!-width-one-third">
-        <form action="/capture" method="POST">
-          <input type="hidden" name="crumb" value="{{crumb}}"/>
+        <form
+          action="/capture"
+          method="POST">
+          <input
+            type="hidden"
+            name="crumb"
+            value="{{crumb}}"
+          />
           {{ searchCombined(model) }}
         </form>
       </div>
@@ -71,62 +104,125 @@
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-one-half">
             <div style="display:flex;align-items:baseline;gap:1rem;">
-              <h2 class="govuk-heading-m govuk-!-margin-0">Existing datasets</h2>
-              <a href="/capture/extract" class="govuk-link">Download as CSV</a>
+              <h2 class="govuk-heading-m govuk-!-margin-0">
+                Existing datasets
+              </h2>
+              <a
+                href="/capture/extract"
+                class="govuk-link">Download as CSV</a>
             </div>
           </div>
 
-          <div class="govuk-grid-column-one-half govuk-!-padding-top-1">
-            <div style="display:flex;align-items:baseline;justify-content:flex-end;">
-              <div class="govuk-body-s" aria-label="Records per page" style="white-space:nowrap;vertical-align:baseline;">
-                <span>Number of records per page:</span>&nbsp;
-                {% set perPageOptions = [100, 500, 1000] %}
-                {% for opt in perPageOptions %}
-                  {% if perPage == opt %}
-                    <strong>{{ opt }}</strong>
-                  {% else %}
-                    <a href="/capture?perPage={{ opt }}&page=1" class="govuk-link">{{ opt }}</a>
-                  {% endif %}
-                  {% if not loop.last %} &nbsp;|&nbsp; {% endif %}
-                {% endfor %}
+          {% if hasMultiplePages %}
+            <div class="govuk-grid-column-one-half govuk-!-padding-top-1">
+              <div
+                style="display:flex;align-items:baseline;justify-content:flex-end;">
+                <div
+                  class="govuk-body-s"
+                  aria-label="Records per page"
+                  style="white-space:nowrap;vertical-align:baseline;">
+                  <span>Number of records per page:</span>&nbsp;
+                  {% set perPageOptions = [2500, 5000, 10000] %}
+                  {% for opt in perPageOptions %}
+                    {% if perPage == opt %}
+                      <strong>{{ opt }}</strong>
+                    {% else %}
+                      <a
+                        href="/capture?perPage={{ opt }}&page=1{{ extraQuery }}"
+                        class="govuk-link">{{ opt }}</a>
+                    {% endif %}
+                    {% if not loop.last %}
+                      &nbsp;|&nbsp;
+                    {% endif %}
+                  {% endfor %}
+                </div>
               </div>
             </div>
-          </div>
+          {% endif %}
         </div>
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
-            {{ govukCheckboxes({
-              name: "showAttached",
-              items: [
-                {
-                  value: "yes",
-                  text: "Show attached datasets (for reference only)",
-                  id: "show-attached",
-                  checked: true
-                }
-              ],
-              classes: "govuk-checkboxes--small"
-            }) }}
+            {{
+              govukCheckboxes({
+                name: "showAttached",
+                items: [
+                  {
+                    value: "yes",
+                    text: "Show attached datasets (for reference only)",
+                    id: "show-attached",
+                    checked: true
+                  }
+                ],
+                classes: "govuk-checkboxes--small"
+              })
+            }}
           </div>
         </div>
+        <p
+          class="govuk-body-m"
+          id="dataset-count">
+          Showing {{ captureData.length }} dataset{{
+            's' if captureData.length != 1
+          }}
+        </p>
         <table class="govuk-table">
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header govuk-body-s">Scheme</th>
-              <th scope="col" class="govuk-table__header govuk-body-s">FRN</th>
-              <th scope="col" class="govuk-table__header govuk-body-s">Agreement number</th>
-              <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Net value</th>
-              <th scope="col" class="govuk-table__header govuk-body-s">Debt type</th>
-              <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-body-s">Date of Discovery</th>
-              <th scope="col" class="govuk-table__header govuk-body-s">Created by</th>
-              <th scope="col" class="govuk-table__header govuk-body-s">Status</th>
-              <th scope="col" class="govuk-table__header govuk-body-s">Actions</th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-body-s">
+                Scheme
+              </th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-body-s">
+                FRN
+              </th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-body-s">
+                Agreement number
+              </th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-table__header--numeric govuk-body-s">
+                Net value
+              </th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-body-s">
+                Debt type
+              </th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-table__header--numeric govuk-body-s">
+                Date of Discovery
+              </th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-body-s">
+                Created by
+              </th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-body-s">
+                Status
+              </th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-body-s">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody class="govuk-table__body">
             {% for data in captureData %}
-              <tr class="govuk-table__row capture-datasets" data-status="{{ 'attached' if data.paymentRequestId else 'pending' }}">
-                <td class="govuk-table__cell govuk-body-s">{{ data.schemes.name }}</td>
+              <tr
+                class="govuk-table__row capture-datasets"
+                data-status="{{ 'attached' if data.paymentRequestId else 'pending' }}">
+                <td class="govuk-table__cell govuk-body-s">
+                  {{ data.schemes.name }}
+                </td>
                 <td class="govuk-table__cell govuk-body-s">{{ data.frn }}</td>
                 <td class="govuk-table__cell govuk-body-s">
                   {% if data.reference %}
@@ -135,14 +231,22 @@
                     Manual enrichment
                   {% endif %}
                 </td>
-                <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">
+                <td
+                  class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">
                   {% if data.netValueText %}
                     {{ data.netValueText }}
                   {% endif %}
                 </td>
-                <td class="govuk-table__cell govuk-body-s">{{ data.debtTypeText }}</td>
-                <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">{{ data.recoveryDate }}</td>
-                <td class="govuk-table__cell govuk-body-s">{{ data.createdBy }}</td>
+                <td class="govuk-table__cell govuk-body-s">
+                  {{ data.debtTypeText }}
+                </td>
+                <td
+                  class="govuk-table__cell govuk-table__cell--numeric govuk-body-s">
+                  {{ data.recoveryDate }}
+                </td>
+                <td class="govuk-table__cell govuk-body-s">
+                  {{ data.createdBy }}
+                </td>
                 <td class="govuk-table__cell govuk-body-s">
                   {% if data.paymentRequestId %}
                     <strong class="govuk-tag govuk-tag--green">Attached</strong>
@@ -152,11 +256,29 @@
                 </td>
                 <td class="govuk-table__cell govuk-body-s">
                   {% if not data.paymentRequestId %}
-                    <form method="post" action="/capture-delete-confirm">
-                      <input type="hidden" name="crumb" value="{{ crumb }}"/>
-                      <input type="hidden" name="debtdataid" value="{{ data.debtDataId }}"/>
-                      <input type="hidden" name="frn" value="{{ data.frn }}"/>
-                      <input type="hidden" name="scheme" value="{{ data.schemes.name }}"/>
+                    <form
+                      method="post"
+                      action="/capture-delete-confirm">
+                      <input
+                        type="hidden"
+                        name="crumb"
+                        value="{{ crumb }}"
+                      />
+                      <input
+                        type="hidden"
+                        name="debtdataid"
+                        value="{{ data.debtDataId }}"
+                      />
+                      <input
+                        type="hidden"
+                        name="frn"
+                        value="{{ data.frn }}"
+                      />
+                      <input
+                        type="hidden"
+                        name="scheme"
+                        value="{{ data.schemes.name }}"
+                      />
                       <button class="govuk-button-link">Delete</button>
                     </form>
                   {% endif %}
@@ -166,51 +288,69 @@
           </tbody>
         </table>
 
-        {% set paginationPrevious = undefined %}
-        {% set paginationNext = undefined %}
+        {% if hasMultiplePages %}
+          {% set paginationPrevious = undefined %}
+          {% set paginationNext = undefined %}
 
-        {% if page > 1 %}
-          {% set paginationPrevious = {
-            href: "?page=" + (page - 1) + "&perPage=" + perPage,
-            labelText: "Previous page"
-          } %}
+          {% if page > 1 %}
+            {%
+              set paginationPrevious = {
+                href: "?page=" + (page - 1) + "&perPage=" + perPage + extraQuery,
+                labelText: "Previous page"
+              }
+            %}
+          {% endif %}
+
+          {% if page < totalPages %}
+            {%
+              set paginationNext = {
+                href: "?page=" + (page + 1) + "&perPage=" + perPage + extraQuery,
+                labelText: "Next page"
+              }
+            %}
+          {% endif %}
+
+          {{
+            govukPagination({
+              previous: paginationPrevious,
+              next: paginationNext,
+              items: paginationItems
+            })
+          }}
         {% endif %}
-
-        {% if captureData.length >= perPage %}
-          {% set paginationNext = {
-            href: "?page=" + (page + 1) + "&perPage=" + perPage,
-            labelText: "Next page"
-          } %}
-        {% endif %}
-
-        {{ govukPagination({
-          previous: paginationPrevious,
-          next: paginationNext,
-          items: [
-            {
-              number: page,
-              current: true
-            }
-          ]
-        }) }}
       {% else %}
-      {% set extra = '.' %}
+        {% set extra = '.' %}
         {% if frn and scheme %}
-          {% set extra = ' for ' ~ frn ~ ' & ' ~ scheme ~ ". Check your details and try again" %}
+          {%
+            set extra = ' for ' ~ frn ~ ' & ' ~ scheme ~ ". Check your details and try again"
+          %}
         {% elif frn %}
           {% set extra = ' for ' ~ frn ~ ". Check your details and try again" %}
         {% elif scheme %}
-          {% set extra = ' for ' ~ scheme ~ ". Check your details and try again" %}
+          {%
+            set extra = ' for ' ~ scheme ~ ". Check your details and try again"
+          %}
         {% endif %}
-        {{ govukInsetText({
-          text: "No datasets were found" ~ extra
-        }) }}
+        {{
+          govukInsetText({
+            text: "No datasets were found" ~ extra
+          })
+        }}
       {% endif %}
     </div>
   </div>
   <script>
-    const showAttachedCheckbox = document.getElementById('show-attached')
+  const showAttachedCheckbox = document.getElementById('show-attached')
     const tableRows = document.querySelectorAll('.govuk-table__row.capture-datasets')
+    const datasetCount = document.getElementById('dataset-count')
+
+    const updateDatasetCount = () => {
+      if (!datasetCount) return
+      const visibleCount = Array.from(tableRows).filter(
+        row => row.style.display !== 'none'
+      ).length
+      datasetCount.textContent = `Showing ${visibleCount} dataset${visibleCount !== 1 ? 's' : ''}`
+    }
 
     const toggleUnattachedData = () => {
       if (!showAttachedCheckbox.checked) {
@@ -222,47 +362,14 @@
       } else {
         tableRows.forEach(row => row.removeAttribute('style'))
       }
+      updateDatasetCount()
     }
 
     if (showAttachedCheckbox) {
       showAttachedCheckbox.addEventListener('change', toggleUnattachedData)
       toggleUnattachedData()
+    } else {
+      updateDatasetCount()
     }
-
-    const handlePostLink = (e) => {
-      const el = e.target.closest('.js-post-link')
-      if (!el) return
-      e.preventDefault()
-
-      const action = el.dataset.action
-      const crumb = el.dataset.crumb
-      const debtDataId = el.dataset.debtdataid
-
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = action
-      form.style.display = 'none'
-
-      if (crumb) {
-        const i = document.createElement('input')
-        i.type = 'hidden'
-        i.name = 'crumb'
-        i.value = crumb
-        form.appendChild(i)
-      }
-
-      if (debtDataId) {
-        const i2 = document.createElement('input')
-        i2.type = 'hidden'
-        i2.name = 'debtDataId'
-        i2.value = debtDataId
-        form.appendChild(i2)
-      }
-
-      document.body.appendChild(form)
-      form.submit()
-    }
-
-    document.addEventListener('click', handlePostLink)
   </script>
 {% endblock %}

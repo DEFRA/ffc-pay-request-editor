@@ -20,7 +20,11 @@ describe('Get manual ledgers test', () => {
 
   beforeEach(async () => {
     await resetTables()
-    const scheme = { schemeId: 1, name: 'SFI' }
+
+    const scheme = {
+      schemeId: 1,
+      name: 'SFI'
+    }
 
     paymentRequest = {
       paymentRequestId: 1,
@@ -74,53 +78,96 @@ describe('Get manual ledgers test', () => {
 
   test('should return only payment requests with categoryId 2 and matching statuses', async () => {
     const paymentRequests = await getManualLedgers(statuses)
-    expect(paymentRequests.length).toBe(2)
-    const ids = paymentRequests.map(p => p.paymentRequestId)
+
+    expect(paymentRequests.rows.length).toBe(2)
+    expect(paymentRequests.count).toBe(2)
+
+    const ids = paymentRequests.rows.map(p => p.paymentRequestId)
+
     expect(ids).toEqual(expect.arrayContaining([1, 3]))
     expect(ids).not.toContain(2)
   })
 
   test('should return payment request record with schemeName "SFI22" if schemeName is "SFI"', async () => {
     const paymentRequests = await getManualLedgers(statuses)
-    for (const pr of paymentRequests) {
+
+    for (const pr of paymentRequests.rows) {
       expect(pr.schemeName).toBe('SFI22')
     }
   })
 
   test('should return paginated results correctly', async () => {
     const pageSize = 1
-    const paymentRequestsPage1 = await getManualLedgers(statuses, 1, pageSize)
-    const paymentRequestsPage2 = await getManualLedgers(statuses, 2, pageSize)
 
-    expect(paymentRequestsPage1.length).toBe(1)
-    expect(paymentRequestsPage2.length).toBe(1)
+    const paymentRequestsPage1 = await getManualLedgers(
+      statuses,
+      1,
+      pageSize
+    )
 
-    expect(paymentRequestsPage1[0].paymentRequestId).toBe(1)
-    expect(paymentRequestsPage2[0].paymentRequestId).toBe(3)
+    const paymentRequestsPage2 = await getManualLedgers(
+      statuses,
+      2,
+      pageSize
+    )
+
+    expect(paymentRequestsPage1.rows.length).toBe(1)
+    expect(paymentRequestsPage2.rows.length).toBe(1)
+
+    expect(paymentRequestsPage1.count).toBe(2)
+    expect(paymentRequestsPage2.count).toBe(2)
+
+    expect(paymentRequestsPage1.rows[0].paymentRequestId).toBe(1)
+    expect(paymentRequestsPage2.rows[0].paymentRequestId).toBe(3)
   })
 
   test('should return all results when usePagination is false', async () => {
-    const paymentRequests = await getManualLedgers(statuses, 1, 1, false)
-    expect(paymentRequests.length).toBe(2)
+    const paymentRequests = await getManualLedgers(
+      statuses,
+      1,
+      1,
+      false
+    )
+
+    expect(paymentRequests.rows.length).toBe(2)
+    expect(paymentRequests.count).toBe(2)
   })
 
   test('should use default page number if omitted', async () => {
-    const paymentRequests = await getManualLedgers(statuses, undefined, 1, true)
-    expect(paymentRequests.length).toBe(1)
-    expect(paymentRequests[0].paymentRequestId).toBe(1)
+    const paymentRequests = await getManualLedgers(
+      statuses,
+      undefined,
+      1,
+      true
+    )
+
+    expect(paymentRequests.rows.length).toBe(1)
+    expect(paymentRequests.rows[0].paymentRequestId).toBe(1)
+    expect(paymentRequests.count).toBe(2)
   })
 
   test('should filter by frn if provided', async () => {
     const frnToFilter = '1234567800'
-    const paymentRequests = await getManualLedgers(statuses, undefined, undefined, false, frnToFilter)
-    expect(paymentRequests.length).toBe(1)
-    expect(paymentRequests[0].paymentRequestId).toBe(1)
-    expect(paymentRequests[0].frn.toString()).toBe(frnToFilter)
+
+    const paymentRequests = await getManualLedgers(
+      statuses,
+      undefined,
+      undefined,
+      false,
+      frnToFilter
+    )
+
+    expect(paymentRequests.rows.length).toBe(1)
+    expect(paymentRequests.count).toBe(1)
+
+    expect(paymentRequests.rows[0].paymentRequestId).toBe(1)
+    expect(paymentRequests.rows[0].frn.toString()).toBe(frnToFilter)
   })
 
   test('should add valueText property converted to string format', async () => {
     const paymentRequests = await getManualLedgers(statuses)
-    for (const pr of paymentRequests) {
+
+    for (const pr of paymentRequests.rows) {
       expect(typeof pr.valueText).toBe('string')
       expect(pr.valueText.length).toBeGreaterThan(0)
     }
@@ -128,7 +175,8 @@ describe('Get manual ledgers test', () => {
 
   test('should format received date as DD/MM/YYYY if received present', async () => {
     const paymentRequests = await getManualLedgers(statuses)
-    for (const pr of paymentRequests) {
+
+    for (const pr of paymentRequests.rows) {
       if (pr.received) {
         expect(pr.receivedFormatted).toMatch(/\d{2}\/\d{2}\/\d{4}/)
       } else {
@@ -140,12 +188,22 @@ describe('Get manual ledgers test', () => {
   test('should correctly format received date for payment requests with received value', async () => {
     const paymentRequests = await getManualLedgers(statuses)
 
-    const prWithReceived = paymentRequests.find(pr => pr.paymentRequestId === 1)
+    const prWithReceived = paymentRequests.rows.find(
+      pr => pr.paymentRequestId === 1
+    )
 
     expect(prWithReceived).toBeDefined()
     expect(prWithReceived.received).toBeTruthy()
 
-    const expectedDate = new Date(prWithReceived.received).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })
+    const expectedDate = new Date(prWithReceived.received).toLocaleDateString(
+      'en-GB',
+      {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }
+    )
+
     expect(prWithReceived.receivedFormatted).toBe(expectedDate)
   })
 })

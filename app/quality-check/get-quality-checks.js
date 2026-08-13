@@ -1,34 +1,14 @@
 const db = require('../data')
 const { PENDING } = require('./statuses')
 
-const getQualityChecks = async (page = 1, pageSize = 100, usePagination = true) => {
+const getQualityChecks = async (page = 1, pageSize = 100, usePagination = true, frn = null) => {
   const offset = (page - 1) * pageSize
-  const options = {
-    where: {
-      status: PENDING
-    }
-  }
-  if (usePagination) {
-    options.limit = pageSize
-    options.offset = offset
-  }
-  const qualityChecks = await db.qualityCheck.findAll(options)
-  const paymentRequestIds = qualityChecks.map(qc => qc.paymentRequestId)
-  const paymentRequests = await db.paymentRequest.findAll({
-    where: {
-      paymentRequestId: paymentRequestIds,
-      categoryId: 2
-    },
-    include: [{
-      model: db.scheme,
-      as: 'schemes',
-      attributes: ['name']
-    }, {
-      model: db.manualLedgerPaymentRequest,
-      as: 'manualLedgerChecks',
-      attributes: ['createdBy', 'createdById'],
-      where: { active: true }
-    }],
+
+  const paymentRequestInclude = {
+    model: db.paymentRequest,
+    as: 'paymentRequest',
+    where: { categoryId: 2 },
+    required: true,
     attributes: [
       'paymentRequestId',
       'schemeId',
@@ -39,25 +19,45 @@ const getQualityChecks = async (page = 1, pageSize = 100, usePagination = true) 
       'value',
       'valueText',
       'marketingYear'
-    ]
-  })
+    ],
+    include: [{
+      model: db.scheme,
+      as: 'schemes',
+      attributes: ['name']
+    }, {
+      model: db.manualLedgerPaymentRequest,
+      as: 'manualLedgerChecks',
+      attributes: ['createdBy', 'createdById'],
+      where: { active: true }
+    }]
+  }
+  if (frn) {
+    paymentRequestInclude.where.frn = String(frn)
+  }
 
-  const paymentRequestMap = paymentRequests.reduce((map, pr) => {
-    map[pr.paymentRequestId] = pr
-    return map
-  }, {})
-  const mergedQualityChecks = qualityChecks.map(qc => {
+  const options = {
+    where: {
+      status: PENDING
+    },
+    include: [paymentRequestInclude],
+    distinct: true // ensures findAndCountAll's count isn't inflated by the joined includes
+  }
+  if (usePagination) {
+    options.limit = pageSize
+    options.offset = offset
+  }
+
+  const result = await db.qualityCheck.findAndCountAll(options)
+
+  const mergedQualityChecks = result.rows.map(qc => {
     const plainQc = qc.get({ plain: true })
-    plainQc.paymentRequest = paymentRequestMap[qc.paymentRequestId]
-
     if (plainQc.paymentRequest?.schemes?.name === 'SFI') {
       plainQc.paymentRequest.schemes.name = 'SFI22'
     }
-
     return plainQc
   })
 
-  return mergedQualityChecks
+  return { rows: mergedQualityChecks, count: result.count }
 }
 
 module.exports = getQualityChecks
