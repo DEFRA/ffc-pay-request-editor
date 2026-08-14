@@ -26,9 +26,10 @@ module.exports = [{
       const { page, perPage } = parsePaginationParams(request.query, defaultPerPage)
       const { frn } = request.query
       const { userId } = getUser(request)
-      const { data: qualityCheckData, totalPages, paginationItems } = await buildQualityCheckViewData({ page, perPage, frn })
+      const { data: qualityCheckData, count, totalPages, paginationItems } = await buildQualityCheckViewData({ page, perPage, frn })
       return h.view(qualityCheck, {
         qualityCheckData,
+        count,
         userId,
         page,
         perPage,
@@ -50,13 +51,14 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        const { data: qualityCheckData, totalPages, paginationItems } = await buildQualityCheckViewData({
+        const { data: qualityCheckData, count, totalPages, paginationItems } = await buildQualityCheckViewData({
           page: defaultPage,
           perPage: defaultPerPage
         })
         const { userId } = getUser(request)
         return h.view(qualityCheck, {
           qualityCheckData,
+          count,
           userId,
           totalPages,
           paginationItems,

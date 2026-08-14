@@ -90,7 +90,7 @@
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-half">
               <div style="display:flex;align-items:baseline;gap:1rem;">
-                <h2 class="govuk-heading-m govuk-!-margin-0">
+                <h2 class="govuk-heading-m">
                   Requests awaiting reporting data
                 </h2>
               </div>
@@ -126,7 +126,7 @@
           <p
             class="govuk-body-m"
             id="dataset-count">
-            Showing {{ enrichData.length }} request{{
+            Showing {{ enrichData.length }} of {{ count }} request{{
               's' if enrichData.length != 1
             }}
           </p>

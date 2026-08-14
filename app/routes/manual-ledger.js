@@ -26,10 +26,11 @@ module.exports = [{
     handler: async (request, h) => {
       const { page, perPage } = parsePaginationParams(request.query, defaultPerPage)
       const { frn } = request.query
-      const { data: ledgerData, totalPages, paginationItems } = await buildLedgerViewData({ page, perPage, frn })
+      const { data: ledgerData, count, totalPages, paginationItems } = await buildLedgerViewData({ page, perPage, frn })
 
       return h.view(manualLedger, {
         ledgerData,
+        count,
         page,
         perPage,
         totalPages,
@@ -49,13 +50,14 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        const { data: ledgerData, totalPages, paginationItems } = await buildLedgerViewData({
+        const { data: ledgerData, count, totalPages, paginationItems } = await buildLedgerViewData({
           page: defaultPage,
           perPage: defaultPerPage
         })
 
         return h.view(manualLedger, {
           ledgerData,
+          count,
           totalPages,
           paginationItems,
           page: defaultPage,
