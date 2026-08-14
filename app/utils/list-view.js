@@ -13,7 +13,7 @@ const withPagination = (fetchAndShape) => async ({ page, perPage, ...filters }) 
   const { data, count } = await fetchAndShape({ page, perPage, ...filters })
   const totalPages = Math.ceil(count / perPage)
   const paginationItems = buildPaginationItems(page, totalPages, perPage, filters)
-  return { data, totalPages, paginationItems }
+  return { data, count, totalPages, paginationItems }
 }
 
 // POST/redirect/GET so the search filters become part of the URL - this means pagination

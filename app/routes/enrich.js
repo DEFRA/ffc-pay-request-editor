@@ -23,9 +23,10 @@ module.exports = [{
     handler: async (request, h) => {
       const { page, perPage } = parsePaginationParams(request.query, defaultPerPage)
       const { frn } = request.query
-      const { data: enrichData, totalPages, paginationItems } = await buildEnrichViewData({ page, perPage, frn })
+      const { data: enrichData, count, totalPages, paginationItems } = await buildEnrichViewData({ page, perPage, frn })
       return h.view(view, {
         enrichData,
+        count,
         page,
         perPage,
         totalPages,
@@ -45,12 +46,13 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        const { data: enrichData, totalPages, paginationItems } = await buildEnrichViewData({
+        const { data: enrichData, count, totalPages, paginationItems } = await buildEnrichViewData({
           page: defaultPage,
           perPage: defaultPerPage
         })
         return h.view(view, {
           enrichData,
+          count,
           totalPages,
           paginationItems,
           page: defaultPage,
