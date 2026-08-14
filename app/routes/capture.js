@@ -37,10 +37,11 @@ module.exports = [{
       const { page, perPage } = parsePaginationParams(request.query, defaultPerPage)
       const { frn, scheme } = request.query
 
-      const { data: captureData, totalPages, paginationItems } = await buildCaptureViewData({ page, perPage, frn, scheme })
+      const { data: captureData, count, totalPages, paginationItems } = await buildCaptureViewData({ page, perPage, frn, scheme })
 
       return h.view(view, {
         captureData,
+        count,
         page,
         perPage,
         totalPages,
@@ -73,7 +74,7 @@ module.exports = [{
     validate: {
       payload: schema,
       failAction: async (request, h, error) => {
-        const { data: captureData, totalPages, paginationItems } = await buildCaptureViewData({
+        const { data: captureData, count, totalPages, paginationItems } = await buildCaptureViewData({
           page: defaultPage,
           perPage: defaultPerPage
         })
@@ -84,6 +85,7 @@ module.exports = [{
 
         return h.view(view, {
           captureData,
+          count,
           totalPages,
           paginationItems,
           page: defaultPage,
@@ -122,7 +124,7 @@ module.exports = [{
         debtDataId: Joi.number().integer().required()
       }),
       failAction: async (_request, h, error) => {
-        const { data: captureData, totalPages, paginationItems } = await buildCaptureViewData({
+        const { data: captureData, count, totalPages, paginationItems } = await buildCaptureViewData({
           page: defaultPage,
           perPage: defaultPerPage
         })
@@ -132,6 +134,7 @@ module.exports = [{
         return h.view(view, {
           totalPages,
           captureData,
+          count,
           paginationItems,
           page: defaultPage,
           perPage: defaultPerPage,
