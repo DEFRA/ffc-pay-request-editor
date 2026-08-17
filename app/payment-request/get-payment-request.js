@@ -37,7 +37,8 @@ const getPaymentRequest = async (page = 1, pageSize = 100, usePagination = true,
       'netValue',
       'fesCode',
       'annualValue',
-      'remmittanceDescription'
+      'remmittanceDescription',
+      'valueText'
     ],
     order: [['received']]
   }
