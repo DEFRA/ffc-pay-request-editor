@@ -150,9 +150,9 @@ describe('Enrich request tests', () => {
       expect(response.request.response.statusCode).toBe(400)
       expect(model.errorMessage.titleText).toBe('There is a problem')
       expect(model.errorMessage.errorList.map(e => e.message)).toEqual([
-        '"day" is required',
-        '"month" is required',
-        '"year" is required',
+        'Day must be a number',
+        'Month must be a number',
+        'Year must be a number',
         '"debt-type" is required'
       ])
       expect(model.radio.errorMessage.text).toBe('Select a type of debt')
@@ -221,9 +221,9 @@ describe('Enrich request tests', () => {
       expect(response.request.response.statusCode).toBe(400)
       expect(model.errorMessage.titleText).toBe('There is a problem')
       expect(model.errorMessage.errorList.map(e => e.message)).toEqual([
-        '"day" is required',
-        '"month" is required',
-        '"year" is required',
+        'Day must be a number',
+        'Month must be a number',
+        'Year must be a number',
         '"debt-type" is required'
       ])
       expect(model.radio.errorMessage.text).toBe('Select a type of debt')
