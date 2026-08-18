@@ -12,41 +12,53 @@
 {% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
 
 {% block beforeContent %}
-  {{ govukBreadcrumbs({
-    items: [{
-      text: "Home",
-      href: "/"
-    }, {
-      text: "Manage unattached debt data",
-      href: "/capture"
-    }, {
-      text: pageTitle
-    }]
-  })}}
+  {{
+    govukBreadcrumbs({
+      items: [{
+        text: "Home",
+        href: "/"
+      }, {
+        text: "Manage unattached debt data",
+        href: "/capture"
+      }, {
+        text: pageTitle
+      }]
+    })
+  }}
 {% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
-      <p class="govuk-body">
-        Provide upcoming debt information for payments that haven’t been processed.
-      </p>
-      <p class="govuk-body">
-        Datasets will be unattached within request editor and automatically attached to a matching payment request when received.
-      </p>
-
       {% if model.errorSummary %}
-        {{ govukErrorSummary({
-          titleText: "There is a problem",
-          errorList: model.errorSummary
-        }) 
-      }}
+        {{
+          govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: model.errorSummary
+          })
+        }}
       {% endif %}
 
-      <form method="POST" action="/capture-debt-confirm" novalidate>
-        <input type="hidden" name="crumb" value="{{ crumb }}"/>
-        
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+      <p class="govuk-body">
+        Provide upcoming debt information for payments that haven’t been
+        processed.
+      </p>
+      <p class="govuk-body">
+        Datasets will be unattached within request editor and automatically
+        attached to a matching payment request when received.
+      </p>
+
+      <form
+        method="POST"
+        action="/capture-debt-confirm"
+        novalidate>
+        <input
+          type="hidden"
+          name="crumb"
+          value="{{ crumb }}"
+        />
+
         <div class="govuk-form-group">
           {{ govukSelect(model.components.scheme) }}
         </div>
@@ -72,16 +84,18 @@
         </div>
 
         <div class="govuk-button-group">
-          {{ govukButton({
+          {{
+            govukButton({
               text: "Continue",
               attributes: {
                 id: "capture-debt"
               }
-            }) 
+            })
           }}
-          <a class="govuk-link" href="/capture">Cancel</a>
+          <a
+            class="govuk-link"
+            href="/capture">Cancel</a>
         </div>
-      
       </form>
     </div>
   </div>
