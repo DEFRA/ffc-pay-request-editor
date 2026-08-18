@@ -5,23 +5,29 @@ const {
   IRREGULAR
 } = require('../../constants/debt-types')
 
+const minDayMonth = 1
+const maxDay = 31
+const maxMonth = 12
+const minYear = 2015
+const maxYear = 9999
+
 module.exports = Joi.object({
-  day: Joi.number().integer().min(1).max(31).required()
+  day: Joi.number().integer().min(minDayMonth).max(maxDay).required()
     .error(errors => {
       errors.forEach(err => {
-        err.message = 'Day must be a number'
+        err.message = 'Enter valid day'
       })
       return errors
     }),
-  month: Joi.number().integer().min(1).max(12).required().error(errors => {
+  month: Joi.number().integer().min(minDayMonth).max(maxMonth).required().error(errors => {
     errors.forEach(err => {
-      err.message = 'Month must be a number'
+      err.message = 'Enter valid month'
     })
     return errors
   }),
-  year: Joi.number().integer().min(2015).max(9999).required().error(errors => {
+  year: Joi.number().integer().min(minYear).max(maxYear).required().error(errors => {
     errors.forEach(err => {
-      err.message = 'Year must be a number'
+      err.message = 'Enter valid year'
     })
     return errors
   }),
