@@ -155,4 +155,40 @@ describe('capture-debt route', () => {
     expect(debt).toBeDefined()
     expect(debt.schemeId).toBe(SCHEME_ID_SFI)
   })
+
+  test('returns validation error when applicationIdentifier exceeds 50 characters', async () => {
+    const result = await server.inject({
+      method: 'POST',
+      url: '/capture-debt',
+      payload: {
+        ...VALID_PAYLOAD,
+        applicationIdentifier: 'A'.repeat(51)
+      },
+      auth
+    })
+
+    expect(result.statusCode).toBe(400)
+    expect(result.request.response.source.context.model.errorSummary[0].text)
+      .toBe('The Agreement / claim number cannot be more than 50 characters long')
+  })
+
+  test('accepts applicationIdentifier with exactly 50 characters', async () => {
+    await db.paymentRequest.create({
+      schemeId: 1,
+      frn: VALID_PAYLOAD.frn
+    })
+
+    const result = await server.inject({
+      method: 'POST',
+      url: '/capture-debt',
+      payload: {
+        ...VALID_PAYLOAD,
+        applicationIdentifier: 'A'.repeat(50)
+      },
+      auth
+    })
+
+    expect(result.statusCode).toBe(302)
+    expect(result.headers.location).toBe('/capture?debtAdded=true')
+  })
 })
