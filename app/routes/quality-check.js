@@ -64,6 +64,7 @@ module.exports = [{
           paginationItems,
           page: defaultPage,
           perPage: defaultPerPage,
+          errors: error.details,
           ...new ViewModel({ ...viewModelDetails, value: request.payload.frn }, error)
         }).code(statusCodes.BAD_REQUEST).takeover()
       }

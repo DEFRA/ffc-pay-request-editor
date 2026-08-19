@@ -92,6 +92,7 @@ module.exports = [{
           perPage: defaultPerPage,
           frn: request.payload.frn,
           scheme: request.payload.scheme,
+          errors: error.details,
           ...new ViewModel(
             { labelText: frnSearchLabelText, value: request.payload.frn, error: frnError },
             { labelText: schemeSearchLabelText, options, value: request.payload.scheme, error: schemeError },

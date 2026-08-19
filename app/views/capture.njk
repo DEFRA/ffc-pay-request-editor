@@ -9,6 +9,7 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "macros/search-combined.njk" import searchCombined %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% set pageTitle = "Manage unattached debt data" %}
 
@@ -68,6 +69,33 @@
           </div>
         </div>
       {% endif %}
+
+      {% if errors and errors.length %}
+        {% set errorList = [] %}
+
+        {% for errorDetail in errors %}
+          {% set href = "#user-search-frn" %}
+
+          {% if errorDetail.context.key == "scheme" %}
+            {% set href = "#scheme" %}
+          {% endif %}
+
+          {%
+            set errorList = errorList.concat([{
+              text: errorDetail.message,
+              href: href
+            }])
+          %}
+        {% endfor %}
+
+        {{
+          govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: errorList
+          })
+        }}
+      {% endif %}
+
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
       <p class="govuk-body">
         Provide unattached debt data in advance of payment request processing

@@ -11,25 +11,32 @@
 {% block pageTitle %}{{ pageTitle }} - {{ serviceName }}{% endblock %}
 
 {% block beforeContent %}
-  {{ govukBreadcrumbs({
-    items: [{
-      text: "Home",
-      href: "/"
-    }, {
-      text: "View awaiting reporting data",
-      href: "/enrich"
-    }, {
-      text: pageTitle
-    }]
-  })}}
+  {{
+    govukBreadcrumbs({
+      items: [{
+        text: "Home",
+        href: "/"
+      }, {
+        text: "View awaiting reporting data",
+        href: "/enrich"
+      }, {
+        text: pageTitle
+      }]
+    })
+  }}
 {% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
+      {% if model.errorMessage %}
+        {{ govukErrorSummary(model.errorMessage) }}
+      {% endif %}
+
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
       <p class="govuk-body">
-        Add the debt type and the date the debt was discovered to the payment request.
+        Add the debt type and the date the debt was discovered to the payment
+        request.
       </p>
       <h2 class="govuk-heading-m">Request to enrich</h2>
       <dl class="govuk-summary-list">
@@ -74,24 +81,40 @@
           </dd>
         </div>
       </dl>
-      <form action="/enrich-request-confirm" method="POST" novalidate>
-        <input type="hidden" name="crumb" value="{{crumb}}"/>
-        <input type="hidden" name="invoice-number" value="{{ paymentRequest.invoiceNumber }}"/>
-        <input type="hidden" name="payment-request-id" value="{{ paymentRequest.paymentRequestId }}"/>
+      <form
+        action="/enrich-request-confirm"
+        method="POST"
+        novalidate>
+        <input
+          type="hidden"
+          name="crumb"
+          value="{{crumb}}"
+        />
+        <input
+          type="hidden"
+          name="invoice-number"
+          value="{{ paymentRequest.invoiceNumber }}"
+        />
+        <input
+          type="hidden"
+          name="payment-request-id"
+          value="{{ paymentRequest.paymentRequestId }}"
+        />
         <h2 class="govuk-heading-m">Dataset to attach</h2>
-        {% if model.errorMessage %}
-          {{ govukErrorSummary(model.errorMessage) }}
-        {% endif %}
         {{ govukRadios(model.radio) }}
         {{ govukDateInput(model.date) }}
         <div class="govuk-button-group">
-          {{ govukButton({
-            text: "Continue",
-            attributes: {
-              id: "submit"
-            }
-          }) }}
-          <a class="govuk-link" href="/enrich">Cancel</a>
+          {{
+            govukButton({
+              text: "Continue",
+              attributes: {
+                id: "submit"
+              }
+            })
+          }}
+          <a
+            class="govuk-link"
+            href="/enrich">Cancel</a>
         </div>
       </form>
     </div>
