@@ -1,11 +1,14 @@
 const Joi = require('joi')
 
+const minSize = 5
+const maxSize = 50
+
 module.exports = {
   applicationIdentifier: Joi.string()
     .required()
     .regex(/^\w*$/)
-    .min(5)
-    .max(50)
+    .min(minSize)
+    .max(maxSize)
     .messages({
       'any.required': 'The Agreement / claim number is required',
       'string.empty': 'The Agreement / claim number is required',
