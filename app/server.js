@@ -1,6 +1,5 @@
 const hapi = require('@hapi/hapi')
 const config = require('./config')
-const catbox = config.useRedis ? require('@hapi/catbox-redis') : require('@hapi/catbox-memory')
 
 const createServer = async () => {
   // Create the hapi server
@@ -15,14 +14,7 @@ const createServer = async () => {
     },
     router: {
       stripTrailingSlash: true
-    },
-    cache: [{
-      name: config.cacheName,
-      provider: {
-        constructor: catbox,
-        options: config.catboxOptions
-      }
-    }]
+    }
   })
 
   // Register the plugins
@@ -33,7 +25,6 @@ const createServer = async () => {
     await server.register(require('./plugins/router'))
     await server.register(require('./plugins/error-pages'))
     await server.register(require('./plugins/crumb'))
-    await server.register(require('./plugins/session-cache'))
     await server.register(require('./plugins/view-context'))
     await server.register(require('./plugins/logging'))
     await server.register(require('./plugins/cookies'))

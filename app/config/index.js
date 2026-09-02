@@ -9,11 +9,6 @@ const schema = Joi.object({
   serviceName: Joi.string().default('Request Editor'),
   port: Joi.number().default(3001),
   env: Joi.string().valid('development', 'test', 'production').default('development'),
-  cacheName: Joi.string(),
-  redisHost: Joi.string(),
-  redisPort: Joi.number().default(6379),
-  redisPassword: Joi.string().default(''),
-  redisPartition: Joi.string().default('ffc-pay-request-editor'),
   cookiePassword: Joi.string().required(),
   sessionTimeoutMinutes: Joi.number().default(30),
   staticCacheTimeoutMillis: Joi.number().default(7 * 24 * 60 * 60 * 1000), // 1 day
@@ -65,11 +60,6 @@ const config = {
   serviceName: process.env.SERVICE_NAME,
   port: process.env.PORT,
   env: process.env.NODE_ENV,
-  cacheName: 'redisCache',
-  redisPartition: process.env.REDIS_PARTITION,
-  redisHost: process.env.REDIS_HOSTNAME,
-  redisPort: process.env.REDIS_PORT,
-  redisPassword: process.env.REDIS_PASSWORD,
   cookiePassword: process.env.COOKIE_PASSWORD,
   sessionTimeoutMinutes: process.env.SESSION_TIMEOUT_IN_MINUTES,
   staticCacheTimeoutMillis: process.env.STATIC_CACHE_TIMEOUT_IN_MILLIS,
@@ -152,13 +142,5 @@ value.isTest = value.env === 'test'
 value.isProd = value.env === 'production'
 
 value.isAlerting = value.isDev || value.isProd
-
-value.catboxOptions = {
-  host: value.redisHost,
-  port: value.redisPort,
-  password: value.redisPassword,
-  tls: value.isProd ? {} : undefined,
-  partition: value.redisPartition
-}
 
 module.exports = value
