@@ -24,6 +24,7 @@ const createServer = async () => {
     await server.register(require('./plugins/views'))
     await server.register(require('./plugins/router'))
     await server.register(require('./plugins/error-pages'))
+    await server.register(require('./plugins/session-cache'))
     await server.register(require('./plugins/crumb'))
     await server.register(require('./plugins/view-context'))
     await server.register(require('./plugins/logging'))
