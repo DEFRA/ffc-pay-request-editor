@@ -1,7 +1,7 @@
 const db = require('../../../../app/data')
 
 jest.mock('../../../../app/event', () => ({
-  sendEnrichRequestBlockedEvent: () => {}
+  sendEnrichRequestBlockedEvent: () => { }
 }))
 
 const { processPaymentRequest } = require('../../../../app/payment-request')
@@ -70,23 +70,33 @@ describe('process payment requests', () => {
     await processPaymentRequest(paymentRequest)
 
     const paymentRequestRows = await db.paymentRequest.findAll({
-      attributes: [
-        'paymentRequestId'
-      ]
+      attributes: ['paymentRequestId']
     })
+
     paymentRequestId = paymentRequestRows[0].paymentRequestId
+
     const invoiceLinesRows = await getInvoiceLinesOfPaymentRequest(paymentRequestId)
 
-    expect(invoiceLinesRows[0].schemeCode).toBe('80001')
-    expect(invoiceLinesRows[0].accountCode).toBe('SOS273')
-    expect(invoiceLinesRows[0].fundCode).toBe('DRD10')
-    expect(invoiceLinesRows[0].description).toBe('G00 - Gross value of claim')
-    expect(parseFloat(invoiceLinesRows[0].value)).toBe(25000)
+    expect(invoiceLinesRows).toHaveLength(2)
 
-    expect(invoiceLinesRows[1].schemeCode).toBe('80001')
-    expect(invoiceLinesRows[1].accountCode).toBe('SOS273')
-    expect(invoiceLinesRows[1].fundCode).toBe('DRD10')
-    expect(invoiceLinesRows[1].description).toBe('P02 - Over declaration penalty')
-    expect(parseFloat(invoiceLinesRows[1].value)).toBe(-10000)
+    const grossValueLine = invoiceLinesRows.find(
+      x => x.description === 'G00 - Gross value of claim'
+    )
+
+    const penaltyLine = invoiceLinesRows.find(
+      x => x.description === 'P02 - Over declaration penalty'
+    )
+
+    expect(grossValueLine).toBeDefined()
+    expect(grossValueLine.schemeCode).toBe('80001')
+    expect(grossValueLine.accountCode).toBe('SOS273')
+    expect(grossValueLine.fundCode).toBe('DRD10')
+    expect(parseFloat(grossValueLine.value)).toBe(25000)
+
+    expect(penaltyLine).toBeDefined()
+    expect(penaltyLine.schemeCode).toBe('80001')
+    expect(penaltyLine.accountCode).toBe('SOS273')
+    expect(penaltyLine.fundCode).toBe('DRD10')
+    expect(parseFloat(penaltyLine.value)).toBe(-10000)
   })
 })
