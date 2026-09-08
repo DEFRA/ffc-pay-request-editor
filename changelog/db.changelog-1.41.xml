@@ -25,13 +25,13 @@
 
     <createIndex
         indexName="idx_manual_ledger_ledger_payment_request_id"
-        tableName="manualLedgerPaymentRequests">
+        tableName="manualLedgerPaymentRequest">
         <column name="ledgerPaymentRequestId"/>
     </createIndex>
 
     <createIndex
         indexName="idx_manual_ledger_payment_request_id"
-        tableName="manualLedgerPaymentRequests">
+        tableName="manualLedgerPaymentRequest">
         <column name="paymentRequestId"/>
     </createIndex>
 
