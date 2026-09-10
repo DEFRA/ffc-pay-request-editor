@@ -1,0 +1,56 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.9.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+  <changeSet author="Alistair Wishart" id="1">
+    <tagDatabase tag="v1.41.0" />
+  </changeSet>
+
+  <changeSet author="Alistair Wishart" id="2">
+    <createIndex
+        indexName="idx_debt_data_payment_request_id"
+        tableName="debtData">
+        <column name="paymentRequestId"/>
+    </createIndex>
+
+    <createIndex
+        indexName="idx_debt_data_scheme_id"
+        tableName="debtData">
+        <column name="schemeId"/>
+    </createIndex>
+
+    <createIndex
+        indexName="idx_invoice_lines_payment_request_id"
+        tableName="invoiceLines">
+        <column name="paymentRequestId"/>
+    </createIndex>
+
+    <createIndex
+        indexName="idx_manual_ledger_ledger_payment_request_id"
+        tableName="manualLedgerPaymentRequest">
+        <column name="ledgerPaymentRequestId"/>
+    </createIndex>
+
+    <createIndex
+        indexName="idx_manual_ledger_payment_request_id"
+        tableName="manualLedgerPaymentRequest">
+        <column name="paymentRequestId"/>
+    </createIndex>
+
+    <createIndex
+        indexName="idx_payment_requests_scheme_id"
+        tableName="paymentRequests">
+        <column name="schemeId"/>
+    </createIndex>
+
+    <createIndex
+        indexName="idx_payment_requests_category_id"
+        tableName="paymentRequests">
+        <column name="categoryId"/>
+    </createIndex>
+
+    <createIndex
+        indexName="idx_quality_checks_payment_request_id"
+        tableName="qualityChecks">
+        <column name="paymentRequestId"/>
+    </createIndex>
+  </changeSet>
+</databaseChangeLog>
