@@ -1,4 +1,4 @@
-const { SFI, SFI_PILOT, LUMP_SUMS, VET_VISITS, CS, BPS, SFI23, DELINKED, SFI_EXPANDED, COHTR, COHTC } = require('../../../app/constants/schemes')
+const { SFI, SFI_PILOT, LUMP_SUMS, VET_VISITS, CS, BPS, SFI23, DELINKED, SFI_EXPANDED, COHTR, COHTC, SFI26 } = require('../../../app/constants/schemes')
 const splitToLedger = require('../../../app/processing/ledger/split-to-ledger')
 const { AP, AR } = require('../../../app/processing/ledger/ledgers')
 
@@ -30,7 +30,8 @@ describe('split ledger test', () => {
     { schemeId: DELINKED, invoiceNumber: 'D12345678SFI123456V002', invoicePrefix: 'D1234567' },
     { schemeId: SFI_EXPANDED, invoiceNumber: 'E12345678E123456V002', invoicePrefix: 'E1234567' },
     { schemeId: COHTR, invoiceNumber: 'E12345678E123456V002', invoicePrefix: 'E1234567' },
-    { schemeId: COHTC, invoiceNumber: 'C12345678H123456V002', invoicePrefix: 'C1234567' }
+    { schemeId: COHTC, invoiceNumber: 'C12345678H123456V002', invoicePrefix: 'C1234567' },
+    { schemeId: SFI26, invoiceNumber: 'S12345678SFI123456V002', invoicePrefix: 'S1234567' }
   ]
 
   test.each(schemeTests)('updates invoice numbers correctly for scheme %#', ({ schemeId, invoiceNumber, invoicePrefix }) => {
