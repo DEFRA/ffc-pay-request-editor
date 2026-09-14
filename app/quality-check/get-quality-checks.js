@@ -51,9 +51,6 @@ const getQualityChecks = async (page = 1, pageSize = 100, usePagination = true, 
 
   const mergedQualityChecks = result.rows.map(qc => {
     const plainQc = qc.get({ plain: true })
-    if (plainQc.paymentRequest?.schemes?.name === 'SFI') {
-      plainQc.paymentRequest.schemes.name = 'SFI22'
-    }
     return plainQc
   })
 

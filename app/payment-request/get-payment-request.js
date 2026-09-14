@@ -52,12 +52,6 @@ const getPaymentRequest = async (page = 1, pageSize = 100, usePagination = true,
   // to the underlying model (e.g. re-saving would silently persist the display-only rename).
   result.rows = result.rows.map(payment => {
     const plainPayment = payment.get({ plain: true })
-    if (plainPayment.schemes?.name === 'SFI') {
-      plainPayment.schemes.name = 'SFI22'
-    }
-    if (plainPayment.schemes?.name === 'Vet Visits') {
-      plainPayment.schemes.name = 'Annual Health and Welfare Review'
-    }
     return plainPayment
   })
   return result
@@ -77,12 +71,6 @@ const getPaymentRequestByInvoiceNumberAndRequestId = async (invoiceNumber, payme
     raw: true,
     nest: true
   })
-  if (paymentRequest?.schemes?.name === 'SFI') {
-    paymentRequest.schemes.name = 'SFI22'
-  }
-  if (paymentRequest?.schemes?.name === 'Vet Visits') {
-    paymentRequest.schemes.name = 'Annual Health and Welfare Review'
-  }
   return paymentRequest
 }
 
