@@ -6,7 +6,6 @@ const mockAuth = require('../../../../app/auth')
 const createServer = require('../../../../app/server')
 const { ADMINISTRATIVE, IRREGULAR } = require('../../../../app/constants/debt-types')
 
-jest.mock('ffc-messaging')
 jest.mock('../../../../app/plugins/crumb')
 jest.mock('../../../../app/debt')
 jest.mock('../../../../app/extract')

@@ -1,4 +1,3 @@
-jest.mock('ffc-messaging')
 jest.mock('../../../app/data')
 jest.mock('../../../app/payment-request')
 const processDebtDataMessage = require('../../../app/messaging/process-debt-data-message')
