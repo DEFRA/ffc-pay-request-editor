@@ -1,7 +1,6 @@
 const { enrichment } = require('../../app/auth/permissions')
 
 describe('capture-debt route', () => {
-  jest.mock('ffc-messaging')
   jest.mock('../../app/plugins/crumb')
   jest.mock('../../app/processing/scheme')
   jest.mock('../../app/auth')

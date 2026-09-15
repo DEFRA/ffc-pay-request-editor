@@ -1,7 +1,6 @@
 const { enrichment } = require('../../../../app/auth/permissions')
 
 describe('errors test', () => {
-  jest.mock('ffc-messaging')
   jest.mock('../../../../app/debt')
   const mockDebts = require('../../../../app/debt')
 

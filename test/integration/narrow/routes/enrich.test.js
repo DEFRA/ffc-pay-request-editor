@@ -1,6 +1,5 @@
 const { enrichment } = require('../../../../app/auth/permissions')
 
-jest.mock('ffc-messaging')
 jest.mock('../../../../app/plugins/crumb')
 jest.mock('../../../../app/payment-request')
 jest.mock('../../../../app/auth')
