@@ -1,3 +1,4 @@
+const { getSchemeNames } = require('ffc-pay-schemes')
 const { enrichment } = require('../../../../app/auth/permissions')
 const { getDebts, deleteDebt } = require('../../../../app/debt')
 const { mapExtract } = require('../../../../app/extract')
@@ -12,6 +13,8 @@ jest.mock('../../../../app/debt')
 jest.mock('../../../../app/extract')
 jest.mock('../../../../app/convert-to-csv')
 jest.mock('../../../../app/auth')
+
+const { SFI, SFI_PILOT } = getSchemeNames()
 
 describe('Capture route tests', () => {
   let server
@@ -31,7 +34,7 @@ describe('Capture route tests', () => {
 
   const debts = [
     {
-      schemes: { name: 'SFI Pilot' },
+      schemes: { name: SFI_PILOT },
       frn: '1234567890',
       reference: 'SFIP1234567',
       netValue: 1000.0,
@@ -41,7 +44,7 @@ describe('Capture route tests', () => {
       createdBy: 'John Watson'
     },
     {
-      schemes: { name: 'SFI' },
+      schemes: { name: SFI },
       frn: '1234567891',
       reference: 'SFIP1234568',
       netValue: 570,
@@ -63,7 +66,7 @@ describe('Capture route tests', () => {
     mapExtract.mockReturnValue(debts)
 
     convertToCSV.mockImplementation(data => {
-      return data ? 'scheme,frn\nSFI Pilot,1234567890' : undefined
+      return data ? `scheme,frn\n${SFI_PILOT},1234567890` : undefined
     })
 
     mockAuth.getUser.mockResolvedValue(user)
@@ -143,7 +146,7 @@ describe('Capture route tests', () => {
     test('passes the FRN and scheme filters to getDebts', async () => {
       const response = await server.inject({
         method: 'GET',
-        url: '/capture?page=1&perPage=10&frn=1234567890&scheme=SFI+Pilot',
+        url: `/capture?page=1&perPage=10&frn=1234567890&scheme=${encodeURIComponent(SFI_PILOT).replace(/%20/g, '+')}`,
         auth
       })
 
@@ -155,13 +158,13 @@ describe('Capture route tests', () => {
         pageSize: 10,
         usePagination: true,
         frn: '1234567890',
-        scheme: 'SFI Pilot'
+        scheme: SFI_PILOT
       })
 
       expect(response.request.response.source.context).toEqual(
         expect.objectContaining({
           frn: '1234567890',
-          scheme: 'SFI Pilot'
+          scheme: SFI_PILOT
         })
       )
     })
@@ -242,10 +245,10 @@ describe('Capture route tests', () => {
       {
         payload: {
           frn: '1234567890',
-          scheme: 'SFI Pilot'
+          scheme: SFI_PILOT
         },
         expectedLocation:
-          '/capture?page=1&perPage=2500&frn=1234567890&scheme=SFI+Pilot'
+          `/capture?page=1&perPage=2500&frn=1234567890&scheme=${encodeURIComponent(SFI_PILOT).replace(/%20/g, '+')}`
       },
       {
         payload: {
@@ -256,10 +259,10 @@ describe('Capture route tests', () => {
       },
       {
         payload: {
-          scheme: 'SFI Pilot'
+          scheme: SFI_PILOT
         },
         expectedLocation:
-          '/capture?page=1&perPage=2500&scheme=SFI+Pilot'
+          `/capture?page=1&perPage=2500&scheme=${encodeURIComponent(SFI_PILOT).replace(/%20/g, '+')}`
       },
       {
         payload: {},
@@ -357,7 +360,7 @@ describe('Capture route tests', () => {
         payload: {
           debtdataid: '123',
           frn: '1234567890',
-          scheme: 'SFI Pilot'
+          scheme: SFI_PILOT
         },
         auth
       })
@@ -371,7 +374,7 @@ describe('Capture route tests', () => {
         expect.objectContaining({
           debtdataid: '123',
           frn: '1234567890',
-          scheme: 'SFI Pilot'
+          scheme: SFI_PILOT
         })
       )
     })
@@ -482,7 +485,7 @@ describe('Capture route tests', () => {
       expect(convertToCSV).toHaveBeenCalledWith(debts)
 
       expect(response.payload).toBe(
-        '\uFEFFscheme,frn\nSFI Pilot,1234567890'
+        `\uFEFFscheme,frn\n${SFI_PILOT},1234567890`
       )
 
       expect(response.headers['content-type']).toContain(
