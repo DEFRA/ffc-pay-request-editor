@@ -11,5 +11,6 @@ module.exports = {
   COHTR: 15,
   COHTC: 16,
   FPTT: 17,
-  WMP: 18
+  WMP: 18,
+  SFI26: 19
 }
