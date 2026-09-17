@@ -47,15 +47,6 @@ const respondValidationErrors = (h, result, payload) => {
   return null
 }
 
-const normalizeScheme = (payload) => {
-  if (payload.scheme === 'SFI22') {
-    payload.scheme = 'SFI'
-  }
-  if (payload.scheme === 'Annual Health and Welfare Review') {
-    payload.scheme = 'Vet Visits'
-  }
-}
-
 module.exports = [{
   method: 'GET',
   path: '/capture-debt',
@@ -122,8 +113,6 @@ module.exports = [{
       if (errorResponse) {
         return errorResponse
       }
-
-      normalizeScheme(request.payload)
 
       await captureDebtData(request)
       return h.redirect('/capture?debtAdded=true')

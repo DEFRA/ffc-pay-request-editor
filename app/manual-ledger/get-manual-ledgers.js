@@ -62,9 +62,6 @@ const getManualLedgers = async (statuses, page = 1, pageSize = 100, usePaginatio
   console.log(`Retrieved ${manualLedgers.length} manual ledgers`)
 
   for (const ledger of manualLedgers) {
-    if (ledger.schemeName === 'SFI') {
-      ledger.schemeName = 'SFI22'
-    }
     ledger.valueText = convertValueToStringFormat(ledger.value)
     if (ledger.received) {
       const receivedDate = new Date(ledger.received)

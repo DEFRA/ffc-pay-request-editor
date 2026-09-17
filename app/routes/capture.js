@@ -1,3 +1,4 @@
+const { getSchemeNames } = require('ffc-pay-schemes')
 const ViewModel = require('./models/search-combined')
 const { getDebts, deleteDebt } = require('../debt')
 const { mapExtract } = require('../extract')
@@ -6,7 +7,7 @@ const Joi = require('joi')
 const { enrichment } = require('../auth/permissions')
 const convertToCSV = require('../convert-to-csv')
 const config = require('../config')
-const options = require('../constants/scheme-names')
+const options = Object.values(getSchemeNames())
 const statusCodes = require('../constants/status-codes')
 const { parsePaginationParams, withPagination, redirectWithFilters } = require('../utils/list-view')
 
