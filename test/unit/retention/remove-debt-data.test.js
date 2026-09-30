@@ -1,52 +1,48 @@
-const { removeDebtData } = require('../../../app/retention/remove-debt-data')
-const db = require('../../../app/data')
+const { createKnexMock } = require('../../helpers/mock-knex')
 
-jest.mock('../../../app/data', () => ({
-  Sequelize: {
-    Op: {
-      in: 'IN_OPERATOR'
-    }
-  },
-  debtData: {
-    destroy: jest.fn()
-  }
+const mockDb = createKnexMock(['debtData'])
+
+jest.mock('../../../app/database', () => ({
+  client: mockDb.knex,
+  transaction: mockDb.transaction,
+  close: mockDb.close,
+  ...mockDb.tables
 }))
+
+const { removeDebtData } = require('../../../app/retention/remove-debt-data')
 
 describe('removeDebtData', () => {
   const paymentRequestIds = [101, 102]
-  const transaction = { id: 'transaction-object' }
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockDb.builder.resolves()
   })
 
-  test('calls db.debtData.destroy with correct parameters', async () => {
-    await removeDebtData(paymentRequestIds, transaction)
+  test('deletes from debtData within the transaction', async () => {
+    await removeDebtData(paymentRequestIds, mockDb.trx)
 
-    expect(db.debtData.destroy).toHaveBeenCalledTimes(1)
-    expect(db.debtData.destroy).toHaveBeenCalledWith({
-      where: {
-        paymentRequestId: { [db.Sequelize.Op.in]: paymentRequestIds }
-      },
-      transaction
-    })
+    expect(mockDb.tables.debtData).toHaveBeenCalledWith(mockDb.trx)
+    expect(mockDb.builder.whereIn).toHaveBeenCalledWith('paymentRequestId', paymentRequestIds)
+    expect(mockDb.builder.del).toHaveBeenCalledTimes(1)
   })
 
-  test('calls db.debtData.destroy with undefined transaction if not provided', async () => {
+  test('uses the pool when no transaction is provided', async () => {
     await removeDebtData(paymentRequestIds)
 
-    expect(db.debtData.destroy).toHaveBeenCalledWith({
-      where: {
-        paymentRequestId: { [db.Sequelize.Op.in]: paymentRequestIds }
-      },
-      transaction: undefined
-    })
+    expect(mockDb.tables.debtData).toHaveBeenCalledWith(undefined)
+    expect(mockDb.builder.whereIn).toHaveBeenCalledWith('paymentRequestId', paymentRequestIds)
   })
 
-  test('propagates errors from db.debtData.destroy', async () => {
-    const error = new Error('DB failure')
-    db.debtData.destroy.mockRejectedValue(error)
+  test('uses the pool when transaction is null', async () => {
+    await removeDebtData(paymentRequestIds, null)
 
-    await expect(removeDebtData(paymentRequestIds, transaction)).rejects.toThrow('DB failure')
+    expect(mockDb.tables.debtData).toHaveBeenCalledWith(undefined)
+  })
+
+  test('propagates a failure', async () => {
+    mockDb.builder.rejects(new Error('DB failure'))
+
+    await expect(removeDebtData(paymentRequestIds, mockDb.trx)).rejects.toThrow('DB failure')
   })
 })

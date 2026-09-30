@@ -1,52 +1,48 @@
-const { removeQualityChecks } = require('../../../app/retention/remove-quality-checks')
-const db = require('../../../app/data')
+const { createKnexMock } = require('../../helpers/mock-knex')
 
-jest.mock('../../../app/data', () => ({
-  Sequelize: {
-    Op: {
-      in: 'IN_OPERATOR'
-    }
-  },
-  qualityCheck: {
-    destroy: jest.fn()
-  }
+const mockDb = createKnexMock(['qualityCheck'])
+
+jest.mock('../../../app/database', () => ({
+  client: mockDb.knex,
+  transaction: mockDb.transaction,
+  close: mockDb.close,
+  ...mockDb.tables
 }))
+
+const { removeQualityChecks } = require('../../../app/retention/remove-quality-checks')
 
 describe('removeQualityChecks', () => {
   const paymentRequestIds = [101, 102]
-  const transaction = { id: 'transaction-object' }
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockDb.builder.resolves()
   })
 
-  test('calls db.qualityCheck.destroy with correct parameters', async () => {
-    await removeQualityChecks(paymentRequestIds, transaction)
+  test('deletes from qualityCheck within the transaction', async () => {
+    await removeQualityChecks(paymentRequestIds, mockDb.trx)
 
-    expect(db.qualityCheck.destroy).toHaveBeenCalledTimes(1)
-    expect(db.qualityCheck.destroy).toHaveBeenCalledWith({
-      where: {
-        paymentRequestId: { [db.Sequelize.Op.in]: paymentRequestIds }
-      },
-      transaction
-    })
+    expect(mockDb.tables.qualityCheck).toHaveBeenCalledWith(mockDb.trx)
+    expect(mockDb.builder.whereIn).toHaveBeenCalledWith('paymentRequestId', paymentRequestIds)
+    expect(mockDb.builder.del).toHaveBeenCalledTimes(1)
   })
 
-  test('calls db.qualityCheck.destroy with undefined transaction if not provided', async () => {
+  test('uses the pool when no transaction is provided', async () => {
     await removeQualityChecks(paymentRequestIds)
 
-    expect(db.qualityCheck.destroy).toHaveBeenCalledWith({
-      where: {
-        paymentRequestId: { [db.Sequelize.Op.in]: paymentRequestIds }
-      },
-      transaction: undefined
-    })
+    expect(mockDb.tables.qualityCheck).toHaveBeenCalledWith(undefined)
+    expect(mockDb.builder.whereIn).toHaveBeenCalledWith('paymentRequestId', paymentRequestIds)
   })
 
-  test('propagates errors from db.qualityCheck.destroy', async () => {
-    const error = new Error('DB failure')
-    db.qualityCheck.destroy.mockRejectedValue(error)
+  test('uses the pool when transaction is null', async () => {
+    await removeQualityChecks(paymentRequestIds, null)
 
-    await expect(removeQualityChecks(paymentRequestIds, transaction)).rejects.toThrow('DB failure')
+    expect(mockDb.tables.qualityCheck).toHaveBeenCalledWith(undefined)
+  })
+
+  test('propagates a failure', async () => {
+    mockDb.builder.rejects(new Error('DB failure'))
+
+    await expect(removeQualityChecks(paymentRequestIds, mockDb.trx)).rejects.toThrow('DB failure')
   })
 })

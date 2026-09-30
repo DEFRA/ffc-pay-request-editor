@@ -1,13 +1,14 @@
-const db = require('../../../app/data')
+const db = require('../../../app/database')
+const { truncate } = require('../../helpers/truncate')
 const { SCHEME_ID_SFI } = require('../../data/scheme-id')
 const { getChangedQualityChecks } = require('../../../app/quality-check')
 describe('Get changed quality check tests', () => {
   let paymentRequest
 
   const resetTables = async () => {
-    await db.manualLedgerPaymentRequest.truncate({ cascade: true, restartIdentity: true })
-    await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
-    await db.scheme.truncate({ cascade: true })
+    await truncate(['manualLedgerPaymentRequest'])
+    await truncate(['paymentRequests'])
+    await truncate(['schemes'])
   }
 
   beforeEach(async () => {
@@ -21,20 +22,20 @@ describe('Get changed quality check tests', () => {
       categoryId: SCHEME_ID_SFI
     }
 
-    await db.scheme.create(scheme)
-    await db.paymentRequest.create(paymentRequest)
-    await db.paymentRequest.create({ ...paymentRequest, paymentRequestId: 2 })
-    await db.paymentRequest.create({ ...paymentRequest, paymentRequestId: 3 })
-    await db.paymentRequest.create({ ...paymentRequest, paymentRequestId: 4 })
-    await db.paymentRequest.create({ ...paymentRequest, paymentRequestId: 5 })
-    await db.manualLedgerPaymentRequest.create({ paymentRequestId: 1, ledgerPaymentRequestId: 2, active: false, original: true })
-    await db.manualLedgerPaymentRequest.create({ paymentRequestId: 1, ledgerPaymentRequestId: 3, active: true, original: false })
-    await db.manualLedgerPaymentRequest.create({ paymentRequestId: 4, ledgerPaymentRequestId: 5, active: true, original: false })
+    await db.scheme().insert(scheme)
+    await db.paymentRequest().insert(paymentRequest)
+    await db.paymentRequest().insert({ ...paymentRequest, paymentRequestId: 2 })
+    await db.paymentRequest().insert({ ...paymentRequest, paymentRequestId: 3 })
+    await db.paymentRequest().insert({ ...paymentRequest, paymentRequestId: 4 })
+    await db.paymentRequest().insert({ ...paymentRequest, paymentRequestId: 5 })
+    await db.manualLedgerPaymentRequest().insert({ paymentRequestId: 1, ledgerPaymentRequestId: 2, active: false, original: true })
+    await db.manualLedgerPaymentRequest().insert({ paymentRequestId: 1, ledgerPaymentRequestId: 3, active: true, original: false })
+    await db.manualLedgerPaymentRequest().insert({ paymentRequestId: 4, ledgerPaymentRequestId: 5, active: true, original: false })
   })
 
   afterAll(async () => {
     await resetTables()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('should return hasDismissed as "Yes" when paymentRequest exists and matching manualLedgerPaymentRequest exists with active set to false', async () => {
