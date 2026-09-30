@@ -1,7 +1,7 @@
-const db = require('../data')
+const { debtData } = require('../database')
 
 const deleteDebt = async (debtDataId) => {
-  await db.debtData.destroy({ where: { debtDataId, paymentRequestId: null } })
+  await debtData().where({ debtDataId }).whereNull('paymentRequestId').del()
 }
 
 module.exports = deleteDebt

@@ -1,8 +1,8 @@
-const db = require('../../data')
+const { scheme } = require('../../database')
 
 const getSchemes = async () => {
-  const schemes = await db.scheme.findAll({ attributes: ['name'] })
-  return schemes.map(x => x.get({ plain: true })).sort((a, b) => a.name.localeCompare(b.name))
+  const schemes = await scheme().select('name')
+  return schemes.sort((a, b) => a.name.localeCompare(b.name))
 }
 
 module.exports = { getSchemes }

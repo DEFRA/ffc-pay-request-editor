@@ -1,11 +1,11 @@
-const db = require('../data')
+const db = require('../database')
 const saveManualLedger = require('./save-manual-ledger')
 const updateQualityCheck = require('../inbound/quality-checks')
 const { getExistingPaymentRequest, savePaymentAndInvoiceLines } = require('../payment-request')
 
 const processManualLedgerRequest = async (manualLedgerRequest) => {
   const paymentRequest = manualLedgerRequest.paymentRequest
-  const transaction = await db.sequelize.transaction()
+  const transaction = await db.transaction()
   try {
     const existingPaymentRequest = await getExistingPaymentRequest(paymentRequest.invoiceNumber, paymentRequest.referenceId, 2, transaction)
     if (existingPaymentRequest) {

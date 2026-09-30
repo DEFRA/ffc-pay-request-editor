@@ -1,4 +1,4 @@
-const db = require('../data')
+const { debtData } = require('../database')
 
 const checkDebts = async (schemeId, frn, reference, secondaryReference, netValue, transaction) => {
   const parsedFrn = parseInt(frn)
@@ -8,29 +8,17 @@ const checkDebts = async (schemeId, frn, reference, secondaryReference, netValue
   } else {
     const referenceNumeric = reference.match(/\d+/)[0]
     const secondaryReferenceNumeric = secondaryReference.match(/\d+/)[0]
-    return db.debtData.findOne({
-      transaction,
-      where: {
-        schemeId,
-        frn: parsedFrn,
-        netValue,
-        paymentRequestId: null,
-        [db.Sequelize.Op.or]: [
-          { reference },
-          { reference: secondaryReference },
-          {
-            reference: {
-              [db.Sequelize.Op.like]: `%${Number(referenceNumeric).toString()}`
-            }
-          },
-          {
-            reference: {
-              [db.Sequelize.Op.like]: `%${Number(secondaryReferenceNumeric).toString()}`
-            }
-          }
-        ]
-      }
-    })
+    const found = await debtData(transaction ?? undefined)
+      .where({ schemeId, frn: parsedFrn, netValue })
+      .whereNull('paymentRequestId')
+      .where(function () {
+        this.where({ reference })
+          .orWhere({ reference: secondaryReference })
+          .orWhere('reference', 'like', `%${Number(referenceNumeric).toString()}`)
+          .orWhere('reference', 'like', `%${Number(secondaryReferenceNumeric).toString()}`)
+      })
+      .first()
+    return found ?? null
   }
 }
 

@@ -1,5 +1,4 @@
 const Joi = require('joi')
-const { DefaultAzureCredential, getBearerTokenProvider } = require('@azure/identity')
 const mqConfig = require('./mq-config')
 const authConfig = require('./auth')
 
@@ -23,30 +22,6 @@ const schema = Joi.object({
     strictHeader: Joi.bool().default(true)
   }),
   publishPollingInterval: Joi.number().default(10000), // 10 seconds
-  database: Joi.object({
-    database: Joi.string(),
-    dialect: Joi.string().default('postgres'),
-    dialectOptions: Joi.object({
-      ssl: Joi.boolean().default(false)
-    }),
-    hooks: Joi.object({
-      beforeConnect: Joi.function()
-    }),
-    host: Joi.string(),
-    password: Joi.string(),
-    port: Joi.number().default(5432),
-    logging: Joi.boolean().default(false),
-    retry: Joi.object({
-      backoffBase: Joi.number().default(500),
-      backoffExponent: Joi.number().default(1.1),
-      match: Joi.array().default([/SequelizeConnectionError/]),
-      max: Joi.number().default(10),
-      name: Joi.string().default('connection'),
-      timeout: Joi.number().default(60000)
-    }),
-    schema: Joi.string().default('public'),
-    username: Joi.string()
-  }),
   debtsReportName: Joi.string().default('ffc-pay-debts-report.csv'),
   bannerEnabled: Joi.bool().default(false),
   bannerHeader: Joi.string().allow(null, ''),
@@ -74,40 +49,6 @@ const config = {
     strictHeader: true
   },
   publishPollingInterval: process.env.PUBLISH_POLLING_INTERVAL,
-  database: {
-    database: process.env.POSTGRES_DB,
-    dialect: 'postgres',
-    dialectOptions: {
-      ssl: process.env.NODE_ENV === 'production'
-    },
-    hooks: {
-      beforeConnect: async (cfg) => {
-        if (process.env.NODE_ENV === 'production') {
-          const dbAuthEndpoint = 'https://ossrdbms-aad.database.windows.net/.default'
-          const credential = new DefaultAzureCredential({ managedIdentityClientId: process.env.AZURE_CLIENT_ID })
-          const tokenProvider = getBearerTokenProvider(
-            credential,
-            dbAuthEndpoint
-          )
-          cfg.password = tokenProvider
-        }
-      }
-    },
-    host: process.env.POSTGRES_HOST,
-    password: process.env.POSTGRES_PASSWORD,
-    port: process.env.POSTGRES_PORT || 5432,
-    logging: process.env.POSTGRES_LOGGING || false,
-    retry: {
-      backoffBase: 500,
-      backoffExponent: 1.1,
-      match: [/SequelizeConnectionError/],
-      max: 10,
-      name: 'connection',
-      timeout: 60000
-    },
-    schema: process.env.POSTGRES_SCHEMA_NAME || 'public',
-    username: process.env.POSTGRES_USERNAME
-  },
   debtsReportName: 'ffc-pay-debts-report.csv',
   bannerEnabled: process.env.BANNER_ENABLED,
   bannerHeader: process.env.BANNER_HEADER,

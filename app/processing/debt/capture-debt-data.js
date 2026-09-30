@@ -1,4 +1,4 @@
-const db = require('../../data')
+const db = require('../../database')
 const { LEDGER_CHECK, LEDGER_ENRICHMENT } = require('../../payment-request/categories')
 const { PENDING } = require('../../quality-check/statuses')
 const { getSchemeId } = require('../../processing/scheme')
@@ -16,7 +16,7 @@ const captureDebtData = async (request) => {
   const recoveryDate = convertDateToDDMMYYYY(...['debt-discovered-day', 'debt-discovered-month', 'debt-discovered-year'].map(key => request.payload[key]))
   const { userId, username } = getUser(request)
 
-  const transaction = await db.sequelize.transaction()
+  const transaction = await db.transaction()
   try {
     const debtData = {
       paymentRequestId: undefined,

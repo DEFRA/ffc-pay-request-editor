@@ -1,17 +1,15 @@
-const db = require('../data')
+const { paymentRequest } = require('../database')
+const TABLES = require('../constants/tables')
 const { ENRICHMENT, LEDGER_ENRICHMENT } = require('./categories')
 
 const getPaymentRequestCount = async (categoryId = [ENRICHMENT, LEDGER_ENRICHMENT]) => {
-  return db.paymentRequest.count({
-    include: [{
-      model: db.debtData,
-      as: 'debtData'
-    }],
-    where: {
-      $debtData$: null,
-      categoryId
-    }
-  })
+  const { count } = await paymentRequest()
+    .leftJoin(TABLES.debtData, `${TABLES.debtData}.paymentRequestId`, `${TABLES.paymentRequest}.paymentRequestId`)
+    .whereNull(`${TABLES.debtData}.debtDataId`)
+    .whereIn(`${TABLES.paymentRequest}.categoryId`, [].concat(categoryId))
+    .count({ count: '*' })
+    .first()
+  return Number(count)
 }
 
 module.exports = getPaymentRequestCount

@@ -1,7 +1,8 @@
-const db = require('../data')
+const db = require('../database')
+const { manualLedgerPaymentRequest, invoiceLine, paymentRequest } = db
 
 const resetManualLedger = async (paymentRequestId) => {
-  const transaction = await db.sequelize.transaction()
+  const transaction = await db.transaction()
   try {
     await cleanUpManualLedger(paymentRequestId, transaction)
     await activateOriginalManualLedger(paymentRequestId, transaction)
@@ -13,22 +14,21 @@ const resetManualLedger = async (paymentRequestId) => {
 }
 
 const activateOriginalManualLedger = (paymentRequestId, transaction) => {
-  return db.manualLedgerPaymentRequest.update({ active: true, createdById: null, createdBy: null }, { where: { paymentRequestId, original: true } }, { transaction })
+  return manualLedgerPaymentRequest(transaction ?? undefined)
+    .where({ paymentRequestId, original: true })
+    .update({ active: true, createdById: null, createdBy: null })
 }
 
 const cleanUpManualLedger = async (paymentRequestId, transaction) => {
-  const paymentRequestsToDelete = await db.manualLedgerPaymentRequest.findAll({
-    transaction,
-    where: {
-      active: true,
-      original: false,
-      paymentRequestId
-    }
+  const paymentRequestsToDelete = await manualLedgerPaymentRequest(transaction ?? undefined).where({
+    active: true,
+    original: false,
+    paymentRequestId
   })
   const paymentRequestsIdsToDelete = paymentRequestsToDelete.map(x => x.ledgerPaymentRequestId)
-  await db.manualLedgerPaymentRequest.destroy({ where: { paymentRequestId, active: true, original: false }, transaction })
-  await db.invoiceLine.destroy({ where: { paymentRequestId: paymentRequestsIdsToDelete }, transaction })
-  await db.paymentRequest.destroy({ where: { paymentRequestId: paymentRequestsIdsToDelete }, transaction })
+  await manualLedgerPaymentRequest(transaction ?? undefined).where({ paymentRequestId, active: true, original: false }).del()
+  await invoiceLine(transaction ?? undefined).whereIn('paymentRequestId', paymentRequestsIdsToDelete).del()
+  await paymentRequest(transaction ?? undefined).whereIn('paymentRequestId', paymentRequestsIdsToDelete).del()
 }
 
 module.exports = resetManualLedger

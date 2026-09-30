@@ -1,7 +1,7 @@
-const db = require('../data')
+const { paymentRequest } = require('../database')
 
 const updatePaymentRequestReleased = async (paymentRequestId) => {
-  return db.paymentRequest.update({ released: new Date() }, { where: { paymentRequestId } })
+  return paymentRequest().where({ paymentRequestId }).update({ released: new Date() })
 }
 
 module.exports = updatePaymentRequestReleased

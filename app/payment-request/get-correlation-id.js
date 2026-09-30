@@ -1,12 +1,8 @@
-const db = require('../data')
+const { paymentRequest } = require('../database')
 
 const getCorrelationId = async (paymentRequestId) => {
-  const paymentRequest = await db.paymentRequest.findOne({
-    where: { paymentRequestId },
-    attributes: ['correlationId'],
-    raw: true
-  })
-  return paymentRequest?.correlationId
+  const request = await paymentRequest().select('correlationId').where({ paymentRequestId }).first()
+  return request?.correlationId
 }
 
 module.exports = getCorrelationId
