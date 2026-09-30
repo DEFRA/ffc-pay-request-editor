@@ -71,9 +71,12 @@ const getQualityChecks = async (page = 1, pageSize = 100, usePagination = true, 
     const paymentRequest = { schemes: { name: row.schemeName } }
     const qualityCheckRow = {}
     for (const [key, value] of Object.entries(row)) {
+      if (key === 'schemeName') {
+        continue
+      }
       if (key.startsWith(REQUEST_PREFIX)) {
         paymentRequest[key.slice(REQUEST_PREFIX.length)] = value
-      } else if (key !== 'schemeName') {
+      } else {
         qualityCheckRow[key] = value
       }
     }

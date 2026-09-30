@@ -6,7 +6,7 @@ const getPaymentRequestCount = async (categoryId = [ENRICHMENT, LEDGER_ENRICHMEN
   const { count } = await paymentRequest()
     .leftJoin(TABLES.debtData, `${TABLES.debtData}.paymentRequestId`, `${TABLES.paymentRequest}.paymentRequestId`)
     .whereNull(`${TABLES.debtData}.debtDataId`)
-    .whereIn(`${TABLES.paymentRequest}.categoryId`, [].concat(categoryId))
+    .whereIn(`${TABLES.paymentRequest}.categoryId`, [categoryId].flat())
     .count({ count: '*' })
     .first()
   return Number(count)

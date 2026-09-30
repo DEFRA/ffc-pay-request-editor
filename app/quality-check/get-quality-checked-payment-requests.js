@@ -14,17 +14,14 @@ const getQualityCheckedPaymentRequests = async () => {
 
   const paymentRequests = await getPaymentRequestsWithLines(qualityChecks.map(x => x.paymentRequestId))
 
-  const qualityCheckedPaymentRequests = []
-  for (const { paymentRequestId } of qualityChecks) {
+  return Promise.all(qualityChecks.map(async ({ paymentRequestId }) => {
     const paymentRequest = paymentRequests.find(x => x.paymentRequestId === paymentRequestId)
     const manualLedgerRequests = await getManualLedgerRequestCheck(paymentRequestId)
-    qualityCheckedPaymentRequests.push({
+    return {
       paymentRequest,
       paymentRequests: manualLedgerRequests.map(x => x.ledgerPaymentRequest)
-    })
-  }
-
-  return qualityCheckedPaymentRequests
+    }
+  }))
 }
 
 module.exports = getQualityCheckedPaymentRequests

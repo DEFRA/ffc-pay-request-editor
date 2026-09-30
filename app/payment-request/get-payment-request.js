@@ -93,7 +93,7 @@ const getPaymentRequestAwaitingEnrichment = async (schemeId, frn, applicationIde
     .where(function () {
       this.where(`${TABLES.paymentRequest}.value`, netValue).orWhere(`${TABLES.paymentRequest}.netValue`, netValue)
     })
-    .whereIn(`${TABLES.paymentRequest}.categoryId`, [].concat(categoryId))
+    .whereIn(`${TABLES.paymentRequest}.categoryId`, [categoryId].flat())
 
   // Preserved from the Sequelize query: the contract number condition used for CS shared an [Op.or] key with the
   // value/netValue condition and was silently overwritten, so it was never applied. Only agreementNumber is filtered.
