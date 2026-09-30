@@ -1,5 +1,6 @@
 const { getSchemeIds } = require('ffc-pay-schemes')
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 
 const { SFI, CS } = getSchemeIds()
 
@@ -10,8 +11,8 @@ const {
 } = require('../../../../app/payment-request')
 
 const resetData = async () => {
-  await db.scheme.truncate({ cascade: true, restartIdentity: true })
-  await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
+  await truncate(['schemes'])
+  await truncate(['paymentRequests'])
 }
 
 let paymentRequest
@@ -38,13 +39,13 @@ describe('Get payment request test', () => {
       received: new Date()
     }
 
-    await db.scheme.create(scheme)
-    await db.paymentRequest.create(paymentRequest)
+    await db.scheme().insert(scheme)
+    await db.paymentRequest().insert(paymentRequest)
   })
 
   afterAll(async () => {
     await resetData()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('should return 1 payment request record', async () => {
@@ -55,7 +56,7 @@ describe('Get payment request test', () => {
   })
 
   test('should filter payment requests by FRN when an FRN is supplied', async () => {
-    await db.paymentRequest.create({
+    await db.paymentRequest().insert({
       ...paymentRequest,
       invoiceNumber: 'S00000001SFIP000002V001',
       paymentRequestNumber: 2,
@@ -116,8 +117,8 @@ describe('Get payment request test', () => {
     paymentRequest.received = '2022-01-01'
 
     await resetData()
-    await db.scheme.create(scheme)
-    await db.paymentRequest.create(paymentRequest)
+    await db.scheme().insert(scheme)
+    await db.paymentRequest().insert(paymentRequest)
 
     const daysWaiting = Math.round(
       (mockDateNow - new Date(paymentRequest.received)) /
@@ -135,8 +136,8 @@ describe('Get payment request test', () => {
     paymentRequest.received = undefined
 
     await resetData()
-    await db.scheme.create(scheme)
-    await db.paymentRequest.create(paymentRequest)
+    await db.scheme().insert(scheme)
+    await db.paymentRequest().insert(paymentRequest)
 
     const paymentRequests = await getPaymentRequest()
 
@@ -144,7 +145,7 @@ describe('Get payment request test', () => {
   })
 
   test('records should be returned ordered by "received" in ascending order', async () => {
-    await db.paymentRequest.truncate({ cascade: true })
+    await truncate(['paymentRequests'])
 
     const paymentRequests = [
       {
@@ -167,7 +168,7 @@ describe('Get payment request test', () => {
       }
     ]
 
-    await db.paymentRequest.bulkCreate(paymentRequests)
+    await db.paymentRequest().insert(paymentRequests)
 
     const paymentRequestRows = await getPaymentRequest()
 
@@ -196,8 +197,8 @@ describe('Get payment request test', () => {
     paymentRequest.schemeId = CS
 
     await resetData()
-    await db.scheme.create(scheme)
-    await db.paymentRequest.create(paymentRequest)
+    await db.scheme().insert(scheme)
+    await db.paymentRequest().insert(paymentRequest)
 
     const matchedPaymentRequest = await getPaymentRequestAwaitingEnrichment(
       paymentRequest.schemeId,
@@ -216,8 +217,8 @@ describe('Get payment request test', () => {
     paymentRequest.schemeId = CS
 
     await resetData()
-    await db.scheme.create(scheme)
-    await db.paymentRequest.create(paymentRequest)
+    await db.scheme().insert(scheme)
+    await db.paymentRequest().insert(paymentRequest)
 
     paymentRequest.contractNumber = 'A01234567'
 
@@ -238,8 +239,8 @@ describe('Get payment request test', () => {
     paymentRequest.contractNumber = 'A01234567'
 
     await resetData()
-    await db.scheme.create(scheme)
-    await db.paymentRequest.create(paymentRequest)
+    await db.scheme().insert(scheme)
+    await db.paymentRequest().insert(paymentRequest)
 
     paymentRequest.contractNumber = 'A1234567'
 

@@ -3,9 +3,12 @@ jest.mock('../../../../app/plugins/crumb')
 jest.mock('../../../../app/auth')
 
 const { enrichment } = require('../../../../app/auth/permissions')
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 const mockAuth = require('../../../../app/auth')
 const createServer = require('../../../../app/server')
+
+const insertPaymentRequest = ({ invoiceLines, ...row }) => db.paymentRequest().insert(row)
 
 const mockSendEvent = jest.fn()
 const mockPublishEvent = jest.fn()
@@ -23,10 +26,10 @@ const { PENDING, NOT_READY } = require('../../../../app/quality-check/statuses')
 const { AR, AP } = require('../../../../app/processing/ledger/ledgers')
 
 const resetData = async () => {
-  await db.qualityCheck.truncate({ cascade: true })
-  await db.scheme.truncate({ cascade: true })
-  await db.debtData.truncate({ cascade: true })
-  await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
+  await truncate(['qualityChecks'])
+  await truncate(['schemes'])
+  await truncate(['debtData'])
+  await truncate(['paymentRequests'])
 }
 
 describe('Enrich request tests', () => {
@@ -73,7 +76,7 @@ describe('Enrich request tests', () => {
 
   afterAll(async () => {
     await resetData()
-    await db.sequelize.close()
+    await db.close()
   })
 
   describe('GET /enrich-request', () => {
@@ -100,8 +103,8 @@ describe('Enrich request tests', () => {
         paymentRequest.ledger = ledger
       }
 
-      await db.scheme.create(scheme)
-      await db.paymentRequest.create(paymentRequest)
+      await db.scheme().insert(scheme)
+      await insertPaymentRequest(paymentRequest)
 
       const response = await server.inject({ method, url, auth })
       expect(response.request.response.variety).toBe('view')
@@ -114,8 +117,8 @@ describe('Enrich request tests', () => {
 
       paymentRequest.released = undefined
       paymentRequest.ledger = AR
-      await db.scheme.create(scheme)
-      await db.paymentRequest.create(paymentRequest)
+      await db.scheme().insert(scheme)
+      await insertPaymentRequest(paymentRequest)
 
       const resp1 = await server.inject({ method, url: url1, auth })
       const resp2 = await server.inject({ method, url: url2, auth })
@@ -131,8 +134,8 @@ describe('Enrich request tests', () => {
     test('redirects to /enrich if already released', async () => {
       const payload = { day: 16, month: 10, year: 2015, 'debt-type': ADMINISTRATIVE, 'invoice-number': paymentRequest.invoiceNumber, 'payment-request-id': 1 }
       paymentRequest.released = new Date()
-      await db.scheme.create(scheme)
-      await db.paymentRequest.create(paymentRequest)
+      await db.scheme().insert(scheme)
+      await insertPaymentRequest(paymentRequest)
 
       const response = await server.inject({ method, url: '/enrich-request', payload, auth })
       expect(response.request.response.statusCode).toBe(302)
@@ -142,8 +145,8 @@ describe('Enrich request tests', () => {
     test('displays validation errors when input missing', async () => {
       const payload = { 'invoice-number': paymentRequest.invoiceNumber, 'payment-request-id': 1 }
       paymentRequest.released = undefined
-      await db.scheme.create(scheme)
-      await db.paymentRequest.create(paymentRequest)
+      await db.scheme().insert(scheme)
+      await insertPaymentRequest(paymentRequest)
 
       const response = await server.inject({ method, url: '/enrich-request', payload, auth })
       const model = response.request.response.source.context.model
@@ -162,8 +165,8 @@ describe('Enrich request tests', () => {
     test('displays error when date is in the future', async () => {
       const payload = { day: 2, month: 3, year: 4000, 'debt-type': ADMINISTRATIVE, 'invoice-number': paymentRequest.invoiceNumber, 'payment-request-id': 1 }
       paymentRequest.released = undefined
-      await db.scheme.create(scheme)
-      await db.paymentRequest.create(paymentRequest)
+      await db.scheme().insert(scheme)
+      await insertPaymentRequest(paymentRequest)
 
       const response = await server.inject({ method, url: '/enrich-request', payload, auth })
       expect(response.request.response.statusCode).toBe(400)
@@ -177,13 +180,13 @@ describe('Enrich request tests', () => {
       const payload = { day, month, year: 2015, 'debt-type': ADMINISTRATIVE, 'invoice-number': paymentRequest.invoiceNumber, 'payment-request-id': 1 }
       paymentRequest.released = undefined
       paymentRequest.ledger = AR
-      await db.scheme.create(scheme)
-      await db.paymentRequest.create(paymentRequest)
-      await db.qualityCheck.create(qualityCheck)
+      await db.scheme().insert(scheme)
+      await insertPaymentRequest(paymentRequest)
+      await db.qualityCheck().insert(qualityCheck)
 
       const response = await server.inject({ method, url: '/enrich-request', payload, auth })
-      const debtRow = await db.debtData.findOne({ where: { debtDataId: 1 } })
-      const qcRow = await db.qualityCheck.findOne({ where: { paymentRequestId: 1 } })
+      const debtRow = await db.debtData().where({ debtDataId: 1 }).first()
+      const qcRow = await db.qualityCheck().where({ paymentRequestId: 1 }).first()
 
       expect(qcRow.status).toBe(PENDING)
       expect(debtRow.paymentRequestId).toBe(1)
@@ -202,8 +205,8 @@ describe('Enrich request tests', () => {
     test('redirects to /enrich if already released', async () => {
       const payload = { day: 16, month: 10, year: 2015, 'debt-type': ADMINISTRATIVE, 'invoice-number': paymentRequest.invoiceNumber, 'payment-request-id': 1 }
       paymentRequest.released = new Date()
-      await db.scheme.create(scheme)
-      await db.paymentRequest.create(paymentRequest)
+      await db.scheme().insert(scheme)
+      await insertPaymentRequest(paymentRequest)
 
       const response = await server.inject({ method, url: '/enrich-request-confirm', payload, auth })
       expect(response.request.response.statusCode).toBe(302)
@@ -213,8 +216,8 @@ describe('Enrich request tests', () => {
     test('displays validation errors when input missing', async () => {
       const payload = { 'invoice-number': paymentRequest.invoiceNumber, 'payment-request-id': 1 }
       paymentRequest.released = undefined
-      await db.scheme.create(scheme)
-      await db.paymentRequest.create(paymentRequest)
+      await db.scheme().insert(scheme)
+      await insertPaymentRequest(paymentRequest)
 
       const response = await server.inject({ method, url: '/enrich-request-confirm', payload, auth })
       const model = response.request.response.source.context.model
@@ -233,8 +236,8 @@ describe('Enrich request tests', () => {
     test('displays error when date is in the future', async () => {
       const payload = { day: 2, month: 3, year: 4000, 'debt-type': ADMINISTRATIVE, 'invoice-number': paymentRequest.invoiceNumber, 'payment-request-id': 1 }
       paymentRequest.released = undefined
-      await db.scheme.create(scheme)
-      await db.paymentRequest.create(paymentRequest)
+      await db.scheme().insert(scheme)
+      await insertPaymentRequest(paymentRequest)
 
       const response = await server.inject({ method, url: '/enrich-request-confirm', payload, auth })
       expect(response.request.response.statusCode).toBe(400)
@@ -244,8 +247,8 @@ describe('Enrich request tests', () => {
     test('renders confirm view with debtTypeText on success', async () => {
       const payload = { day: 2, month: 3, year: 2015, 'debt-type': ADMINISTRATIVE, 'invoice-number': paymentRequest.invoiceNumber, 'payment-request-id': 1 }
       paymentRequest.released = undefined
-      await db.scheme.create(scheme)
-      await db.paymentRequest.create(paymentRequest)
+      await db.scheme().insert(scheme)
+      await insertPaymentRequest(paymentRequest)
 
       const response = await server.inject({ method, url: '/enrich-request-confirm', payload, auth })
       expect(response.statusCode).toBe(200)

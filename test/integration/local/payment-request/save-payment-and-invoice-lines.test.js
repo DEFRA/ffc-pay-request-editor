@@ -1,4 +1,5 @@
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 const { savePaymentAndInvoiceLines } = require('../../../../app/payment-request')
 
 let paymentRequest
@@ -6,8 +7,8 @@ let categoryId
 
 describe('savePaymentAndInvoiceLines tests', () => {
   const resetData = async () => {
-    await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
-    await db.invoiceLine.truncate({ cascade: true })
+    await truncate(['paymentRequests'])
+    await truncate(['invoiceLines'])
   }
 
   beforeEach(async () => {
@@ -42,17 +43,17 @@ describe('savePaymentAndInvoiceLines tests', () => {
 
   afterAll(async () => {
     await resetData()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('should save payment request and invoice lines correctly', async () => {
     const paymentRequestId = await savePaymentAndInvoiceLines(paymentRequest, categoryId)
 
-    const pr = await db.paymentRequest.findOne({ where: { paymentRequestId } })
+    const pr = await db.paymentRequest().where({ paymentRequestId }).first()
     expect(pr.paymentRequestId).toBe(paymentRequestId)
     expect(parseInt(pr.frn)).toBe(paymentRequest.frn)
 
-    const invoiceLine = await db.invoiceLine.findOne({ where: { paymentRequestId } })
+    const invoiceLine = await db.invoiceLine().where({ paymentRequestId }).first()
     expect(invoiceLine.value).toBe(paymentRequest.invoiceLines[0].value)
     expect(invoiceLine.paymentRequestId).toBe(paymentRequestId)
     expect(invoiceLine.schemeCode).toBe(paymentRequest.invoiceLines[0].schemeCode)
@@ -63,7 +64,7 @@ describe('savePaymentAndInvoiceLines tests', () => {
     delete paymentRequest.invoiceLines[0].agreementNumber
     const paymentRequestId = await savePaymentAndInvoiceLines(paymentRequest, categoryId)
 
-    const invoiceLine = await db.invoiceLine.findOne({ where: { paymentRequestId } })
+    const invoiceLine = await db.invoiceLine().where({ paymentRequestId }).first()
     expect(invoiceLine.agreementNumber).toBeNull()
   })
 
@@ -71,7 +72,7 @@ describe('savePaymentAndInvoiceLines tests', () => {
     paymentRequest.invoiceLines[0].paymentRequestId = 999
     const paymentRequestId = await savePaymentAndInvoiceLines(paymentRequest, categoryId)
 
-    const invoiceLine = await db.invoiceLine.findOne({ where: { paymentRequestId } })
+    const invoiceLine = await db.invoiceLine().where({ paymentRequestId }).first()
     expect(invoiceLine.paymentRequestId).toBe(paymentRequestId)
   })
 })
