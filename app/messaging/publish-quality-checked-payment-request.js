@@ -6,13 +6,13 @@ const { attachDebtToManualLedger } = require('../manual-ledger')
 const publishQualityCheckedPaymentRequests = async (qualityCheckSender) => {
   try {
     const qualityCheckedPaymentRequests = await getQualityCheckedPaymentRequests()
-    for (const qualityCheckedPaymentRequest of qualityCheckedPaymentRequests) {
+    await Promise.all(qualityCheckedPaymentRequests.map(async (qualityCheckedPaymentRequest) => {
       await attachDebtToManualLedger(qualityCheckedPaymentRequest, true)
       const paymentRequestId = qualityCheckedPaymentRequest.paymentRequest.paymentRequestId
       await publishPaymentRequest(qualityCheckedPaymentRequest, qualityCheckSender)
       await updatePaymentRequestReleased(paymentRequestId)
       await updateQualityChecksStatus(paymentRequestId, 'Processed')
-    }
+    }))
   } catch (err) {
     console.error('Unable to process payment request message:', err)
   }

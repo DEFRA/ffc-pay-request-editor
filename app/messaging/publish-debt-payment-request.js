@@ -13,7 +13,7 @@ const publishDebtPaymentRequests = async (debtSender) => {
   try {
     const debtPaymentRequests = await getDebtPaymentRequests()
 
-    for (const paymentRequest of debtPaymentRequests) {
+    await Promise.all(debtPaymentRequests.map(async (paymentRequest) => {
       const { paymentRequestId } = paymentRequest
       const inManualLedgerAwaitingDebtData = await checkAwaitingManualLedgerDebtData(paymentRequestId)
 
@@ -26,7 +26,7 @@ const publishDebtPaymentRequests = async (debtSender) => {
         await updatePaymentRequestReleased(paymentRequestId)
         await updateQualityChecksStatus(paymentRequestId, PROCESSED)
       }
-    }
+    }))
   } catch (err) {
     console.error('Unable to process payment request message:', err)
   }

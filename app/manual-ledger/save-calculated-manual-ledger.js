@@ -2,6 +2,7 @@ const db = require('../database')
 const { manualLedgerPaymentRequest } = db
 const TABLES = require('../constants/tables')
 const { savePaymentAndInvoiceLines } = require('../payment-request')
+const { PROVISIONAL_LEDGER_CHECK } = require('../payment-request/categories')
 const saveManualLedger = require('./save-manual-ledger')
 
 const saveCalculatedManualLedger = async (calculatedManualLedgers) => {
@@ -12,7 +13,7 @@ const saveCalculatedManualLedger = async (calculatedManualLedgers) => {
 
     await updateManualLedger(paymentRequestId, transaction)
 
-    for (const paymentRequest of provisionalLedgerData) {
+    for await (const paymentRequest of provisionalLedgerData) {
       const ledgerPaymentRequest = paymentRequest.ledgerPaymentRequest
       const matchingPaymentRequest = await manualLedgerPaymentRequest(transaction ?? undefined)
         .select(`${TABLES.manualLedgerPaymentRequest}.manualLedgerPaymentRequestId`)
@@ -22,7 +23,7 @@ const saveCalculatedManualLedger = async (calculatedManualLedgers) => {
           [`${TABLES.manualLedgerPaymentRequest}.original`]: true,
           [`${TABLES.paymentRequest}.value`]: ledgerPaymentRequest.value,
           [`${TABLES.paymentRequest}.ledger`]: ledgerPaymentRequest.ledger,
-          [`${TABLES.paymentRequest}.categoryId`]: 3
+          [`${TABLES.paymentRequest}.categoryId`]: PROVISIONAL_LEDGER_CHECK
         })
         .first()
       if (matchingPaymentRequest) {
@@ -30,7 +31,7 @@ const saveCalculatedManualLedger = async (calculatedManualLedgers) => {
           .where({ manualLedgerPaymentRequestId: matchingPaymentRequest.manualLedgerPaymentRequestId })
           .update({ active: true })
       } else {
-        const paymentRequestLedgerId = await savePaymentAndInvoiceLines(ledgerPaymentRequest, 3, transaction)
+        const paymentRequestLedgerId = await savePaymentAndInvoiceLines(ledgerPaymentRequest, PROVISIONAL_LEDGER_CHECK, transaction)
         await saveManualLedger(paymentRequestId, paymentRequestLedgerId, false, transaction)
       }
     }
