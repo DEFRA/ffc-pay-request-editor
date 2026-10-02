@@ -14,9 +14,8 @@ const processManualLedgerRequest = async (manualLedgerRequest) => {
       await transaction.rollback()
     } else {
       const paymentRequestId = await savePaymentAndInvoiceLines(paymentRequest, LEDGER_CHECK, transaction)
-      for await (const paymentRequestProvisional of manualLedgerRequest.paymentRequests) {
-        const paymentRequestLedgerId = await savePaymentAndInvoiceLines(paymentRequestProvisional, PROVISIONAL_LEDGER_CHECK, transaction)
-        await saveManualLedger(paymentRequestId, paymentRequestLedgerId, true, transaction)
+      for (const paymentRequestProvisional of manualLedgerRequest.paymentRequests) {
+        await saveProvisionalPaymentRequest(paymentRequestId, paymentRequestProvisional, transaction) // NOSONAR
       }
       await updateQualityCheck(paymentRequestId, transaction)
       await transaction.commit()
@@ -25,6 +24,11 @@ const processManualLedgerRequest = async (manualLedgerRequest) => {
     await transaction.rollback()
     throw (error)
   }
+}
+
+const saveProvisionalPaymentRequest = async (paymentRequestId, paymentRequestProvisional, transaction) => {
+  const paymentRequestLedgerId = await savePaymentAndInvoiceLines(paymentRequestProvisional, PROVISIONAL_LEDGER_CHECK, transaction)
+  await saveManualLedger(paymentRequestId, paymentRequestLedgerId, true, transaction)
 }
 
 module.exports = processManualLedgerRequest

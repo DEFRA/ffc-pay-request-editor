@@ -1,11 +1,11 @@
 const db = require('../database')
 const { convertValueToStringFormat } = require('../processing/conversion')
+const { LEDGER_CHECK } = require('../payment-request/categories')
 
 const getManualLedgers = async (statuses, page = 1, pageSize = 100, usePagination = true, frn = null) => {
   const offset = (page - 1) * pageSize
-  // this has been rewritten into raw SQL rather than using the query builder for performance reasons
   const replacements = {
-    categoryId: 2,
+    categoryId: LEDGER_CHECK,
     statuses,
     limit: pageSize,
     offset
