@@ -3,7 +3,8 @@ jest.mock('../../../../app/event', () => ({
 }))
 
 const { randomUUID } = require('node:crypto')
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 const { processPaymentRequest } = require('../../../../app/payment-request')
 const { NOT_READY } = require('../../../../app/quality-check/statuses')
 
@@ -11,10 +12,10 @@ let scheme
 let paymentRequest
 
 const resetData = async () => {
-  await db.qualityCheck.truncate({ cascade: true })
-  await db.scheme.truncate({ cascade: true })
-  await db.debtData.truncate({ cascade: true })
-  await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
+  await truncate(['qualityChecks'])
+  await truncate(['schemes'])
+  await truncate(['debtData'])
+  await truncate(['paymentRequests'])
 }
 
 describe('process payment requests', () => {
@@ -44,18 +45,18 @@ describe('process payment requests', () => {
       ]
     }
 
-    await db.scheme.create(scheme)
+    await db.scheme().insert(scheme)
   })
 
   afterAll(async () => {
     await resetData()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('should insert payment request header, invoice lines and quality check', async () => {
     await processPaymentRequest(paymentRequest)
 
-    const pr = await db.paymentRequest.findOne({ where: { agreementNumber: 'SIP00000000000001' } })
+    const pr = await db.paymentRequest().where({ agreementNumber: 'SIP00000000000001' }).first()
     expect(pr.invoiceNumber).toBe(paymentRequest.invoiceNumber)
     expect(pr.contractNumber).toBe(paymentRequest.contractNumber)
     expect(parseInt(pr.frn)).toBe(paymentRequest.frn)
@@ -64,24 +65,24 @@ describe('process payment requests', () => {
     expect(pr.dueDate).toBe(paymentRequest.dueDate)
     expect(pr.value).toBe(paymentRequest.value)
 
-    const invoiceLines = await db.invoiceLine.findAll({ where: { paymentRequestId: pr.paymentRequestId } })
+    const invoiceLines = await db.invoiceLine().where({ paymentRequestId: pr.paymentRequestId })
     expect(invoiceLines).toHaveLength(2)
     expect(invoiceLines.some(l => l.description === 'G00 - Gross value of claim')).toBe(true)
     expect(invoiceLines.some(l => l.description === 'P02 - Over declaration penalty')).toBe(true)
 
-    const qc = await db.qualityCheck.findOne({ where: { paymentRequestId: pr.paymentRequestId } })
+    const qc = await db.qualityCheck().where({ paymentRequestId: pr.paymentRequestId }).first()
     expect(qc.status).toBe(NOT_READY)
   })
 
   test('should prevent duplicate inserts based on invoice number or referenceId', async () => {
     await processPaymentRequest(paymentRequest)
     await processPaymentRequest(paymentRequest)
-    let rows = await db.paymentRequest.findAll({ where: { agreementNumber: paymentRequest.agreementNumber } })
+    let rows = await db.paymentRequest().where({ agreementNumber: paymentRequest.agreementNumber })
     expect(rows.length).toBe(1)
 
     paymentRequest.referenceId = randomUUID()
     await processPaymentRequest(paymentRequest)
-    rows = await db.paymentRequest.findAll({ where: { agreementNumber: paymentRequest.agreementNumber } })
+    rows = await db.paymentRequest().where({ agreementNumber: paymentRequest.agreementNumber })
     expect(rows.length).toBe(2)
   })
 
@@ -95,8 +96,8 @@ describe('process payment requests', () => {
   test('should overwrite existing invoice line primary key', async () => {
     paymentRequest.invoiceLines[0].paymentRequestId = 999
     await processPaymentRequest(paymentRequest)
-    const pr = await db.paymentRequest.findOne()
-    const invoiceLines = await db.invoiceLine.findAll({ where: { paymentRequestId: pr.paymentRequestId } })
+    const pr = await db.paymentRequest().first()
+    const invoiceLines = await db.invoiceLine().where({ paymentRequestId: pr.paymentRequestId })
     expect(invoiceLines.length).toBe(2)
   })
 })

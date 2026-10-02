@@ -1,14 +1,9 @@
-const db = require('../data')
+const { manualLedgerPaymentRequest } = require('../database')
 
 const updateManualLedgerUser = async (paymentRequestId, user) => {
-  return db.manualLedgerPaymentRequest.update({
+  return manualLedgerPaymentRequest().where({ paymentRequestId, active: true }).update({
     createdBy: user.username,
     createdById: user.userId
-  }, {
-    where: {
-      paymentRequestId,
-      active: true
-    }
   })
 }
 

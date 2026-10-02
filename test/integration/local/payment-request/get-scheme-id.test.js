@@ -1,10 +1,11 @@
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 const { getSchemeId } = require('../../../../app/processing/scheme')
 
 describe('Get scheme id test', () => {
   let scheme
   const resetData = async () => {
-    await db.scheme.truncate({ cascade: true })
+    await truncate(['schemes'])
   }
   beforeEach(async () => {
     await resetData()
@@ -14,12 +15,12 @@ describe('Get scheme id test', () => {
       name: 'somename'
     }
 
-    await db.scheme.create(scheme)
+    await db.scheme().insert(scheme)
   })
 
   afterAll(async () => {
     await resetData()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('Return schemeId where name matches', async () => {

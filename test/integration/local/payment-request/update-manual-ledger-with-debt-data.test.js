@@ -9,7 +9,8 @@ jest.mock('ffc-pay-event-publisher', () => ({
   EventPublisher: MockEventPublisher
 }))
 
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 const { updateManualLedgerWithDebtData, attachDebtToManualLedger } = require('../../../../app/manual-ledger')
 const { AR, AP } = require('../../../../app/processing/ledger/ledgers')
 const { PENDING } = require('../../../../app/quality-check/statuses')
@@ -24,17 +25,19 @@ let qualityCheck
 let manualLedgerPaymentRequest
 
 const resetData = async () => {
-  await db.qualityCheck.truncate({ cascade: true })
-  await db.debtData.truncate({ cascade: true })
-  await db.scheme.truncate({ cascade: true })
-  await db.manualLedgerPaymentRequest.truncate({ cascade: true })
-  await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
+  await truncate(['qualityChecks'])
+  await truncate(['debtData'])
+  await truncate(['schemes'])
+  await truncate(['manualLedgerPaymentRequest'])
+  await truncate(['paymentRequests'])
 }
 
 const recoveryDate = () => {
   const date = new Date()
   return convertDateToDDMMYYYY(date.getDate(), date.getMonth(), date.getYear())
 }
+
+const insertPaymentRequest = ({ invoiceLines, ...row }) => db.paymentRequest().insert(row)
 
 describe('Manual Ledger Processing', () => {
   beforeEach(async () => {
@@ -67,12 +70,12 @@ describe('Manual Ledger Processing', () => {
     qualityCheck = { qualityCheckId: 1, paymentRequestId: 1, status: PENDING }
     manualLedgerPaymentRequest = { paymentRequestId: 1, ledgerPaymentRequestId: 1, active: true, original: true }
 
-    await db.scheme.create(scheme)
+    await db.scheme().insert(scheme)
   })
 
   afterAll(async () => {
     await resetData()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test.each([
@@ -80,65 +83,65 @@ describe('Manual Ledger Processing', () => {
     [AR, 4, 'manual ledger updated when ledger is AR and matching debt-data exists']
   ])('manual ledger updates correctly for ledger %s', async (ledger, expectedCategoryId, description) => {
     paymentRequest.ledger = ledger
-    await db.paymentRequest.create(paymentRequest)
-    await db.qualityCheck.create(qualityCheck)
-    await db.manualLedgerPaymentRequest.create(manualLedgerPaymentRequest)
-    await db.debtData.create({ debtDataId: 1, frn: 1234567890, reference: 'SIP00000000000001', paymentRequestId: ledger === AR ? null : 1, netValue: 1500, debtType: ledger === AR ? ADMINISTRATIVE : undefined, recoveryDate: recoveryDate() })
+    await insertPaymentRequest(paymentRequest)
+    await db.qualityCheck().insert(qualityCheck)
+    await db.manualLedgerPaymentRequest().insert(manualLedgerPaymentRequest)
+    await db.debtData().insert({ debtDataId: 1, frn: 1234567890, reference: 'SIP00000000000001', paymentRequestId: ledger === AR ? null : 1, netValue: 1500, debtType: ledger === AR ? ADMINISTRATIVE : undefined, recoveryDate: recoveryDate() })
 
     await updateManualLedgerWithDebtData(paymentRequest.paymentRequestId)
-    const updatedPR = await db.paymentRequest.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
+    const updatedPR = await db.paymentRequest().where({ paymentRequestId: paymentRequest.paymentRequestId }).first()
     expect(updatedPR.categoryId).toBe(expectedCategoryId)
   })
 
   test('manual ledger is published to ffc-pay-quality-check if debt data is already attached', async () => {
-    await db.paymentRequest.create(paymentRequest)
-    await db.qualityCheck.create(qualityCheck)
-    await db.debtData.create({ debtDataId: 1, frn: 1234567890, reference: 'SIP00000000000001', paymentRequestId: 1, netValue: 15000 })
+    await insertPaymentRequest(paymentRequest)
+    await db.qualityCheck().insert(qualityCheck)
+    await db.debtData().insert({ debtDataId: 1, frn: 1234567890, reference: 'SIP00000000000001', paymentRequestId: 1, netValue: 15000 })
 
     await updateManualLedgerWithDebtData(paymentRequest.paymentRequestId)
-    const qcAfterUpdate = await db.qualityCheck.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
+    const qcAfterUpdate = await db.qualityCheck().where({ paymentRequestId: paymentRequest.paymentRequestId }).first()
     expect(qcAfterUpdate.status).toBe(PENDING)
   })
 
   test('manual ledger attaches debt data when ledger is AR', async () => {
     paymentRequest.ledger = AR
-    await db.paymentRequest.create(paymentRequest)
-    await db.qualityCheck.create(qualityCheck)
-    await db.manualLedgerPaymentRequest.create(manualLedgerPaymentRequest)
-    await db.debtData.create({ debtDataId: 1, frn: 1234567890, reference: 'SIP00000000000001', paymentRequestId: null, netValue: 3000, debtType: ADMINISTRATIVE, recoveryDate: recoveryDate() })
+    await insertPaymentRequest(paymentRequest)
+    await db.qualityCheck().insert(qualityCheck)
+    await db.manualLedgerPaymentRequest().insert(manualLedgerPaymentRequest)
+    await db.debtData().insert({ debtDataId: 1, frn: 1234567890, reference: 'SIP00000000000001', paymentRequestId: null, netValue: 3000, debtType: ADMINISTRATIVE, recoveryDate: recoveryDate() })
 
-    const debtBefore = await db.debtData.findOne({ where: { debtDataId: 1 } })
+    const debtBefore = await db.debtData().where({ debtDataId: 1 }).first()
     expect(debtBefore.paymentRequestId).toBeNull()
 
     await updateManualLedgerWithDebtData(paymentRequest.paymentRequestId)
 
-    const debtAfter = await db.debtData.findOne({ where: { debtDataId: 1 } })
+    const debtAfter = await db.debtData().where({ debtDataId: 1 }).first()
     expect(debtAfter.paymentRequestId).toBe(1)
   })
 
   test('manual ledger does not attach debt data when ledger is not AR', async () => {
     paymentRequest.ledger = AP
-    await db.paymentRequest.create(paymentRequest)
-    await db.qualityCheck.create(qualityCheck)
-    await db.manualLedgerPaymentRequest.create(manualLedgerPaymentRequest)
-    await db.debtData.create({ debtDataId: 1, frn: 1234567890, reference: 'SIP00000000000001', paymentRequestId: null, netValue: 3000 })
+    await insertPaymentRequest(paymentRequest)
+    await db.qualityCheck().insert(qualityCheck)
+    await db.manualLedgerPaymentRequest().insert(manualLedgerPaymentRequest)
+    await db.debtData().insert({ debtDataId: 1, frn: 1234567890, reference: 'SIP00000000000001', paymentRequestId: null, netValue: 3000 })
 
-    const debtBefore = await db.debtData.findOne({ where: { debtDataId: 1 } })
+    const debtBefore = await db.debtData().where({ debtDataId: 1 }).first()
     expect(debtBefore.paymentRequestId).toBeNull()
 
     await updateManualLedgerWithDebtData(paymentRequest.paymentRequestId)
 
-    const debtAfter = await db.debtData.findOne({ where: { debtDataId: 1 } })
+    const debtAfter = await db.debtData().where({ debtDataId: 1 }).first()
     expect(debtAfter.paymentRequestId).toBeNull()
   })
 
   test('attaches debt type to manual ledger payment request', async () => {
-    await db.paymentRequest.create(paymentRequest)
-    await db.qualityCheck.create(qualityCheck)
-    await db.manualLedgerPaymentRequest.create(manualLedgerPaymentRequest)
-    await db.debtData.create({ debtDataId: 1, frn: 1234567890, reference: 'SIP00000000000001', paymentRequestId: 1, netValue: 3000, debtType: ADMINISTRATIVE, recoveryDate: recoveryDate() })
+    await insertPaymentRequest(paymentRequest)
+    await db.qualityCheck().insert(qualityCheck)
+    await db.manualLedgerPaymentRequest().insert(manualLedgerPaymentRequest)
+    await db.debtData().insert({ debtDataId: 1, frn: 1234567890, reference: 'SIP00000000000001', paymentRequestId: 1, netValue: 3000, debtType: ADMINISTRATIVE, recoveryDate: recoveryDate() })
 
-    const prBefore = await db.paymentRequest.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
+    const prBefore = await db.paymentRequest().where({ paymentRequestId: paymentRequest.paymentRequestId }).first()
     expect(prBefore.debtType).toBe(undefined)
 
     await attachDebtToManualLedger({ paymentRequest: prBefore })

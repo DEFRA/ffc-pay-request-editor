@@ -1,7 +1,7 @@
-const db = require('../data')
+const { qualityCheck } = require('../database')
 
 const updateQualityChecksStatus = async (paymentRequestId, newStatus, transaction) => {
-  return db.qualityCheck.update({ status: newStatus, checkedDate: new Date() }, { where: { paymentRequestId } }, { transaction })
+  return qualityCheck(transaction ?? undefined).where({ paymentRequestId }).update({ status: newStatus, checkedDate: new Date() })
 }
 
 module.exports = updateQualityChecksStatus

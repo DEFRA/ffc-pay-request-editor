@@ -1,18 +1,18 @@
-const db = require('../data')
+const db = require('../database')
 const { convertValueToStringFormat } = require('../processing/conversion')
+const { LEDGER_CHECK } = require('../payment-request/categories')
 
 const getManualLedgers = async (statuses, page = 1, pageSize = 100, usePagination = true, frn = null) => {
   const offset = (page - 1) * pageSize
-  // this has been rewritten into raw SQL rather than using sequelize for performance reasons
   const replacements = {
-    categoryId: 2,
+    categoryId: LEDGER_CHECK,
     statuses,
     limit: pageSize,
     offset
   }
   let whereClause = `
     WHERE "pr"."categoryId" = :categoryId
-      AND "qc"."status" IN (:statuses)
+      AND "qc"."status" = ANY(:statuses)
   `
   if (frn) {
     whereClause += ' AND "pr"."frn" = :frn'
@@ -49,16 +49,11 @@ const getManualLedgers = async (statuses, page = 1, pageSize = 100, usePaginatio
   `
 
   console.log('Getting manual ledgers, SQL built successfully')
-  const [manualLedgers, countResult] = await Promise.all([
-    db.sequelize.query(sql, {
-      replacements,
-      type: db.sequelize.QueryTypes.SELECT
-    }),
-    db.sequelize.query(countSql, {
-      replacements,
-      type: db.sequelize.QueryTypes.SELECT
-    })
+  const [manualLedgersResult, countResult] = await Promise.all([
+    db.client.raw(sql, replacements),
+    db.client.raw(countSql, replacements)
   ])
+  const manualLedgers = manualLedgersResult.rows
   console.log(`Retrieved ${manualLedgers.length} manual ledgers`)
 
   for (const ledger of manualLedgers) {
@@ -71,7 +66,7 @@ const getManualLedgers = async (statuses, page = 1, pageSize = 100, usePaginatio
     }
   }
 
-  return { rows: manualLedgers, count: Number(countResult[0].count) }
+  return { rows: manualLedgers, count: Number(countResult.rows[0].count) }
 }
 
 module.exports = getManualLedgers

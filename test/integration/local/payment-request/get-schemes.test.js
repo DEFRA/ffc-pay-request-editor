@@ -1,34 +1,32 @@
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 const { getSchemes } = require('../../../../app/processing/scheme')
 
 describe('Get schemes test', () => {
   let schemes
   const resetData = async () => {
-    await db.scheme.truncate({ cascade: true })
+    await truncate(['schemes'])
   }
   beforeEach(async () => {
     await resetData()
 
     schemes = [{
       schemeId: 1,
-      name: 'SFI',
-      plain: false
+      name: 'SFI'
     }, {
       schemeId: 2,
-      name: 'A Name',
-      plain: false
+      name: 'A Name'
     }, {
       schemeId: 3,
-      name: 'Vet Visits',
-      plain: false
+      name: 'Vet Visits'
     }]
 
-    await db.scheme.bulkCreate(schemes)
+    await db.scheme().insert(schemes)
   })
 
   afterAll(async () => {
     await resetData()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('return name attribute from scheme db, ordered alphabetically', async () => {

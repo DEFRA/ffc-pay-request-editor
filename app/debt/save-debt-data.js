@@ -1,21 +1,14 @@
-const db = require('../data')
+const { debtData } = require('../database')
 
-const saveDebtData = (debtData, transaction) => {
-  const { paymentRequestId, debtDataId } = debtData
+const saveDebtData = (debt, transaction) => {
+  const { paymentRequestId, debtDataId } = debt
   const attachedDate = new Date()
-  return db.debtData.update({
-    paymentRequestId,
-    attachedDate
-  },
-  {
-    where: {
-      debtDataId
-    }
-  },
-  {
-    transaction
-  }
-  )
+  return debtData(transaction ?? undefined)
+    .where({ debtDataId })
+    .update({
+      paymentRequestId,
+      attachedDate
+    })
 }
 
 module.exports = saveDebtData

@@ -1,90 +1,63 @@
-const { findPaymentRequests } = require('../../../app/retention/find-payment-requests')
-const db = require('../../../app/data')
+const { createKnexMock } = require('../../helpers/mock-knex')
 
-jest.mock('../../../app/data', () => ({
-  paymentRequest: {
-    findAll: jest.fn()
-  }
+const mockDb = createKnexMock(['paymentRequest'])
+
+jest.mock('../../../app/database', () => ({
+  client: mockDb.knex,
+  transaction: mockDb.transaction,
+  close: mockDb.close,
+  ...mockDb.tables
 }))
+
+const { findPaymentRequests } = require('../../../app/retention/find-payment-requests')
 
 describe('findPaymentRequests', () => {
   const agreementNumber = 'AGR123'
   const frn = 456789
   const schemeId = 10
-  const mockTransaction = { id: 'transaction-object' }
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockDb.builder.resolves([])
   })
 
-  test('calls db.paymentRequest.findAll with agreementNumber in where when usesContractNumber is false', async () => {
-    const mockResult = [
-      { paymentRequestId: 201 },
-      { paymentRequestId: 202 }
-    ]
-    db.paymentRequest.findAll.mockResolvedValue(mockResult)
+  test('filters on agreementNumber when usesContractNumber is false', async () => {
+    const mockResult = [{ paymentRequestId: 201 }, { paymentRequestId: 202 }]
+    mockDb.builder.resolves(mockResult)
 
-    const result = await findPaymentRequests(agreementNumber, frn, schemeId, false, mockTransaction)
+    const result = await findPaymentRequests(agreementNumber, frn, schemeId, false, mockDb.trx)
 
-    expect(db.paymentRequest.findAll).toHaveBeenCalledTimes(1)
-    expect(db.paymentRequest.findAll).toHaveBeenCalledWith({
-      attributes: ['paymentRequestId'],
-      where: { agreementNumber, frn, schemeId },
-      transaction: mockTransaction
-    })
+    expect(mockDb.tables.paymentRequest).toHaveBeenCalledWith(mockDb.trx)
+    expect(mockDb.builder.select).toHaveBeenCalledWith('paymentRequestId')
+    expect(mockDb.builder.where).toHaveBeenCalledWith({ agreementNumber, frn, schemeId })
     expect(result).toBe(mockResult)
   })
 
-  test('calls db.paymentRequest.findAll with contractNumber in where when usesContractNumber is true', async () => {
-    const mockResult = [
-      { paymentRequestId: 301 },
-      { paymentRequestId: 302 }
-    ]
-    db.paymentRequest.findAll.mockResolvedValue(mockResult)
+  test('filters on contractNumber when usesContractNumber is true', async () => {
+    const mockResult = [{ paymentRequestId: 301 }]
+    mockDb.builder.resolves(mockResult)
 
-    const result = await findPaymentRequests(agreementNumber, frn, schemeId, true, mockTransaction)
+    const result = await findPaymentRequests(agreementNumber, frn, schemeId, true, mockDb.trx)
 
-    expect(db.paymentRequest.findAll).toHaveBeenCalledTimes(1)
-    expect(db.paymentRequest.findAll).toHaveBeenCalledWith({
-      attributes: ['paymentRequestId'],
-      where: { contractNumber: agreementNumber, frn, schemeId },
-      transaction: mockTransaction
-    })
+    expect(mockDb.builder.where).toHaveBeenCalledWith({ contractNumber: agreementNumber, frn, schemeId })
     expect(result).toBe(mockResult)
   })
 
-  test('passes undefined transaction if not provided, usesContractNumber false', async () => {
-    const mockResult = []
-    db.paymentRequest.findAll.mockResolvedValue(mockResult)
+  test('uses the pool when no transaction is provided', async () => {
+    await findPaymentRequests(agreementNumber, frn, schemeId, false)
 
-    const result = await findPaymentRequests(agreementNumber, frn, schemeId, false)
-
-    expect(db.paymentRequest.findAll).toHaveBeenCalledWith({
-      attributes: ['paymentRequestId'],
-      where: { agreementNumber, frn, schemeId },
-      transaction: undefined
-    })
-    expect(result).toBe(mockResult)
+    expect(mockDb.tables.paymentRequest).toHaveBeenCalledWith(undefined)
   })
 
-  test('passes undefined transaction if not provided, usesContractNumber true', async () => {
-    const mockResult = []
-    db.paymentRequest.findAll.mockResolvedValue(mockResult)
+  test('uses the pool when transaction is null', async () => {
+    await findPaymentRequests(agreementNumber, frn, schemeId, true, null)
 
-    const result = await findPaymentRequests(agreementNumber, frn, schemeId, true)
-
-    expect(db.paymentRequest.findAll).toHaveBeenCalledWith({
-      attributes: ['paymentRequestId'],
-      where: { contractNumber: agreementNumber, frn, schemeId },
-      transaction: undefined
-    })
-    expect(result).toBe(mockResult)
+    expect(mockDb.tables.paymentRequest).toHaveBeenCalledWith(undefined)
   })
 
-  test('propagates errors from db.paymentRequest.findAll', async () => {
-    const error = new Error('DB failure')
-    db.paymentRequest.findAll.mockRejectedValue(error)
+  test('propagates a failure', async () => {
+    mockDb.builder.rejects(new Error('DB failure'))
 
-    await expect(findPaymentRequests(agreementNumber, frn, schemeId, false, mockTransaction)).rejects.toThrow('DB failure')
+    await expect(findPaymentRequests(agreementNumber, frn, schemeId, false, mockDb.trx)).rejects.toThrow('DB failure')
   })
 })
