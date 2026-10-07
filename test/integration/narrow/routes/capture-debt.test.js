@@ -1,5 +1,5 @@
 const { getSchemeNames } = require('ffc-pay-schemes')
-jest.mock('ffc-messaging')
+const { SFI } = getSchemeNames()
 jest.mock('../../../../app/plugins/crumb')
 jest.mock('../../../../app/processing/scheme')
 jest.mock('../../../../app/auth')
@@ -18,29 +18,6 @@ const {
   invalidDateTests
 } = require('../../../helpers/capture-debt-validation-cases')
 const { enrichment } = require('../../../../app/auth/permissions')
-
-<<<<<<< HEAD
-describe('capture-debt route', () => {
-  jest.mock('../../../../app/plugins/crumb')
-  jest.mock('../../../../app/processing/scheme')
-  jest.mock('../../../../app/auth')
-  const mockAuth = require('../../../../app/auth')
-  const { getSchemeId, getSchemes } = require('../../../../app/processing/scheme')
-  const db = require('../../../../app/data')
-  const { SCHEMES } = require('../../../data/scheme')
-  const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
-  const { ADMINISTRATIVE } = require('../../../../app/constants/debt-types')
-  const {
-    invalidSchemeTests,
-    invalidFrnTests,
-    invalidApplicationTests,
-    invalidNetTests,
-    invalidDebtTypeTests,
-    invalidDateTests
-  } = require('../../../helpers/capture-debt-validation-cases')
-=======
-const { SFI } = getSchemeNames()
->>>>>>> origin/main
 
 describe('capture-debt route', () => {
   const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
