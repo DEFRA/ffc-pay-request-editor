@@ -1,6 +1,9 @@
+const { getSchemeIds, getSchemeNames } = require('ffc-pay-schemes')
 const { getDebts, getDebtsCount } = require('../../../../app/debt')
 const db = require('../../../../app/data')
-const { SFI } = require('../../../../app/constants/schemes')
+
+const { SFI } = getSchemeIds()
+const { SFI: SFI_NAME } = getSchemeNames()
 
 let scheme
 
@@ -22,7 +25,7 @@ describe('Get debts test', () => {
 
     scheme = {
       schemeId: SFI,
-      name: 'SFI'
+      name: SFI_NAME
     }
 
     await db.scheme.create(scheme)
@@ -91,12 +94,6 @@ describe('Get debts test', () => {
 
     expect(debtDataRows.rows[0].createdDate)
       .toStrictEqual(new Date('2022-02-01T00:00:00.000Z'))
-  })
-
-  test('if data with scheme SFI, name should be replaced with SFI22', async () => {
-    const debt = await getDebts()
-
-    expect(debt.rows[0].schemes.name).toBe('SFI22')
   })
 
   test('should return paginated results correctly', async () => {
@@ -175,15 +172,6 @@ describe('Get debts test', () => {
     expect(result.count).toBe(0)
   })
 
-  test('should filter by display scheme name SFI22', async () => {
-    const result = await getDebts({
-      scheme: 'SFI22'
-    })
-
-    expect(result.rows).toHaveLength(1)
-    expect(result.rows[0].schemes.name).toBe('SFI22')
-  })
-
   test('should return debts when includeAttached is true', async () => {
     const result = await getDebts({
       includeAttached: true
@@ -191,15 +179,5 @@ describe('Get debts test', () => {
 
     expect(result.rows).toHaveLength(1)
     expect(result.count).toBe(1)
-  })
-
-  test('should filter by stored scheme name SFI', async () => {
-    const result = await getDebts({
-      scheme: 'SFI'
-    })
-
-    expect(result.rows).toHaveLength(1)
-    expect(result.count).toBe(1)
-    expect(result.rows[0].schemes.name).toBe('SFI22')
   })
 })

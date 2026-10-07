@@ -1,5 +1,7 @@
+const { getSchemeNames } = require('ffc-pay-schemes')
 const Joi = require('joi')
-const schemeNames = require('../../constants/scheme-names')
+
+const schemeNames = Object.values(getSchemeNames())
 
 module.exports = {
   scheme: Joi.string().valid(...schemeNames).required()

@@ -1,5 +1,7 @@
+const { getSchemeNames } = require('ffc-pay-schemes')
 const Joi = require('joi')
-const schemeNames = require('../../constants/scheme-names')
+
+const schemeNames = Object.values(getSchemeNames())
 
 const minFRN = 1000000000
 const maxFRN = 9999999999

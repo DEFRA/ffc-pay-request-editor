@@ -38,7 +38,7 @@ describe('Payment Request Functions Test Suite', () => {
       netValue: -500,
       fesCode: 'FES-001',
       annualValue: '1234.56',
-      remmittanceDescription: 'Initial remittance',
+      remittanceDescription: 'Initial remittance',
       genericStringField: 'GENERIC-STRING-ONE'
     }
 
@@ -58,7 +58,7 @@ describe('Payment Request Functions Test Suite', () => {
       netValue: -200,
       fesCode: 'FES-002',
       annualValue: '9876543210.12',
-      remmittanceDescription: 'Follow-up remittance',
+      remittanceDescription: 'Follow-up remittance',
       genericStringField: 'GENERIC-STRING-TWO'
     }
 
@@ -100,7 +100,7 @@ describe('Payment Request Functions Test Suite', () => {
     expect(paymentRequests.rows[0].paymentRequestId).toBe(1)
   })
 
-  describe('new fields: fesCode, annualValue, remmittanceDescription', () => {
+  describe('new fields: fesCode, annualValue, remittanceDescription', () => {
     test('should return fesCode for first record', async () => {
       const [pr] = (await getPaymentRequest(1, 1)).rows
 
@@ -113,10 +113,10 @@ describe('Payment Request Functions Test Suite', () => {
       expect(pr.annualValue).toBe('9876543210.12')
     })
 
-    test('should return remmittanceDescription for first record', async () => {
+    test('should return remittanceDescription for first record', async () => {
       const [pr] = (await getPaymentRequest(1, 1)).rows
 
-      expect(pr.remmittanceDescription).toBe('Initial remittance')
+      expect(pr.remittanceDescription).toBe('Initial remittance')
     })
 
     test('should return all new fields when usePagination=false', async () => {
@@ -126,82 +126,11 @@ describe('Payment Request Functions Test Suite', () => {
 
       expect(results[0].fesCode).toBe('FES-001')
       expect(results[0].annualValue).toBe('1234.56')
-      expect(results[0].remmittanceDescription).toBe('Initial remittance')
+      expect(results[0].remittanceDescription).toBe('Initial remittance')
 
       expect(results[1].fesCode).toBe('FES-002')
       expect(results[1].annualValue).toBe('9876543210.12')
-      expect(results[1].remmittanceDescription).toBe('Follow-up remittance')
+      expect(results[1].remittanceDescription).toBe('Follow-up remittance')
     })
-  })
-
-  test('maps Vet Visits to Annual Health and Welfare Review', async () => {
-    await resetTables()
-
-    const vetScheme = {
-      schemeId: 10,
-      name: 'Vet Visits'
-    }
-
-    const pr = {
-      paymentRequestId: 10,
-      schemeId: vetScheme.schemeId,
-      frn: 1111111111,
-      categoryId: ENRICHMENT,
-      agreementNumber: 'AG200',
-      invoiceNumber: 'INV200',
-      paymentRequestNumber: 1,
-      value: 500,
-      received: new Date(),
-      ledger: AP,
-      marketingYear: 2023,
-      daysWaiting: 1,
-      netValue: -100,
-      fesCode: 'FES-VET',
-      annualValue: '10.00',
-      remmittanceDescription: 'Vet remittance'
-    }
-
-    await db.scheme.create(vetScheme)
-    await db.paymentRequest.create(pr)
-
-    const result = await getPaymentRequest(1, 10, false)
-
-    expect(result.rows[0].schemes.name)
-      .toBe('Annual Health and Welfare Review')
-  })
-
-  test('maps SFI to SFI22', async () => {
-    await resetTables()
-
-    const sfiScheme = {
-      schemeId: 20,
-      name: 'SFI'
-    }
-
-    const pr = {
-      paymentRequestId: 20,
-      schemeId: sfiScheme.schemeId,
-      frn: 2222222222,
-      categoryId: ENRICHMENT,
-      agreementNumber: 'AG300',
-      invoiceNumber: 'INV300',
-      paymentRequestNumber: 1,
-      value: 600,
-      received: new Date(),
-      ledger: AP,
-      marketingYear: 2023,
-      daysWaiting: 2,
-      netValue: -150,
-      fesCode: 'FES-SFI',
-      annualValue: '20.00',
-      remmittanceDescription: 'SFI remittance'
-    }
-
-    await db.scheme.create(sfiScheme)
-    await db.paymentRequest.create(pr)
-
-    const result = await getPaymentRequest(1, 10, false)
-
-    expect(result.rows[0].schemes.name).toBe('SFI22')
   })
 })

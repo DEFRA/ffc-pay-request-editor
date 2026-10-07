@@ -10,6 +10,11 @@ const createServer = require('../../app/server')
 jest.mock('../../app/messaging')
 const { start: mockMessagingStart } = require('../../app/messaging')
 
+jest.mock('../../app/update-schemes-database', () => ({
+  updateSchemesDatabase: jest.fn()
+}))
+const mockUpdateSchemesDatabase = require('../../app/update-schemes-database')
+
 const startApp = require('../../app')
 
 describe('app start', () => {
@@ -27,6 +32,18 @@ describe('app start', () => {
     config.processingActive = false
     await startApp()
     expect(createServer).toHaveBeenCalledTimes(1)
+  })
+
+  test('updates schemes when active is true', async () => {
+    config.processingActive = true
+    await startApp()
+    expect(mockUpdateSchemesDatabase.updateSchemesDatabase).toHaveBeenCalledTimes(1)
+  })
+
+  test('updates schemes if active is false', async () => {
+    config.processingActive = false
+    await startApp()
+    expect(mockUpdateSchemesDatabase.updateSchemesDatabase).toHaveBeenCalledTimes(1)
   })
 
   test('starts messaging when active is true', async () => {

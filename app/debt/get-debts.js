@@ -1,11 +1,5 @@
 const db = require('../data')
 
-// Display name -> underlying stored scheme name.
-// (Scheme names are normalised for display below - 'SFI' is shown as 'SFI22'.)
-const SCHEME_DISPLAY_TO_STORED = {
-  SFI22: 'SFI'
-}
-
 const getDebts = async ({
   includeAttached = false,
   page = 1,
@@ -31,8 +25,7 @@ const getDebts = async ({
   }
 
   if (scheme) {
-    // Translate a display name (e.g. 'SFI22') back to the stored name (e.g. 'SFI') if needed
-    schemeInclude.where = { name: SCHEME_DISPLAY_TO_STORED[scheme] || scheme }
+    schemeInclude.where = { name: scheme }
     schemeInclude.required = true
   }
 
@@ -68,9 +61,6 @@ const getDebts = async ({
   // to the underlying model (e.g. re-saving would silently persist the display-only rename).
   result.rows = result.rows.map(debt => {
     const plainDebt = debt.get({ plain: true })
-    if (plainDebt.schemes?.name === 'SFI') {
-      plainDebt.schemes.name = 'SFI22'
-    }
     return plainDebt
   })
 

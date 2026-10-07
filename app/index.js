@@ -5,9 +5,11 @@ const config = require('./config')
 const messaging = require('./messaging')
 
 const startServer = require('./start-server')
+const { updateSchemesDatabase } = require('./update-schemes-database')
 
 const startApp = async () => {
   startServer()
+  await updateSchemesDatabase()
   if (config.processingActive) {
     await messaging.start()
   } else {

@@ -69,17 +69,6 @@ describe('Get quality checks', () => {
     await db.sequelize.close()
   })
 
-  test('should return 1 quality check record with updated scheme name', async () => {
-    const qualityChecks = await getQualityChecks()
-
-    expect(qualityChecks.rows).toHaveLength(1)
-    expect(qualityChecks.count).toBe(1)
-
-    expect(
-      qualityChecks.rows[0].paymentRequest.schemes.name
-    ).toBe('SFI22')
-  })
-
   test('should return correct count for quality checks', async () => {
     const qualityChecks = await getQualityChecks()
 

@@ -88,14 +88,6 @@ describe('Get manual ledgers test', () => {
     expect(ids).not.toContain(2)
   })
 
-  test('should return payment request record with schemeName "SFI22" if schemeName is "SFI"', async () => {
-    const paymentRequests = await getManualLedgers(statuses)
-
-    for (const pr of paymentRequests.rows) {
-      expect(pr.schemeName).toBe('SFI22')
-    }
-  })
-
   test('should return paginated results correctly', async () => {
     const pageSize = 1
 

@@ -1,5 +1,7 @@
+const { getSchemeIds } = require('ffc-pay-schemes')
 const db = require('../data')
-const { CS } = require('../constants/schemes')
+
+const { CS } = getSchemeIds()
 
 const getPaymentRequestMatchingReference = (schemeId, applicationIdentifier) => {
   if (schemeId === CS) {

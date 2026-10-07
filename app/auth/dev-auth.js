@@ -1,5 +1,5 @@
-const { ledger, enrichment } = require('./permissions')
 const { randomUUID } = require('node:crypto')
+const { ledger, enrichment } = require('./permissions')
 const devAccount = require('./dev-account')
 
 const getAuthenticationUrl = () => {

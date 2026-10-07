@@ -1,5 +1,5 @@
-const config = require('../config')
 const msal = require('@azure/msal-node')
+const config = require('../config')
 
 const msalLogging = config.isProd
   ? {}

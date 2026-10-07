@@ -1,12 +1,12 @@
+const { getSchemeIds } = require('ffc-pay-schemes')
 const db = require('../../../../app/data')
 
-const { SFI, CS } = require('../../../../app/constants/schemes')
+const { SFI, CS } = getSchemeIds()
 
 const {
   getPaymentRequest,
   getPaymentRequestCount,
-  getPaymentRequestAwaitingEnrichment,
-  getPaymentRequestByInvoiceNumberAndRequestId
+  getPaymentRequestAwaitingEnrichment
 } = require('../../../../app/payment-request')
 
 const resetData = async () => {
@@ -54,12 +54,6 @@ describe('Get payment request test', () => {
     expect(paymentRequests.count).toBe(1)
   })
 
-  test('should return payment request record with scheme name SFI22 if name is SFI', async () => {
-    const paymentRequests = await getPaymentRequest()
-
-    expect(paymentRequests.rows[0].schemes.name).toBe('SFI22')
-  })
-
   test('should filter payment requests by FRN when an FRN is supplied', async () => {
     await db.paymentRequest.create({
       ...paymentRequest,
@@ -78,46 +72,6 @@ describe('Get payment request test', () => {
 
     expect(paymentRequests.rows).toHaveLength(1)
     expect(paymentRequests.rows[0].frn).toBe(String(paymentRequest.frn))
-  })
-
-  test('should return scheme name Annual Health and Welfare Review when scheme name is Vet Visits', async () => {
-    await resetData()
-
-    const vetVisitsScheme = {
-      schemeId: SFI,
-      name: 'Vet Visits'
-    }
-
-    await db.scheme.create(vetVisitsScheme)
-    await db.paymentRequest.create(paymentRequest)
-
-    const paymentRequests = await getPaymentRequest()
-
-    expect(paymentRequests.rows).toHaveLength(1)
-    expect(paymentRequests.rows[0].schemes.name)
-      .toBe('Annual Health and Welfare Review')
-  })
-
-  test('should return scheme name Annual Health and Welfare Review when getting Vet Visits payment request by invoice number and request ID', async () => {
-    await resetData()
-
-    const vetVisitsScheme = {
-      schemeId: SFI,
-      name: 'Vet Visits'
-    }
-
-    await db.scheme.create(vetVisitsScheme)
-
-    const createdPaymentRequest = await db.paymentRequest.create(paymentRequest)
-
-    const result = await getPaymentRequestByInvoiceNumberAndRequestId(
-      createdPaymentRequest.invoiceNumber,
-      createdPaymentRequest.paymentRequestId
-    )
-
-    expect(result).not.toBeNull()
-    expect(result.schemes.name)
-      .toBe('Annual Health and Welfare Review')
   })
 
   test('should return a count of 1 for payment request', async () => {

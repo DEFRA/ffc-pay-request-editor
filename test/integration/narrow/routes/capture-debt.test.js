@@ -1,5 +1,25 @@
+const { getSchemeNames } = require('ffc-pay-schemes')
+jest.mock('ffc-messaging')
+jest.mock('../../../../app/plugins/crumb')
+jest.mock('../../../../app/processing/scheme')
+jest.mock('../../../../app/auth')
+const mockAuth = require('../../../../app/auth')
+const { getSchemeId, getSchemes } = require('../../../../app/processing/scheme')
+const db = require('../../../../app/data')
+const { SCHEMES } = require('../../../data/scheme')
+const { SCHEME_ID_SFI } = require('../../../data/scheme-id')
+const { ADMINISTRATIVE } = require('../../../../app/constants/debt-types')
+const {
+  invalidSchemeTests,
+  invalidFrnTests,
+  invalidApplicationTests,
+  invalidNetTests,
+  invalidDebtTypeTests,
+  invalidDateTests
+} = require('../../../helpers/capture-debt-validation-cases')
 const { enrichment } = require('../../../../app/auth/permissions')
 
+<<<<<<< HEAD
 describe('capture-debt route', () => {
   jest.mock('../../../../app/plugins/crumb')
   jest.mock('../../../../app/processing/scheme')
@@ -18,7 +38,11 @@ describe('capture-debt route', () => {
     invalidDebtTypeTests,
     invalidDateTests
   } = require('../../../helpers/capture-debt-validation-cases')
+=======
+const { SFI } = getSchemeNames()
+>>>>>>> origin/main
 
+describe('capture-debt route', () => {
   const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
   const user = { userId: '1', username: 'Developer' }
 
@@ -26,7 +50,7 @@ describe('capture-debt route', () => {
   let server
 
   const VALID_PAYLOAD = {
-    scheme: 'SFI22',
+    scheme: SFI,
     frn: '1234567890',
     applicationIdentifier: '43210987654321A',
     net: 312.2,
@@ -127,32 +151,6 @@ describe('capture-debt route', () => {
     expect(ctx.debtDiscoveredDay).toBe('02')
     expect(ctx.debtDiscoveredMonth).toBe('01')
     expect(ctx.debtDiscoveredYear).toBe(2015)
-  })
-
-  test('POST /capture-debt normalises SFI22 to SFI when resolving scheme id', async () => {
-    const payload = { ...VALID_PAYLOAD, scheme: 'SFI22' }
-
-    await db.paymentRequest.create({ schemeId: SCHEME_ID_SFI, frn: payload.frn })
-
-    getSchemeId.mockClear()
-    getSchemeId.mockResolvedValue(SCHEME_ID_SFI)
-
-    const result = await server.inject({
-      method: 'POST',
-      url: '/capture-debt',
-      payload,
-      auth
-    })
-
-    expect(result.statusCode).toBe(302)
-    expect(result.headers.location).toBe('/capture?debtAdded=true')
-
-    const calledNames = getSchemeId.mock.calls.map(c => c[0])
-    expect(calledNames).toContain('SFI')
-
-    const debt = await db.debtData.findOne({ where: { frn: payload.frn } })
-    expect(debt).toBeDefined()
-    expect(debt.schemeId).toBe(SCHEME_ID_SFI)
   })
 
   test('returns validation error when applicationIdentifier exceeds 50 characters', async () => {

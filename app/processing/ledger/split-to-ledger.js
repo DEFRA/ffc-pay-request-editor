@@ -1,6 +1,6 @@
-const createSplitInvoiceNumber = require('./create-split-invoice-number')
-const ensureValueConsistency = require('./ensure-value-consistency')
+const { createSplitInvoiceNumber } = require('ffc-pay-schemes')
 const { randomUUID } = require('node:crypto')
+const ensureValueConsistency = require('./ensure-value-consistency')
 
 const splitToLedger = (paymentRequest, targetValue, targetLedger) => {
   const originalValue = paymentRequest.value
