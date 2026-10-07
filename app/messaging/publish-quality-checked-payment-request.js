@@ -8,19 +8,15 @@ const publishQualityCheckedPaymentRequests = async (qualityCheckSender) => {
   try {
     const qualityCheckedPaymentRequests = await getQualityCheckedPaymentRequests()
     for (const qualityCheckedPaymentRequest of qualityCheckedPaymentRequests) {
-      await processQualityCheckedPaymentRequest(qualityCheckedPaymentRequest, qualityCheckSender) // NOSONAR
+      await attachDebtToManualLedger(qualityCheckedPaymentRequest, true)
+      const paymentRequestId = qualityCheckedPaymentRequest.paymentRequest.paymentRequestId
+      await publishPaymentRequest(qualityCheckedPaymentRequest, qualityCheckSender)
+      await updatePaymentRequestReleased(paymentRequestId)
+      await updateQualityChecksStatus(paymentRequestId, PROCESSED)
     }
   } catch (err) {
     console.error('Unable to process payment request message:', err)
   }
-}
-
-const processQualityCheckedPaymentRequest = async (qualityCheckedPaymentRequest, qualityCheckSender) => {
-  await attachDebtToManualLedger(qualityCheckedPaymentRequest, true)
-  const paymentRequestId = qualityCheckedPaymentRequest.paymentRequest.paymentRequestId
-  await publishPaymentRequest(qualityCheckedPaymentRequest, qualityCheckSender)
-  await updatePaymentRequestReleased(paymentRequestId)
-  await updateQualityChecksStatus(paymentRequestId, PROCESSED)
 }
 
 const publishPaymentRequest = async (paymentRequest, qualityCheckSender) => {

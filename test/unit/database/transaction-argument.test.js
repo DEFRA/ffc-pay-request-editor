@@ -96,7 +96,7 @@ describe('column whitelisting', () => {
 
     await saveInvoiceLines(invoiceLines, 5)
 
-    const [[row]] = mockDb.builder.insert.mock.calls[0]
+    const [row] = mockDb.builder.insert.mock.calls[0]
     expect(row).toMatchObject({ paymentRequestId: 5, value: 10, description: 'G00' })
     expect(row).not.toHaveProperty('invoiceLineId')
     expect(row).not.toHaveProperty('unknownField')

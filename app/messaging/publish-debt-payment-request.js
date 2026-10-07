@@ -14,25 +14,21 @@ const publishDebtPaymentRequests = async (debtSender) => {
     const debtPaymentRequests = await getDebtPaymentRequests()
 
     for (const paymentRequest of debtPaymentRequests) {
-      await processDebtPaymentRequest(paymentRequest, debtSender) // NOSONAR
+      const { paymentRequestId } = paymentRequest
+      const inManualLedgerAwaitingDebtData = await checkAwaitingManualLedgerDebtData(paymentRequestId)
+
+      if (inManualLedgerAwaitingDebtData) {
+        await updatePaymentRequestCategory(paymentRequestId, LEDGER_CHECK)
+        await updateQualityChecksStatus(paymentRequestId, PASSED)
+      } else {
+        delete paymentRequest.paymentRequestId
+        await publishPaymentRequest(paymentRequest, debtSender)
+        await updatePaymentRequestReleased(paymentRequestId)
+        await updateQualityChecksStatus(paymentRequestId, PROCESSED)
+      }
     }
   } catch (err) {
     console.error('Unable to process payment request message:', err)
-  }
-}
-
-const processDebtPaymentRequest = async (paymentRequest, debtSender) => {
-  const { paymentRequestId } = paymentRequest
-  const inManualLedgerAwaitingDebtData = await checkAwaitingManualLedgerDebtData(paymentRequestId)
-
-  if (inManualLedgerAwaitingDebtData) {
-    await updatePaymentRequestCategory(paymentRequestId, LEDGER_CHECK)
-    await updateQualityChecksStatus(paymentRequestId, PASSED)
-  } else {
-    delete paymentRequest.paymentRequestId
-    await publishPaymentRequest(paymentRequest, debtSender)
-    await updatePaymentRequestReleased(paymentRequestId)
-    await updateQualityChecksStatus(paymentRequestId, PROCESSED)
   }
 }
 
