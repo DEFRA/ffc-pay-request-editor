@@ -1,6 +1,5 @@
 const { ledger } = require('../../../../app/auth/permissions')
 
-jest.mock('ffc-messaging')
 jest.mock('../../../../app/plugins/crumb')
 jest.mock('../../../../app/auth')
 jest.mock('../../../../app/quality-check')

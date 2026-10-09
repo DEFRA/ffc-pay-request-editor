@@ -30,7 +30,7 @@ describe('publishDebtPaymentRequests', () => {
       invoiceNumber: 'INV-001'
     }
 
-    debtSender = { sendMessage: jest.fn() }
+    debtSender = { sendMessages: jest.fn() }
 
     getDebtPaymentRequests.mockResolvedValue([{ ...paymentRequest }])
     checkAwaitingManualLedgerDebtData.mockResolvedValue(false)
@@ -51,7 +51,7 @@ describe('publishDebtPaymentRequests', () => {
   test('publishes payment request and marks as released when not awaiting manual ledger debt data', async () => {
     await publishDebtPaymentRequests(debtSender)
 
-    expect(debtSender.sendMessage).toHaveBeenCalledTimes(1)
+    expect(debtSender.sendMessages).toHaveBeenCalledTimes(1)
     expect(updatePaymentRequestReleased).toHaveBeenCalledTimes(1)
     expect(updatePaymentRequestReleased).toHaveBeenCalledWith(paymentRequest.paymentRequestId)
     expect(updateQualityChecksStatus).toHaveBeenCalledWith(paymentRequest.paymentRequestId, PROCESSED)
@@ -64,7 +64,7 @@ describe('publishDebtPaymentRequests', () => {
 
     expect(updatePaymentRequestCategory).toHaveBeenCalledWith(paymentRequest.paymentRequestId, LEDGER_CHECK)
     expect(updateQualityChecksStatus).toHaveBeenCalledWith(paymentRequest.paymentRequestId, PASSED)
-    expect(debtSender.sendMessage).not.toHaveBeenCalled()
+    expect(debtSender.sendMessages).not.toHaveBeenCalled()
     expect(updatePaymentRequestReleased).not.toHaveBeenCalled()
   })
 
@@ -73,12 +73,12 @@ describe('publishDebtPaymentRequests', () => {
 
     await publishDebtPaymentRequests(debtSender)
 
-    expect(debtSender.sendMessage).not.toHaveBeenCalled()
+    expect(debtSender.sendMessages).not.toHaveBeenCalled()
   })
 
   test('deletes paymentRequestId from payment request before publishing', async () => {
     let capturedBody
-    debtSender.sendMessage.mockImplementation((msg) => {
+    debtSender.sendMessages.mockImplementation((msg) => {
       capturedBody = msg.body
     })
     createMessage.mockImplementation((body) => ({ body }))
@@ -109,7 +109,7 @@ describe('publishDebtPaymentRequests', () => {
     await publishDebtPaymentRequests(debtSender)
 
     expect(consoleSpy).toHaveBeenCalledWith('Unable to process payment request message:', error)
-    expect(debtSender.sendMessage).not.toHaveBeenCalled()
+    expect(debtSender.sendMessages).not.toHaveBeenCalled()
 
     consoleSpy.mockRestore()
   })
@@ -136,7 +136,7 @@ describe('publishDebtPaymentRequests', () => {
 
     await publishDebtPaymentRequests(debtSender)
 
-    expect(debtSender.sendMessage).toHaveBeenCalledTimes(2)
+    expect(debtSender.sendMessages).toHaveBeenCalledTimes(2)
     expect(updatePaymentRequestReleased).toHaveBeenCalledTimes(2)
     expect(updateQualityChecksStatus).toHaveBeenCalledTimes(2)
   })
@@ -146,7 +146,7 @@ describe('publishDebtPaymentRequests', () => {
 
     await publishDebtPaymentRequests(debtSender)
 
-    expect(debtSender.sendMessage).not.toHaveBeenCalled()
+    expect(debtSender.sendMessages).not.toHaveBeenCalled()
     expect(updatePaymentRequestReleased).not.toHaveBeenCalled()
     expect(updateQualityChecksStatus).not.toHaveBeenCalled()
   })
@@ -169,7 +169,7 @@ describe('publishPaymentRequest', () => {
       source: 'ffc-pay-request-editor'
     }
 
-    debtSender = { sendMessage: jest.fn() }
+    debtSender = { sendMessages: jest.fn() }
     createMessage.mockReturnValue(message)
   })
 
@@ -186,8 +186,8 @@ describe('publishPaymentRequest', () => {
   test('sends the created message via debtSender', async () => {
     await publishPaymentRequest(paymentRequest, debtSender)
 
-    expect(debtSender.sendMessage).toHaveBeenCalledTimes(1)
-    expect(debtSender.sendMessage).toHaveBeenCalledWith(message)
+    expect(debtSender.sendMessages).toHaveBeenCalledTimes(1)
+    expect(debtSender.sendMessages).toHaveBeenCalledWith(message)
   })
 
   test('logs completion with frn and invoiceNumber', async () => {

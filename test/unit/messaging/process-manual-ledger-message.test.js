@@ -1,4 +1,3 @@
-jest.mock('ffc-messaging')
 jest.mock('../../../app/data')
 jest.mock('../../../app/manual-ledger')
 const processManualLedgerDataMessage = require('../../../app/messaging/process-manual-ledger-data-message')

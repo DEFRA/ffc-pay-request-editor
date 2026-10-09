@@ -1,5 +1,5 @@
 const { getSchemeNames } = require('ffc-pay-schemes')
-jest.mock('ffc-messaging')
+const { SFI } = getSchemeNames()
 jest.mock('../../../../app/plugins/crumb')
 jest.mock('../../../../app/processing/scheme')
 jest.mock('../../../../app/auth')
@@ -18,8 +18,6 @@ const {
   invalidDateTests
 } = require('../../../helpers/capture-debt-validation-cases')
 const { enrichment } = require('../../../../app/auth/permissions')
-
-const { SFI } = getSchemeNames()
 
 describe('capture-debt route', () => {
   const auth = { strategy: 'session-auth', credentials: { scope: [enrichment] } }
