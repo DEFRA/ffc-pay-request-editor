@@ -1,4 +1,13 @@
-jest.mock('../../../app/data')
+const { createKnexMock } = require('../../helpers/mock-knex')
+
+const mockDb = createKnexMock([])
+
+jest.mock('../../../app/database', () => ({
+  client: mockDb.knex,
+  transaction: mockDb.transaction,
+  close: mockDb.close,
+  ...mockDb.tables
+}))
 jest.mock('../../../app/manual-ledger')
 const processManualLedgerDataMessage = require('../../../app/messaging/process-manual-ledger-data-message')
 let receiver

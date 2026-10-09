@@ -1,42 +1,30 @@
-const db = require('../data')
+const { qualityCheck } = require('../database')
+const TABLES = require('../constants/tables')
 const getManualLedgerRequestCheck = require('../manual-ledger/get-manual-ledger-requests')
+const getPaymentRequestsWithLines = require('../payment-request/get-payment-requests-with-lines')
 const { PASSED } = require('./statuses')
 
 const getQualityCheckedPaymentRequests = async () => {
+  const qualityChecks = await qualityCheck()
+    .select(`${TABLES.qualityCheck}.paymentRequestId`)
+    .innerJoin(TABLES.paymentRequest, `${TABLES.paymentRequest}.paymentRequestId`, `${TABLES.qualityCheck}.paymentRequestId`)
+    .where(`${TABLES.qualityCheck}.status`, PASSED)
+    .where(`${TABLES.paymentRequest}.categoryId`, 2)
+    .orderBy(`${TABLES.qualityCheck}.qualityCheckId`, 'asc')
+
+  const paymentRequests = await getPaymentRequestsWithLines(qualityChecks.map(x => x.paymentRequestId))
+
   const qualityCheckedPaymentRequests = []
-
-  const qualityChecks = await db.qualityCheck.findAll({
-    include: [
-      {
-        model: db.paymentRequest,
-        as: 'paymentRequest',
-        where: { categoryId: 2 },
-        include: [{
-          model: db.invoiceLine,
-          as: 'invoiceLines'
-        }]
-      }
-    ],
-    where: {
-      status: PASSED
-    }
-  })
-
-  if (qualityChecks.length > 0) {
-    for (const qualityCheck of qualityChecks) {
-      const paymentRequest = qualityCheck.paymentRequest
-      const manualLedgerRequests = await getManualLedgerRequestCheck(paymentRequest.paymentRequestId)
-      const transformManualLedgerRequest = manualLedgerRequests.map(x => x.ledgerPaymentRequest)
-      qualityCheckedPaymentRequests.push({ paymentRequest, paymentRequests: transformManualLedgerRequest })
-    }
+  for (const { paymentRequestId } of qualityChecks) {
+    const paymentRequest = paymentRequests.find(x => x.paymentRequestId === paymentRequestId)
+    const manualLedgerRequests = await getManualLedgerRequestCheck(paymentRequestId)
+    qualityCheckedPaymentRequests.push({
+      paymentRequest,
+      paymentRequests: manualLedgerRequests.map(x => x.ledgerPaymentRequest)
+    })
   }
 
-  return qualityCheckedPaymentRequests.map(x => {
-    return {
-      paymentRequest: x.paymentRequest.get({ plain: true }),
-      paymentRequests: x.paymentRequests
-    }
-  })
+  return qualityCheckedPaymentRequests
 }
 
 module.exports = getQualityCheckedPaymentRequests

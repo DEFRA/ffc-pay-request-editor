@@ -1,13 +1,8 @@
-const db = require('../data')
+const { qualityCheck } = require('../database')
 const { AWAITING_ENRICHMENT } = require('../quality-check/statuses')
 
 const checkAwaitingManualLedgerDebtData = async (paymentRequestId) => {
-  return db.qualityCheck.findOne({
-    where: {
-      paymentRequestId,
-      status: AWAITING_ENRICHMENT
-    }
-  })
+  return (await qualityCheck().where({ paymentRequestId, status: AWAITING_ENRICHMENT }).first()) ?? null
 }
 
 module.exports = checkAwaitingManualLedgerDebtData

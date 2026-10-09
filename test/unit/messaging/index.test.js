@@ -1,5 +1,15 @@
+const { createKnexMock } = require('../../helpers/mock-knex')
+
+const mockDb = createKnexMock([])
+
+jest.mock('../../../app/database', () => ({
+  client: mockDb.knex,
+  transaction: mockDb.transaction,
+  close: mockDb.close,
+  ...mockDb.tables
+}))
+
 jest.mock('../../../app/messaging/service-bus')
-jest.mock('../../../app/data')
 jest.useFakeTimers()
 
 const {

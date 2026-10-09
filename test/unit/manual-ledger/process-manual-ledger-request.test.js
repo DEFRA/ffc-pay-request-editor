@@ -1,4 +1,5 @@
-const db = require('../../../app/data')
+const db = require('../../../app/database')
+const { truncate } = require('../../helpers/truncate')
 const { SCHEME_ID_SFI } = require('../../data/scheme-id')
 const processManualLedgerRequest = require('../../../app/manual-ledger/process-manual-ledger-request')
 const getManualLedger = require('../../../app/manual-ledger/get-manual-ledger')
@@ -8,11 +9,11 @@ describe('Get manual ledger test', () => {
   let consoleSpy
 
   const resetTables = async () => {
-    await db.manualLedgerPaymentRequest.truncate({ cascade: true })
-    await db.invoiceLine.truncate({ cascade: true })
-    await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
-    await db.scheme.truncate({ cascade: true })
-    await db.qualityCheck.truncate({ cascade: true })
+    await truncate(['manualLedgerPaymentRequest'])
+    await truncate(['invoiceLines'])
+    await truncate(['paymentRequests'])
+    await truncate(['schemes'])
+    await truncate(['qualityChecks'])
   }
 
   beforeAll(async () => {
@@ -44,12 +45,12 @@ describe('Get manual ledger test', () => {
         }]
       }]
     }
-    await db.scheme.create(scheme)
+    await db.scheme().insert(scheme)
   })
 
   afterAll(async () => {
     await resetTables()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('should return 1 payment request record with a provisional paymaent request', async () => {

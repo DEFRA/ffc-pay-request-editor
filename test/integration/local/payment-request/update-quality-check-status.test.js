@@ -1,4 +1,5 @@
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 
 jest.mock('../../../../app/event', () => ({
   sendEnrichRequestBlockedEvent: () => {}
@@ -13,10 +14,10 @@ let paymentRequest
 let paymentRequestId
 
 const resetData = async () => {
-  await db.qualityCheck.truncate({ cascade: true })
-  await db.scheme.truncate({ cascade: true })
-  await db.debtData.truncate({ cascade: true })
-  await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
+  await truncate(['qualityChecks'])
+  await truncate(['schemes'])
+  await truncate(['debtData'])
+  await truncate(['paymentRequests'])
 }
 
 describe('process payment requests', () => {
@@ -61,24 +62,18 @@ describe('process payment requests', () => {
       ]
     }
 
-    await db.scheme.create(scheme)
+    await db.scheme().insert(scheme)
   })
 
   afterAll(async () => {
     await resetData()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('confirm quality data status update', async () => {
     await processPaymentRequest(paymentRequest)
 
-    const qualityChecksRowBeforeUpdate = await db.qualityCheck.findAll({
-      include: [{
-        model: db.paymentRequest,
-        as: 'paymentRequest',
-        required: true
-      }]
-    })
+    const qualityChecksRowBeforeUpdate = await db.qualityCheck()
 
     paymentRequestId = qualityChecksRowBeforeUpdate[0].paymentRequestId
 
@@ -86,14 +81,7 @@ describe('process payment requests', () => {
 
     await updateQualityChecksStatus(paymentRequestId, PASSED)
 
-    const qualityChecksRowAfterUpdate = await db.qualityCheck.findAll({
-      where: { paymentRequestId },
-      include: [{
-        model: db.paymentRequest,
-        as: 'paymentRequest',
-        required: true
-      }]
-    })
+    const qualityChecksRowAfterUpdate = await db.qualityCheck().where({ paymentRequestId })
     expect(qualityChecksRowAfterUpdate[0].status).toBe(PASSED)
   })
 })

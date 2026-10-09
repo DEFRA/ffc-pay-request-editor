@@ -1,40 +1,27 @@
-const db = require('../data')
+const { debtData, paymentRequest } = require('../database')
+const TABLES = require('../constants/tables')
 const { ENRICHMENT } = require('./categories')
 
 const getDebtPaymentRequests = async () => {
-  const debtDatas = await db.debtData.findAll({
-    where: {
-      [db.Sequelize.Op.and]: [{
-        debtType: { [db.Sequelize.Op.ne]: null },
-        recoveryDate: { [db.Sequelize.Op.ne]: null }
-      }]
-    }
-  })
+  const debtDatas = await debtData()
+    .select('paymentRequestId')
+    .whereNotNull('debtType')
+    .whereNotNull('recoveryDate')
 
   const debtDataIds = debtDatas.map(x => x?.paymentRequestId)
 
-  return db.paymentRequest.findAll({
-    where: {
-      released: { [db.Sequelize.Op.eq]: null },
-      paymentRequestId: { [db.Sequelize.Op.in]: debtDataIds },
-      categoryId: ENRICHMENT
-    },
-    include: [
-      {
-        model: db.debtData,
-        as: 'debtData',
-        attributes: []
-      }
-    ],
-    attributes: [
-      'paymentRequestId',
-      'invoiceNumber',
-      'frn',
-      [db.Sequelize.col('debtData.debtType'), 'debtType'],
-      [db.Sequelize.col('debtData.recoveryDate'), 'recoveryDate']
-    ],
-    raw: true
-  })
+  return paymentRequest()
+    .select(
+      `${TABLES.paymentRequest}.paymentRequestId`,
+      `${TABLES.paymentRequest}.invoiceNumber`,
+      `${TABLES.paymentRequest}.frn`,
+      `${TABLES.debtData}.debtType`,
+      `${TABLES.debtData}.recoveryDate`
+    )
+    .leftJoin(TABLES.debtData, `${TABLES.debtData}.paymentRequestId`, `${TABLES.paymentRequest}.paymentRequestId`)
+    .whereNull(`${TABLES.paymentRequest}.released`)
+    .whereIn(`${TABLES.paymentRequest}.paymentRequestId`, debtDataIds)
+    .where(`${TABLES.paymentRequest}.categoryId`, ENRICHMENT)
 }
 
 module.exports = getDebtPaymentRequests

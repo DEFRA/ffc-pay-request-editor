@@ -6,7 +6,7 @@ describe('capture-debt route', () => {
   jest.mock('../../app/auth')
   const mockAuth = require('../../app/auth')
   const { getSchemeId, getSchemes } = require('../../app/processing/scheme')
-  const db = require('../../app/data')
+  const db = require('../../app/database')
   const { SCHEMES } = require('../data/scheme')
   const { SCHEME_ID_SFI } = require('../data/scheme-id')
   const { ADMINISTRATIVE } = require('../../app/constants/debt-types')
@@ -37,7 +37,7 @@ describe('capture-debt route', () => {
   }
 
   beforeAll(async () => {
-    await db.scheme.upsert({ schemeId: 1, name: 'SFI' })
+    await db.scheme().insert({ schemeId: 1, name: 'SFI' }).onConflict('schemeId').merge()
   })
 
   beforeEach(async () => {
@@ -55,7 +55,7 @@ describe('capture-debt route', () => {
   })
 
   afterAll(async () => {
-    await db.sequelize.close()
+    await db.close()
   })
 
   describe('GET /capture-debt', () => {
@@ -70,13 +70,13 @@ describe('capture-debt route', () => {
 
   describe('POST /capture-debt - Valid submission', () => {
     test('redirects to home and saves to database', async () => {
-      await db.paymentRequest.create({ schemeId: 1, frn: VALID_PAYLOAD.frn })
+      await db.paymentRequest().insert({ schemeId: 1, frn: VALID_PAYLOAD.frn })
       const result = await server.inject({ method: 'POST', url: '/capture-debt', payload: VALID_PAYLOAD, auth })
 
       expect(result.statusCode).toBe(302)
       expect(result.headers.location).toBe('/')
 
-      const debtData = await db.debtData.findOne({ where: { schemeId: 1, frn: VALID_PAYLOAD.frn } })
+      const debtData = await db.debtData().where({ schemeId: 1, frn: VALID_PAYLOAD.frn }).first()
       expect(debtData.schemeId).toBe(1)
       expect(debtData.frn).toBe(VALID_PAYLOAD.frn)
     })

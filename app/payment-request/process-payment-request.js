@@ -1,4 +1,4 @@
-const db = require('../data')
+const db = require('../database')
 const getExistingPaymentRequest = require('./get-existing-payment-request')
 const savePaymentRequest = require('./save-payment-request')
 const saveInvoiceLines = require('../inbound/invoice-lines')
@@ -6,7 +6,7 @@ const updateQualityCheck = require('../inbound/quality-checks')
 const { attachDebtInformationIfExists } = require('../debt')
 
 const processPaymentRequest = async (paymentRequest) => {
-  const transaction = await db.sequelize.transaction()
+  const transaction = await db.transaction()
   try {
     const existingPaymentRequest = await getExistingPaymentRequest(paymentRequest.invoiceNumber, paymentRequest.referenceId, 1, transaction)
     if (existingPaymentRequest) {

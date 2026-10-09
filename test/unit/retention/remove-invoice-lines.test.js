@@ -1,52 +1,48 @@
-const { removeInvoiceLines } = require('../../../app/retention/remove-invoice-lines')
-const db = require('../../../app/data')
+const { createKnexMock } = require('../../helpers/mock-knex')
 
-jest.mock('../../../app/data', () => ({
-  Sequelize: {
-    Op: {
-      in: 'IN_OPERATOR'
-    }
-  },
-  invoiceLine: {
-    destroy: jest.fn()
-  }
+const mockDb = createKnexMock(['invoiceLine'])
+
+jest.mock('../../../app/database', () => ({
+  client: mockDb.knex,
+  transaction: mockDb.transaction,
+  close: mockDb.close,
+  ...mockDb.tables
 }))
+
+const { removeInvoiceLines } = require('../../../app/retention/remove-invoice-lines')
 
 describe('removeInvoiceLines', () => {
   const paymentRequestIds = [101, 102]
-  const transaction = { id: 'transaction-object' }
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockDb.builder.resolves()
   })
 
-  test('calls db.invoiceLine.destroy with correct parameters', async () => {
-    await removeInvoiceLines(paymentRequestIds, transaction)
+  test('deletes from invoiceLine within the transaction', async () => {
+    await removeInvoiceLines(paymentRequestIds, mockDb.trx)
 
-    expect(db.invoiceLine.destroy).toHaveBeenCalledTimes(1)
-    expect(db.invoiceLine.destroy).toHaveBeenCalledWith({
-      where: {
-        paymentRequestId: { [db.Sequelize.Op.in]: paymentRequestIds }
-      },
-      transaction
-    })
+    expect(mockDb.tables.invoiceLine).toHaveBeenCalledWith(mockDb.trx)
+    expect(mockDb.builder.whereIn).toHaveBeenCalledWith('paymentRequestId', paymentRequestIds)
+    expect(mockDb.builder.del).toHaveBeenCalledTimes(1)
   })
 
-  test('calls db.invoiceLine.destroy with undefined transaction if not provided', async () => {
+  test('uses the pool when no transaction is provided', async () => {
     await removeInvoiceLines(paymentRequestIds)
 
-    expect(db.invoiceLine.destroy).toHaveBeenCalledWith({
-      where: {
-        paymentRequestId: { [db.Sequelize.Op.in]: paymentRequestIds }
-      },
-      transaction: undefined
-    })
+    expect(mockDb.tables.invoiceLine).toHaveBeenCalledWith(undefined)
+    expect(mockDb.builder.whereIn).toHaveBeenCalledWith('paymentRequestId', paymentRequestIds)
   })
 
-  test('propagates errors from db.invoiceLine.destroy', async () => {
-    const error = new Error('DB failure')
-    db.invoiceLine.destroy.mockRejectedValue(error)
+  test('uses the pool when transaction is null', async () => {
+    await removeInvoiceLines(paymentRequestIds, null)
 
-    await expect(removeInvoiceLines(paymentRequestIds, transaction)).rejects.toThrow('DB failure')
+    expect(mockDb.tables.invoiceLine).toHaveBeenCalledWith(undefined)
+  })
+
+  test('propagates a failure', async () => {
+    mockDb.builder.rejects(new Error('DB failure'))
+
+    await expect(removeInvoiceLines(paymentRequestIds, mockDb.trx)).rejects.toThrow('DB failure')
   })
 })

@@ -1,11 +1,7 @@
-const db = require('../data')
+const { debtData } = require('../database')
 
 const getDebtData = async (paymentRequestId) => {
-  return db.debtData.findOne({
-    where: {
-      paymentRequestId
-    }
-  })
+  return (await debtData().where({ paymentRequestId }).first()) ?? null
 }
 
 module.exports = getDebtData
