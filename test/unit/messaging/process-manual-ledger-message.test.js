@@ -8,8 +8,6 @@ jest.mock('../../../app/database', () => ({
   close: mockDb.close,
   ...mockDb.tables
 }))
-
-jest.mock('ffc-messaging')
 jest.mock('../../../app/manual-ledger')
 const processManualLedgerDataMessage = require('../../../app/messaging/process-manual-ledger-data-message')
 let receiver

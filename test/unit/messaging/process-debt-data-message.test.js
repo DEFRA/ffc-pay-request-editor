@@ -8,8 +8,6 @@ jest.mock('../../../app/database', () => ({
   close: mockDb.close,
   ...mockDb.tables
 }))
-
-jest.mock('ffc-messaging')
 jest.mock('../../../app/payment-request')
 const processDebtDataMessage = require('../../../app/messaging/process-debt-data-message')
 let receiver

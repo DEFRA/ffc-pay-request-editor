@@ -1,4 +1,3 @@
-jest.mock('ffc-messaging')
 jest.mock('../../../../app/plugins/crumb')
 jest.mock('../../../../app/manual-ledger')
 jest.mock('../../../../app/event')

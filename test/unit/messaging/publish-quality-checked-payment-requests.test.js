@@ -6,6 +6,9 @@ const { updatePaymentRequestReleased } = require('../../../app/payment-request')
 jest.mock('../../../app/quality-check')
 const { getQualityCheckedPaymentRequests } = require('../../../app/quality-check')
 
+jest.mock('../../../app/manual-ledger')
+const { attachDebtToManualLedger } = require('../../../app/manual-ledger')
+
 const {
   publishQualityCheckedPaymentRequests,
   publishPaymentRequest
@@ -34,8 +37,9 @@ describe('Publish quality checked payment requests', () => {
     }]
 
     getQualityCheckedPaymentRequests.mockReturnValue(qualityCheckedPaymentRequests)
+    attachDebtToManualLedger.mockResolvedValue()
 
-    qualityCheckSender = { sendMessage: jest.fn() }
+    qualityCheckSender = { sendMessages: jest.fn() }
 
     message = {
       body: { paymentRequest },
@@ -65,7 +69,7 @@ describe('Publish quality checked payment requests', () => {
 
   test('completes valid message', async () => {
     await publishPaymentRequest({ paymentRequest }, qualityCheckSender)
-    expect(qualityCheckSender.sendMessage).toHaveBeenCalled()
-    expect(qualityCheckSender.sendMessage).toHaveBeenCalledWith(message)
+    expect(qualityCheckSender.sendMessages).toHaveBeenCalled()
+    expect(qualityCheckSender.sendMessages).toHaveBeenCalledWith(message)
   })
 })

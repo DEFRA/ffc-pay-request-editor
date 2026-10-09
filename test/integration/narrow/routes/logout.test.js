@@ -1,5 +1,3 @@
-jest.mock('ffc-messaging')
-
 jest.mock('../../../../app/auth')
 const createServer = require('../../../../app/server')
 
