@@ -1,6 +1,7 @@
 const { getSchemeIds, getSchemeNames } = require('ffc-pay-schemes')
 const { getDebts, getDebtsCount } = require('../../../../app/debt')
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 
 const { SFI } = getSchemeIds()
 const { SFI: SFI_NAME } = getSchemeNames()
@@ -8,8 +9,8 @@ const { SFI: SFI_NAME } = getSchemeNames()
 let scheme
 
 const resetData = async () => {
-  await db.scheme.truncate({ cascade: true })
-  await db.debtData.truncate({ cascade: true })
+  await truncate(['schemes'])
+  await truncate(['debtData'])
 }
 
 describe('Get debts test', () => {
@@ -28,13 +29,13 @@ describe('Get debts test', () => {
       name: SFI_NAME
     }
 
-    await db.scheme.create(scheme)
-    await db.debtData.create(debts)
+    await db.scheme().insert(scheme)
+    await db.debtData().insert(debts)
   })
 
   afterAll(async () => {
     await resetData()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('should return 1 debt record', async () => {
@@ -51,7 +52,7 @@ describe('Get debts test', () => {
   })
 
   test('should return zero debt records', async () => {
-    await db.debtData.truncate({ cascade: true })
+    await truncate(['debtData'])
 
     const debt = await getDebts()
 
@@ -60,7 +61,7 @@ describe('Get debts test', () => {
   })
 
   test('should return count of zero for debt', async () => {
-    await db.debtData.truncate({ cascade: true })
+    await truncate(['debtData'])
 
     const debtCount = await getDebtsCount()
 
@@ -68,7 +69,7 @@ describe('Get debts test', () => {
   })
 
   test('records should be in descending order by createdDate', async () => {
-    await db.debtData.truncate({ cascade: true })
+    await truncate(['debtData'])
 
     const debtData = [
       {
@@ -85,7 +86,7 @@ describe('Get debts test', () => {
       }
     ]
 
-    await db.debtData.bulkCreate(debtData)
+    await db.debtData().insert(debtData)
 
     const debtDataRows = await getDebts()
 
@@ -97,9 +98,9 @@ describe('Get debts test', () => {
   })
 
   test('should return paginated results correctly', async () => {
-    await db.debtData.truncate({ cascade: true })
+    await truncate(['debtData'])
 
-    await db.debtData.bulkCreate([
+    await db.debtData().insert([
       {
         frn: 1234567890,
         reference: 'REF1',
@@ -136,7 +137,7 @@ describe('Get debts test', () => {
   })
 
   test('should return all results when usePagination is false', async () => {
-    await db.debtData.bulkCreate([
+    await db.debtData().insert([
       {
         frn: 1234567891,
         reference: 'REF1',

@@ -1,11 +1,8 @@
-const db = require('../data')
+const { debtData } = require('../database')
 
 const getDebtsCount = async () => {
-  return db.debtData.count({
-    where: {
-      paymentRequestId: null
-    }
-  })
+  const { count } = await debtData().whereNull('paymentRequestId').count({ count: '*' }).first()
+  return Number(count)
 }
 
 module.exports = getDebtsCount

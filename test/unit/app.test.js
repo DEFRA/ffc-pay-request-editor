@@ -1,3 +1,8 @@
+jest.mock('../../app/messaging')
+jest.mock('../../app/update-schemes-database', () => ({
+  updateSchemesDatabase: jest.fn()
+}))
+
 describe('Entry point test', () => {
   test('entry point starts server', () => {
     const mockStart = jest.fn()

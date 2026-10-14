@@ -1,4 +1,5 @@
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 
 jest.mock('../../../../app/event', () => ({
   sendEnrichRequestBlockedEvent: () => { }
@@ -12,8 +13,8 @@ let paymentRequest
 let paymentRequestId
 
 const resetData = async () => {
-  await db.scheme.truncate({ cascade: true })
-  await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
+  await truncate(['schemes'])
+  await truncate(['paymentRequests'])
 }
 
 describe('process payment requests', () => {
@@ -58,20 +59,18 @@ describe('process payment requests', () => {
       ]
     }
 
-    await db.scheme.create(scheme)
+    await db.scheme().insert(scheme)
   })
 
   afterAll(async () => {
     await resetData()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('should return invoice lines data', async () => {
     await processPaymentRequest(paymentRequest)
 
-    const paymentRequestRows = await db.paymentRequest.findAll({
-      attributes: ['paymentRequestId']
-    })
+    const paymentRequestRows = await db.paymentRequest().select('paymentRequestId')
 
     paymentRequestId = paymentRequestRows[0].paymentRequestId
 

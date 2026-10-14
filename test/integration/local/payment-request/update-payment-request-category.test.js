@@ -1,12 +1,13 @@
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 const { updatePaymentRequestCategory } = require('../../../../app/payment-request')
 const { LEDGER_CHECK, ENRICHMENT } = require('../../../../app/payment-request/categories')
 const { SCHEME_ID_SFI_PILOT } = require('../../../data/scheme-id')
 const { SCHEME_NAME_SFI_PILOT } = require('../../../data/scheme')
 
 const resetData = async () => {
-  await db.scheme.truncate({ cascade: true })
-  await db.paymentRequest.truncate({ cascade: true, restartIdentity: true })
+  await truncate(['schemes'])
+  await truncate(['paymentRequests'])
 }
 
 describe('Update payment request category test', () => {
@@ -15,7 +16,7 @@ describe('Update payment request category test', () => {
   beforeEach(async () => {
     const scheme = {
       schemeId: SCHEME_ID_SFI_PILOT,
-      schemeName: SCHEME_NAME_SFI_PILOT
+      name: SCHEME_NAME_SFI_PILOT
     }
 
     paymentRequest = {
@@ -26,22 +27,22 @@ describe('Update payment request category test', () => {
     }
 
     await resetData()
-    await db.scheme.create(scheme)
-    await db.paymentRequest.create(paymentRequest)
+    await db.scheme().insert(scheme)
+    await db.paymentRequest().insert(paymentRequest)
   })
 
   afterAll(async () => {
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('should return LEDGER_CHECK before update', async () => {
-    const paymentRequestBeforeUpdate = await db.paymentRequest.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
+    const paymentRequestBeforeUpdate = await db.paymentRequest().where({ paymentRequestId: paymentRequest.paymentRequestId }).first()
     expect(paymentRequestBeforeUpdate.categoryId).toBe(LEDGER_CHECK)
   })
 
   test('should return ENRICHMENT category after update', async () => {
     await updatePaymentRequestCategory(paymentRequest.paymentRequestId, ENRICHMENT)
-    const paymentRequestAfterUpdate = await db.paymentRequest.findOne({ where: { paymentRequestId: paymentRequest.paymentRequestId } })
+    const paymentRequestAfterUpdate = await db.paymentRequest().where({ paymentRequestId: paymentRequest.paymentRequestId }).first()
     expect(paymentRequestAfterUpdate.categoryId).toBe(ENRICHMENT)
   })
 })

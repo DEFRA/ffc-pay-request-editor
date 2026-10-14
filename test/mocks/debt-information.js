@@ -41,14 +41,14 @@ const expectedDebt = {
   frn: '1234567890',
   reference: '123',
   netValue: '100',
-  netValueText: '£1.00',
   debtType: 'irr',
-  debtTypeText: 'Irregular',
   recoveryDate: '20/01/2023',
   attachedDate: null,
   createdDate: new Date('2018-02-22T11:44:06.157Z'),
   createdBy: 'Developer',
-  createdById: 'cx24291'
+  createdById: 'cx24291',
+  migrated: null,
+  migrationId: null
 }
 
 const mockRequest = {

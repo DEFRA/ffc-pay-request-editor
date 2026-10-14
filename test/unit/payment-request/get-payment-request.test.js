@@ -1,4 +1,5 @@
-const db = require('../../../app/data')
+const db = require('../../../app/database')
+const { truncate } = require('../../helpers/truncate')
 const { getPaymentRequest } = require('../../../app/payment-request')
 const { ENRICHMENT, LEDGER_ENRICHMENT } = require('../../../app/payment-request/categories')
 const { AP } = require('../../../app/processing/ledger/ledgers')
@@ -9,9 +10,9 @@ describe('Payment Request Functions Test Suite', () => {
   let scheme
 
   const resetTables = async () => {
-    await db.debtData.truncate({ cascade: true })
-    await db.paymentRequest.truncate({ cascade: true })
-    await db.scheme.truncate({ cascade: true })
+    await truncate(['debtData'])
+    await truncate(['paymentRequests'])
+    await truncate(['schemes'])
   }
 
   beforeEach(async () => {
@@ -34,12 +35,10 @@ describe('Payment Request Functions Test Suite', () => {
       received: new Date('2022-12-09'),
       ledger: AP,
       marketingYear: 2023,
-      daysWaiting: 10,
       netValue: -500,
       fesCode: 'FES-001',
       annualValue: '1234.56',
-      remittanceDescription: 'Initial remittance',
-      genericStringField: 'GENERIC-STRING-ONE'
+      remittanceDescription: 'Initial remittance'
     }
 
     paymentRequest2 = {
@@ -54,22 +53,20 @@ describe('Payment Request Functions Test Suite', () => {
       received: new Date(),
       ledger: AP,
       marketingYear: 2023,
-      daysWaiting: 15,
       netValue: -200,
       fesCode: 'FES-002',
       annualValue: '9876543210.12',
-      remittanceDescription: 'Follow-up remittance',
-      genericStringField: 'GENERIC-STRING-TWO'
+      remittanceDescription: 'Follow-up remittance'
     }
 
-    await db.scheme.create(scheme)
-    await db.paymentRequest.create(paymentRequest1)
-    await db.paymentRequest.create(paymentRequest2)
+    await db.scheme().insert(scheme)
+    await db.paymentRequest().insert(paymentRequest1)
+    await db.paymentRequest().insert(paymentRequest2)
   })
 
   afterAll(async () => {
     await resetTables()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('should return paginated results correctly', async () => {

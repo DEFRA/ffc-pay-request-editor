@@ -1,7 +1,8 @@
-const db = require('../../data')
+const { debtData } = require('../../database')
+const toDebtRow = require('../../debt/to-debt-row')
 
-const saveDebtData = async (debtData, transaction) => {
-  await db.debtData.create(debtData, { transaction })
+const saveDebtData = async (debt, transaction) => {
+  await debtData(transaction ?? undefined).insert(toDebtRow(debt))
 }
 
 module.exports = { saveDebtData }

@@ -1,8 +1,8 @@
-const db = require('../data')
+const { qualityCheck } = require('../database')
 const { NOT_READY } = require('../quality-check/statuses')
 
 const updateQualityCheck = async (paymentRequestId, transaction) => {
-  await db.qualityCheck.create({ paymentRequestId, status: NOT_READY }, { transaction })
+  await qualityCheck(transaction ?? undefined).insert({ paymentRequestId, status: NOT_READY })
 }
 
 module.exports = updateQualityCheck
