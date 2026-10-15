@@ -31,10 +31,10 @@ const start = async () => {
   retentionReceiver = createReceiver(sbClient, config.retentionSubscription)
   subscribeReceiver(retentionReceiver, retentionAction, errorHandling, config.retentionSubscription)
 
-  qualityCheckSender = sbClient.createSender(config.qcTopic)
+  qualityCheckSender = sbClient.createSender(config.qcTopic.address)
   setInterval(() => publishQualityCheckedPaymentRequests(qualityCheckSender), config.publishPollingInterval)
 
-  debtSender = sbClient.createSender(config.debtResponseTopic)
+  debtSender = sbClient.createSender(config.debtResponseTopic.address)
   setInterval(() => publishDebtPaymentRequests(debtSender), config.publishPollingInterval)
 
   console.info('Ready to receive messages')
