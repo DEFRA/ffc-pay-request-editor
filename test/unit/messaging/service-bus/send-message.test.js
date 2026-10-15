@@ -52,7 +52,7 @@ describe('sendMessage', () => {
   })
 
   test('retries a failed send using the shared retry policy', async () => {
-    jest.useFakeTimers()
+    jest.useFakeTimers({ legacyFakeTimers: false })
     try {
       const message = {
         body: { claimId: 1 },
