@@ -9,7 +9,8 @@ const attachDebtInformationIfExists = async (paymentRequest, transaction) => {
 
   if (foundDebtData) {
     foundDebtData.paymentRequestId = paymentRequest.paymentRequestId
-    await saveDebtData(foundDebtData, transaction)
+    const debtData = foundDebtData.dataValues ?? foundDebtData
+    await saveDebtData(debtData, transaction)
     console.log('debt data updated')
   } else {
     console.log('no debt data found')
