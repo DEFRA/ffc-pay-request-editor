@@ -10,6 +10,14 @@ jest.mock('../../../app/database', () => ({
 }))
 
 jest.mock('../../../app/messaging/service-bus')
+jest.mock('../../../app/config', () => ({
+  debtSubscription: { host: 'namespace', address: 'debt-subscription', type: 'subscription' },
+  manualLedgerSubscription: { address: 'manual-ledger-subscription', type: 'subscription' },
+  retentionSubscription: { address: 'retention-subscription', type: 'subscription' },
+  qcTopic: { address: 'quality-check-topic' },
+  debtResponseTopic: { address: 'debt-response-topic' },
+  publishPollingInterval: 10000
+}))
 jest.useFakeTimers()
 
 const {
@@ -48,6 +56,8 @@ describe('messaging', () => {
     expect(createServiceBusClient).toHaveBeenCalledTimes(1)
     expect(createReceiver).toHaveBeenCalledTimes(3)
     expect(subscribeReceiver).toHaveBeenCalledTimes(3)
+    expect(mockClient.createSender).toHaveBeenNthCalledWith(1, 'quality-check-topic')
+    expect(mockClient.createSender).toHaveBeenNthCalledWith(2, 'debt-response-topic')
   })
 
   test('stops closes senders and client', async () => {
