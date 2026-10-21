@@ -1,7 +1,12 @@
-const db = require('../data')
+const { paymentRequest } = require('../database')
+const TABLES = require('../constants/tables')
+const { pickColumns } = require('../constants/columns')
 
-const savePaymentRequest = async (paymentRequest, transaction) => {
-  return db.paymentRequest.create({ ...paymentRequest, received: new Date() }, { transaction })
+const savePaymentRequest = async (request, transaction) => {
+  const [saved] = await paymentRequest(transaction ?? undefined)
+    .insert(pickColumns({ ...request, received: new Date() }, TABLES.paymentRequest))
+    .returning('paymentRequestId')
+  return saved
 }
 
 module.exports = savePaymentRequest

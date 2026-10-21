@@ -1,12 +1,7 @@
-const db = require('../data')
+const { manualLedgerPaymentRequest } = require('../database')
 
 const removeManualLedgerPaymentRequest = async (paymentRequestIds, transaction) => {
-  await db.manualLedgerPaymentRequest.destroy({
-    where: {
-      paymentRequestId: { [db.Sequelize.Op.in]: paymentRequestIds }
-    },
-    transaction
-  })
+  await manualLedgerPaymentRequest(transaction ?? undefined).whereIn('paymentRequestId', paymentRequestIds).del()
 }
 
 module.exports = {

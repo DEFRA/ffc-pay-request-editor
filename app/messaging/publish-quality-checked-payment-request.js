@@ -2,6 +2,7 @@ const createMessage = require('./create-message')
 const { updateQualityChecksStatus, getQualityCheckedPaymentRequests } = require('../quality-check')
 const { updatePaymentRequestReleased } = require('../payment-request')
 const { attachDebtToManualLedger } = require('../manual-ledger')
+const { PROCESSED } = require('../quality-check/statuses')
 
 const publishQualityCheckedPaymentRequests = async (qualityCheckSender) => {
   try {
@@ -11,7 +12,7 @@ const publishQualityCheckedPaymentRequests = async (qualityCheckSender) => {
       const paymentRequestId = qualityCheckedPaymentRequest.paymentRequest.paymentRequestId
       await publishPaymentRequest(qualityCheckedPaymentRequest, qualityCheckSender)
       await updatePaymentRequestReleased(paymentRequestId)
-      await updateQualityChecksStatus(paymentRequestId, 'Processed')
+      await updateQualityChecksStatus(paymentRequestId, PROCESSED)
     }
   } catch (err) {
     console.error('Unable to process payment request message:', err)

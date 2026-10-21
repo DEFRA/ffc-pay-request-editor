@@ -1,20 +1,15 @@
-const db = require('../data')
+const { qualityCheck } = require('../database')
+const TABLES = require('../constants/tables')
 const { PENDING } = require('./statuses')
 
 const getQualityChecksCount = async () => {
-  return db.qualityCheck.count(
-    {
-      include: [
-        {
-          model: db.paymentRequest,
-          as: 'paymentRequest',
-          where: {
-            categoryId: 2
-          }
-        }
-      ],
-      where: { status: PENDING }
-    })
+  const { count } = await qualityCheck()
+    .innerJoin(TABLES.paymentRequest, `${TABLES.paymentRequest}.paymentRequestId`, `${TABLES.qualityCheck}.paymentRequestId`)
+    .where(`${TABLES.paymentRequest}.categoryId`, 2)
+    .where(`${TABLES.qualityCheck}.status`, PENDING)
+    .count({ count: '*' })
+    .first()
+  return Number(count)
 }
 
 module.exports = getQualityChecksCount

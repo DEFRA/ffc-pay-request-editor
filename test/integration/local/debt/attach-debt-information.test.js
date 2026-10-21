@@ -4,7 +4,8 @@ const config = require('../../../../app/config')
 jest.mock('../../../../app/event')
 const { sendEnrichRequestBlockedEvent } = require('../../../../app/event')
 
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 const {
   attachDebtInformationIfExists,
   checkDebts
@@ -15,9 +16,9 @@ const { mockDebt1, mockQuality, mockRequest } = require('../../../mocks/debt-inf
 global.console.log = jest.fn()
 
 const resetData = async () => {
-  await db.qualityCheck.truncate({ cascade: true })
-  await db.debtData.truncate({ cascade: true })
-  await db.paymentRequest.truncate({ cascade: true })
+  await truncate(['qualityChecks'])
+  await truncate(['debtData'])
+  await truncate(['paymentRequests'])
 }
 
 describe('attachDebtInformationIfExists', () => {
@@ -28,9 +29,10 @@ describe('attachDebtInformationIfExists', () => {
 
     await resetData()
 
-    await db.debtData.create(mockDebt1)
-    await db.qualityCheck.create(mockQuality)
-    paymentRequest = await db.paymentRequest.create(mockRequest)
+    await db.debtData().insert(mockDebt1)
+    await db.qualityCheck().insert(mockQuality)
+    const { invoiceLines, ...requestRow } = mockRequest
+    ;[paymentRequest] = await db.paymentRequest().insert(requestRow).returning('*')
   })
 
   afterEach(async () => {
@@ -39,12 +41,12 @@ describe('attachDebtInformationIfExists', () => {
 
   afterAll(async () => {
     await resetData()
-    await db.sequelize.close()
+    await db.close()
   })
 
   const runAndFetch = async () => {
     await attachDebtInformationIfExists(paymentRequest)
-    return db.debtData.findAll()
+    return db.debtData()
   }
 
   test('updates paymentRequestId and attachedDate when debt exists', async () => {
@@ -60,20 +62,20 @@ describe('attachDebtInformationIfExists', () => {
   })
 
   test('calls sendEnrichRequestBlockedEvent when no debt and alerting enabled', async () => {
-    await db.debtData.truncate({ cascade: true })
+    await truncate(['debtData'])
     await attachDebtInformationIfExists(paymentRequest)
     expect(sendEnrichRequestBlockedEvent).toHaveBeenCalled()
   })
 
   test('calls sendEnrichRequestBlockedEvent with paymentRequest spread', async () => {
-    await db.debtData.truncate({ cascade: true })
+    await truncate(['debtData'])
     await attachDebtInformationIfExists(paymentRequest)
     expect(sendEnrichRequestBlockedEvent).toHaveBeenCalledWith({ ...paymentRequest })
   })
 
   test('does not call sendEnrichRequestBlockedEvent when alerting disabled', async () => {
     config.isAlerting = false
-    await db.debtData.truncate({ cascade: true })
+    await truncate(['debtData'])
     await attachDebtInformationIfExists(paymentRequest)
     expect(sendEnrichRequestBlockedEvent).not.toHaveBeenCalled()
   })

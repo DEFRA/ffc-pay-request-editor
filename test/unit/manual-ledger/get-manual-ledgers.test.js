@@ -1,4 +1,5 @@
-const db = require('../../../app/data')
+const db = require('../../../app/database')
+const { truncate } = require('../../helpers/truncate')
 const { SCHEME_ID_SFI } = require('../../data/scheme-id')
 const getManualLedgers = require('../../../app/manual-ledger/get-manual-ledgers')
 
@@ -13,9 +14,9 @@ describe('Get manual ledgers test', () => {
   let failedQualityCheck
 
   const resetTables = async () => {
-    await db.qualityCheck.truncate({ cascade: true })
-    await db.paymentRequest.truncate({ cascade: true })
-    await db.scheme.truncate({ cascade: true })
+    await truncate(['qualityChecks'])
+    await truncate(['paymentRequests'])
+    await truncate(['schemes'])
   }
 
   beforeEach(async () => {
@@ -63,17 +64,17 @@ describe('Get manual ledgers test', () => {
       status: FAILED
     }
 
-    await db.scheme.create(scheme)
-    await db.paymentRequest.create(paymentRequest)
-    await db.paymentRequest.create(provisionalPaymentRequest)
-    await db.paymentRequest.create(failedPaymentRequest)
-    await db.qualityCheck.create(qualityCheck)
-    await db.qualityCheck.create(failedQualityCheck)
+    await db.scheme().insert(scheme)
+    await db.paymentRequest().insert(paymentRequest)
+    await db.paymentRequest().insert(provisionalPaymentRequest)
+    await db.paymentRequest().insert(failedPaymentRequest)
+    await db.qualityCheck().insert(qualityCheck)
+    await db.qualityCheck().insert(failedQualityCheck)
   })
 
   afterAll(async () => {
     await resetTables()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('should return only payment requests with categoryId 2 and matching statuses', async () => {

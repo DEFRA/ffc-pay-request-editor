@@ -1,60 +1,93 @@
-const db = require('../data')
+const { qualityCheck, manualLedgerPaymentRequest } = require('../database')
+const TABLES = require('../constants/tables')
 const { PENDING } = require('./statuses')
+const { convertValueToStringFormat } = require('../processing/conversion')
+
+const REQUEST_PREFIX = 'request_'
+
+const PAYMENT_REQUEST_COLUMNS = [
+  'paymentRequestId',
+  'schemeId',
+  'frn',
+  'agreementNumber',
+  'invoiceNumber',
+  'paymentRequestNumber',
+  'value',
+  'marketingYear'
+]
+
+const buildFilteredQuery = (frn) => {
+  const query = qualityCheck()
+    .innerJoin(TABLES.paymentRequest, `${TABLES.paymentRequest}.paymentRequestId`, `${TABLES.qualityCheck}.paymentRequestId`)
+    .leftJoin(TABLES.scheme, `${TABLES.scheme}.schemeId`, `${TABLES.paymentRequest}.schemeId`)
+    .where(`${TABLES.qualityCheck}.status`, PENDING)
+    .where(`${TABLES.paymentRequest}.categoryId`, 2)
+    .whereIn(
+      `${TABLES.paymentRequest}.paymentRequestId`,
+      manualLedgerPaymentRequest().select('paymentRequestId').where({ active: true })
+    )
+
+  if (frn) {
+    query.where(`${TABLES.paymentRequest}.frn`, String(frn))
+  }
+
+  return query
+}
+
+const getManualLedgerChecks = async (paymentRequestIds) => {
+  if (paymentRequestIds.length === 0) {
+    return []
+  }
+  return manualLedgerPaymentRequest()
+    .select('paymentRequestId', 'createdBy', 'createdById')
+    .whereIn('paymentRequestId', paymentRequestIds)
+    .where({ active: true })
+    .orderBy('manualLedgerPaymentRequestId', 'asc')
+}
 
 const getQualityChecks = async (page = 1, pageSize = 100, usePagination = true, frn = null) => {
   const offset = (page - 1) * pageSize
 
-  const paymentRequestInclude = {
-    model: db.paymentRequest,
-    as: 'paymentRequest',
-    where: { categoryId: 2 },
-    required: true,
-    attributes: [
-      'paymentRequestId',
-      'schemeId',
-      'frn',
-      'agreementNumber',
-      'invoiceNumber',
-      'paymentRequestNumber',
-      'value',
-      'valueText',
-      'marketingYear'
-    ],
-    include: [{
-      model: db.scheme,
-      as: 'schemes',
-      attributes: ['name']
-    }, {
-      model: db.manualLedgerPaymentRequest,
-      as: 'manualLedgerChecks',
-      attributes: ['createdBy', 'createdById'],
-      where: { active: true }
-    }]
-  }
-  if (frn) {
-    paymentRequestInclude.where.frn = String(frn)
-  }
+  const rowsQuery = buildFilteredQuery(frn)
+    .select(
+      `${TABLES.qualityCheck}.*`,
+      ...PAYMENT_REQUEST_COLUMNS.map(column => ({ [`${REQUEST_PREFIX}${column}`]: `${TABLES.paymentRequest}.${column}` })),
+      { schemeName: `${TABLES.scheme}.name` }
+    )
+    .orderBy(`${TABLES.qualityCheck}.qualityCheckId`, 'asc')
 
-  const options = {
-    where: {
-      status: PENDING
-    },
-    include: [paymentRequestInclude],
-    distinct: true // ensures findAndCountAll's count isn't inflated by the joined includes
-  }
   if (usePagination) {
-    options.limit = pageSize
-    options.offset = offset
+    rowsQuery.limit(pageSize).offset(offset)
   }
 
-  const result = await db.qualityCheck.findAndCountAll(options)
+  const [rows, countResult] = await Promise.all([
+    rowsQuery,
+    buildFilteredQuery(frn).count({ count: '*' }).first()
+  ])
 
-  const mergedQualityChecks = result.rows.map(qc => {
-    const plainQc = qc.get({ plain: true })
-    return plainQc
+  const manualLedgerChecks = await getManualLedgerChecks(rows.map(x => x.request_paymentRequestId))
+
+  const qualityChecks = rows.map(row => {
+    const paymentRequest = { schemes: { name: row.schemeName } }
+    const qualityCheckRow = {}
+    for (const [key, value] of Object.entries(row)) {
+      if (key === 'schemeName') {
+        continue
+      }
+      if (key.startsWith(REQUEST_PREFIX)) {
+        paymentRequest[key.slice(REQUEST_PREFIX.length)] = value
+      } else {
+        qualityCheckRow[key] = value
+      }
+    }
+    paymentRequest.valueText = convertValueToStringFormat(paymentRequest.value)
+    paymentRequest.manualLedgerChecks = manualLedgerChecks
+      .filter(x => x.paymentRequestId === paymentRequest.paymentRequestId)
+      .map(({ createdBy, createdById }) => ({ createdBy, createdById }))
+    return { ...qualityCheckRow, paymentRequest }
   })
 
-  return { rows: mergedQualityChecks, count: result.count }
+  return { rows: qualityChecks, count: Number(countResult.count) }
 }
 
 module.exports = getQualityChecks

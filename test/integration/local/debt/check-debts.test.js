@@ -1,12 +1,13 @@
 const checkDebts = require('../../../../app/debt/check-debts')
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 const { mockDebt2, expectedDebt } = require('../../../mocks/debt-information')
 
 describe('checkDebts', () => {
   beforeEach(async () => {
-    await db.debtData.truncate({ cascade: true })
-    await db.scheme.truncate({ cascade: true })
-    await db.scheme.create({ schemeId: 1, name: 'SFI' })
+    await truncate(['debtData'])
+    await truncate(['schemes'])
+    await db.scheme().insert({ schemeId: 1, name: 'SFI' })
   })
 
   test('returns {} when frn is not numeric', async () => {
@@ -16,7 +17,7 @@ describe('checkDebts', () => {
 
   describe('matching', () => {
     beforeEach(async () => {
-      await db.debtData.create(mockDebt2)
+      await db.debtData().insert(mockDebt2)
     })
 
     test.each([
@@ -26,7 +27,7 @@ describe('checkDebts', () => {
       ['numeric secondary ref match', 'B0456B', 'A0123A']
     ])('returns expectedDebt when %s matches', async (_, reference, secondaryReference) => {
       const result = await checkDebts(1, '1234567890', reference, secondaryReference, 100)
-      expect(result.get()).toEqual(expectedDebt)
+      expect(result).toEqual(expectedDebt)
     })
   })
 

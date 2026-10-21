@@ -1,4 +1,4 @@
-const db = require('../data')
+const db = require('../database')
 const { findPaymentRequests } = require('./find-payment-requests')
 const { removeDebtData } = require('./remove-debt-data')
 const { removeInvoiceLines } = require('./remove-invoice-lines')
@@ -7,7 +7,7 @@ const { removePaymentRequests } = require('./remove-payment-requests')
 const { removeQualityChecks } = require('./remove-quality-checks')
 
 const removeAgreementData = async (retentionData) => {
-  const transaction = await db.sequelize.transaction()
+  const transaction = await db.transaction()
   try {
     const { agreementNumber, frn, schemeId, usesContractNumber } = retentionData
 

@@ -1,5 +1,6 @@
 const { getQualityChecks } = require('../../../../app/quality-check')
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 const { PENDING } = require('../../../../app/quality-check/statuses')
 
 describe('Get quality checks', () => {
@@ -9,9 +10,9 @@ describe('Get quality checks', () => {
   let qualityCheck
 
   const resetTables = async () => {
-    await db.qualityCheck.truncate({ cascade: true })
-    await db.paymentRequest.truncate({ cascade: true })
-    await db.scheme.truncate({ cascade: true })
+    await truncate(['qualityChecks'])
+    await truncate(['paymentRequests'])
+    await truncate(['schemes'])
   }
 
   beforeEach(async () => {
@@ -40,7 +41,9 @@ describe('Get quality checks', () => {
 
     manualLedgerPaymentRequest = {
       paymentRequestId: 1,
-      ledgerPaymentRequestId: 2
+      ledgerPaymentRequestId: 2,
+      active: true,
+      original: true
     }
 
     qualityCheck = {
@@ -50,23 +53,23 @@ describe('Get quality checks', () => {
       status: PENDING
     }
 
-    await db.scheme.create(scheme)
+    await db.scheme().insert(scheme)
 
-    await db.paymentRequest.bulkCreate([
+    await db.paymentRequest().insert([
       paymentRequest,
       ledgerPaymentRequest
     ])
 
-    await db.manualLedgerPaymentRequest.create(
+    await db.manualLedgerPaymentRequest().insert(
       manualLedgerPaymentRequest
     )
 
-    await db.qualityCheck.create(qualityCheck)
+    await db.qualityCheck().insert(qualityCheck)
   })
 
   afterAll(async () => {
     await resetTables()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('should return correct count for quality checks', async () => {

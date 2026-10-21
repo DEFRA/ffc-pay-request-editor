@@ -3,13 +3,16 @@ jest.mock('ffc-pay-schemes', () => ({
 }))
 const { getSchemes: mockGetSchemes } = require('ffc-pay-schemes')
 
-jest.mock('../../app/data', () => ({
-  scheme: {
-    findOne: jest.fn(),
-    upsert: jest.fn()
-  }
+const { createKnexMock } = require('../helpers/mock-knex')
+
+const mockDb = createKnexMock(['scheme'])
+
+jest.mock('../../app/database', () => ({
+  client: mockDb.knex,
+  transaction: mockDb.transaction,
+  close: mockDb.close,
+  ...mockDb.tables
 }))
-const db = require('../../app/data')
 
 const { updateSchemesDatabase } = require('../../app/update-schemes-database')
 
@@ -19,7 +22,10 @@ describe('update schemes database', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation()
-    db.scheme.findOne.mockResolvedValue(null)
+    mockDb.builder.resolves()
+    mockDb.builder.first.mockImplementation(() => mockDb.builder)
+    mockDb.builder.merge.mockImplementation(() => mockDb.builder)
+    mockDb.builder.insert.mockImplementation(() => mockDb.builder)
   })
 
   afterEach(() => {
@@ -41,18 +47,17 @@ describe('update schemes database', () => {
     }
 
     mockGetSchemes.mockReturnValue([scheme])
-    db.scheme.findOne.mockResolvedValue(null)
-    db.scheme.upsert.mockResolvedValue([{}, true])
+    mockDb.builder.first.mockResolvedValue(undefined)
 
     await updateSchemesDatabase()
 
-    expect(db.scheme.findOne).toHaveBeenCalledWith({
-      where: { schemeId: scheme.schemeId }
-    })
-    expect(db.scheme.upsert).toHaveBeenCalledWith({
+    expect(mockDb.builder.where).toHaveBeenCalledWith({ schemeId: scheme.schemeId })
+    expect(mockDb.builder.insert).toHaveBeenCalledWith({
       schemeId: scheme.schemeId,
       name: scheme.schemeName
     })
+    expect(mockDb.builder.onConflict).toHaveBeenCalledWith('schemeId')
+    expect(mockDb.builder.merge).toHaveBeenCalledTimes(1)
 
     expect(consoleLogSpy).toHaveBeenCalledWith(
       `${scheme.schemeName} created`
@@ -66,18 +71,16 @@ describe('update schemes database', () => {
     }
 
     mockGetSchemes.mockReturnValue([scheme])
-    db.scheme.findOne.mockResolvedValue({ schemeId: scheme.schemeId })
-    db.scheme.upsert.mockResolvedValue([{}, false])
+    mockDb.builder.first.mockResolvedValue({ schemeId: scheme.schemeId })
 
     await updateSchemesDatabase()
 
-    expect(db.scheme.findOne).toHaveBeenCalledWith({
-      where: { schemeId: scheme.schemeId }
-    })
-    expect(db.scheme.upsert).toHaveBeenCalledWith({
+    expect(mockDb.builder.where).toHaveBeenCalledWith({ schemeId: scheme.schemeId })
+    expect(mockDb.builder.insert).toHaveBeenCalledWith({
       schemeId: scheme.schemeId,
       name: scheme.schemeName
     })
+    expect(mockDb.builder.onConflict).toHaveBeenCalledWith('schemeId')
 
     expect(consoleLogSpy).toHaveBeenCalledWith(
       `${scheme.schemeName} updated`
@@ -97,16 +100,15 @@ describe('update schemes database', () => {
     ]
 
     mockGetSchemes.mockReturnValue(schemes)
-    db.scheme.findOne.mockResolvedValue(null)
-    db.scheme.upsert.mockResolvedValue([{}, true])
+    mockDb.builder.first.mockResolvedValue(undefined)
 
     await updateSchemesDatabase()
 
-    expect(db.scheme.findOne).toHaveBeenCalledTimes(schemes.length)
-    expect(db.scheme.upsert).toHaveBeenCalledTimes(schemes.length)
+    expect(mockDb.builder.first).toHaveBeenCalledTimes(schemes.length)
+    expect(mockDb.builder.merge).toHaveBeenCalledTimes(schemes.length)
 
     for (const scheme of schemes) {
-      expect(db.scheme.upsert).toHaveBeenCalledWith({
+      expect(mockDb.builder.insert).toHaveBeenCalledWith({
         schemeId: scheme.schemeId,
         name: scheme.schemeName
       })
@@ -138,10 +140,10 @@ describe('update schemes database', () => {
     const calls = []
 
     mockGetSchemes.mockReturnValue(schemes)
-    db.scheme.findOne.mockResolvedValue(null)
-    db.scheme.upsert.mockImplementation(async ({ schemeId }) => {
+    mockDb.builder.first.mockResolvedValue(undefined)
+    mockDb.builder.insert.mockImplementation(({ schemeId }) => {
       calls.push(schemeId)
-      return [{}, true]
+      return mockDb.builder
     })
 
     await updateSchemesDatabase()
@@ -156,8 +158,8 @@ describe('update schemes database', () => {
       schemeId: 1,
       schemeName: 'Scheme one'
     }])
-    db.scheme.findOne.mockResolvedValue(null)
-    db.scheme.upsert.mockRejectedValue(error)
+    mockDb.builder.first.mockResolvedValue(undefined)
+    mockDb.builder.merge.mockRejectedValue(error)
 
     await expect(updateSchemesDatabase()).rejects.toBe(error)
   })

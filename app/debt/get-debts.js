@@ -1,4 +1,39 @@
-const db = require('../data')
+const { debtData } = require('../database')
+const TABLES = require('../constants/tables')
+const { addDebtDataFields } = require('../utils/computed-fields')
+
+const DEBT_COLUMNS = [
+  'debtDataId',
+  'frn',
+  'reference',
+  'netValue',
+  'debtType',
+  'recoveryDate',
+  'createdBy',
+  'attachedDate',
+  'paymentRequestId',
+  'createdDate'
+]
+
+const buildFilteredQuery = ({ includeAttached, frn, scheme }) => {
+  const query = debtData()
+    .leftJoin(TABLES.scheme, `${TABLES.scheme}.schemeId`, `${TABLES.debtData}.schemeId`)
+    .where(`${TABLES.debtData}.reference`, 'not like', 'Manual enrichment')
+
+  if (!includeAttached) {
+    query.whereNull(`${TABLES.debtData}.paymentRequestId`)
+  }
+
+  if (frn) {
+    query.where(`${TABLES.debtData}.frn`, String(frn))
+  }
+
+  if (scheme) {
+    query.where(`${TABLES.scheme}.name`, scheme)
+  }
+
+  return query
+}
 
 const getDebts = async ({
   includeAttached = false,
@@ -9,62 +44,31 @@ const getDebts = async ({
   scheme
 } = {}) => {
   const offset = (page - 1) * pageSize
+  const filters = { includeAttached, frn, scheme }
 
-  const where = includeAttached
-    ? { reference: { [db.Sequelize.Op.notLike]: 'Manual enrichment' } }
-    : { paymentRequestId: null, reference: { [db.Sequelize.Op.notLike]: 'Manual enrichment' } }
-
-  if (frn) {
-    where.frn = String(frn)
-  }
-
-  const schemeInclude = {
-    model: db.scheme,
-    as: 'schemes',
-    attributes: ['name']
-  }
-
-  if (scheme) {
-    schemeInclude.where = { name: scheme }
-    schemeInclude.required = true
-  }
-
-  const options = {
-    where,
-    include: [schemeInclude],
-    attributes: [
-      'debtDataId',
-      'frn',
-      'reference',
-      'netValue',
-      'netValueText',
-      'debtType',
-      'debtTypeText',
-      'recoveryDate',
-      'createdBy',
-      'attachedDate',
-      'paymentRequestId',
-      'createdDate'
-    ],
-    order: [['createdDate', 'DESC']]
-  }
+  const rowsQuery = buildFilteredQuery(filters)
+    .select(
+      ...DEBT_COLUMNS.map(column => `${TABLES.debtData}.${column}`),
+      { schemeName: `${TABLES.scheme}.name` }
+    )
+    .orderBy(`${TABLES.debtData}.createdDate`, 'desc')
 
   if (usePagination) {
-    options.limit = pageSize
-    options.offset = offset
+    rowsQuery.limit(pageSize).offset(offset)
   }
 
-  const result = await db.debtData.findAndCountAll(options)
+  const [rows, countResult] = await Promise.all([
+    rowsQuery,
+    buildFilteredQuery(filters).count({ count: '*' }).first()
+  ])
 
-  // Work with plain objects rather than mutating the Sequelize model instances in place,
-  // so the returned rows can't unexpectedly affect anything else still holding a reference
-  // to the underlying model (e.g. re-saving would silently persist the display-only rename).
-  result.rows = result.rows.map(debt => {
-    const plainDebt = debt.get({ plain: true })
-    return plainDebt
-  })
-
-  return result
+  return {
+    count: Number(countResult.count),
+    rows: rows.map(({ schemeName, ...debt }) => ({
+      ...addDebtDataFields(debt),
+      schemes: { name: schemeName }
+    }))
+  }
 }
 
 module.exports = getDebts

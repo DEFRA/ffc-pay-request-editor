@@ -1,15 +1,16 @@
 const { deleteDebt } = require('../../../../app/debt')
-const db = require('../../../../app/data')
+const db = require('../../../../app/database')
+const { truncate } = require('../../../helpers/truncate')
 
 const resetData = async () => {
-  await db.debtData.truncate({ cascade: true })
-  await db.paymentRequest.truncate({ cascade: true })
+  await truncate(['debtData'])
+  await truncate(['paymentRequests'])
 }
 
 describe('Delete debts test', () => {
   beforeEach(async () => {
     await resetData()
-    await db.debtData.create({
+    await db.debtData().insert({
       debtDataId: 1,
       frn: 1234567890,
       reference: 'SIP00000000000001',
@@ -19,20 +20,20 @@ describe('Delete debts test', () => {
 
   afterAll(async () => {
     await resetData()
-    await db.sequelize.close()
+    await db.close()
   })
 
   test('should delete debt', async () => {
     await deleteDebt(1)
-    const remainingDebt = await db.debtData.findAll({ raw: true })
+    const remainingDebt = await db.debtData()
     expect(remainingDebt.length).toBe(0)
   })
 
   test('should not delete attached debt', async () => {
-    await db.paymentRequest.create({ paymentRequestId: 1 })
-    await db.debtData.update({ paymentRequestId: 1 }, { where: { debtDataId: 1 } })
+    await db.paymentRequest().insert({ paymentRequestId: 1 })
+    await db.debtData().where({ debtDataId: 1 }).update({ paymentRequestId: 1 })
     await deleteDebt(1)
-    const remainingDebt = await db.debtData.findAll()
+    const remainingDebt = await db.debtData()
     expect(remainingDebt.length).toBe(1)
   })
 })
