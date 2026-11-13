@@ -40,7 +40,7 @@ services:
       BANNER_TEXT: ${BANNER_TEXT}
       BANNER_EMAIL: ${BANNER_EMAIL}
   ffc-pay-request-editor-postgres:
-    image: postgres:11.4-alpine
+    image: postgres:16.5-alpine
     environment:
       POSTGRES_DB: ffc_pay_request_editor
       POSTGRES_PASSWORD: ppp
