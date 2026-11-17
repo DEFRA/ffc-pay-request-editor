@@ -7,8 +7,10 @@
 
     <changeSet author="Leigh Godson" id="2">
       <sql>
-      DROP TABLE IF EXISTS public."v2TempDebtData";
+      DROP TABLE IF EXISTS 
+        public."v2TempDebtData",
+        public."tempDebtData";
       </sql>
   </changeSet>
-  
+
 </databaseChangeLog>
