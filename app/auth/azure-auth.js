@@ -6,12 +6,12 @@ const AUTH_SCOPES = ['openid', 'profile', 'offline_access']
 const msalLogging = config.isProd
   ? {}
   : {
-    loggerCallback(_loglevel, message) {
-      console.log(message)
-    },
-    piiLoggingEnabled: false,
-    logLevel: msal.LogLevel.Verbose
-  }
+      loggerCallback (_loglevel, message) {
+        console.log(message)
+      },
+      piiLoggingEnabled: false,
+      logLevel: msal.LogLevel.Verbose
+    }
 
 const msalClientApplication = new msal.ConfidentialClientApplication({
   auth: config.authConfig.azure,
