@@ -1,12 +1,10 @@
 const msal = require('@azure/msal-node')
 const config = require('../config')
 
-const AUTH_SCOPES = ['openid', 'profile', 'offline_access']
-
 const msalLogging = config.isProd
   ? {}
   : {
-      loggerCallback (_loglevel, message) {
+      loggerCallback (loglevel, message, containsPii) {
         console.log(message)
       },
       piiLoggingEnabled: false,
@@ -20,121 +18,53 @@ const msalClientApplication = new msal.ConfidentialClientApplication({
 
 const getAuthenticationUrl = () => {
   const authCodeUrlParameters = {
-    prompt: 'select_account',
-    redirectUri: config.authConfig.redirectUrl,
-    scopes: AUTH_SCOPES
+    prompt: 'select_account', // Force the MS account select dialog
+    redirectUri: config.authConfig.redirectUrl
   }
 
   return msalClientApplication.getAuthCodeUrl(authCodeUrlParameters)
 }
 
-const getSessionAccount = account => ({
-  homeAccountId: account.homeAccountId,
-  environment: account.environment,
-  tenantId: account.tenantId,
-  username: account.username,
-  localAccountId: account.localAccountId,
-  name: account.name
-})
-
-const getCachedAccount = async account => {
-  if (!account?.homeAccountId) {
-    return null
-  }
-
-  return msalClientApplication
-    .getTokenCache()
-    .getAccountByHomeId(account.homeAccountId)
-}
-
 const authenticate = async (redirectCode, cookieAuth) => {
   try {
-    if (!redirectCode) {
-      throw new Error(
-        'No authorization code was returned by Microsoft Entra ID'
-      )
-    }
-
     const token = await msalClientApplication.acquireTokenByCode({
       code: redirectCode,
-      scopes: AUTH_SCOPES,
+      scopes: ['openid', 'profile', 'offline_access'],
       redirectUri: config.authConfig.redirectUrl
     })
 
-    if (!token?.account || !token?.idTokenClaims) {
-      throw new Error(
-        'Microsoft Entra ID returned an incomplete authentication result'
-      )
-    }
-
     cookieAuth.set({
       scope: token.idTokenClaims.roles || [],
-      account: getSessionAccount(token.account)
+      account: token.account
     })
-
-    return token
   } catch (err) {
-    console.error('Failed to acquire token by code:', {
-      name: err?.name,
-      message: err?.message,
-      errorCode: err?.errorCode,
-      correlationId: err?.correlationId
-    })
-
-    throw err
+    console.error('Failed to acquire token by code:', err)
   }
 }
 
-const refresh = async (account, cookieAuth, forceRefresh = false) => {
+const refresh = async (account, cookieAuth, forceRefresh = true) => {
   try {
-    const cachedAccount = await getCachedAccount(account)
-
-    if (!cachedAccount) {
-      console.warn(
-        'Unable to refresh token: account not found in MSAL cache'
-      )
-      return null
-    }
-
     const token = await msalClientApplication.acquireTokenSilent({
-      account: cachedAccount,
-      scopes: AUTH_SCOPES,
+      account,
+      scopes: ['openid', 'profile', 'offline_access'],
       forceRefresh
     })
 
-    if (!token?.account || !token?.idTokenClaims) {
-      throw new Error(
-        'Microsoft Entra ID returned an incomplete refresh result'
-      )
-    }
-
     cookieAuth.set({
       scope: token.idTokenClaims.roles || [],
-      account: getSessionAccount(token.account)
+      account: token.account
     })
 
     return token.idTokenClaims.roles
   } catch (err) {
-    console.error('Failed to acquire token on silent refresh:', {
-      name: err?.name,
-      message: err?.message,
-      errorCode: err?.errorCode,
-      correlationId: err?.correlationId
-    })
-
+    console.error('Failed to acquire token on silent refresh:', err)
     return null
   }
 }
 
-const logout = async account => {
+const logout = async (account) => {
   try {
-    const cachedAccount = await getCachedAccount(account)
-
-    if (cachedAccount) {
-      await msalClientApplication
-        .getTokenCache()
-        .removeAccount(cachedAccount)
-    }
+    await msalClientApplication.getTokenCache().removeAccount(account)
   } catch (err) {
     console.error('Unable to end session', err)
   }
